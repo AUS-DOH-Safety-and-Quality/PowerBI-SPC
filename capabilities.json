@@ -1,0 +1,227 @@
+{
+    "supportsHighlight": true,
+    "dataRoles": [
+        {
+            "displayName": "Outcome/Numerator",
+            "name": "numerator",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Denominator",
+            "name": "denominator",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "ID Key (Date or ID for xbar/s)",
+            "name": "key",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Grouping (xbar/s)",
+            "name": "groups",
+            "kind": "Grouping"
+        }
+    ],
+    "objects": {
+        "funnel" : {
+            "displayName": "Data Settings",
+            "properties": {
+                "data_type": {
+                    "displayName": "Chart Type",
+                    "type" : {
+                        "enumeration" : [
+                          {
+                              "displayName" : "run - Run Chart",
+                              "value" : "run"
+                          },
+                          {
+                            "displayName" : "i - Individual Measurements",
+                            "value" : "i"
+                          },
+                          {
+                            "displayName" : "mr - Moving Range of Individual Measurements",
+                            "value" : "mr"
+                          },
+                          {
+                            "displayName" : "p - Proportions",
+                            "value" : "p"
+                          },
+                          {
+                            "displayName" : "p prime - Proportions Chart with Large Sample Correction",
+                            "value" : "pp"
+                          },
+                          {
+                            "displayName" : "u - Rates",
+                            "value" : "u"
+                          },
+                          {
+                            "displayName" : "u prime - Rates Chart with Large Sample Correction",
+                            "value" : "up"
+                          },
+                          {
+                            "displayName" : "c - Counts",
+                            "value" : "c"
+                          },
+                          {
+                            "displayName" : "xbar - Sample Means",
+                            "value" : "xbar"
+                          },
+                          {
+                            "displayName" : "s - Sample SDs",
+                            "value" : "s"
+                          },
+                          {
+                            "displayName" : "g - Number of Non-Events Between Events",
+                            "value" : "g"
+                          },
+                          {
+                            "displayName" : "t - Time Between Events",
+                            "value" : "t"
+                          },
+                          {
+                            "displayName" : "SR - Standardised Ratios (e.g., HSMR)",
+                            "value" : "sr"
+                          }
+                        ]
+                    }
+                },
+                "multiplier": {
+                    "displayName": "Multiplier",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "scatter": {
+            "displayName": "Scatter Settings",
+            "properties": {
+                "size": {
+                    "displayName": "Dot Size",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "opacity": {
+                    "displayName": "Opacity",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "opacity_unselected": {
+                    "displayName": "Opacity if Unselected",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "colour":{
+                    "displayName": "Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 }
+            }
+        },
+        "lines": {
+            "displayName": "Line Settings",
+            "properties": {
+                "width_99": {
+                    "displayName": "99.8% Line Width",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "width_main": {
+                    "displayName": "Main Line Width",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "width_target": {
+                    "displayName": "Target Line Width",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "colour_99":{
+                    "displayName": "99.8% Line Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "colour_main":{
+                    "displayName": "Main Line Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "colour_target":{
+                    "displayName": "Target Line Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "dataViewMappings": [
+        {
+            "conditions": [
+                {
+                    "dates": {
+                        "max": 1
+                    },
+                    "numerator": {
+                        "max": 1
+                    }
+                }
+            ],
+            "categorical": {
+                "categories": {
+                    "select": [
+                        {
+                            "for": {
+                                "in": "key"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "groups"
+                            }
+                        }
+                    ]
+                },
+                "values": {
+                    "select": [
+                        {
+                            "for": {
+                                "in": "numerator"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "denominator"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

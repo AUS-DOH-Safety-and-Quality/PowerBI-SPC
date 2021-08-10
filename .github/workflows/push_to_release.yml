@@ -1,0 +1,37 @@
+name: Push to Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Build
+      run: |
+        npm install
+        npm install -g powerbi-visuals-tools@3.1.15
+        pbiviz package
+        
+    - name: Update release
+      uses: ncipollo/release-action@v1
+      with:
+        name: "Continuous"
+        tag: "Continuous"
+        allowUpdates: true
+        body: "This release contains the latest build of the visual, and is rebuilt when any change is pushed.\nNote that the 'Source code' archives below will not be current.\n\nDownload using [this link](https://github.com/andrjohns/PowerBI-Funnels/releases/download/Continuous/PBIFUN.1.0.0.pbiviz) or from the 'Assets' section below."
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: dist/*.pbiviz

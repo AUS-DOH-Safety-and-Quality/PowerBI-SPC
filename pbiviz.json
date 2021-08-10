@@ -1,0 +1,25 @@
+{
+    "visual":{
+        "name":"PBISPC",
+        "displayName":"PBI SPC",
+        "guid":"PBISPC",
+        "visualClassName":"Visual",
+        "version":"1.0.0",
+        "description":"test",
+        "supportUrl":"test",
+        "gitHubUrl":""
+    },
+    "apiVersion":"2.6.0",
+    "author":{
+        "name":"Test",
+        "email":"test"
+    },
+    "assets":{
+        "icon":"assets/icon.png"
+    },
+    "externalJS":null,
+    "style":"style/visual.less",
+    "capabilities":"capabilities.json",
+    "dependencies":null,
+    "stringResources":[]
+}
