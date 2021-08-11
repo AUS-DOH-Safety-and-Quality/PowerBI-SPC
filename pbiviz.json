@@ -5,14 +5,14 @@
         "guid":"PBISPC",
         "visualClassName":"Visual",
         "version":"1.0.0",
-        "description":"test",
-        "supportUrl":"test",
-        "gitHubUrl":""
-    },
+        "description":"A PowerBI custom visual for SPC chart",
+        "supportUrl":"https://github.com/andrjohns/PowerBI-SPC",
+        "gitHubUrl":"https://github.com/andrjohns/PowerBI-SPC"
+        },
     "apiVersion":"3.8.0",
     "author":{
-        "name":"Test",
-        "email":"test"
+        "name":"Andrew Johnson",
+        "email":"Andrew.Johnson@health.wa.gov.au"
     },
     "assets":{
         "icon":"assets/icon.png"
