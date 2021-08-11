@@ -23,5 +23,5 @@ jobs:
     - name: Build
       run: |
         npm install
-        npm install -g powerbi-visuals-tools@3.1.15
+        npm install -g powerbi-visuals-tools
         pbiviz package
