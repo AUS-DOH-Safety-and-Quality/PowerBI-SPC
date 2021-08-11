@@ -5,7 +5,7 @@
         "guid":"PBISPC",
         "visualClassName":"Visual",
         "version":"1.0.0",
-        "description":"A PowerBI custom visual for SPC chart",
+        "description":"A PowerBI custom visual for SPC charts",
         "supportUrl":"https://github.com/andrjohns/PowerBI-SPC",
         "gitHubUrl":"https://github.com/andrjohns/PowerBI-SPC"
         },
