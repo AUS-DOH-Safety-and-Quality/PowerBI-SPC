@@ -15,7 +15,8 @@
     "lib-r-math.js": ">=1.0.89",
     "mathjs": ">=9.3.0",
     "powerbi-visuals-api": "~3.8.0",
-    "powerbi-visuals-utils-dataviewutils": "^2.2.1"
+    "powerbi-visuals-utils-dataviewutils": "^2.2.1",
+    "regenerator-runtime": "^0.13.9"
   },
   "devDependencies": {
     "process": "^0.11.10",
