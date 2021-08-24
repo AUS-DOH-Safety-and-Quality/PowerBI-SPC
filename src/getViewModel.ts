@@ -95,7 +95,7 @@ function getViewModel(options, settings, host) {
         
         if(data_type == "p" || data_type == "pp" ||
            data_type == "u" || data_type == "up" ||
-           ((data_type == "i") || (data_type == "mr") && denominator)) {
+           (((data_type == "i") || (data_type == "mr")) && denominator)) {
             valid = (valid && <number>denominator.values[idx] != null && <number>denominator.values[idx] > 0);
         }
 
