@@ -187,7 +187,6 @@ export class Visual implements IVisual {
         //   This function contains the construction of the funnel
         //   control limits
         this.viewModel = getViewModel(options, this.settings, this.host);
-        console.log(this.viewModel);
 
         // Get the width and height of plotting space
         let width = options.viewport.width;

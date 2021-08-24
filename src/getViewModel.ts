@@ -68,11 +68,11 @@ function getViewModel(options, settings, host) {
 
     let data_type = settings.funnel.data_type.value;
 
-    let numerator_in: number[] = [0];
-    let denominator_in: number[];
+    let numerator_in: number[] = new Array();
+    let denominator_in: number[] = new Array();
     var groups_in: string[];
     var key_in: string[];
-    var key_valid: string[] = [""];
+    var key_valid: string[] = new Array();
 
     if(view.categories[0].source.type.dateTime) {
         key_in = str_to_dmy(<string[]>(key.values));
@@ -95,8 +95,8 @@ function getViewModel(options, settings, host) {
         
         if(data_type == "p" || data_type == "pp" ||
            data_type == "u" || data_type == "up" ||
-           ((data_type == "i") || (data_type == "mr")) && denominator) {
-            valid = (valid && denominator.values[idx] != null && denominator.values[idx] > 0);
+           ((data_type == "i") || (data_type == "mr") && denominator)) {
+            valid = (valid && <number>denominator.values[idx] != null && <number>denominator.values[idx] > 0);
         }
 
         if(view.categories[1]) {
@@ -104,19 +104,14 @@ function getViewModel(options, settings, host) {
         }
 
         if(valid) {
-            if(idx == 0) {
-                numerator_in = [d];
-                key_valid = [key_in[idx]];
-                denominator_in = denominator ? [denominator.values[idx]] : null;
-            }
             numerator_in.push(d);
             key_valid.push(key_in[idx]);
             if(denominator) {denominator_in.push(denominator.values[idx]);}
         }
     })
 
-
     let limitsArray = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
+
     let tooltipsArray = getTooltips(data_type, limitsArray, numerator_in, denominator_in);
     let lab_vals: string[] =  ((data_type == "xbar") || (data_type == "s")) ? groups_in : key_valid;
     let multiplier = settings.funnel.multiplier.value;
@@ -158,7 +153,7 @@ function getViewModel(options, settings, host) {
 
     // Flag whether any dots need to be highlighted
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;
-    console.log(viewModel);
+
     return viewModel;
 }
 
