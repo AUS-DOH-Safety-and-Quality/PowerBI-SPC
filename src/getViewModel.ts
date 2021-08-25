@@ -25,6 +25,7 @@ function str_to_dmy(text: string[]) {
 */
 function getViewModel(options, settings, host) {
     let dv = options.dataViews;
+    let data_type = settings.spc.data_type.value;
 
     let viewModel = {
         plotData: [],
@@ -47,6 +48,11 @@ function getViewModel(options, settings, host) {
     // Get  categorical view of the data
     let view = dv[0].categorical;
 
+    if(!view.values[0]
+        || (data_type == "p" && !view.values[1])) {
+            return viewModel;
+    }
+
     if(!view.categories[0]) {
         return viewModel;
     }
@@ -66,7 +72,6 @@ function getViewModel(options, settings, host) {
     // Get groups of dots to highlight
     let highlights = [];
 
-    let data_type = settings.spc.data_type.value;
 
     let numerator_in: number[] = new Array();
     let denominator_in: number[] = new Array();

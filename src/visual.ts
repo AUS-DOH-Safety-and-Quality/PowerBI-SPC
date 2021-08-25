@@ -183,13 +183,13 @@ export class Visual implements IVisual {
                                 .classed("dot-group", true);
 
         this.UL99Group = this.svg.append("g")
-                                .classed("line-group", true);
+                                .classed("ul-line-group", true);
         this.LL99Group = this.svg.append("g")
-                                .classed("line-group", true);
+                                .classed("ll-line-group", true);
         this.targetGroup = this.svg.append("g")
-                                .classed("line-group", true);
+                                .classed("tg-line-group", true);
         this.lineGroup = this.svg.append("g")
-                                .classed("line-group", true);
+                                .classed("mn-line-group", true);
 
         // Add a grouping ('g') element to the canvas that will later become the x-axis
         this.xAxisGroup = this.svg.append("g")
@@ -218,6 +218,7 @@ export class Visual implements IVisual {
         //   This function contains the construction of the spc
         //   control limits
         this.viewModel = getViewModel(options, this.settings, this.host);
+        
 
         // Get the width and height of plotting space
         let width = options.viewport.width;
@@ -257,7 +258,9 @@ export class Visual implements IVisual {
         let xLabels: (number|string)[][] = this.viewModel.plotData.map(d => d.tick_labels);
 
         let yAxis = d3.axisLeft(yScale)
-                      .tickFormat(d => data_type == "p" && multiplier == 1 ? (<number>d * 100) + "%" : <string><unknown>d);
+                      .tickFormat(
+                          d => data_type == "p" && multiplier == 1 ? (<number>d * 100) + "%" : <string><unknown>d
+                      );
         let xAxis = d3.axisBottom(xScale)
                       .tickFormat(
                         d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
@@ -298,7 +301,6 @@ export class Visual implements IVisual {
         makeDots(dots_merged, this.settings,
                  this.viewModel.highlights, this.selectionManager,
                  this.host.tooltipService, xScale, yScale);
-
         this.xAxisLabels
             .attr("x",width/2)
             .attr("y",height - xAxisPadding/10)
@@ -323,17 +325,17 @@ export class Visual implements IVisual {
             .selectAll(".line")
             .data([this.viewModel.plotData]);
         
-        const linesMainMerged = linesMain.enter()
+        let linesMainMerged = linesMain.enter()
                                          .append("path")
                                          .merge(<any>linesMain)
                                          .classed("line", true)
 
-        const linesLL99Merged = linesLL99.enter()
+        let linesLL99Merged = linesLL99.enter()
                                          .append("path")
                                          .merge(<any>linesLL99)
                                          .classed("line", true)
         
-        const linesUL99_merged = linesUL99.enter()
+        let linesUL99_merged = linesUL99.enter()
                                           .append("path")
                                           .merge(<any>linesUL99)
                                           .classed("line", true)
@@ -342,7 +344,7 @@ export class Visual implements IVisual {
                              .selectAll(".line")
                              .data([this.viewModel.plotData]);
 
-        const lineTarget_merged = lineTarget.enter()
+        let lineTarget_merged = lineTarget.enter()
                                             .append("path")
                                             .merge(<any>lineTarget)
                                             .classed("line", true)
