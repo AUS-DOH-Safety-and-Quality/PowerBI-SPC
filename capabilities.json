@@ -1,5 +1,15 @@
 {
     "supportsHighlight": true,
+    "sorting": {
+        "implicit": {
+            "clauses": [
+                {
+                    "role": "key",
+                    "direction": 1
+                }
+            ]
+        }
+    },
     "dataRoles": [
         {
             "displayName": "Outcome/Numerator",
