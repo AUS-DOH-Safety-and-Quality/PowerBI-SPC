@@ -12,7 +12,7 @@ function str_to_dmy(text: string[]) {
 
 /**
  * Interfacing function between PowerBI data and visual rendering. Reads in
- * user-specified data, calculates the funnel control limits to plot, and
+ * user-specified data, calculates the spc control limits to plot, and
  * packages into a format ready for plotting. This function is called on
  * each plot update (e.g., resizing, filtering).
  *
@@ -66,7 +66,7 @@ function getViewModel(options, settings, host) {
     // Get groups of dots to highlight
     let highlights = [];
 
-    let data_type = settings.funnel.data_type.value;
+    let data_type = settings.spc.data_type.value;
 
     let numerator_in: number[] = new Array();
     let denominator_in: number[] = new Array();
@@ -114,7 +114,7 @@ function getViewModel(options, settings, host) {
 
     let tooltipsArray = getTooltips(data_type, limitsArray, numerator_in, denominator_in);
     let lab_vals: string[] =  ((data_type == "xbar") || (data_type == "s")) ? groups_in : key_valid;
-    let multiplier = settings.funnel.multiplier.value;
+    let multiplier = settings.spc.multiplier.value;
 
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
     for (let i = 0; i < limitsArray.length;  i++) {
@@ -146,8 +146,8 @@ function getViewModel(options, settings, host) {
     let maxPoint: number = <number><unknown>(d3.max(limitsArray.map(d => d[1])));
 
     // Extract maximum value of input data and add to viewModel
-    viewModel.minLimit = (mathjs.min([minLimit,minPoint]) - mathjs.min([minLimit,minPoint])*0.1) * multiplier;
-    viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + mathjs.max([maxLimit,maxPoint])*0.1) * multiplier;
+    viewModel.minLimit = (mathjs.min([minLimit,minPoint]) - Math.abs(mathjs.min([minLimit,minPoint]))*0.1) * multiplier;
+    viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + Math.abs(mathjs.max([maxLimit,maxPoint]))*0.1) * multiplier;
 
     viewModel.target = <number>limitsArray[0][2] * multiplier;
 

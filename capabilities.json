@@ -23,7 +23,7 @@
         }
     ],
     "objects": {
-        "funnel" : {
+        "spc" : {
             "displayName": "Data Settings",
             "properties": {
                 "data_type": {
@@ -175,6 +175,47 @@
                                 "color": true
                             }
                         }
+                    }
+                }
+            }
+        },
+        "axis": {
+            "displayName": "Axis Settings",
+            "properties": {
+                "xlimit_label": {
+                    "displayName": "X-Axis Label",
+                    "type": {
+                        "text": true
+                    }
+                },
+                "ylimit_label": {
+                    "displayName": "Y-Axis Label",
+                    "type": {
+                        "text": true
+                    }
+                },
+                "ylimit_l": {
+                    "displayName": "Y-Axis Lower Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "ylimit_u": {
+                    "displayName": "Y-Axis Upper Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "xlimit_l": {
+                    "displayName": "X-Axis Lower Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "xlimit_u": {
+                    "displayName": "X-Axis Upper Limit",
+                    "type": {
+                        "numeric": true
                     }
                 }
             }
