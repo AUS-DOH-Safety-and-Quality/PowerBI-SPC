@@ -26,6 +26,7 @@ function str_to_dmy(text: string[]) {
 function getViewModel(options, settings, host) {
     let dv = options.dataViews;
     let data_type = settings.spc.data_type.value;
+    let input_names = dv[0].metadata.columns.map(d => Object.keys(d.roles)[0]);
 
     let viewModel = {
         plotData: [],
@@ -49,16 +50,20 @@ function getViewModel(options, settings, host) {
     let view = dv[0].categorical;
 
     if(!view.values[0]
-        || (data_type == "p" && !view.values[1])) {
+        || !view.categories[0]
+        || (data_type == "p" && !view.values[1])
+        || (!(data_type == "xbar" || data_type == "s") && input_names.slice(-1)[0] == "groups")) {
             return viewModel;
     }
 
-    if(!view.categories[0]) {
-        return viewModel;
-    }
+    let num_cat = (data_type == "xbar" || data_type == "s") ? view.categories.length - 1 : view.categories.length;
 
     // Get array of category values
     let key = view.categories[0];
+
+    let valid_int = Array.from({length: num_cat}, (_, index) => index).reverse();
+    let obs_len = Array.from({length: view.categories[0].values.length}, (_, index) => index);
+    let key_grps = obs_len.map(idx => valid_int.map(i => view.categories[i].values[idx]).join(" "));
 
     // Get array of category values
     let categories = view.categories[1] ? view.categories[1] : view.categories[0];
@@ -72,24 +77,23 @@ function getViewModel(options, settings, host) {
     // Get groups of dots to highlight
     let highlights = [];
 
-
     let numerator_in: number[] = new Array();
     let denominator_in: number[] = new Array();
     var groups_in: string[];
     var key_in: string[];
     var key_valid: string[] = new Array();
 
-    if(view.categories[0].source.type.dateTime) {
+    if(num_cat == 1 && view.categories[0].source.type.dateTime) {
         key_in = str_to_dmy(<string[]>(key.values));
     } else {
-        key_in = <string[]>key.values;
+        key_in = key_grps;
     }
 
-    if(view.categories[1]) {
-        if(view.categories[1].source.type.dateTime) {
-            groups_in = str_to_dmy(<string[]>(view.categories[1]));
+    if((data_type == "xbar" || data_type == "s")) {
+        if(view.categories.slice(-1).source.type.dateTime) {
+            groups_in = str_to_dmy(<string[]>(view.categories.slice(-1)));
         } else {
-            groups_in = <string[]>view.categories[1].values;
+            groups_in = <string[]>view.categories.slice(-1).values;
         }
     }
 
