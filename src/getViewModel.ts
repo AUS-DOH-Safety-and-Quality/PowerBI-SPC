@@ -146,8 +146,8 @@ function getViewModel(options, settings, host) {
     let maxPoint: number = <number><unknown>(d3.max(limitsArray.map(d => d[1])));
 
     // Extract maximum value of input data and add to viewModel
-    viewModel.minLimit = (mathjs.min([minLimit,minPoint])*1.1) * multiplier;
-    viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint])*1.1) * multiplier;
+    viewModel.minLimit = (mathjs.min([minLimit,minPoint]) - Math.abs(mathjs.min([minLimit,minPoint]))*0.1) * multiplier;
+    viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + Math.abs(mathjs.max([maxLimit,maxPoint]))*0.1) * multiplier;
 
     viewModel.target = <number>limitsArray[0][2] * multiplier;
 
