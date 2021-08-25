@@ -32,6 +32,6 @@ jobs:
         name: "Continuous"
         tag: "Continuous"
         allowUpdates: true
-        body: "This release contains the latest build of the visual, and is rebuilt when any change is pushed.\nNote that the 'Source code' archives below will not be current.\n\nDownload using [this link](https://github.com/andrjohns/PowerBI-spcs/releases/download/Continuous/PBISPC.1.0.0.pbiviz) or from the 'Assets' section below."
+        body: "This release contains the latest build of the visual, and is rebuilt when any change is pushed.\nNote that the 'Source code' archives below will not be current.\n\nDownload using [this link](https://github.com/andrjohns/PowerBI-SPC/releases/download/Continuous/PBISPC.1.0.0.pbiviz) or from the 'Assets' section below."
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: dist/*.pbiviz
