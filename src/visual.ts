@@ -230,6 +230,8 @@ export class Visual implements IVisual {
         let xAxisMax = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x))+1;
         let yAxisMin = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : this.viewModel.minLimit;
         let yAxisMax = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : this.viewModel.maxLimit;
+        let data_type = this.settings.spc.data_type.value;
+        let multiplier = this.settings.spc.multiplier.value;
 
         // Dynamically scale chart to use all available space
         this.svg.attr("width", width)
@@ -254,7 +256,8 @@ export class Visual implements IVisual {
 
         let xLabels: (number|string)[][] = this.viewModel.plotData.map(d => d.tick_labels);
 
-        let yAxis = d3.axisLeft(yScale);
+        let yAxis = d3.axisLeft(yScale)
+                      .tickFormat(d => data_type == "p" && multiplier == 1 ? (<number>d * 100) + "%" : <string><unknown>d);
         let xAxis = d3.axisBottom(xScale)
                       .tickFormat(
                         d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
