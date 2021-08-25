@@ -8,19 +8,19 @@ import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
  * @param objects         - List of settings objects to get values from
  */
 function updateSettings(settings, objects) {
-    settings.funnel.data_type.value = dataViewObjects.getValue(
+    settings.spc.data_type.value = dataViewObjects.getValue(
         objects, {
-            objectName: "funnel",
+            objectName: "spc",
             propertyName: "data_type"
         },
-        settings.funnel.data_type.default
+        settings.spc.data_type.default
     )
-    settings.funnel.multiplier.value = dataViewObjects.getValue(
+    settings.spc.multiplier.value = dataViewObjects.getValue(
         objects, {
-            objectName: "funnel",
+            objectName: "spc",
             propertyName: "multiplier"
         },
-        settings.funnel.multiplier.default
+        settings.spc.multiplier.default
     )
     settings.scatter.size.value = dataViewObjects.getValue(
         objects, {
@@ -91,6 +91,55 @@ function updateSettings(settings, objects) {
             propertyName: "colour_target"
         },
         settings.lines.colour_target.default
+    )
+    settings.axis.xlimit_label.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "xlimit_label"
+        },
+        settings.axis.xlimit_label.default
+    )
+    settings.axis.ylimit_label.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "ylimit_label"
+        },
+        settings.axis.ylimit_label.default
+    )
+    settings.axis.ylimit_u.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "ylimit_u"
+        },
+        settings.axis.ylimit_u.default
+    )
+    settings.axis.ylimit_l.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "ylimit_l"
+        },
+        settings.axis.ylimit_l.default
+    )
+    settings.axis.ylimit_u.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "ylimit_u"
+        },
+        settings.axis.ylimit_u.default
+    )
+    settings.axis.xlimit_l.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "xlimit_l"
+        },
+        settings.axis.xlimit_l.default
+    )
+    settings.axis.xlimit_u.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "axis",
+            propertyName: "xlimit_u"
+        },
+        settings.axis.xlimit_u.default
     )
 }
 
