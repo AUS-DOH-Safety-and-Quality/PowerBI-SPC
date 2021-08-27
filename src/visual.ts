@@ -12,46 +12,16 @@ import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
-import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
-import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import makeDots from "./Plotting Functions/makeDots";
 import makeLines from "./Plotting Functions/makeLines";
-import updateSettings from "../src/updateSettings";
+import updateSettings from "./Settings/updateSettings";
 import getViewModel from "../src/getViewModel";
 import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
+import initSettings from "../src/Settings/initSettings"
 import * as d3 from "d3";
-import * as mathjs from "mathjs";
-import * as rmath from "lib-r-math.js";
+import { ViewModel } from "../src/Interfaces"
 
-// I don't know why it needs this, and at this point I'm too afraid to ask
-type Selection<T extends d3.BaseType> = d3.Selection<T, any, any, any>;
-
-// Used to represent the different datapoints on the chart
-interface PlotData {
-    x: number,
-    l_limit: number;
-    u_limit: number;
-    ratio: number;
-    colour: string;
-    // ISelectionId allows the visual to report the selection choice to PowerBI
-    identity: powerbi.visuals.ISelectionId;
-    // Flag for whether dot should be highlighted by selections in other charts
-    highlighted: boolean;
-    // Tooltip data to print
-    tooltips: VisualTooltipDataItem[];
-    tick_labels: (number|string)[];
-};
-
-// Separator between code that gets data from PBI, and code that renders
-//   the data in the visual
-interface ViewModel {
-    plotData: PlotData[];
-    minLimit: number;
-    maxLimit: number;
-    target: number;
-    highlights: boolean;
-};
 
 export class Visual implements IVisual {
     private host: IVisualHost;
@@ -73,104 +43,8 @@ export class Visual implements IVisual {
     //   rest of the report
     private selectionManager: ISelectionManager;
 
-
     // Settings for plot aesthetics
-    private settings = {
-        axispad: {
-            x: {
-                padding: {
-                    default: 50,
-                    value: 50
-                }
-            },
-            y: {
-                padding: {
-                    default: 50,
-                    value: 50
-                }
-            }
-        },
-        spc: {
-            data_type: {
-                default: "i",
-                value: "i"
-            },
-            multiplier: {
-                default: 1,
-                value: 1
-            }
-        },
-        scatter: {
-            size: {
-                default: 4,
-                value: 4
-            },
-            colour: {
-                default: "#000000",
-                value: "#000000"
-            },
-            opacity: {
-                default: 1,
-                value: 1
-            },
-            opacity_unselected: {
-                default: 0.2,
-                value: 0.2
-            }
-        },
-        lines: {
-            width_99: {
-                default: 3,
-                value: 3
-            },
-            width_main: {
-                default: 1.5,
-                value: 1.5
-            },
-            width_target: {
-                default: 1.5,
-                value: 1.5
-            },
-            colour_99: {
-                default: "#4682B4",
-                value: "#4682B4"
-            },
-            colour_main: {
-                default: "#000000",
-                value: "#000000"
-            },
-            colour_target: {
-                default: "#4682B4",
-                value: "#4682B4"
-            }
-        },
-        axis: {
-            xlimit_label: {
-                default: null,
-                value: null
-            },
-            ylimit_label: {
-                default: null,
-                value: null
-            },
-            ylimit_l: {
-                default: null,
-                value: null
-            },
-            ylimit_u: {
-                default: null,
-                value: null
-            },
-            xlimit_l: {
-                default: null,
-                value: null
-            },
-            xlimit_u: {
-                default: null,
-                value: null
-            }
-        }
-    }
+    private settings = initSettings();
 
     constructor(options: VisualConstructorOptions) {
         // Add reference to host object, for accessing environment (e.g. colour)
