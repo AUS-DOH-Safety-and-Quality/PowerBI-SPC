@@ -1,3 +1,5 @@
+import powerbi from "powerbi-visuals-api";
+import ISelectionId = powerbi.visuals.ISelectionId;
 
 /**
  * Check whether a given selection ID from current observations is
@@ -7,7 +9,8 @@
  * @param currentSelectionId 
  * @returns 
  */
-function checkIDSelected(globalSelectionIds, currentSelectionId): boolean {
+function checkIDSelected(globalSelectionIds: ISelectionId[],
+                         currentSelectionId: ISelectionId): boolean {
     if (!globalSelectionIds || !currentSelectionId) {
         return false;
     }

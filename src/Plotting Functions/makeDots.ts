@@ -12,7 +12,7 @@ import highlightIfSelected from "../Selection Helpers/highlightIfSelected";
  * @param x_scale           - d3 scale function for translating axis coordinates to screen coordinates
  * @param y_scale           - d3 scale function for translating axis coordinates to screen coordinates
  */
-function makeDots(DotObject, settings, highlights, selectionManager,
+function makeDots(DotObject, LineObject, settings, highlights, selectionManager,
                   tooltipService, x_scale, y_scale) {
     let dot_size = settings.scatter.size.value;
     let dot_colour = settings.scatter.colour.value;
@@ -26,7 +26,7 @@ function makeDots(DotObject, settings, highlights, selectionManager,
             // Fill each dot with the colour in each DataPoint
              .style("fill", d => dot_colour);
 
-    highlightIfSelected(DotObject, selectionManager.getSelectionIds(),
+    highlightIfSelected(DotObject, LineObject, selectionManager.getSelectionIds(),
                         dot_opacity, dot_opacity_unsel);
 
     // Change opacity (highlighting) with selections in other plots
@@ -47,7 +47,9 @@ function makeDots(DotObject, settings, highlights, selectionManager,
                         (ids.indexOf(d.identity) >= 0 ? dot_opacity : dot_opacity_unsel) 
                         : dot_opacity
                     );
+                    LineObject.style("stroke-opacity", ids.length > 0 ? dot_opacity_unsel : dot_opacity)
                 });
+                (<any>d3).event.stopPropagation();
          })
         // Display tooltip content on mouseover
         .on("mouseover", d => {
