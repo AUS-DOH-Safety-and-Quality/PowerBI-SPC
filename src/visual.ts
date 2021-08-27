@@ -19,6 +19,7 @@ import makeDots from "./Plotting Functions/makeDots";
 import makeLines from "./Plotting Functions/makeLines";
 import updateSettings from "../src/updateSettings";
 import getViewModel from "../src/getViewModel";
+import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
 import * as d3 from "d3";
 import * as mathjs from "mathjs";
 import * as rmath from "lib-r-math.js";
@@ -56,6 +57,8 @@ export class Visual implements IVisual {
     private host: IVisualHost;
     private svg: d3.Selection<SVGElement, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
+    private dots: d3.Selection<any, any, any, any>;
+    private linesMain: d3.Selection<any, any, any, any>;
     private lineGroup: d3.Selection<SVGElement, any, any, any>;
     private UL99Group: d3.Selection<SVGElement, any, any, any>;
     private LL99Group: d3.Selection<SVGElement, any, any, any>;
@@ -203,16 +206,20 @@ export class Visual implements IVisual {
 
         // Request a new selectionManager tied to the visual
         this.selectionManager = this.host.createSelectionManager();
+
+        // Update dot highlighting on initialisation
+        this.selectionManager.registerOnSelectCallback(() => {
+            highlightIfSelected(this.dots,
+                                this.linesMain,
+                                this.selectionManager.getSelectionIds() as ISelectionId[],
+                                this.settings.scatter.opacity.value,
+                                this.settings.scatter.opacity_unselected.value);
+        })
     }
 
     public update(options: VisualUpdateOptions) {
         // Update settings object with user-specified values (if present)
         updateSettings(this.settings, options.dataViews[0].metadata.objects);
-
-        // Have to remove & re-append dot element to fix weird xbar/s bug
-        this.svg.select(".dot-group").remove();
-        this.dotGroup = this.svg.append("g")
-                                .classed("dot-group", true);
 
         // Insert the viewModel object containing the user-input data
         //   This function contains the construction of the spc
@@ -284,7 +291,7 @@ export class Visual implements IVisual {
             .style("font-size","x-small");
  
         // Bind input data to dotGroup reference
-        let dots = this.dotGroup
+        this.dots = this.dotGroup
                        // List all child elements of dotGroup that have CSS class '.dot'
                        .selectAll(".dot")
                        // Matches input array to a list, returns three result sets
@@ -292,17 +299,14 @@ export class Visual implements IVisual {
                        .data(this.viewModel.plotData);
 
         // Update the datapoints if data is refreshed
-        let dots_merged = dots.enter()
-                              .append("circle")
-                              .merge(<any>dots)
-                              .classed("dot", true);
+        const dots_merged: d3.Selection<SVGCircleElement, any, any, any>
+            = this.dots.enter()
+                  .append("circle")
+                  .merge(<any>this.dots);
 
-        // Plotting of scatter points
-        makeDots(dots_merged, this.settings,
-                 this.viewModel.highlights, this.selectionManager,
-                 this.host.tooltipService, xScale, yScale);
-        this.xAxisLabels
-            .attr("x",width/2)
+        dots_merged.classed("dot", true);
+
+        this.xAxisLabels.attr("x",width/2)
             .attr("y",height - xAxisPadding/10)
             .style("text-anchor", "middle")
             .text(this.settings.axis.xlimit_label.value);
@@ -314,7 +318,7 @@ export class Visual implements IVisual {
             .style("text-anchor", "end");
 
         // Bind calculated control limits and target line to respective plotting objects
-        let linesMain= this.lineGroup
+        this.linesMain= this.lineGroup
             .selectAll(".line")
             .data([this.viewModel.plotData]);
         let linesLL99 = this.LL99Group
@@ -325,9 +329,9 @@ export class Visual implements IVisual {
             .selectAll(".line")
             .data([this.viewModel.plotData]);
         
-        let linesMainMerged = linesMain.enter()
+        let linesMainMerged = this.linesMain.enter()
                                          .append("path")
-                                         .merge(<any>linesMain)
+                                         .merge(<any>this.linesMain)
                                          .classed("line", true)
 
         let linesLL99Merged = linesLL99.enter()
@@ -368,6 +372,20 @@ export class Visual implements IVisual {
         makeLines(lineTarget_merged, this.settings,
                     xScale, yScale, "Target",
                     this.viewModel, this.host.tooltipService);
+
+        // Plotting of scatter points
+        makeDots(dots_merged, linesMainMerged, this.settings,
+                    this.viewModel.highlights, this.selectionManager,
+                    this.host.tooltipService, xScale, yScale);
+
+        this.dots.exit().remove();
+        this.svg.on('click', (d) => {
+            this.selectionManager.clear();
+            
+            highlightIfSelected(dots_merged, linesMainMerged, [],
+                                this.settings.scatter.opacity.value,
+                                this.settings.scatter.opacity_unselected.value);
+        });
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane
