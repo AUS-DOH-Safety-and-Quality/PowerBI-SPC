@@ -1,4 +1,8 @@
+import powerbi from "powerbi-visuals-api";
+import ITooltipService = powerbi.extensibility.ITooltipService;
 import * as d3 from "d3";
+import { ViewModel } from "../../src/Interfaces"
+import { PlotData } from "../../src/Interfaces"
 /**
  * Function for plotting the control limit and target lines, as well
  *   as managing the creation & updating of tooltips.
@@ -13,34 +17,39 @@ import * as d3 from "d3";
  * @param x_scale_inv      - d3 scale function for translating screen coordinates to axis coordinates
  * @param y_scale_inv      - d3 scale function for translating screen coordinates to axis coordinates
  */
-function makeLines(LineObject, settings, x_scale, y_scale,
-                   linetype, viewModel, tooltipService,
-                   y_scale_inv?) {
-    let l99_width = settings.lines.width_99.value;
-    let main_width = settings.lines.width_main.value;
-    let target_width = settings.lines.width_target.value;
-    let l99_colour = settings.lines.colour_99.value;
-    let main_colour = settings.lines.colour_main.value;
-    let target_colour = settings.lines.colour_target.value;
+function makeLines(LineObject: d3.Selection<SVGPathElement, any, any, any>,
+                   settings: any,
+                   x_scale: d3.ScaleLinear<number, number, never>,
+                   y_scale: d3.ScaleLinear<number, number, never>,
+                   linetype: string,
+                   viewModel: ViewModel,
+                   tooltipService: ITooltipService,
+                   y_scale_inv?: d3.ScaleLinear<number, number, never>): void {
+    let l99_width: number = settings.lines.width_99.value;
+    let main_width: number = settings.lines.width_main.value;
+    let target_width: number = settings.lines.width_target.value;
+    let l99_colour: string = settings.lines.colour_99.value;
+    let main_colour: string = settings.lines.colour_main.value;
+    let target_colour: string = settings.lines.colour_target.value;
     if (linetype != "Target") {
         if(linetype == "Lower") {
-            LineObject.attr("d", d3.line<typeof viewModel.LimitLines>()
+            LineObject.attr("d", d3.line<PlotData>()
                                    .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.lower_limit)))
+                                   .y(d => y_scale(d.l_limit)))
                 .attr("fill","none")
                 .attr("stroke", l99_colour)
                 .attr("stroke-width", l99_width)
                 .style("stroke-dasharray",("6,3"));
         } else if(linetype == "Upper") {
-            LineObject.attr("d", d3.line<typeof viewModel.LimitLines>()
+            LineObject.attr("d", d3.line<PlotData>()
                                    .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.upper_limit)))
+                                   .y(d => y_scale(d.u_limit)))
                 .attr("fill","none")
                 .attr("stroke", l99_colour)
                 .attr("stroke-width", l99_width)
                 .style("stroke-dasharray",("6,3"));
         } else if(linetype == "Main") {
-            LineObject.attr("d", d3.line<typeof viewModel.LimitLines>()
+            LineObject.attr("d", d3.line<PlotData>()
                                           .x(d => x_scale(d.x))
                                           .y(d => y_scale(d.ratio))
                                           .defined(d => (d.ratio != null)))
@@ -100,7 +109,7 @@ function makeLines(LineObject, settings, x_scale, y_scale,
                         })
                     });
     } else if (linetype == "Target") {
-        LineObject.attr("d", d3.line<typeof viewModel.LimitLines>()
+        LineObject.attr("d", d3.line<PlotData>()
                                .x(d => x_scale(d.x))
                                .y(d => y_scale(viewModel.target)))
             // Apply CSS class to elements so that they can be looked up later

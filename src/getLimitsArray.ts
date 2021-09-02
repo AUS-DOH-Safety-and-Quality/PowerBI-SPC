@@ -12,7 +12,7 @@ import g_limits from "./Limit Calculations/g"
 import t_limits from "./Limit Calculations/t"
 import sr_limits from "./Limit Calculations/sr"
 
-function getLimitsArray(chart_type: string, key: string[], numerator: number[], denominator: number[], group: string[]) {
+function getLimitsArray(chart_type: string, key: string[], numerator: number[], denominator: number[], group: string[]): (string | number)[][] {
     var limitFunction;
    if (chart_type == "i") {
         limitFunction = i_limits;

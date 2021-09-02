@@ -20,8 +20,11 @@ import getViewModel from "../src/getViewModel";
 import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
 import initSettings from "../src/Settings/initSettings"
 import * as d3 from "d3";
+import { PlotData } from "../src/Interfaces"
 import { ViewModel } from "../src/Interfaces"
 
+type LineType = d3.Selection<d3.BaseType, PlotData[], SVGElement, any>;
+type MergedLineType = d3.Selection<SVGPathElement, PlotData[], SVGElement, any>;
 
 export class Visual implements IVisual {
     private host: IVisualHost;
@@ -102,18 +105,18 @@ export class Visual implements IVisual {
         
 
         // Get the width and height of plotting space
-        let width = options.viewport.width;
-        let height = options.viewport.height;
+        let width: number = options.viewport.width;
+        let height: number = options.viewport.height;
 
         // Add appropriate padding so that plotted data doesn't overlay axis
-        let xAxisPadding = this.settings.axispad.x.padding.value;
-        let yAxisPadding = this.settings.axispad.y.padding.value;
-        let xAxisMin = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
-        let xAxisMax = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x))+1;
-        let yAxisMin = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : this.viewModel.minLimit;
-        let yAxisMax = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : this.viewModel.maxLimit;
-        let data_type = this.settings.spc.data_type.value;
-        let multiplier = this.settings.spc.multiplier.value;
+        let xAxisPadding: number = this.settings.axispad.x.padding.value;
+        let yAxisPadding: number = this.settings.axispad.y.padding.value;
+        let xAxisMin: number = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
+        let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x))+1;
+        let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : this.viewModel.minLimit;
+        let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : this.viewModel.maxLimit;
+        let data_type: string = this.settings.spc.data_type.value;
+        let multiplier: number = this.settings.spc.multiplier.value;
 
         // Dynamically scale chart to use all available space
         this.svg.attr("width", width)
@@ -122,30 +125,35 @@ export class Visual implements IVisual {
         // Define axes for chart.
         //   Takes a given plot axis value and returns the appropriate screen height
         //     to plot at.
-        let yScale = d3.scaleLinear()
-                       .domain([yAxisMin, yAxisMax])
-                       .range([height - xAxisPadding, 0]);
+        let yScale: d3.ScaleLinear<number, number, never>
+            = d3.scaleLinear()
+                .domain([yAxisMin, yAxisMax])
+                .range([height - xAxisPadding, 0]);
 
-        let xScale = d3.scaleLinear()
-                        .domain([xAxisMin, xAxisMax])
-                        .range([yAxisPadding, width]);
+        let xScale: d3.ScaleLinear<number, number, never>
+            = d3.scaleLinear()
+                .domain([xAxisMin, xAxisMax])
+                .range([yAxisPadding, width]);
 
         // Specify inverse scaling that will return a plot axis value given an input
         //   screen height. Used to display line chart tooltips.
-        let yScale_inv = d3.scaleLinear()
-                       .domain([height - xAxisPadding, 0])
-                       .range([this.viewModel.minLimit, this.viewModel.maxLimit]);
+        let yScale_inv: d3.ScaleLinear<number, number, never>
+            = d3.scaleLinear()
+                .domain([height - xAxisPadding, 0])
+                .range([this.viewModel.minLimit, this.viewModel.maxLimit]);
 
         let xLabels: (number|string)[][] = this.viewModel.plotData.map(d => d.tick_labels);
 
-        let yAxis = d3.axisLeft(yScale)
-                      .tickFormat(
-                          d => data_type == "p" && multiplier == 1 ? (<number>d * 100) + "%" : <string><unknown>d
-                      );
-        let xAxis = d3.axisBottom(xScale)
-                      .tickFormat(
-                        d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
-                      )
+        let yAxis: d3.Axis<d3.NumberValue>
+            = d3.axisLeft(yScale)
+                .tickFormat(
+                    d => data_type == "p" && multiplier == 1 ? (<number>d * 100) + "%" : <string><unknown>d
+                );
+        let xAxis: d3.Axis<d3.NumberValue>
+            = d3.axisBottom(xScale)
+                .tickFormat(
+                    d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
+                )
 
         // Draw axes on plot
         this.yAxisGroup
@@ -192,41 +200,42 @@ export class Visual implements IVisual {
             .style("text-anchor", "end");
 
         // Bind calculated control limits and target line to respective plotting objects
-        this.linesMain= this.lineGroup
-            .selectAll(".line")
-            .data([this.viewModel.plotData]);
-        let linesLL99 = this.LL99Group
+        this.linesMain = this.lineGroup
             .selectAll(".line")
             .data([this.viewModel.plotData]);
 
-        let linesUL99 = this.UL99Group
+        let linesLL99: LineType = this.LL99Group
+            .selectAll(".line")
+            .data([this.viewModel.plotData]);
+
+        let linesUL99: LineType = this.UL99Group
             .selectAll(".line")
             .data([this.viewModel.plotData]);
         
-        let linesMainMerged = this.linesMain.enter()
-                                         .append("path")
-                                         .merge(<any>this.linesMain)
-                                         .classed("line", true)
+        let linesMainMerged: MergedLineType = this.linesMain.enter()
+                                                            .append("path")
+                                                            .merge(<any>this.linesMain)
+                                                            .classed("line", true)
 
-        let linesLL99Merged = linesLL99.enter()
-                                         .append("path")
-                                         .merge(<any>linesLL99)
-                                         .classed("line", true)
+        let linesLL99Merged: MergedLineType = linesLL99.enter()
+                                                       .append("path")
+                                                       .merge(<any>linesLL99)
+                                                       .classed("line", true)
         
-        let linesUL99_merged = linesUL99.enter()
-                                          .append("path")
-                                          .merge(<any>linesUL99)
-                                          .classed("line", true)
+        let linesUL99_merged: MergedLineType = linesUL99.enter()
+                                                       .append("path")
+                                                       .merge(<any>linesUL99)
+                                                       .classed("line", true)
 
-        let lineTarget = this.targetGroup
-                             .selectAll(".line")
-                             .data([this.viewModel.plotData]);
+        let lineTarget: LineType = this.targetGroup
+                                       .selectAll(".line")
+                                       .data([this.viewModel.plotData]);
 
-        let lineTarget_merged = lineTarget.enter()
-                                            .append("path")
-                                            .merge(<any>lineTarget)
-                                            .classed("line", true)
-        
+        let lineTarget_merged: MergedLineType = lineTarget.enter()
+                                                          .append("path")
+                                                          .merge(<any>lineTarget)
+                                                          .classed("line", true)
+
         // Initial construction of lines, run when plot is first rendered.
         //   Text argument specifies which type of line is required (controls aesthetics),
         //   inverse scale objects used to display tooltips on drawn control limits 
@@ -265,7 +274,7 @@ export class Visual implements IVisual {
     // Function to render the properties specified in capabilities.json to the properties pane
     public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): 
         VisualObjectInstanceEnumeration {
-            let propertyGroupName = options.objectName;
+            let propertyGroupName: string = options.objectName;
             // Object that holds the specified settings/options to be rendered
             let properties: VisualObjectInstance[] = [];
 
