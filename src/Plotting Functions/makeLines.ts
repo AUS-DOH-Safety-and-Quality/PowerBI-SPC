@@ -35,7 +35,7 @@ function makeLines(LineObject: d3.Selection<SVGPathElement, any, any, any>,
         if(linetype == "Lower") {
             LineObject.attr("d", d3.line<PlotData>()
                                    .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.l_limit)))
+                                   .y(d => y_scale(d.lower_limit)))
                 .attr("fill","none")
                 .attr("stroke", l99_colour)
                 .attr("stroke-width", l99_width)
@@ -43,7 +43,7 @@ function makeLines(LineObject: d3.Selection<SVGPathElement, any, any, any>,
         } else if(linetype == "Upper") {
             LineObject.attr("d", d3.line<PlotData>()
                                    .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.u_limit)))
+                                   .y(d => y_scale(d.upper_limit)))
                 .attr("fill","none")
                 .attr("stroke", l99_colour)
                 .attr("stroke-width", l99_width)
