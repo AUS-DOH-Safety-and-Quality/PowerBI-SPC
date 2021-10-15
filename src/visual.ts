@@ -146,7 +146,7 @@ export class Visual implements IVisual {
         let yAxis: d3.Axis<d3.NumberValue>
             = d3.axisLeft(yScale)
                 .tickFormat(
-                    d => data_type == "p" && multiplier == 1 ? (<number>d * 100) + "%" : <string><unknown>d
+                    d => data_type == "p" && multiplier == 1 ? (<number>d * 100).toFixed(2) + "%" : <string><unknown>d
                 );
         let xAxis: d3.Axis<d3.NumberValue>
             = d3.axisBottom(xScale)

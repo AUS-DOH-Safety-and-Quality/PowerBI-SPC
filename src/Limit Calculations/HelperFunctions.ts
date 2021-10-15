@@ -39,4 +39,4 @@ export { add };
 export { diff };
 export { abs };
 export { exp };
-export {isDate};
+export { isDate };

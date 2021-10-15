@@ -6,7 +6,7 @@ import { subtract } from "./HelperFunctions";
 import { sqrt } from "./HelperFunctions";
 import { pow } from "./HelperFunctions";
 
-function s_limits(key: string[], value: number[], denominator: number[], group: string[]): (string | number)[][] {
+function s_limits(value: number[], group: string[]): (string | number)[][] {
     // Get the unique groupings to summarise
     let unique_groups: string[] = group.filter(
         (value, index, self) => self.indexOf(value) === index

@@ -5,7 +5,7 @@ import { sqrt } from "./HelperFunctions";
 import { pow } from "./HelperFunctions";
 import { subtract } from "./HelperFunctions";
 
-function xbar_limits(key: string[], value: number[], denominator: number[], group: string[]) {
+function xbar_limits(value: number[], group: string[]) {
     // Get the unique groupings to summarise
     let unique_groups: string[] = group.filter(
         (value, index, self) => self.indexOf(value) === index

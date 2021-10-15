@@ -5,7 +5,7 @@ import { diff } from "./HelperFunctions";
 import { abs } from "./HelperFunctions";
 import { subtract } from "./HelperFunctions";
 
-function uprime_limits(key: string[], value: number[], denominator: number[], group?): (string | number)[][] {
+function uprime_limits(key: string[], value: number[], denominator: number[]): (string | number)[][] {
     let val: number[] = rmath.R.div(value,denominator);
     let cl: number = d3.sum(value) / d3.sum(denominator);
     let sd: number[] = sqrt(rmath.R.div(cl,denominator));

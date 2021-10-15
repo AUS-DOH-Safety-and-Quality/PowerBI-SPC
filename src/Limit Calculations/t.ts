@@ -1,7 +1,7 @@
 import i_limits from "./i";
 import { pow } from "./HelperFunctions";
 
-function t_limits(key: string[], value: number[], denominator?, group?): (string | number)[][] {
+function t_limits(key: string[], value: number[]): (string | number)[][] {
 
     let val: number[] = pow(value, 1 / 3.6);
 

@@ -1,6 +1,6 @@
 import * as rmath from "lib-r-math.js";
 
-function sr_limits(key: string[], value: number[], denominator: number[], group?): (string | number)[][] {
+function sr_limits(key: string[], value: number[], denominator: number[]): (string | number)[][] {
 
     let cl: number = 1;
     let val: number[] = rmath.R.div(value,denominator);

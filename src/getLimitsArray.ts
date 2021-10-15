@@ -12,37 +12,35 @@ import g_limits from "./Limit Calculations/g"
 import t_limits from "./Limit Calculations/t"
 import sr_limits from "./Limit Calculations/sr"
 
-function getLimitsArray(chart_type: string, key: string[], numerator: number[], denominator: number[], group: string[]): (string | number)[][] {
-    var limitFunction;
+function getLimitsArray(chart_type: string, key: string[], numerator: number[],
+                        denominator: number[], group: string[]): (string | number)[][] {
    if (chart_type == "i") {
-        limitFunction = i_limits;
+      return i_limits(key, numerator, denominator);
     } else if (chart_type == "p") {
-        limitFunction = p_limits;
+        return p_limits(key, numerator, denominator);
     } else if (chart_type == "u") {
-        limitFunction = u_limits;
+        return u_limits(key, numerator, denominator);
     } else if (chart_type == "c") {
-        limitFunction = c_limits;
+        return c_limits(key, numerator);
     } else if (chart_type == "xbar") {
-        limitFunction = xbar_limits;
+        return xbar_limits(numerator, group);
     } else if (chart_type == "up") {
-        limitFunction = uprime_limits;
+        return uprime_limits(key, numerator, denominator);
     } else if (chart_type == "pp") {
-        limitFunction = pprime_limits;
+        return pprime_limits(key, numerator, denominator);
     } else if (chart_type == "run") {
-        limitFunction = run_limits;
+        return run_limits(key, numerator, denominator);
     } else if (chart_type == "mr") {
-        limitFunction = mr_limits;
+        return mr_limits(key, numerator, denominator);
     } else if (chart_type == "s") {
-        limitFunction = s_limits;
+        return s_limits(numerator, group);
     } else if (chart_type == "g") {
-        limitFunction = g_limits;
+        return g_limits(key, numerator);
     } else if (chart_type == "t") {
-        limitFunction = t_limits;
+        return t_limits(key, numerator);
     } else if (chart_type == "sr") {
-        limitFunction = sr_limits;
+        return sr_limits(key, numerator, denominator);
     }
-    
-    return limitFunction(key, numerator, denominator, group);
 }
 
 export default getLimitsArray;
