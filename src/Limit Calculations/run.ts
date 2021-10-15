@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import * as rmath from "lib-r-math.js";
 
-function run_limits(key: string[], value: number[], denominator?: number[], group?): (string | number)[][] {
+function run_limits(key: string[], value: number[], denominator?: number[]): (string | number)[][] {
     var ratio: number[];
     if (denominator == null) {
         ratio = value;

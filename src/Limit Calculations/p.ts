@@ -1,7 +1,7 @@
 import * as rmath from "lib-r-math.js";
 import { sqrt } from "./HelperFunctions";
 
-function p_limits(key: string[], value: number[], denominator: number[], group?): (string | number)[][] {
+function p_limits(key: string[], value: number[], denominator: number[]): (string | number)[][] {
 
     let cl: number = rmath.R.div(rmath.R.sum(value),rmath.R.sum(denominator));
     let val: number[] = rmath.R.div(value,denominator);

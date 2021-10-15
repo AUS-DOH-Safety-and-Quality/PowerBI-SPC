@@ -3,7 +3,7 @@ import { diff } from "./HelperFunctions";
 import { abs } from "./HelperFunctions";
 import * as rmath from "lib-r-math.js";
 
-function mr_limits(key: string[], value: number[], denominator?: number[], group?): (string | number)[][] {
+function mr_limits(key: string[], value: number[], denominator?: number[]): (string | number)[][] {
     var ratio: number[];
     if (denominator == null) {
         ratio = value;

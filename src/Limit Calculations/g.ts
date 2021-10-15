@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { sqrt } from "./HelperFunctions";
 
-function g_limits(key: string[], value: number[], denominator?, group?): (string | number)[][] {
+function g_limits(key: string[], value: number[]): (string | number)[][] {
 
     let cl: number = d3.mean(value);
 

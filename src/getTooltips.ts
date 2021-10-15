@@ -1,4 +1,8 @@
-function getTooltips(data_type, limitsArray, numerator_values, denominator_values) {
+import { ToolTips } from "../src/Interfaces";
+
+function getTooltips(data_type: string, limitsArray: (string | number)[][],
+                     numerator_values: number[], denominator_values: number[],
+                     prop_limits: boolean): ToolTips[][] {
 
     var val_name: string;
 
@@ -38,14 +42,13 @@ function getTooltips(data_type, limitsArray, numerator_values, denominator_value
 
     return limitsArray.map(
         (d, idx) => {
-            let base =  [{
+            let base: ToolTips[] =  [{
                     displayName: "Date:",
                     value: <string>d[0]
                 },{
                     displayName: val_name + ":",
-                    value: (d[1] == null) ? "" : (<number>d[1]).toFixed(2)
+                    value: (d[1] == null) ? "" : (prop_limits ? (<number>d[1] * 100).toFixed(2) + '%' : (<number>d[1]).toFixed(2))
                 }]
-
             if(inc_numdem && numerator_values != null && denominator_values != null) {
                 base = base.concat(
                     [{
@@ -57,7 +60,6 @@ function getTooltips(data_type, limitsArray, numerator_values, denominator_value
                     }]
                 )
             }
-
             if(data_type == "xbar" || data_type == "s") {
                 base = base.concat(
                     [{
@@ -66,7 +68,6 @@ function getTooltips(data_type, limitsArray, numerator_values, denominator_value
                     }]
                 )
             }
-            
             return base;
         }
     )

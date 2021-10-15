@@ -28,5 +28,11 @@ interface ViewModel {
     highlights: boolean;
 };
 
+interface ToolTips {
+    displayName: string;
+    value: string;
+}
+
 export { PlotData }
 export { ViewModel }
+export { ToolTips }

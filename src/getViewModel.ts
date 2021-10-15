@@ -9,6 +9,7 @@ import * as d3 from "d3";
 import * as mathjs from "mathjs";
 import getLimitsArray from "../src/getLimitsArray";
 import getTooltips from "../src/getTooltips";
+import { ToolTips } from "./Interfaces";
 
 //Function to handle string-to-date conversions with JS's weird conventions
 function str_to_dmy(text: string[]) {
@@ -126,18 +127,18 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     })
 
     let limitsArray: (string | number)[][] = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
-
-    let tooltipsArray = getTooltips(data_type, limitsArray, numerator_in, denominator_in);
-    let lab_vals: string[] =  ((data_type == "xbar") || (data_type == "s")) ? groups_in : key_valid;
     let multiplier: number = settings.spc.multiplier.value;
+    let prop_labels: boolean = data_type == "p" && multiplier == 1;
+    let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, prop_labels);
+    let lab_vals: string[] =  ((data_type == "xbar") || (data_type == "s")) ? groups_in : key_valid;
 
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
     for (let i = 0; i < limitsArray.length;  i++) {
         viewModel.plotData.push({
             x: i+1,
             lower_limit: (<number>limitsArray[i][3] * multiplier),
-            upper_limit: (<number>limitsArray[i][4]* multiplier),
-            ratio: (<number>limitsArray[i][1]* multiplier),
+            upper_limit: (<number>limitsArray[i][4] * multiplier),
+            ratio: (<number>limitsArray[i][1] * multiplier),
             // Check whether objects array exists with user-specified fill colours, apply those colours if so
             //   otherwise use default palette
             colour: settings.scatter.colour.value,
