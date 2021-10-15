@@ -5,8 +5,8 @@ import ISelectionId = powerbi.visuals.ISelectionId;
 // Used to represent the different datapoints on the chart
 interface PlotData {
     x: number,
-    l_limit: number;
-    u_limit: number;
+    lower_limit: number;
+    upper_limit: number;
     ratio: number;
     colour: string;
     // ISelectionId allows the visual to report the selection choice to PowerBI

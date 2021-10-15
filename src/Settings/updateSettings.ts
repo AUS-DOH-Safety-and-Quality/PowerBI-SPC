@@ -1,4 +1,5 @@
 import powerbi from "powerbi-visuals-api";
+import DataViewObjects = powerbi.DataViewObjects;
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
 
 /**
@@ -8,7 +9,7 @@ import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
  * @param settings        - Existing settings object to update
  * @param objects         - List of settings objects to get values from
  */
-function updateSettings(settings: any, objects: powerbi.DataViewObjects) {
+function updateSettings(settings: any, objects: DataViewObjects) {
     settings.spc.data_type.value = dataViewObjects.getValue(
         objects, {
             objectName: "spc",
