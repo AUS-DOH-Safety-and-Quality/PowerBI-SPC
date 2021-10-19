@@ -27,8 +27,8 @@ function initSettings() {
         },
         scatter: {
             size: {
-                default: 4,
-                value: 4
+                default: 3,
+                value: 3
             },
             colour: {
                 default: "#000000",
@@ -45,28 +45,28 @@ function initSettings() {
         },
         lines: {
             width_99: {
-                default: 3,
-                value: 3
+                default: 2,
+                value: 2
             },
             width_main: {
-                default: 1.5,
-                value: 1.5
+                default: 1,
+                value: 1
             },
             width_target: {
                 default: 1.5,
                 value: 1.5
             },
             colour_99: {
-                default: "#4682B4",
-                value: "#4682B4"
+                default: "#6495ED",
+                value: "#6495ED"
             },
             colour_main: {
                 default: "#000000",
                 value: "#000000"
             },
             colour_target: {
-                default: "#4682B4",
-                value: "#4682B4"
+                default: "#6495ED",
+                value: "#6495ED"
             }
         },
         axis: {

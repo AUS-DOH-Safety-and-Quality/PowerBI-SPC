@@ -19,6 +19,7 @@ import updateSettings from "./Settings/updateSettings";
 import getViewModel from "../src/getViewModel";
 import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
 import initSettings from "../src/Settings/initSettings"
+import initTooltipTracking from "./Plotting Functions/initTooltipTracking";
 import * as d3 from "d3";
 import { PlotData } from "../src/Interfaces"
 import { ViewModel } from "../src/Interfaces"
@@ -29,6 +30,7 @@ type MergedLineType = d3.Selection<SVGPathElement, PlotData[], SVGElement, any>;
 export class Visual implements IVisual {
     private host: IVisualHost;
     private svg: d3.Selection<SVGElement, any, any, any>;
+    private listeningRect: d3.Selection<SVGElement, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
     private dots: d3.Selection<any, any, any, any>;
     private linesMain: d3.Selection<any, any, any, any>;
@@ -58,6 +60,9 @@ export class Visual implements IVisual {
         this.svg = d3.select(options.element)
                     // Create new svg element inside container
                      .append("svg");
+
+        this.listeningRect = this.svg.append("g")
+                                     .classed("listen-group", true);
 
         this.dotGroup = this.svg.append("g")
                                 .classed("dot-group", true);
@@ -111,7 +116,7 @@ export class Visual implements IVisual {
         let xAxisPadding: number = this.settings.axispad.x.padding.value;
         let yAxisPadding: number = this.settings.axispad.y.padding.value;
         let xAxisMin: number = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
-        let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x))+1;
+        let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x)) + 1;
         let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : this.viewModel.minLimit;
         let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : this.viewModel.maxLimit;
         let data_type: string = this.settings.spc.data_type.value;
@@ -133,6 +138,10 @@ export class Visual implements IVisual {
             = d3.scaleLinear()
                 .domain([xAxisMin, xAxisMax])
                 .range([yAxisPadding, width]);
+
+
+        initTooltipTracking(this.svg, this.listeningRect, width, height - xAxisPadding,
+            xScale, yScale, this.host.tooltipService, this.viewModel);
 
         // Specify inverse scaling that will return a plot axis value given an input
         //   screen height. Used to display line chart tooltips.
@@ -179,13 +188,6 @@ export class Visual implements IVisual {
                        //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
                        .data(this.viewModel.plotData);
 
-        // Update the datapoints if data is refreshed
-        const dots_merged: d3.Selection<SVGCircleElement, any, any, any>
-            = this.dots.enter()
-                  .append("circle")
-                  .merge(<any>this.dots);
-
-        dots_merged.classed("dot", true);
 
         this.xAxisLabels.attr("x",width/2)
             .attr("y",height - xAxisPadding/10)
@@ -198,10 +200,7 @@ export class Visual implements IVisual {
             .text(this.settings.axis.ylimit_label.value)
             .style("text-anchor", "end");
 
-        // Bind calculated control limits and target line to respective plotting objects
-        this.linesMain = this.lineGroup
-            .selectAll(".line")
-            .data([this.viewModel.plotData]);
+
 
         let linesLL99: LineType = this.LL99Group
             .selectAll(".line")
@@ -211,63 +210,35 @@ export class Visual implements IVisual {
             .selectAll(".line")
             .data([this.viewModel.plotData]);
         
-        let linesMainMerged: MergedLineType = this.linesMain.enter()
-                                                            .append("path")
-                                                            .merge(<any>this.linesMain)
-                                                            .classed("line", true)
-
-        let linesLL99Merged: MergedLineType = linesLL99.enter()
-                                                       .append("path")
-                                                       .merge(<any>linesLL99)
-                                                       .classed("line", true)
-        
-        let linesUL99_merged: MergedLineType = linesUL99.enter()
-                                                       .append("path")
-                                                       .merge(<any>linesUL99)
-                                                       .classed("line", true)
-
         let lineTarget: LineType = this.targetGroup
                                        .selectAll(".line")
                                        .data([this.viewModel.plotData]);
 
-        let lineTarget_merged: MergedLineType = lineTarget.enter()
-                                                          .append("path")
-                                                          .merge(<any>lineTarget)
-                                                          .classed("line", true)
-
         // Initial construction of lines, run when plot is first rendered.
         //   Text argument specifies which type of line is required (controls aesthetics),
         //   inverse scale objects used to display tooltips on drawn control limits 
-        makeLines(linesMainMerged, this.settings,
-                    xScale, yScale, "Main",
-                    this.viewModel, this.host.tooltipService,
-                    yScale_inv);
-        makeLines(linesLL99Merged, this.settings,
-                    xScale, yScale, "Lower",
-                    this.viewModel, this.host.tooltipService,
-                    yScale_inv);
-        makeLines(linesUL99_merged, this.settings,
-                    xScale, yScale, "Upper",
-                    this.viewModel, this.host.tooltipService,
-                    yScale_inv);
 
-        makeLines(lineTarget_merged, this.settings,
-                    xScale, yScale, "Target",
-                    this.viewModel, this.host.tooltipService);
+        [
+         [linesLL99, "Lower"],
+         [linesUL99, "Upper"],
+         [lineTarget, "Target"]
+        ].map(d => makeLines(<LineType>d[0], this.settings,
+                             xScale, yScale, <string>d[1],
+                             this.viewModel, this.host.tooltipService,
+                             yScale_inv));
+        // Bind calculated control limits and target line to respective plotting objects
+        this.linesMain = this.lineGroup
+            .selectAll(".line")
+            .data([this.viewModel.plotData]);
 
+        let MergedMain: MergedLineType =  makeLines(this.linesMain, this.settings,
+                                                    xScale, yScale, "Main",
+                                                    this.viewModel, this.host.tooltipService,
+                                                    yScale_inv);
         // Plotting of scatter points
-        makeDots(dots_merged, linesMainMerged, this.settings,
+        makeDots(this.dots, MergedMain, this.settings,
                     this.viewModel.highlights, this.selectionManager,
-                    this.host.tooltipService, xScale, yScale);
-
-        this.dots.exit().remove();
-        this.svg.on('click', (d) => {
-            this.selectionManager.clear();
-            
-            highlightIfSelected(dots_merged, linesMainMerged, [],
-                                this.settings.scatter.opacity.value,
-                                this.settings.scatter.opacity_unselected.value);
-        });
+                    this.host.tooltipService, xScale, yScale, this.svg);
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane

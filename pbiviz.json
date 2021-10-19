@@ -9,7 +9,7 @@
         "supportUrl":"https://github.com/andrjohns/PowerBI-SPC",
         "gitHubUrl":"https://github.com/andrjohns/PowerBI-SPC"
         },
-    "apiVersion":"3.8.0",
+    "apiVersion":"4.0.0",
     "author":{
         "name":"Andrew Johnson",
         "email":"Andrew.Johnson@health.wa.gov.au"
