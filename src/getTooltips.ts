@@ -48,6 +48,12 @@ function getTooltips(data_type: string, limitsArray: (string | number)[][],
                 },{
                     displayName: val_name + ":",
                     value: (d[1] == null) ? "" : (prop_limits ? (<number>d[1] * 100).toFixed(2) + '%' : (<number>d[1]).toFixed(2))
+                },{
+                    displayName: "Upper 99% Limit",
+                    value: (prop_limits ? (<number>d[4] * 100).toFixed(2) + '%' : (<number>d[4]).toFixed(2))
+                },{
+                    displayName: "Lower 99% Limit",
+                    value: (prop_limits ? (<number>d[3] * 100).toFixed(2) + '%' : (<number>d[3]).toFixed(2))
                 }]
             if(inc_numdem && numerator_values != null && denominator_values != null) {
                 base = base.concat(
