@@ -1,18 +1,21 @@
-name: Push to Release
+---
+name: "Build release"
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  pre-release:
+    name: "Pre Release"
+    runs-on: "ubuntu-latest"
 
     strategy:
       matrix:
         node-version: [16.x]
-    
+
     steps:
+
     - uses: actions/checkout@v2
 
     - name: Use Node.js ${{ matrix.node-version }}
@@ -26,12 +29,11 @@ jobs:
         npm install -g powerbi-visuals-tools
         pbiviz package
         
-    - name: Update release
-      uses: ncipollo/release-action@v1
+    - name : "Create Release"
+      uses: "marvinpinto/action-automatic-releases@latest"
       with:
-        name: "Continuous"
-        tag: "Continuous"
-        allowUpdates: true
-        body: "This release contains the latest build of the visual, and is rebuilt when any change is pushed.\nNote that the 'Source code' archives below will not be current.\n\nDownload using [this link](https://github.com/andrjohns/PowerBI-SPC/releases/download/Continuous/PBISPC.1.0.0.pbiviz) or from the 'Assets' section below."
-        token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: dist/*.pbiviz
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+        files: dist/*.pbiviz
