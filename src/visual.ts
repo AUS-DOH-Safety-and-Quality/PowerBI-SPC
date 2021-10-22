@@ -115,6 +115,8 @@ export class Visual implements IVisual {
         // Add appropriate padding so that plotted data doesn't overlay axis
         let xAxisPadding: number = this.settings.axispad.x.padding.value;
         let yAxisPadding: number = this.settings.axispad.y.padding.value;
+        let xAxisEndPadding: number = this.settings.axispad.x.end_padding.value;
+        let yAxisEndPadding: number = this.settings.axispad.y.end_padding.value;
         let xAxisMin: number = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
         let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x)) + 1;
         let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : this.viewModel.minLimit;
@@ -132,12 +134,12 @@ export class Visual implements IVisual {
         let yScale: d3.ScaleLinear<number, number, never>
             = d3.scaleLinear()
                 .domain([yAxisMin, yAxisMax])
-                .range([height - xAxisPadding, 0]);
+                .range([height - xAxisPadding, xAxisEndPadding]);
 
         let xScale: d3.ScaleLinear<number, number, never>
             = d3.scaleLinear()
                 .domain([xAxisMin, xAxisMax])
-                .range([yAxisPadding, width]);
+                .range([yAxisPadding, width - yAxisEndPadding]);
 
 
         initTooltipTracking(this.svg, this.listeningRect, width, height - xAxisPadding,
@@ -155,7 +157,11 @@ export class Visual implements IVisual {
         let yAxis: d3.Axis<d3.NumberValue>
             = d3.axisLeft(yScale)
                 .tickFormat(
-                    d => data_type == "p" && multiplier == 1 ? (<number>d * 100).toFixed(2) + "%" : <string><unknown>d
+                    d => {
+                      // If axis displayed on % scale, then disable axis values > 100%
+                      let prop_limits: boolean = data_type == "p" && multiplier == 1;
+                      return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
+                    }
                 );
         let xAxis: d3.Axis<d3.NumberValue>
             = d3.axisBottom(xScale)

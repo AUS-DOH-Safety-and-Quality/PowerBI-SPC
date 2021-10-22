@@ -15,7 +15,8 @@ function initTooltipTracking(svg: d3.Selection<SVGElement, any, any, any>,
                             .attr("class", "dotted")
                             .attr("stroke-width", "1px")
                             .attr("width", ".5px")
-                            .attr("height", height);
+                            .attr("height", height)
+                            .style("fill-opacity", 0);
 
     listeningRect
             .append("rect")
