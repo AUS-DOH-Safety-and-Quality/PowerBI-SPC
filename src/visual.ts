@@ -158,7 +158,7 @@ export class Visual implements IVisual {
             = d3.axisLeft(yScale)
                 .tickFormat(
                     d => {
-                      // If axis displayed on % scale, then disableaxies values > 100%
+                      // If axis displayed on % scale, then disable axis values > 100%
                       let prop_limits: boolean = data_type == "p" && multiplier == 1;
                       return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
                     }
