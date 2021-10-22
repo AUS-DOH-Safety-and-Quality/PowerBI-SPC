@@ -23,12 +23,17 @@ import initTooltipTracking from "./Plotting Functions/initTooltipTracking";
 import * as d3 from "d3";
 import { PlotData } from "../src/Interfaces"
 import { ViewModel } from "../src/Interfaces"
+import { TestDialog } from "./Dialogs/TestDialog"
+import DialogAction = powerbi.DialogAction;
+
 
 type LineType = d3.Selection<d3.BaseType, PlotData[], SVGElement, any>;
 type MergedLineType = d3.Selection<SVGPathElement, PlotData[], SVGElement, any>;
 
 export class Visual implements IVisual {
     private host: IVisualHost;
+    private element: HTMLElement;
+    private button: d3.Selection<HTMLButtonElement, any, any, any>;
     private svg: d3.Selection<SVGElement, any, any, any>;
     private listeningRect: d3.Selection<SVGElement, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
@@ -43,6 +48,7 @@ export class Visual implements IVisual {
     private yAxisGroup: d3.Selection<SVGGElement, any, any, any>;
     private yAxisLabels: d3.Selection<SVGGElement, any, any, any>;
     private viewModel: ViewModel;
+    private dialogActionsButtons = [DialogAction.OK, DialogAction.Cancel];
 
     // Method for notifying PowerBI of changes in the visual to propagate to the
     //   rest of the report
@@ -54,6 +60,7 @@ export class Visual implements IVisual {
     constructor(options: VisualConstructorOptions) {
         // Add reference to host object, for accessing environment (e.g. colour)
         this.host = options.host;
+        this.element = options.element;
 
                     // Get reference to element object for manipulation
                     //   (reference to html container for visual)
@@ -61,6 +68,7 @@ export class Visual implements IVisual {
                     // Create new svg element inside container
                      .append("svg");
 
+        //this.button = this.svg.append("input");
         this.listeningRect = this.svg.append("g")
                                      .classed("listen-group", true);
 
@@ -107,6 +115,15 @@ export class Visual implements IVisual {
         //   This function contains the construction of the spc
         //   control limits
         this.viewModel = getViewModel(options, this.settings, this.host);
+        /*
+        this.button.onclick = () => {
+            console.log('Hello!');
+            const dialogOptions = {
+                actionButtons: this.dialogActionsButtons,
+                title: "test"
+            };
+            this.host.openModalDialog(TestDialog.id, dialogOptions).catch(error => console.log("error:", error));
+        };*/
 
         // Get the width and height of plotting space
         let width: number = options.viewport.width;
@@ -125,6 +142,10 @@ export class Visual implements IVisual {
         // Dynamically scale chart to use all available space
         this.svg.attr("width", width)
                 .attr("height", height);
+
+        let button = this.svg.append("input");
+        
+        button.attr("type","button");               
 
         // Define axes for chart.
         //   Takes a given plot axis value and returns the appropriate screen height
@@ -200,8 +221,6 @@ export class Visual implements IVisual {
             .text(this.settings.axis.ylimit_label.value)
             .style("text-anchor", "end");
 
-
-
         let linesLL99: LineType = this.LL99Group
             .selectAll(".line")
             .data([this.viewModel.plotData]);
@@ -239,6 +258,9 @@ export class Visual implements IVisual {
         makeDots(this.dots, MergedMain, this.settings,
                     this.viewModel.highlights, this.selectionManager,
                     this.host.tooltipService, xScale, yScale, this.svg);
+        
+
+                    
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane

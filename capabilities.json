@@ -274,5 +274,21 @@
                 }
             }
         }
-    ]
+    ],
+    "tooltips": {
+        "supportedTypes": {
+            "default": true,
+            "canvas": true
+        },
+        "roles": [
+            "Tooltips"
+        ],
+        "supportEnhancedTooltips": true
+    },
+    "supportsLandingPage": false,
+    "drilldown": {
+        "roles": [
+            "category"
+        ]
+    }
 }
