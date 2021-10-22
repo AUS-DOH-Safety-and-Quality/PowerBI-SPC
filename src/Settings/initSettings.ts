@@ -6,12 +6,20 @@ function initSettings() {
                 padding: {
                     default: 50,
                     value: 50
+                },
+                end_padding: {
+                    default: 10,
+                    value: 10
                 }
             },
             y: {
                 padding: {
                     default: 50,
                     value: 50
+                },
+                end_padding: {
+                    default: 10,
+                    value: 10
                 }
             }
         },
