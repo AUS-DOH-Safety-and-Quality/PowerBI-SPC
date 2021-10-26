@@ -231,7 +231,7 @@ export class Visual implements IVisual {
         ].map(d => makeLines(<LineType>d[0], this.settings,
                              xScale, yScale, <string>d[1],
                              this.viewModel, this.host.tooltipService,
-                             yScale_inv));
+                             this.viewModel.highlights, yScale_inv));
         // Bind calculated control limits and target line to respective plotting objects
         this.linesMain = this.lineGroup
             .selectAll(".line")
@@ -240,11 +240,21 @@ export class Visual implements IVisual {
         let MergedMain: MergedLineType =  makeLines(this.linesMain, this.settings,
                                                     xScale, yScale, "Main",
                                                     this.viewModel, this.host.tooltipService,
-                                                    yScale_inv);
+                                                    this.viewModel.highlights, yScale_inv);
         // Plotting of scatter points
         makeDots(this.dots, MergedMain, this.settings,
                     this.viewModel.highlights, this.selectionManager,
                     this.host.tooltipService, xScale, yScale, this.svg);
+
+        this.svg.on('contextmenu', () => {
+            const eventTarget: EventTarget = (<any>d3).event.target;
+            let dataPoint: PlotData = <PlotData>(d3.select(<d3.BaseType>eventTarget).datum());
+            this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
+                x: (<any>d3).event.clientX,
+                y: (<any>d3).event.clientY
+            });
+            (<any>d3).event.preventDefault();
+        });
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane
