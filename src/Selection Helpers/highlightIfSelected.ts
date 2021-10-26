@@ -17,14 +17,16 @@ function highlightIfSelected(DotObject: d3.Selection<any, any, any, any>,
                              opacitySelected: number,
                              opacityUnselected: number) {
     if (!DotObject || !selectionIds) {
+        LineObject.style("stroke-opacity", opacitySelected);
         return;
     }
 
     if (!selectionIds.length) {
         DotObject.style("fill-opacity", opacitySelected);
-        LineObject.style("stroke-opacity", opacitySelected);
         return;
     }
+
+    LineObject.style("stroke-opacity", opacityUnselected);
 
     DotObject.each(d => {
         const opacity: number
@@ -32,9 +34,6 @@ function highlightIfSelected(DotObject: d3.Selection<any, any, any, any>,
 
         (<any>d3).select(DotObject)
                  .style("fill-opacity", opacity);
-        
-        (<any>d3).select(LineObject)
-                 .style("stroke-opacity", opacityUnselected)
     });
 }
 

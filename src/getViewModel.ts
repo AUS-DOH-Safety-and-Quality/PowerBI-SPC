@@ -83,7 +83,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let denominator: DataViewValueColumn = view.values[1];
 
     // Get groups of dots to highlight
-    let highlights = [];
+    let highlights: powerbi.PrimitiveValue[] = numerator.highlights;
 
     let numerator_in: number[] = new Array();
     let denominator_in: number[] = new Array();

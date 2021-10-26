@@ -28,6 +28,7 @@ function makeLines(LineObject: LineType,
                    linetype: string,
                    viewModel: ViewModel,
                    tooltipService: ITooltipService,
+                   highlights: boolean,
                    y_scale_inv?: d3.ScaleLinear<number, number, never>): MergedLineType {
     let l99_width: number = settings.lines.width_99.value;
     let main_width: number = settings.lines.width_main.value;
@@ -35,12 +36,13 @@ function makeLines(LineObject: LineType,
     let l99_colour: string = settings.lines.colour_99.value;
     let main_colour: string = settings.lines.colour_main.value;
     let target_colour: string = settings.lines.colour_target.value;
+    let stroke_opacity: number = settings.scatter.opacity.value;
+    let stroke_opacity_unsel: number = settings.scatter.opacity_unselected.value;
 
     let MergedLineObject: MergedLineType = LineObject.enter()
                                                      .append("path")
                                                      .merge(<any>LineObject)
                                                      .classed("line", true)
-
 
     if (linetype != "Target") {
         if(linetype == "Lower") {
@@ -130,6 +132,7 @@ function makeLines(LineObject: LineType,
     MergedLineObject.exit()
             .remove();
     if (linetype == "Main") {
+        MergedLineObject.style("stroke-opacity", highlights ? stroke_opacity_unsel : stroke_opacity);
         return MergedLineObject;
     }
 }

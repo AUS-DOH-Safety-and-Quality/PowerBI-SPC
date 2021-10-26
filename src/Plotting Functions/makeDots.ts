@@ -113,9 +113,10 @@ function makeDots(DotObject: d3.Selection<SVGCircleElement, any, any, any>,
 
     MergedDotObject.exit().remove();
     DotObject.exit().remove();
+    LineObject.exit().remove();
     svg.on('click', (d) => {
         selectionManager.clear();
-        
+        LineObject.style("stroke-opacity", dot_opacity);
         highlightIfSelected(MergedDotObject, LineObject, [],
                             dot_opacity, dot_opacity_unsel);
     });
