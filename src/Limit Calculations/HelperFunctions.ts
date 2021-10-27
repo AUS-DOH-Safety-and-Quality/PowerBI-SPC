@@ -33,7 +33,7 @@ function isDate(x: any): boolean {
 }
 
 function rep(x: number, n: number) : number[] {
-    return rmath.R.seq()()(0, n).map(() => x);
+    return rmath.R.seq()()(1, n).map(() => x);
 }
 
 export { sqrt };

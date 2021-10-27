@@ -165,7 +165,6 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + Math.abs(mathjs.max([maxLimit,maxPoint]))*0.1) * multiplier;
 
     viewModel.target = limitsArray.centerline * multiplier;
-    console.log(viewModel.target)
 
     // Flag whether any dots need to be highlighted
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;
