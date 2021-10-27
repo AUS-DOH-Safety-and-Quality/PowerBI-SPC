@@ -1,11 +1,10 @@
 import * as d3 from "d3";
 import * as rmath from "lib-r-math.js";
 import { a3 } from "./Constants";
-import { sqrt } from "./HelperFunctions";
-import { pow } from "./HelperFunctions";
-import { subtract } from "./HelperFunctions";
+import { sqrt, pow, subtract, add } from "./HelperFunctions";
+import { ControlLimits } from "../Interfaces";
 
-function xbar_limits(value: number[], group: string[]) {
+function xbar_limits(value: number[], group: string[]): ControlLimits {
     // Get the unique groupings to summarise
     let unique_groups: string[] = group.filter(
         (value, index, self) => self.indexOf(value) === index
@@ -41,12 +40,15 @@ function xbar_limits(value: number[], group: string[]) {
     // Sample-size dependent constant
     let A3: number[] = a3(count_per_group);
 
-    return unique_groups.map((d,idx) => [d,
-                                         group_means[idx],
-                                         cl,
-                                         cl - A3[idx]*sd,
-                                         cl + A3[idx]*sd,
-                                         count_per_group[idx]]);
+    let limits: ControlLimits = {
+        key: unique_groups,
+        value: group_means,
+        centerline: cl,
+        lowerLimit: subtract(cl, rmath.R.mult(A3,sd)),
+        upperLimit: add(cl, rmath.R.mult(A3,sd)),
+        count: count_per_group
+    }
+    return limits;
 }
 
 export default xbar_limits;

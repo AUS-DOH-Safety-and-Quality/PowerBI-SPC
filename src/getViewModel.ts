@@ -9,7 +9,7 @@ import * as d3 from "d3";
 import * as mathjs from "mathjs";
 import getLimitsArray from "../src/getLimitsArray";
 import getTooltips from "../src/getTooltips";
-import { ToolTips } from "./Interfaces";
+import { ToolTips, ControlLimits } from "./Interfaces";
 
 //Function to handle string-to-date conversions with JS's weird conventions
 function str_to_dmy(text: string[]) {
@@ -126,19 +126,19 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         }
     })
 
-    let limitsArray: (string | number)[][] = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
+    let limitsArray: ControlLimits = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
     let multiplier: number = settings.spc.multiplier.value;
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
     let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, prop_labels);
     let lab_vals: string[] =  ((data_type == "xbar") || (data_type == "s")) ? groups_in : key_valid;
 
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
-    for (let i = 0; i < limitsArray.length;  i++) {
+    for (let i = 0; i < limitsArray.key.length;  i++) {
         viewModel.plotData.push({
             x: i+1,
-            lower_limit: (<number>limitsArray[i][3] * multiplier),
-            upper_limit: (<number>limitsArray[i][4] * multiplier),
-            ratio: (<number>limitsArray[i][1] * multiplier),
+            lower_limit: (<number>limitsArray.lowerLimit[i] * multiplier),
+            upper_limit: (<number>limitsArray.upperLimit[i] * multiplier),
+            ratio: (<number>limitsArray.value[i] * multiplier),
             // Check whether objects array exists with user-specified fill colours, apply those colours if so
             //   otherwise use default palette
             colour: settings.scatter.colour.value,
@@ -155,17 +155,16 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             tick_labels: [i+1, <string>lab_vals[i]]
         });
     }
-
-    let minLimit: number = d3.min(<number[]>limitsArray.map(d => d[3]));
-    let minPoint: number = d3.min(<number[]>limitsArray.map(d => d[1]));
-    let maxLimit: number = d3.max(<number[]>limitsArray.map(d => d[4]));
-    let maxPoint: number = d3.max(<number[]>limitsArray.map(d => d[1]));
+    let minLimit: number = d3.min(limitsArray.lowerLimit);
+    let minPoint: number = d3.min(limitsArray.value);
+    let maxLimit: number = d3.max(limitsArray.upperLimit);
+    let maxPoint: number = d3.max(limitsArray.value);
 
     // Extract maximum value of input data and add to viewModel
     viewModel.minLimit = (mathjs.min([minLimit,minPoint]) - Math.abs(mathjs.min([minLimit,minPoint]))*0.1) * multiplier;
     viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + Math.abs(mathjs.max([maxLimit,maxPoint]))*0.1) * multiplier;
 
-    viewModel.target = <number>limitsArray[0][2] * multiplier;
+    viewModel.target = limitsArray.centerline * multiplier;
 
     // Flag whether any dots need to be highlighted
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;

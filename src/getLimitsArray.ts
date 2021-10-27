@@ -11,9 +11,10 @@ import s_limits from "./Limit Calculations/s"
 import g_limits from "./Limit Calculations/g"
 import t_limits from "./Limit Calculations/t"
 import sr_limits from "./Limit Calculations/sr"
+import { ControlLimits } from "./Interfaces";
 
 function getLimitsArray(chart_type: string, key: string[], numerator: number[],
-                        denominator: number[], group: string[]): (string | number)[][] {
+                        denominator: number[], group: string[]): ControlLimits {
    if (chart_type == "i") {
       return i_limits(key, numerator, denominator);
     } else if (chart_type == "p") {

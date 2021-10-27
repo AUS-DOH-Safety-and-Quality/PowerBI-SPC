@@ -1,6 +1,7 @@
-import { ToolTips } from "../src/Interfaces";
+import * as rmath from "lib-r-math.js";
+import { ToolTips, ControlLimits } from "../src/Interfaces";
 
-function getTooltips(data_type: string, limitsArray: (string | number)[][],
+function getTooltips(data_type: string, limitsArray: ControlLimits,
                      numerator_values: number[], denominator_values: number[],
                      prop_limits: boolean): ToolTips[][] {
 
@@ -40,29 +41,34 @@ function getTooltips(data_type: string, limitsArray: (string | number)[][],
                                data_type != "t" && data_type != "g" &&
                                data_type != "c");
 
-    return limitsArray.map(
-        (d, idx) => {
+    let { key, value, centerline, upperLimit, lowerLimit, count } = limitsArray;
+    let seq: number[] = rmath.R.seq()()(0, key.length-1);
+    return seq.map(
+        (i) => {
             let base: ToolTips[] =  [{
                     displayName: "Date:",
-                    value: <string>d[0]
+                    value: <string>key[i]
                 },{
                     displayName: val_name + ":",
-                    value: (d[1] == null) ? "" : (prop_limits ? (<number>d[1] * 100).toFixed(2) + '%' : (<number>d[1]).toFixed(2))
-                },{
+                    value: (value[i] == null) ? "" : (prop_limits ? (<number>value[i] * 100).toFixed(2) + '%' : (<number>value[i]).toFixed(2))
+                }];
+            if(data_type != "run") {
+                base = base.concat([{
                     displayName: "Upper 99% Limit",
-                    value: (prop_limits ? (<number>d[4] * 100).toFixed(2) + '%' : (<number>d[4]).toFixed(2))
+                    value: (prop_limits ? (<number>upperLimit[i] * 100).toFixed(2) + '%' : (<number>upperLimit[i]).toFixed(2))
                 },{
                     displayName: "Lower 99% Limit",
-                    value: (prop_limits ? (<number>d[3] * 100).toFixed(2) + '%' : (<number>d[3]).toFixed(2))
-                }]
+                    value: (prop_limits ? (<number>lowerLimit[i] * 100).toFixed(2) + '%' : (<number>lowerLimit[i]).toFixed(2))
+                }])
+            }
             if(inc_numdem && numerator_values != null && denominator_values != null) {
                 base = base.concat(
                     [{
                         displayName: "Numerator:",
-                        value: (<number>numerator_values[idx]).toFixed(2)
+                        value: (<number>numerator_values[i]).toFixed(2)
                     },{
                         displayName: "Denominator:",
-                        value: (<number>denominator_values[idx]).toFixed(2)
+                        value: (<number>denominator_values[i]).toFixed(2)
                     }]
                 )
             }
@@ -70,7 +76,7 @@ function getTooltips(data_type: string, limitsArray: (string | number)[][],
                 base = base.concat(
                     [{
                         displayName: "Group N",
-                        value: (<number>(d[5])).toFixed(2)
+                        value: (<number>(count[i])).toFixed(2)
                     }]
                 )
             }

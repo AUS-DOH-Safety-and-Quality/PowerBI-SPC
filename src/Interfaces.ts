@@ -33,6 +33,16 @@ interface ToolTips {
     value: string;
 }
 
+interface ControlLimits {
+    key: string[];
+    value: number[];
+    centerline: number;
+    upperLimit: number[];
+    lowerLimit: number[];
+    count: number[];
+}
+
 export { PlotData }
 export { ViewModel }
 export { ToolTips }
+export { ControlLimits }
