@@ -1,19 +1,21 @@
 import * as d3 from "d3";
-import { sqrt } from "./HelperFunctions";
+import { sqrt, rep } from "./HelperFunctions";
+import { ControlLimits } from "../Interfaces";
 
-function g_limits(key: string[], value: number[]): (string | number)[][] {
-
+function g_limits(key: string[], value: number[]): ControlLimits {
     let cl: number = d3.mean(value);
-
     let sigma: number = sqrt(cl * (cl + 1));
-    let lcl: number = 0;
-    let ucl: number = cl + 3*sigma;
 
-    return key.map((d,idx) => [d,
-                               value[idx],
-                               cl * 0.693, // Centerline defined by theoretical median
-                               lcl,
-                               ucl]);
+    let limits: ControlLimits = {
+        key: key,
+        value: value,
+        centerline: cl,
+        lowerLimit: rep(0, key.length),
+        upperLimit: rep(cl + 3*sigma, key.length),
+        count: null
+    }
+
+    return limits;
 }
 
 export default g_limits;

@@ -1,12 +1,10 @@
 import * as d3 from "d3";
 import * as rmath from "lib-r-math.js";
-import { b3 } from "./Constants";
-import { b4 } from "./Constants";
-import { subtract } from "./HelperFunctions";
-import { sqrt } from "./HelperFunctions";
-import { pow } from "./HelperFunctions";
+import { b3, b4 } from "./Constants";
+import { subtract, sqrt, pow } from "./HelperFunctions";
+import { ControlLimits } from "../Interfaces";
 
-function s_limits(value: number[], group: string[]): (string | number)[][] {
+function s_limits(value: number[], group: string[]): ControlLimits {
     // Get the unique groupings to summarise
     let unique_groups: string[] = group.filter(
         (value, index, self) => self.indexOf(value) === index
@@ -31,16 +29,19 @@ function s_limits(value: number[], group: string[]): (string | number)[][] {
     // Calculate weighted SD
     let cl: number = sqrt(d3.sum(rmath.R.mult(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
 
-    // Sample-size dependant constant (function above)
+    // Sample-size dependent constant (function above)
     let B3: number[] = b3(count_per_group);
     let B4: number[] = b4(count_per_group);
 
-    return unique_groups.map((d,idx) => [d,
-                                         group_sd[idx],
-                                         cl,
-                                         cl * B3[idx],
-                                         cl * B4[idx],
-                                         count_per_group[idx]]);
+    let limits: ControlLimits = {
+        key: unique_groups,
+        value: group_sd,
+        centerline: cl,
+        lowerLimit: rmath.R.mult(cl, B3),
+        upperLimit: rmath.R.mult(cl, B4),
+        count: count_per_group
+    }
+    return limits;
 }
 
 export default s_limits;

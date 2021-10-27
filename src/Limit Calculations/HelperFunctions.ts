@@ -32,6 +32,10 @@ function isDate(x: any): boolean {
     return (Object.prototype.toString.call(x) == "[object Date]");
 }
 
+function rep(x: number, n: number) : number[] {
+    return rmath.R.seq()()(0, n).map(() => x);
+}
+
 export { sqrt };
 export { pow };
 export { subtract };
@@ -40,3 +44,4 @@ export { diff };
 export { abs };
 export { exp };
 export { isDate };
+export { rep };
