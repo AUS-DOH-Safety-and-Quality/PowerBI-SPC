@@ -6,7 +6,6 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                      prop_limits: boolean): ToolTips[][] {
 
     var val_name: string;
-    console.log("start1")
     if(data_type == "xbar") {
         val_name = "Group Mean"
     } else if(data_type == "s") {
@@ -36,7 +35,6 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
     } else {
         val_name = "Rate"
     }
-    console.log("after1")
 
     var inc_numdem: boolean = (data_type != "xbar" && data_type != "s" &&
                                data_type != "t" && data_type != "g" &&
