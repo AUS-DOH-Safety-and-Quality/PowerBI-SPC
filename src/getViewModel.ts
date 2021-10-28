@@ -125,7 +125,6 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             if(denominator) {denominator_in.push(<number>denominator.values[idx]);}
         }
     })
-
     let limitsArray: ControlLimits = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
     let multiplier: number = settings.spc.multiplier.value;
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
@@ -152,7 +151,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
 
             // Specify content to print in tooltip
             tooltips: tooltipsArray[i],
-            tick_labels: [i+1, <string>lab_vals[i]]
+            tick_labels: (data_type == "t" || data_type == "g") ? [i+1, (i+1).toFixed(0)] : [i+1, <string>lab_vals[i]]
         });
     }
     let minLimit: number = d3.min(limitsArray.lowerLimit);
