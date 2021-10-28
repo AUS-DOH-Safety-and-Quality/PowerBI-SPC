@@ -4,12 +4,8 @@ import { diff, abs, rep } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function i_limits(key: string[], value: number[], denominator?: number[]): ControlLimits {
-    let ratio: number[];
-    if (denominator == null) {
-        ratio = value;
-    } else {
-        ratio = rmath.R.div(value,denominator);
-    }
+    let ratio: number[] = denominator ? rmath.R.div(value,denominator) : value;
+
     let cl: number = d3.mean(ratio);
 
     let consec_diff: number[] = abs(diff(ratio));

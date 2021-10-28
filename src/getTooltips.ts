@@ -6,7 +6,7 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                      prop_limits: boolean): ToolTips[][] {
 
     var val_name: string;
-
+    console.log("start1")
     if(data_type == "xbar") {
         val_name = "Group Mean"
     } else if(data_type == "s") {
@@ -36,18 +36,19 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
     } else {
         val_name = "Rate"
     }
+    console.log("after1")
 
     var inc_numdem: boolean = (data_type != "xbar" && data_type != "s" &&
                                data_type != "t" && data_type != "g" &&
-                               data_type != "c");
+                               data_type != "c" && (data_type == "i" && denominator_values  == null));
 
     let { key, value, centerline, upperLimit, lowerLimit, count } = limitsArray;
     let seq: number[] = rmath.R.seq()()(0, key.length-1);
     return seq.map(
         (i) => {
             let base: ToolTips[] =  [{
-                    displayName: "Date:",
-                    value: <string>key[i]
+                    displayName: (data_type == "t" || data_type == "g") ? "Event #:" : "Date:",
+                    value: (data_type == "t" || data_type == "g") ? (i+1).toFixed(0) : <string>key[i]
                 },{
                     displayName: val_name + ":",
                     value: (value[i] == null) ? "" : (prop_limits ? (<number>value[i] * 100).toFixed(2) + '%' : (<number>value[i]).toFixed(2))
