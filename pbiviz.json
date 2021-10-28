@@ -1,7 +1,7 @@
 {
     "visual":{
         "name":"PBISPC",
-        "displayName":"PBI SPC",
+        "displayName":"SPC Charts",
         "guid":"PBISPC",
         "visualClassName":"Visual",
         "version":"1.0.0",
