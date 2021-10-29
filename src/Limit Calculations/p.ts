@@ -6,12 +6,14 @@ function p_limits(key: string[], value: number[], denominator: number[]): Contro
     let cl: number = rmath.R.sum(value) / rmath.R.sum(denominator);
     let sigma: number[] = sqrt(rmath.R.div(cl*(1-cl),denominator));
 
-    let limits: ControlLimits;
-    limits.key = key;
-    limits.value = rmath.R.div(value, denominator);
-    limits.centerline = cl;
-    limits.lowerLimit = subtract(cl, rmath.R.mult(3,sigma)).map(d => d < 0 ? 0 : d);
-    limits.upperLimit = add(cl, rmath.R.mult(3,sigma)).map(d => d > 1 ? 1 : d);
+    let limits: ControlLimits = {
+        key: key,
+        value: rmath.R.div(value, denominator),
+        centerline: cl,
+        lowerLimit: subtract(cl, rmath.R.mult(3,sigma)).map(d => d < 0 ? 0 : d),
+        upperLimit: add(cl, rmath.R.mult(3,sigma)).map(d => d > 1 ? 1 : d),
+        count: null
+    }
 
     return limits;
 }
