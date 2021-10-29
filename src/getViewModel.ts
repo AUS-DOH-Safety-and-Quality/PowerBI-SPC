@@ -125,6 +125,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             if(denominator) {denominator_in.push(<number>denominator.values[idx]);}
         }
     })
+
     let limitsArray: ControlLimits = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
     let multiplier: number = settings.spc.multiplier.value;
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
