@@ -31,6 +31,10 @@ function initSettings() {
             multiplier: {
                 default: 1,
                 value: 1
+            },
+            denom_split: {
+                default: null,
+                value: null
             }
         },
         scatter: {

@@ -17,7 +17,7 @@ function mr_limits(key: string[], value: number[], denominator?: number[]): Cont
     let limits: ControlLimits = {
         key: key,
         value: [null].concat(consec_diff),
-        centerline: cl,
+        centerline: rep(cl, key.length),
         lowerLimit: rep(0, key.length),
         upperLimit: rep(3.267*cl, key.length),
         count: null

@@ -24,6 +24,13 @@ function updateSettings(settings: any, objects: DataViewObjects) {
         },
         settings.spc.multiplier.default
     )
+    settings.spc.denom_split.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "spc",
+            propertyName: "denom_split"
+        },
+        settings.spc.denom_split.default
+    )
     settings.scatter.size.value = dataViewObjects.getValue(
         objects, {
             objectName: "scatter",

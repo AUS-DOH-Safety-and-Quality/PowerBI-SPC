@@ -48,14 +48,16 @@ function makeLines(LineObject: LineType,
         if(linetype == "Lower") {
             MergedLineObject.attr("d", d3.line<PlotData>()
                                    .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.lower_limit)))
+                                   .y(d => y_scale(d.lower_limit))
+                                   .defined(function(d) {return d.lower_limit !== null}))
                 .attr("fill","none")
                 .attr("stroke", l99_colour)
                 .attr("stroke-width", l99_width);
         } else if(linetype == "Upper") {
             MergedLineObject.attr("d", d3.line<PlotData>()
                                    .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.upper_limit)))
+                                   .y(d => y_scale(d.upper_limit))
+                                   .defined(function(d) {return d.upper_limit !== null}))
                 .attr("fill","none")
                 .attr("stroke", l99_colour)
                 .attr("stroke-width", l99_width);
@@ -63,7 +65,7 @@ function makeLines(LineObject: LineType,
             MergedLineObject.attr("d", d3.line<PlotData>()
                                           .x(d => x_scale(d.x))
                                           .y(d => y_scale(d.ratio))
-                                          .defined(d => (d.ratio != null)))
+                                          .defined(function(d) {return d.ratio !== null}))
                       .attr("fill","none")
                       .attr("stroke", main_colour)
                       .attr("stroke-width", main_width);
@@ -122,7 +124,8 @@ function makeLines(LineObject: LineType,
     } else if (linetype == "Target") {
         MergedLineObject.attr("d", d3.line<PlotData>()
                                .x(d => x_scale(d.x))
-                               .y(d => y_scale(viewModel.target)))
+                               .y(d => y_scale(d.target))
+                               .defined(function(d) {return d.target !== null}))
             // Apply CSS class to elements so that they can be looked up later
             .attr("fill","none")
             .attr("stroke", target_colour)

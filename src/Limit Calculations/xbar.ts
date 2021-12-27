@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import * as rmath from "lib-r-math.js";
 import { a3 } from "./Constants";
-import { sqrt, pow, subtract, add } from "./HelperFunctions";
+import { sqrt, pow, subtract, add, rep } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function xbar_limits(value: number[], group: string[]): ControlLimits {
@@ -43,7 +43,7 @@ function xbar_limits(value: number[], group: string[]): ControlLimits {
     let limits: ControlLimits = {
         key: unique_groups,
         value: group_means,
-        centerline: cl,
+        centerline: rep(cl, unique_groups.length),
         lowerLimit: subtract(cl, rmath.R.mult(A3,sd)),
         upperLimit: add(cl, rmath.R.mult(A3,sd)),
         count: count_per_group

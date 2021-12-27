@@ -7,6 +7,7 @@ interface PlotData {
     x: number,
     lower_limit: number;
     upper_limit: number;
+    target: number;
     ratio: number;
     colour: string;
     // ISelectionId allows the visual to report the selection choice to PowerBI
@@ -24,7 +25,6 @@ interface ViewModel {
     plotData: PlotData[];
     minLimit: number;
     maxLimit: number;
-    target: number;
     highlights: boolean;
 };
 
@@ -36,7 +36,7 @@ interface ToolTips {
 interface ControlLimits {
     key: string[];
     value: number[];
-    centerline: number;
+    centerline: number[];
     upperLimit: number[];
     lowerLimit: number[];
     count: number[];

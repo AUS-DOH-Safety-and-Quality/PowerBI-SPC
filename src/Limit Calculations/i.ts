@@ -17,7 +17,7 @@ function i_limits(key: string[], value: number[], denominator?: number[]): Contr
     let limits: ControlLimits = {
         key: key,
         value: ratio.map(d => isNaN(d) ? 0 : d),
-        centerline: cl,
+        centerline: rep(cl, key.length),
         lowerLimit: rep(cl - 3*sigma, key.length),
         upperLimit: rep(cl + 3*sigma, key.length),
         count: null

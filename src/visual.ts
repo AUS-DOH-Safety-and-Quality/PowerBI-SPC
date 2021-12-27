@@ -206,8 +206,6 @@ export class Visual implements IVisual {
             .text(this.settings.axis.ylimit_label.value)
             .style("text-anchor", "end");
 
-
-
         let linesLL99: LineType = this.LL99Group
             .selectAll(".line")
             .data([this.viewModel.plotData]);
@@ -219,11 +217,9 @@ export class Visual implements IVisual {
         let lineTarget: LineType = this.targetGroup
                                        .selectAll(".line")
                                        .data([this.viewModel.plotData]);
-
         // Initial construction of lines, run when plot is first rendered.
         //   Text argument specifies which type of line is required (controls aesthetics),
         //   inverse scale objects used to display tooltips on drawn control limits 
-
         [
          [linesLL99, "Lower"],
          [linesUL99, "Upper"],
@@ -273,7 +269,8 @@ export class Visual implements IVisual {
                         objectName: propertyGroupName,
                         properties: {
                             data_type: this.settings.spc.data_type.value,
-                            multiplier: this.settings.spc.multiplier.value
+                            multiplier: this.settings.spc.multiplier.value,
+                            denom_split: this.settings.spc.denom_split.value
                         },
                         selector: null
                     });

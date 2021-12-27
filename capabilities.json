@@ -100,6 +100,12 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "denom_split": {
+                    "displayName": "Split Limits at Date(s): ",
+                    "type": {
+                        "text": true
+                    }
                 }
             }
         },

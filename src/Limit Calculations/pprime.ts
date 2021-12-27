@@ -1,6 +1,6 @@
 import * as rmath from "lib-r-math.js";
 import * as d3 from "d3";
-import { sqrt, diff, abs, add, subtract } from "./HelperFunctions";
+import { sqrt, diff, abs, add, subtract, rep } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function pprime_limits(key: string[], value: number[], denominator: number[]): ControlLimits {
@@ -15,7 +15,7 @@ function pprime_limits(key: string[], value: number[], denominator: number[]): C
     let limits: ControlLimits = {
         key: key,
         value: val,
-        centerline: cl,
+        centerline: rep(cl, key.length),
         lowerLimit: subtract(cl, rmath.R.mult(3,sigma)).map(d => d < 0 ? 0 : d),
         upperLimit: add(cl, rmath.R.mult(3,sigma)).map(d => d > 1 ? 1 : d),
         count: null

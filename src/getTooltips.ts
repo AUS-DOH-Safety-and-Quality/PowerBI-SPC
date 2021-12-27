@@ -3,7 +3,7 @@ import { ToolTips, ControlLimits } from "../src/Interfaces";
 
 function getTooltips(data_type: string, limitsArray: ControlLimits,
                      numerator_values: number[], denominator_values: number[],
-                     prop_limits: boolean): ToolTips[][] {
+                     key_values: string[], prop_limits: boolean): ToolTips[][] {
 
     var val_name: string;
     if(data_type == "xbar") {
@@ -45,6 +45,7 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
     let seq: number[] = rmath.R.seq()()(0, key.length-1);
     return seq.map(
         (i) => {
+            let ind: number = key_values.indexOf(<string>key[i]);
             let base: ToolTips[] =  [{
                     displayName: (data_type == "t" || data_type == "g") ? "Event #:" : "Date:",
                     value: (data_type == "t" || data_type == "g") ? (i+1).toFixed(0) : <string>key[i]
@@ -52,6 +53,9 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                     displayName: val_name + ":",
                     value: (value[i] == null) ? "" : (prop_limits ? (<number>value[i] * 100).toFixed(2) + '%' : (<number>value[i]).toFixed(2))
                 }];
+            if (value[i] === null && upperLimit[i] === null && lowerLimit[i] === null) {
+                return base;
+            }
             if(data_type != "run") {
                 base = base.concat([{
                     displayName: "Upper 99% Limit",
@@ -65,10 +69,10 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                 base = base.concat(
                     [{
                         displayName: "Numerator:",
-                        value: (<number>numerator_values[i]).toFixed(2)
+                        value: (<number>numerator_values[ind]).toFixed(2)
                     },{
                         displayName: "Denominator:",
-                        value: (<number>denominator_values[i]).toFixed(2)
+                        value: (<number>denominator_values[ind]).toFixed(2)
                     }]
                 )
             }

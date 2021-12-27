@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import * as rmath from "lib-r-math.js";
 import { b3, b4 } from "./Constants";
-import { subtract, sqrt, pow } from "./HelperFunctions";
+import { subtract, sqrt, pow, rep } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function s_limits(value: number[], group: string[]): ControlLimits {
@@ -36,7 +36,7 @@ function s_limits(value: number[], group: string[]): ControlLimits {
     let limits: ControlLimits = {
         key: unique_groups,
         value: group_sd,
-        centerline: cl,
+        centerline: rep(cl, unique_groups.length),
         lowerLimit: rmath.R.mult(cl, B3),
         upperLimit: rmath.R.mult(cl, B4),
         count: count_per_group
