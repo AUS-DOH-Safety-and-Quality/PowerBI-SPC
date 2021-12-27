@@ -1,7 +1,6 @@
 import * as d3 from "d3";
-import * as rmath from "lib-r-math.js";
 import { a3 } from "./Constants";
-import { sqrt, pow, subtract, add, rep } from "./HelperFunctions";
+import { sqrt, pow, subtract, add, rep, multiply } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function xbar_limits(value: number[], group: string[]): ControlLimits {
@@ -32,10 +31,10 @@ function xbar_limits(value: number[], group: string[]): ControlLimits {
     let Nm1: number[] = subtract(count_per_group, 1);
 
     // Calculate weighted SD
-    let sd: number = sqrt(d3.sum(rmath.R.mult(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
+    let sd: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
 
     // Calculated weighted mean (for centreline)
-    let cl: number = d3.sum(rmath.R.mult(count_per_group, group_means)) / d3.sum(count_per_group);
+    let cl: number = d3.sum(multiply(count_per_group, group_means)) / d3.sum(count_per_group);
 
     // Sample-size dependent constant
     let A3: number[] = a3(count_per_group);
@@ -44,8 +43,8 @@ function xbar_limits(value: number[], group: string[]): ControlLimits {
         key: unique_groups,
         value: group_means,
         centerline: rep(cl, unique_groups.length),
-        lowerLimit: subtract(cl, rmath.R.mult(A3,sd)),
-        upperLimit: add(cl, rmath.R.mult(A3,sd)),
+        lowerLimit: subtract(cl, multiply(A3,sd)),
+        upperLimit: add(cl, multiply(A3,sd)),
         count: count_per_group
     }
     return limits;

@@ -1,7 +1,6 @@
 import * as d3 from "d3";
-import * as rmath from "lib-r-math.js";
 import { b3, b4 } from "./Constants";
-import { subtract, sqrt, pow, rep } from "./HelperFunctions";
+import { subtract, sqrt, pow, rep, multiply, divide } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function s_limits(value: number[], group: string[]): ControlLimits {
@@ -27,7 +26,7 @@ function s_limits(value: number[], group: string[]): ControlLimits {
     let Nm1: number[] = subtract(count_per_group, 1);
 
     // Calculate weighted SD
-    let cl: number = sqrt(d3.sum(rmath.R.mult(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
+    let cl: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
 
     // Sample-size dependent constant (function above)
     let B3: number[] = b3(count_per_group);
@@ -37,8 +36,8 @@ function s_limits(value: number[], group: string[]): ControlLimits {
         key: unique_groups,
         value: group_sd,
         centerline: rep(cl, unique_groups.length),
-        lowerLimit: rmath.R.mult(cl, B3),
-        upperLimit: rmath.R.mult(cl, B4),
+        lowerLimit: multiply(cl, B3),
+        upperLimit: multiply(cl, B4),
         count: count_per_group
     }
     return limits;

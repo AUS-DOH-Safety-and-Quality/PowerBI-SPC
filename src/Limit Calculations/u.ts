@@ -1,17 +1,17 @@
-import * as rmath from "lib-r-math.js";
-import { sqrt, subtract, add, rep } from "./HelperFunctions";
+import * as d3 from "d3";
+import { sqrt, subtract, add, rep, divide, multiply } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function u_limits(key: string[], value: number[], denominator: number[]): ControlLimits {
-    let cl: number = rmath.R.div(rmath.R.sum(value),rmath.R.sum(denominator));
-    let sigma: number[] = sqrt(rmath.R.div(cl,denominator));
+    let cl: number = divide(d3.sum(value),d3.sum(denominator));
+    let sigma: number[] = sqrt(divide(cl,denominator));
 
     let limits: ControlLimits = {
         key: key,
-        value: rmath.R.div(value, denominator),
+        value: divide(value, denominator),
         centerline: rep(cl, key.length),
-        lowerLimit: subtract(cl, rmath.R.mult(3,sigma)).map(d => d < 0 ? 0 : d),
-        upperLimit: add(cl, rmath.R.mult(3,sigma)),
+        lowerLimit: subtract(cl, multiply(3,sigma)).map(d => d < 0 ? 0 : d),
+        upperLimit: add(cl, multiply(3,sigma)),
         count: null
     }
     return limits;
