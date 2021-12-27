@@ -206,9 +206,6 @@ export class Visual implements IVisual {
             .text(this.settings.axis.ylimit_label.value)
             .style("text-anchor", "end");
 
-
-        console.log("PLOTDATA")
-        console.log(this.viewModel.plotData)
         let linesLL99: LineType = this.LL99Group
             .selectAll(".line")
             .data([this.viewModel.plotData]);
@@ -223,7 +220,6 @@ export class Visual implements IVisual {
         // Initial construction of lines, run when plot is first rendered.
         //   Text argument specifies which type of line is required (controls aesthetics),
         //   inverse scale objects used to display tooltips on drawn control limits 
-        console.log("m lines");
         [
          [linesLL99, "Lower"],
          [linesUL99, "Upper"],
@@ -232,7 +228,6 @@ export class Visual implements IVisual {
                              xScale, yScale, <string>d[1],
                              this.viewModel, this.host.tooltipService,
                              this.viewModel.highlights, yScale_inv));
-                             console.log("f lines");
         // Bind calculated control limits and target line to respective plotting objects
         this.linesMain = this.lineGroup
             .selectAll(".line")

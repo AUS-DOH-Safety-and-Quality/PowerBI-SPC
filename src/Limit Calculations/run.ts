@@ -15,7 +15,6 @@ function run_limits(key: string[], value: number[], denominator?: number[]): Con
         upperLimit: rep(null, key.length),
         count: null
     }
-    console.log(limits.value)
     return limits;
 }
 
