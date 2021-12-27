@@ -1,6 +1,5 @@
 import * as d3 from "d3";
-import * as rmath from "lib-r-math.js";
-import { diff, abs, rep } from "./HelperFunctions";
+import { diff, abs, rep, divide } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function mr_limits(key: string[], value: number[], denominator?: number[]): ControlLimits {
@@ -8,7 +7,7 @@ function mr_limits(key: string[], value: number[], denominator?: number[]): Cont
     if (denominator == null) {
         ratio = value;
     } else {
-        ratio = rmath.R.div(value,denominator);
+        ratio = divide(value,denominator);
     }
 
     let consec_diff: number[] = abs(diff(ratio));

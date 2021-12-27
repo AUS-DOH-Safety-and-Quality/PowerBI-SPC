@@ -1,4 +1,3 @@
-import * as rmath from "lib-r-math.js";
 import { ToolTips, ControlLimits } from "../src/Interfaces";
 
 function getTooltips(data_type: string, limitsArray: ControlLimits,
@@ -42,9 +41,8 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                                !((data_type == "i" || data_type == "mr" || data_type == "run") && denominator_values.length == 0));
 
     let { key, value, centerline, upperLimit, lowerLimit, count } = limitsArray;
-    let seq: number[] = rmath.R.seq()()(0, key.length-1);
-    return seq.map(
-        (i) => {
+    return Array.apply(null, Array(key.length)).map(
+        (d,i) => {
             let ind: number = key_values.indexOf(<string>key[i]);
             let base: ToolTips[] =  [{
                     displayName: (data_type == "t" || data_type == "g") ? "Event #:" : "Date:",

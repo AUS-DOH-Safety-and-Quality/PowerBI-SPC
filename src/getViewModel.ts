@@ -6,7 +6,6 @@ import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn
 import DataViewValueColumn = powerbi.DataViewValueColumn
 import * as d3 from "d3";
-import * as mathjs from "mathjs";
 import getLimitsArray from "../src/getLimitsArray";
 import getTooltips from "../src/getTooltips";
 import { ToolTips, ControlLimits } from "./Interfaces";
@@ -213,8 +212,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let maxPoint: number = d3.max(limitsArray.value);
 
     // Extract maximum value of input data and add to viewModel
-    viewModel.minLimit = (mathjs.min([minLimit,minPoint]) - Math.abs(mathjs.min([minLimit,minPoint]))*0.1) * multiplier;
-    viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + Math.abs(mathjs.max([maxLimit,maxPoint]))*0.1) * multiplier;
+    viewModel.minLimit = (d3.min([minLimit,minPoint]) - Math.abs(d3.min([minLimit,minPoint]))*0.1) * multiplier;
+    viewModel.maxLimit = (d3.max([maxLimit,maxPoint]) + Math.abs(d3.max([maxLimit,maxPoint]))*0.1) * multiplier;
 
     // Flag whether any dots need to be highlighted
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;

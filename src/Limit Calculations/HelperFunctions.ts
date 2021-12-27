@@ -1,20 +1,28 @@
-import * as rmath from "lib-r-math.js";
-import * as mathjs from "mathjs";
+import * as math from '@stdlib/math/base/special';
 
-const sqrt = rmath.R.multiplex(Math.sqrt);
-const pow = rmath.R.multiplex(Math.pow);
-
-function subtract_tmp(x: number, y:number): number {
-    return x - y;
+function broadcast_unary(fun: (x: any) => any) {
+    return function(x: any) {
+        if(Array.isArray(x)) {
+            return x.map(d => fun(d));
+        } else {
+            return fun(x);
+        }
+    };
 }
 
-const subtract = rmath.R.multiplex(subtract_tmp);
-
-function add_tmp(x: number, y:number): number {
-    return x + y;
+function broadcast_binary(fun: (x: any, y:any) => any) {
+    return function(x: any, y: any) {
+        if(Array.isArray(x) && Array.isArray(y)) {
+            return x.map((d, idx) => fun(d, y[idx]));
+        } else if(Array.isArray(x) && !Array.isArray(y)) {
+            return x.map((d) => fun(d, y));
+        } else if(!Array.isArray(x) && Array.isArray(y)) {
+            return y.map((d) => fun(x, d));
+        } else {
+            return fun(x, y);
+        }
+    };
 }
-
-const add = rmath.R.multiplex(add_tmp);
 
 function diff(x: number[]): number[] {
     var consec_diff: number[] = new Array<number>(x.length - 1);
@@ -24,22 +32,31 @@ function diff(x: number[]): number[] {
     return consec_diff;
 }
 
-const abs = rmath.R.multiplex(mathjs.abs);
-
-const exp = rmath.R.multiplex(Math.exp);
+const sqrt = broadcast_unary(math.sqrt);
+const abs = broadcast_unary(math.abs);
+const exp = broadcast_unary(math.exp);
+const lgamma = broadcast_unary(math.gammaln);
+const pow = broadcast_binary(math.pow);
+const add = broadcast_binary((x, y) => x + y);
+const subtract = broadcast_binary((x, y) => x - y);
+const divide = broadcast_binary((x, y) => x / y);
+const multiply = broadcast_binary((x, y) => x * y);
 
 function isDate(x: any): boolean {
     return (Object.prototype.toString.call(x) == "[object Date]");
 }
 
 function rep(x: number, n: number) : number[] {
-    return rmath.R.seq()()(1, n).map(() => x);
+    return Array.apply(null, Array(n)).map(d => x)
 }
 
 export { sqrt };
 export { pow };
 export { subtract };
 export { add };
+export { divide };
+export { multiply };
+export { lgamma };
 export { diff };
 export { abs };
 export { exp };
