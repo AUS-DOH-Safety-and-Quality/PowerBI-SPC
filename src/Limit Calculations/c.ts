@@ -9,7 +9,7 @@ function c_limits(key: string[], value: number[]): ControlLimits {
     let limits: ControlLimits = {
         key: key,
         value: value,
-        centerline: cl,
+        centerline: rep(cl, key.length),
         lowerLimit: rep(Math.max(cl - 3*sigma, 0), key.length),
         upperLimit: rep(cl + 3*sigma, key.length),
         count: null

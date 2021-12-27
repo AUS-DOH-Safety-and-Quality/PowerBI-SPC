@@ -15,6 +15,8 @@ import { ControlLimits } from "./Interfaces";
 
 function getLimitsArray(chart_type: string, key: string[], numerator: number[],
                         denominator: number[], group: string[]): ControlLimits {
+
+    console.log("limits - a")
    if (chart_type == "i") {
       return i_limits(key, numerator, denominator);
     } else if (chart_type == "p") {

@@ -34,6 +34,8 @@ function str_to_dmy(text: string[]) {
 function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisualHost) {
     let dv: DataView[] = options.dataViews;
     let data_type: string = settings.spc.data_type.value;
+    let denom_split: string = settings.spc.denom_split.value;
+    let axes_split: string[] = denom_split ? denom_split.split(",") : null;
     let input_names: string[] = dv[0].metadata.columns.map(d => Object.keys(d.roles)[0]);
 
     let viewModel: any = {
@@ -90,12 +92,14 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     var groups_in: string[];
     var key_in: string[];
     var key_valid: string[] = new Array();
+    let split_indexes: number[] = new Array();
 
     if(num_cat == 1 && view.categories[0].source.type.dateTime) {
         key_in = str_to_dmy(<string[]>(key.values));
     } else {
         key_in = key_grps;
     }
+
 
     if((data_type == "xbar" || data_type == "s")) {
         if(view.categories.slice(-1)[1].source.type.dateTime) {
@@ -106,11 +110,14 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     }
 
     (<number[]>numerator.values).map((d,idx) => {
-
         let valid: boolean = (d != null && key_in[idx] != null);
         
         if(data_type == "p" || data_type == "pp" ||
            data_type == "u" || data_type == "up") {
+            valid = (valid && <number>denominator.values[idx] != null && <number>denominator.values[idx] > 0);
+        }
+
+        if((data_type == "run" || data_type == "i" || data_type == "mr") && denominator) {
             valid = (valid && <number>denominator.values[idx] != null && <number>denominator.values[idx] > 0);
         }
 
@@ -124,35 +131,80 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             if(denominator) {denominator_in.push(<number>denominator.values[idx]);}
         }
     })
+    if(axes_split) {
+        split_indexes.push(0);
+        for(let i = 0; i < axes_split.length; i++) {
+            let index: number = key_valid.indexOf(axes_split[i]);
+            if(index == -1) {
+                return viewModel;
+            }
+            split_indexes.push(index);
+        }
+        split_indexes.push(key_valid.length - 1);
+        split_indexes = split_indexes.sort((a,b) => a-b);
+    }
+    let limitsArray: ControlLimits;
+    if(split_indexes.length > 0) {
+        limitsArray = {
+            key: new Array(),
+            value: new Array(),
+            centerline: new Array(),
+            upperLimit: new Array(),
+            lowerLimit: new Array(),
+            count: new Array()
+        };
+        let splitLimits: ControlLimits[] = split_indexes.slice(0,split_indexes.length - 1).map((d, idx) => {
+            // Determine number of items to copy
+            let slice_length: number = (split_indexes[idx + 1])
+            return getLimitsArray(data_type,
+                           key_valid.slice(d, slice_length),
+                           numerator_in.slice(d, slice_length),
+                           denominator_in.slice(d, slice_length),
+                           groups_in ? groups_in.slice(d, slice_length) : null)
+        })
+        splitLimits.map(d => {
+            limitsArray.key = limitsArray.key.concat(d.key).concat(d.key.slice(-1));
+            limitsArray.value = limitsArray.value.concat(d.value);
+            limitsArray.centerline = limitsArray.centerline.concat(d.centerline);
+            limitsArray.upperLimit = limitsArray.upperLimit.concat(d.upperLimit);
+            limitsArray.lowerLimit = limitsArray.lowerLimit.concat(d.lowerLimit);
+            limitsArray.count = limitsArray.count.concat(d.count);
 
-
-    let limitsArray: ControlLimits = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
+            // Assign null values at the last x-axis value for split-line plotting
+            limitsArray.value.push(null)
+            limitsArray.centerline.push(null)
+            limitsArray.upperLimit.push(null)
+            limitsArray.lowerLimit.push(null)
+            limitsArray.count.push(null)
+        })
+    } else {
+        limitsArray = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
+    }
     let multiplier: number = settings.spc.multiplier.value;
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
-    let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, prop_labels);
-    let lab_vals: string[] =  ((data_type == "xbar") || (data_type == "s")) ? groups_in : key_valid;
-
+    let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, key_valid, prop_labels);
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
     for (let i = 0; i < limitsArray.key.length;  i++) {
         viewModel.plotData.push({
-            x: i+1,
-            lower_limit: (<number>limitsArray.lowerLimit[i] * multiplier),
-            upper_limit: (<number>limitsArray.upperLimit[i] * multiplier),
-            ratio: (<number>limitsArray.value[i] * multiplier),
+            x: (limitsArray.value[i] !== null) ? i+1 : i,
+            lower_limit: (limitsArray.lowerLimit[i] !== null) ? (<number>limitsArray.lowerLimit[i] * multiplier) : null,
+            upper_limit: (limitsArray.upperLimit[i] !== null) ? (<number>limitsArray.upperLimit[i] * multiplier) : null,
+            ratio: (limitsArray.value[i] !== null) ? (<number>limitsArray.value[i] * multiplier) : null,
+            target: (limitsArray.centerline[i] !== null) ? (<number>limitsArray.centerline[i] * multiplier) : null,
             // Check whether objects array exists with user-specified fill colours, apply those colours if so
             //   otherwise use default palette
             colour: settings.scatter.colour.value,
             // Create selection identity for each data point, to control cross-plot highlighting
-            identity: host.createSelectionIdBuilder()
+            identity: (limitsArray.value[i] !== null) ? host.createSelectionIdBuilder()
                           .withCategory(categories, i)
-                          .createSelectionId(),
+                          .createSelectionId() : null,
             // Check if highlights array exists, if it does, check if dot should
             //   be highlighted
             highlighted: highlights ? (highlights[i] ? true : false) : false,
 
             // Specify content to print in tooltip
             tooltips: tooltipsArray[i],
-            tick_labels: (data_type == "t" || data_type == "g") ? [i+1, (i+1).toFixed(0)] : [i+1, <string>lab_vals[i]]
+            tick_labels: (data_type == "t" || data_type == "g") ? [i+1, (i+1).toFixed(0)] : [i+1, <string>limitsArray.key[i]]
         });
     }
     let minLimit: number = d3.min(limitsArray.lowerLimit);
@@ -163,8 +215,6 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     // Extract maximum value of input data and add to viewModel
     viewModel.minLimit = (mathjs.min([minLimit,minPoint]) - Math.abs(mathjs.min([minLimit,minPoint]))*0.1) * multiplier;
     viewModel.maxLimit = (mathjs.max([maxLimit,maxPoint]) + Math.abs(mathjs.max([maxLimit,maxPoint]))*0.1) * multiplier;
-
-    viewModel.target = limitsArray.centerline * multiplier;
 
     // Flag whether any dots need to be highlighted
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;
