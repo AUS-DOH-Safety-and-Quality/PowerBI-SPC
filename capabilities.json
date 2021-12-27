@@ -41,8 +41,8 @@
                     "type" : {
                         "enumeration" : [
                           {
-                              "displayName" : "run - Run Chart",
-                              "value" : "run"
+                            "displayName" : "run - Run Chart",
+                            "value" : "run"
                           },
                           {
                             "displayName" : "i - Individual Measurements",

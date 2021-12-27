@@ -18,13 +18,13 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
         val_name = "Non-Events"
     } else if(data_type == "i" ||
               data_type == "run") {
-        if(denominator_values  == null){
+        if(denominator_values.length == 0){
             val_name = "Observation"
         } else {
             val_name = "Ratio"
         }
     } else if(data_type == "mr") {
-        if(denominator_values  == null){
+        if(denominator_values.length == 0){
             val_name = "Moving Range"
         } else {
             val_name = "Moving Range of Ratios"
@@ -38,7 +38,8 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
 
     var inc_numdem: boolean = (data_type != "xbar" && data_type != "s" &&
                                data_type != "t" && data_type != "g" &&
-                               data_type != "c" && (data_type == "i" && denominator_values  == null));
+                               data_type != "c" &&
+                               !((data_type == "i" || data_type == "mr" || data_type == "run") && denominator_values.length == 0));
 
     let { key, value, centerline, upperLimit, lowerLimit, count } = limitsArray;
     let seq: number[] = rmath.R.seq()()(0, key.length-1);
