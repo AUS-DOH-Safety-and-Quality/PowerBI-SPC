@@ -4,7 +4,7 @@ import { diff, abs, rep } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function i_limits(key: string[], value: number[], denominator?: number[]): ControlLimits {
-    let ratio: number[] = denominator ? rmath.R.div(value,denominator) : value;
+    let ratio: number[] = (denominator && denominator.length > 0) ? rmath.R.div(value, denominator) : value;
 
     let cl: number = d3.mean(ratio);
 
@@ -16,7 +16,7 @@ function i_limits(key: string[], value: number[], denominator?: number[]): Contr
 
     let limits: ControlLimits = {
         key: key,
-        value: ratio,
+        value: ratio.map(d => isNaN(d) ? 0 : d),
         centerline: cl,
         lowerLimit: rep(cl - 3*sigma, key.length),
         upperLimit: rep(cl + 3*sigma, key.length),

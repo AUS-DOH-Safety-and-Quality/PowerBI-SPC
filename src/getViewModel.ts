@@ -110,8 +110,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         let valid: boolean = (d != null && key_in[idx] != null);
         
         if(data_type == "p" || data_type == "pp" ||
-           data_type == "u" || data_type == "up" ||
-           (((data_type == "i") || (data_type == "mr")) && denominator)) {
+           data_type == "u" || data_type == "up") {
             valid = (valid && <number>denominator.values[idx] != null && <number>denominator.values[idx] > 0);
         }
 
@@ -125,6 +124,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             if(denominator) {denominator_in.push(<number>denominator.values[idx]);}
         }
     })
+
 
     let limitsArray: ControlLimits = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
     let multiplier: number = settings.spc.multiplier.value;
