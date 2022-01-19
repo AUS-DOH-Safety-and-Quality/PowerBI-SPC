@@ -3,10 +3,10 @@ import ITooltipService = powerbi.extensibility.ITooltipService;
 import * as d3 from "d3";
 import highlightIfSelected from "../Selection Helpers/highlightIfSelected";
 import { ViewModel } from "../../src/Interfaces"
-import { PlotData } from "../../src/Interfaces"
-type LineType = d3.Selection<d3.BaseType, PlotData[], SVGElement, any>;
-type MergedLineType = d3.Selection<SVGPathElement, PlotData[], SVGElement, any>;
-
+import { PlotData, groupedData } from "../../src/Interfaces"
+type LineType = d3.Selection<any, any, any, any>;
+type MergedLineType = d3.Selection<SVGPathElement, any, any, any>;
+type AestheticsScale = d3.ScaleOrdinal<string, unknown, never>;
 /**
  * Function for plotting the control limit and target lines, as well
  *   as managing the creation & updating of tooltips.
@@ -25,119 +25,47 @@ function makeLines(LineObject: LineType,
                    settings: any,
                    x_scale: d3.ScaleLinear<number, number, never>,
                    y_scale: d3.ScaleLinear<number, number, never>,
-                   linetype: string,
-                   viewModel: ViewModel,
-                   tooltipService: ITooltipService,
-                   highlights: boolean,
-                   y_scale_inv?: d3.ScaleLinear<number, number, never>): MergedLineType {
+                   viewModel: ViewModel): MergedLineType {
+    let MergedLineObject: MergedLineType = LineObject.enter()
+                                                     .append("path")
+                                                     .merge(<any>LineObject);
+
     let l99_width: number = settings.lines.width_99.value;
     let main_width: number = settings.lines.width_main.value;
     let target_width: number = settings.lines.width_target.value;
     let l99_colour: string = settings.lines.colour_99.value;
     let main_colour: string = settings.lines.colour_main.value;
     let target_colour: string = settings.lines.colour_target.value;
-    let stroke_opacity: number = settings.scatter.opacity.value;
-    let stroke_opacity_unsel: number = settings.scatter.opacity_unselected.value;
 
-    let MergedLineObject: MergedLineType = LineObject.enter()
-                                                     .append("path")
-                                                     .merge(<any>LineObject)
-                                                     .classed("line", true)
+    let GroupedLines = viewModel.groupedLines;
 
-    if (linetype != "Target") {
-        if(linetype == "Lower") {
-            MergedLineObject.attr("d", d3.line<PlotData>()
-                                   .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.lower_limit))
-                                   .defined(function(d) {return d.lower_limit !== null}))
-                .attr("fill","none")
-                .attr("stroke", l99_colour)
-                .attr("stroke-width", l99_width);
-        } else if(linetype == "Upper") {
-            MergedLineObject.attr("d", d3.line<PlotData>()
-                                   .x(d => x_scale(d.x))
-                                   .y(d => y_scale(d.upper_limit))
-                                   .defined(function(d) {return d.upper_limit !== null}))
-                .attr("fill","none")
-                .attr("stroke", l99_colour)
-                .attr("stroke-width", l99_width);
-        } else if(linetype == "Main") {
-            MergedLineObject.attr("d", d3.line<PlotData>()
-                                          .x(d => x_scale(d.x))
-                                          .y(d => y_scale(d.ratio))
-                                          .defined(function(d) {return d.ratio !== null}))
-                      .attr("fill","none")
-                      .attr("stroke", main_colour)
-                      .attr("stroke-width", main_width);
-        }
-        MergedLineObject.on("mouseover", d => {
-                        // Get screen coordinates of mouse pointer, tooltip will
-                        //   be displayed at these coordinates
-                        //    Needs the '<any>' prefix, otherwise PowerBI doesn't defer
-                        //      to d3 properly
-                        let x = (<any>d3).event.pageX;
-                        let y = (<any>d3).event.pageY;
-                
-                        tooltipService.show({
-                            dataItems: [{
-                                displayName: "Limit:",
-                                value: linetype + (linetype == "Main" ? "" : " 99.8%")
-                            }, {
-                                displayName: "Value:",
-                                value: (y_scale_inv(y)).toFixed(2)
-                            }],
-                            identities: [0],
-                            coordinates: [x, y],
-                            isTouchEvent: false
-                        });
-                    })
-                    // Specify that tooltips should move with the mouse
-                    .on("mousemove", d => {
-                        // Get screen coordinates of mouse pointer, tooltip will
-                        //   be displayed at these coordinates
-                        //    Needs the '<any>' prefix, otherwise PowerBI doesn't defer
-                        //      to d3 properly
-                        let x = (<any>d3).event.pageX;
-                        let y = (<any>d3).event.pageY;
-                
-                        // Use the 'move' service for more responsive display
-                        tooltipService.move({
-                            dataItems: [{
-                                displayName: "Limit:",
-                                value: linetype + (linetype == "Main" ? "" : " 99.8%")
-                            }, {
-                                displayName: "Value:",
-                                value: (y_scale_inv(y)).toFixed(2)
-                            }],
-                            identities: [0],
-                            coordinates: [x, y],
-                            isTouchEvent: false
-                        });
-                    })
-                    // Hide tooltip when mouse moves out of dot
-                    .on("mouseout", d => {
-                        tooltipService.hide({
-                            immediately: true,
-                            isTouchEvent: false
-                        })
-                    });
-    } else if (linetype == "Target") {
-        MergedLineObject.attr("d", d3.line<PlotData>()
-                               .x(d => x_scale(d.x))
-                               .y(d => y_scale(d.target))
-                               .defined(function(d) {return d.target !== null}))
-            // Apply CSS class to elements so that they can be looked up later
-            .attr("fill","none")
-            .attr("stroke", target_colour)
-            .attr("stroke-width", target_width);
-    }
+    let group_keys: string[] = GroupedLines.map(d => d.key)
 
+    let line_color: AestheticsScale = d3.scaleOrdinal()
+                       .domain(group_keys)
+                       .range([l99_colour, l99_colour, main_colour, target_colour]);
+
+    let line_width: AestheticsScale = d3.scaleOrdinal()
+                    .domain(group_keys)
+                    .range([l99_width, l99_width, main_width, target_width]);
+
+    MergedLineObject.classed("line", true);
+    MergedLineObject
+        .attr("d", function (d) {
+            return d3.line<groupedData>()
+            .x(d => x_scale(d.x))
+            .y(d => y_scale(d.value))
+            .defined(function(d) {return d.value !== null})
+            (d.values)
+        })
+        .attr("fill","none")
+        .attr("stroke", d => <string>line_color(d.key))
+        .attr("stroke-width", d => <number>line_width(d.key));
+    
     MergedLineObject.exit()
-            .remove();
-    if (linetype == "Main") {
-        MergedLineObject.style("stroke-opacity", highlights ? stroke_opacity_unsel : stroke_opacity);
-        return MergedLineObject;
-    }
+                    .remove();
+    console.log("makelines fine")
+    return MergedLineObject;
 }
 
 export default makeLines;

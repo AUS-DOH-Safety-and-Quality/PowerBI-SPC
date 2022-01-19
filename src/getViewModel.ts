@@ -8,7 +8,7 @@ import DataViewValueColumn = powerbi.DataViewValueColumn
 import * as d3 from "d3";
 import getLimitsArray from "../src/getLimitsArray";
 import getTooltips from "../src/getTooltips";
-import { ToolTips, ControlLimits } from "./Interfaces";
+import { ToolTips, ControlLimits, groupedData, ViewModel } from "./Interfaces";
 
 //Function to handle string-to-date conversions with JS's weird conventions
 function str_to_dmy(text: string[]) {
@@ -37,12 +37,13 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let axes_split: string[] = denom_split ? denom_split.split(",") : null;
     let input_names: string[] = dv[0].metadata.columns.map(d => Object.keys(d.roles)[0]);
 
-    let viewModel: any = {
+    let viewModel: ViewModel = {
         plotData: [],
+        lineData: [],
         minLimit: 0,
         maxLimit: 0,
-        target: 0,
-        highlights: false
+        highlights: false,
+        groupedLines: []
     };
 
     if(!dv
@@ -183,6 +184,49 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
     let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, key_valid, prop_labels);
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
+
+    let l99_width: number = settings.lines.width_99.value;
+    let main_width: number = settings.lines.width_main.value;
+    let target_width: number = settings.lines.width_target.value;
+    let l99_colour: string = settings.lines.colour_99.value;
+    let main_colour: string = settings.lines.colour_main.value;
+    let target_colour: string = settings.lines.colour_target.value;
+
+    for (let i = 0; i < limitsArray.key.length;  i++) {
+        let x: number = (limitsArray.value[i] !== null) ? i+1 : i;
+        viewModel.lineData.push({
+            x: x,
+            group: "ll99",
+            value: <number>limitsArray.lowerLimit[i],
+            colour: l99_colour,
+            width: l99_width
+        });
+        viewModel.lineData.push({
+            x: x,
+            group: "ul99",
+            value: <number>limitsArray.upperLimit[i],
+            colour: l99_colour,
+            width: l99_width
+        });
+        viewModel.lineData.push({
+            x: x,
+            group: "val",
+            value: <number>limitsArray.value[i],
+            colour: main_colour,
+            width: main_width
+        });
+        viewModel.lineData.push({
+            x: x,
+            group: "target",
+            value: <number>limitsArray.centerline[i],
+            colour: target_colour,
+            width: target_width
+        });
+    }
+    viewModel.lineData.map(d => d.value = (d.value !== null) ? d.value * multiplier : null)
+    viewModel.groupedLines.push(d3.nest()
+                               .key(function(d: groupedData) { return d.group; })
+                               .entries(viewModel.lineData));
     for (let i = 0; i < limitsArray.key.length;  i++) {
         viewModel.plotData.push({
             x: (limitsArray.value[i] !== null) ? i+1 : i,

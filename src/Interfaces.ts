@@ -2,6 +2,15 @@ import powerbi from "powerbi-visuals-api";
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import ISelectionId = powerbi.visuals.ISelectionId;
 
+
+interface groupedData {
+    x: number,
+    value: number,
+    group: string,
+    colour: string,
+    width: number
+};
+
 // Used to represent the different datapoints on the chart
 interface PlotData {
     x: number,
@@ -23,9 +32,11 @@ interface PlotData {
 //   the data in the visual
 interface ViewModel {
     plotData: PlotData[];
+    lineData: groupedData[];
     minLimit: number;
     maxLimit: number;
     highlights: boolean;
+    groupedLines: any
 };
 
 interface ToolTips {
@@ -46,3 +57,4 @@ export { PlotData }
 export { ViewModel }
 export { ToolTips }
 export { ControlLimits }
+export { groupedData }
