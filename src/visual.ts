@@ -21,11 +21,11 @@ import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
 import initSettings from "../src/Settings/initSettings"
 import initTooltipTracking from "./Plotting Functions/initTooltipTracking";
 import * as d3 from "d3";
-import { groupedData, PlotData } from "../src/Interfaces"
+import { PlotData } from "../src/Interfaces"
 import { ViewModel } from "../src/Interfaces"
 
-type LineType = d3.Selection<d3.BaseType, groupedData[], SVGElement, any>;
-type MergedLineType = d3.Selection<SVGPathElement, any, any, any>;
+type LineType = d3.Selection<d3.BaseType, PlotData[], SVGElement, any>;
+type MergedLineType = d3.Selection<SVGPathElement, PlotData[], SVGElement, any>;
 
 export class Visual implements IVisual {
     private host: IVisualHost;
@@ -205,19 +205,40 @@ export class Visual implements IVisual {
             .attr("transform","rotate(-90," + yAxisPadding/3 +"," + height/2 +")")
             .text(this.settings.axis.ylimit_label.value)
             .style("text-anchor", "end");
+
+        let linesLL99: LineType = this.LL99Group
+            .selectAll(".line")
+            .data([this.viewModel.plotData]);
+
+        let linesUL99: LineType = this.UL99Group
+            .selectAll(".line")
+            .data([this.viewModel.plotData]);
         
-        console.log(this.viewModel.groupedLines)
-        
+        let lineTarget: LineType = this.targetGroup
+                                       .selectAll(".line")
+                                       .data([this.viewModel.plotData]);
+        // Initial construction of lines, run when plot is first rendered.
+        //   Text argument specifies which type of line is required (controls aesthetics),
+        //   inverse scale objects used to display tooltips on drawn control limits 
+        [
+         [linesLL99, "Lower"],
+         [linesUL99, "Upper"],
+         [lineTarget, "Target"]
+        ].map(d => makeLines(<LineType>d[0], this.settings,
+                             xScale, yScale, <string>d[1],
+                             this.viewModel, this.host.tooltipService,
+                             this.viewModel.highlights, yScale_inv));
+        // Bind calculated control limits and target line to respective plotting objects
         this.linesMain = this.lineGroup
             .selectAll(".line")
-            .data(this.viewModel.groupedLines);
+            .data([this.viewModel.plotData]);
 
-        let PlottedLines: MergedLineType =
-            makeLines(this.linesMain, this.settings, xScale,
-                      yScale, this.viewModel);
-
+        let MergedMain: MergedLineType =  makeLines(this.linesMain, this.settings,
+                                                    xScale, yScale, "Main",
+                                                    this.viewModel, this.host.tooltipService,
+                                                    this.viewModel.highlights, yScale_inv);
         // Plotting of scatter points
-        makeDots(this.dots, PlottedLines, this.settings,
+        makeDots(this.dots, MergedMain, this.settings,
                     this.viewModel.highlights, this.selectionManager,
                     this.host.tooltipService, xScale, yScale, this.svg);
 
