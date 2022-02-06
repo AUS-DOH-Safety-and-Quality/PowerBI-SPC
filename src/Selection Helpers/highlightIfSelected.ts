@@ -23,10 +23,11 @@ function highlightIfSelected(DotObject: d3.Selection<any, any, any, any>,
 
     if (!selectionIds.length) {
         DotObject.style("fill-opacity", opacitySelected);
+        LineObject.style("stroke-opacity", opacitySelected);
         return;
     }
 
-    LineObject.style("stroke-opacity", opacityUnselected);
+    (<any>d3).select(LineObject).style("stroke-opacity", opacityUnselected);
 
     DotObject.each(d => {
         const opacity: number
