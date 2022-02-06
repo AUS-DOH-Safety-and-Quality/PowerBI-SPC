@@ -10,8 +10,8 @@ function c_limits(key: string[], value: number[]): ControlLimits {
         key: key,
         value: value,
         centerline: rep(cl, key.length),
-        lowerLimit: rep(Math.max(cl - 3*sigma, 0), key.length),
-        upperLimit: rep(cl + 3*sigma, key.length),
+        lowerLimit99: rep(Math.max(cl - 3*sigma, 0), key.length),
+        upperLimit99: rep(cl + 3*sigma, key.length),
         count: null
     }
     return limits;

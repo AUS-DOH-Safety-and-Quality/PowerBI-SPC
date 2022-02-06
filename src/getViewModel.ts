@@ -149,8 +149,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             key: new Array(),
             value: new Array(),
             centerline: new Array(),
-            upperLimit: new Array(),
-            lowerLimit: new Array(),
+            upperLimit99: new Array(),
+            lowerLimit99: new Array(),
             count: new Array()
         };
         let splitLimits: ControlLimits[] = split_indexes.slice(0,split_indexes.length - 1).map((d, idx) => {
@@ -166,15 +166,15 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             limitsArray.key = limitsArray.key.concat(d.key).concat(d.key.slice(-1));
             limitsArray.value = limitsArray.value.concat(d.value);
             limitsArray.centerline = limitsArray.centerline.concat(d.centerline);
-            limitsArray.upperLimit = limitsArray.upperLimit.concat(d.upperLimit);
-            limitsArray.lowerLimit = limitsArray.lowerLimit.concat(d.lowerLimit);
+            limitsArray.upperLimit99 = limitsArray.upperLimit99.concat(d.upperLimit99);
+            limitsArray.lowerLimit99 = limitsArray.lowerLimit99.concat(d.lowerLimit99);
             limitsArray.count = limitsArray.count.concat(d.count);
 
             // Assign null values at the last x-axis value for split-line plotting
             limitsArray.value.push(null)
             limitsArray.centerline.push(null)
-            limitsArray.upperLimit.push(null)
-            limitsArray.lowerLimit.push(null)
+            limitsArray.upperLimit99.push(null)
+            limitsArray.lowerLimit99.push(null)
             limitsArray.count.push(null)
         })
     } else {
@@ -185,55 +185,38 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, key_valid, prop_labels);
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
 
-    let l99_width: number = settings.lines.width_99.value;
-    let main_width: number = settings.lines.width_main.value;
-    let target_width: number = settings.lines.width_target.value;
-    let l99_colour: string = settings.lines.colour_99.value;
-    let main_colour: string = settings.lines.colour_main.value;
-    let target_colour: string = settings.lines.colour_target.value;
-
     for (let i = 0; i < limitsArray.key.length;  i++) {
         let x: number = (limitsArray.value[i] !== null) ? i+1 : i;
         viewModel.lineData.push({
             x: x,
             group: "ll99",
-            value: <number>limitsArray.lowerLimit[i],
-            colour: l99_colour,
-            width: l99_width
+            value: <number>limitsArray.lowerLimit99[i]
         });
         viewModel.lineData.push({
             x: x,
             group: "ul99",
-            value: <number>limitsArray.upperLimit[i],
-            colour: l99_colour,
-            width: l99_width
+            value: <number>limitsArray.upperLimit99[i]
         });
         viewModel.lineData.push({
             x: x,
             group: "val",
-            value: <number>limitsArray.value[i],
-            colour: main_colour,
-            width: main_width
+            value: <number>limitsArray.value[i]
         });
         viewModel.lineData.push({
             x: x,
             group: "target",
-            value: <number>limitsArray.centerline[i],
-            colour: target_colour,
-            width: target_width
+            value: <number>limitsArray.centerline[i]
         });
     }
     viewModel.lineData.map(d => d.value = (d.value !== null) ? d.value * multiplier : null)
     viewModel.groupedLines = (d3.nest()
-                                  .key(function(d: groupedData) { return d.group; })
-                                  .entries(viewModel.lineData));
+                                .key(function(d: groupedData) { return d.group; })
+                                .entries(viewModel.lineData));
+
     for (let i = 0; i < limitsArray.key.length;  i++) {
         viewModel.plotData.push({
             x: (limitsArray.value[i] !== null) ? i+1 : i,
-            lower_limit: (limitsArray.lowerLimit[i] !== null) ? (<number>limitsArray.lowerLimit[i] * multiplier) : null,
-            upper_limit: (limitsArray.upperLimit[i] !== null) ? (<number>limitsArray.upperLimit[i] * multiplier) : null,
             ratio: (limitsArray.value[i] !== null) ? (<number>limitsArray.value[i] * multiplier) : null,
-            target: (limitsArray.centerline[i] !== null) ? (<number>limitsArray.centerline[i] * multiplier) : null,
             // Check whether objects array exists with user-specified fill colours, apply those colours if so
             //   otherwise use default palette
             colour: settings.scatter.colour.value,
@@ -250,9 +233,9 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             tick_labels: (data_type == "t" || data_type == "g") ? [i+1, (i+1).toFixed(0)] : [i+1, <string>limitsArray.key[i]]
         });
     }
-    let minLimit: number = d3.min(limitsArray.lowerLimit);
+    let minLimit: number = d3.min(limitsArray.lowerLimit99);
     let minPoint: number = d3.min(limitsArray.value);
-    let maxLimit: number = d3.max(limitsArray.upperLimit);
+    let maxLimit: number = d3.max(limitsArray.upperLimit99);
     let maxPoint: number = d3.max(limitsArray.value);
 
     // Extract maximum value of input data and add to viewModel

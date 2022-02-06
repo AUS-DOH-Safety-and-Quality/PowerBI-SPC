@@ -17,8 +17,8 @@ function i_limits(key: string[], value: number[], denominator?: number[]): Contr
         key: key,
         value: ratio.map(d => isNaN(d) ? 0 : d),
         centerline: rep(cl, key.length),
-        lowerLimit: rep(cl - 3*sigma, key.length),
-        upperLimit: rep(cl + 3*sigma, key.length),
+        lowerLimit99: rep(cl - 3*sigma, key.length),
+        upperLimit99: rep(cl + 3*sigma, key.length),
         count: null
     }
     return limits;
