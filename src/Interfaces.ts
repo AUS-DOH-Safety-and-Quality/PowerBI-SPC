@@ -39,6 +39,7 @@ interface ViewModel {
     highlights: boolean;
     groupedLines: nestArray[];
     data_type: string;
+    multiplier: number;
 };
 
 interface ToolTips {

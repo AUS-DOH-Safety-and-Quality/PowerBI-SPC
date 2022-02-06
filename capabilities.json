@@ -27,14 +27,19 @@
             "kind": "Grouping"
         },
         {
+            "displayName": "Grouping (xbar/s)",
+            "name": "groups",
+            "kind": "Grouping"
+        },
+        {
             "displayName": "Optional: Chart Type",
             "name": "chart_type",
             "kind": "Measure"
         },
         {
-            "displayName": "Grouping (xbar/s)",
-            "name": "groups",
-            "kind": "Grouping"
+            "displayName": "Optional: Multiplier",
+            "name": "chart_multiplier",
+            "kind": "Measure"
         }
     ],
     "objects": {
@@ -300,6 +305,11 @@
                         {
                             "for": {
                                 "in": "chart_type"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "multiplier"
                             }
                         }
                     ]

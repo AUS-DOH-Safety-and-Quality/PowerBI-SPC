@@ -98,6 +98,7 @@ export class Visual implements IVisual {
         this.viewModel = getViewModel(options, this.settings, this.host);
 
         this.settings.spc.data_type.value = this.viewModel.data_type;
+        this.settings.spc.multiplier.value = this.viewModel.multiplier;
 
         // Get the width and height of plotting space
         let width: number = options.viewport.width;

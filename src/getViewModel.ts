@@ -44,7 +44,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         maxLimit: 0,
         highlights: false,
         groupedLines: [{ key: "null", values: undefined, value: 0}],
-        data_type: data_type
+        data_type: data_type,
+        multiplier: 1
     };
 
     if(!dv
@@ -189,7 +190,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     } else {
         limitsArray = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
     }
-    let multiplier: number = settings.spc.multiplier.value;
+    let multiplier: number = view.values[3] ? <number>view.values[3].values[0] : settings.spc.multiplier.value;
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
     let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, key_valid, prop_labels);
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
@@ -264,6 +265,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     // Flag whether any dots need to be highlighted
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;
     viewModel.data_type = data_type;
+    viewModel.multiplier = multiplier;
 
     return viewModel;
 }
