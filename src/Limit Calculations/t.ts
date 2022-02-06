@@ -8,8 +8,8 @@ function t_limits(key: string[], value: number[]): ControlLimits {
     let limits: ControlLimits = i_limits(key, val);
     limits.centerline = pow(limits.centerline, 3.6);
     limits.value = pow(limits.value, 3.6);
-    limits.lowerLimit = pow(limits.lowerLimit, 3.6).map(d => d < 0 ? 0 : d);
-    limits.upperLimit = pow(limits.upperLimit, 3.6);
+    limits.lowerLimit99 = pow(limits.lowerLimit99, 3.6).map(d => d < 0 ? 0 : d);
+    limits.upperLimit99 = pow(limits.upperLimit99, 3.6);
 
     return limits;
 }

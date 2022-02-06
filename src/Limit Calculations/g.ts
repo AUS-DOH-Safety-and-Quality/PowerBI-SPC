@@ -10,8 +10,8 @@ function g_limits(key: string[], value: number[]): ControlLimits {
         key: key,
         value: value,
         centerline: rep(cl, key.length),
-        lowerLimit: rep(0, key.length),
-        upperLimit: rep(cl + 3*sigma, key.length),
+        lowerLimit99: rep(0, key.length),
+        upperLimit99: rep(cl + 3*sigma, key.length),
         count: null
     }
 

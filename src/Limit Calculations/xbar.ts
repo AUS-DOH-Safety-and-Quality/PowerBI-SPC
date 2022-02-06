@@ -43,8 +43,8 @@ function xbar_limits(value: number[], group: string[]): ControlLimits {
         key: unique_groups,
         value: group_means,
         centerline: rep(cl, unique_groups.length),
-        lowerLimit: subtract(cl, multiply(A3,sd)),
-        upperLimit: add(cl, multiply(A3,sd)),
+        lowerLimit99: subtract(cl, multiply(A3,sd)),
+        upperLimit99: add(cl, multiply(A3,sd)),
         count: count_per_group
     }
     return limits;

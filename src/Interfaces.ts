@@ -6,9 +6,7 @@ import ISelectionId = powerbi.visuals.ISelectionId;
 interface groupedData {
     x: number,
     value: number,
-    group: string,
-    colour: string,
-    width: number
+    group: string
 };
 
 interface nestArray {
@@ -20,9 +18,6 @@ interface nestArray {
 // Used to represent the different datapoints on the chart
 interface PlotData {
     x: number,
-    lower_limit: number;
-    upper_limit: number;
-    target: number;
     ratio: number;
     colour: string;
     // ISelectionId allows the visual to report the selection choice to PowerBI
@@ -54,8 +49,8 @@ interface ControlLimits {
     key: string[];
     value: number[];
     centerline: number[];
-    upperLimit: number[];
-    lowerLimit: number[];
+    upperLimit99: number[];
+    lowerLimit99: number[];
     count: number[];
 }
 

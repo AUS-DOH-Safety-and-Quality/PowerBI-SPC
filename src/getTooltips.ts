@@ -40,7 +40,7 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                                data_type != "c" &&
                                !((data_type == "i" || data_type == "mr" || data_type == "run") && denominator_values.length == 0));
 
-    let { key, value, centerline, upperLimit, lowerLimit, count } = limitsArray;
+    let { key, value, centerline, upperLimit99, lowerLimit99, count } = limitsArray;
     return Array.apply(null, Array(key.length)).map(
         (d,i) => {
             let ind: number = key_values.indexOf(<string>key[i]);
@@ -51,16 +51,16 @@ function getTooltips(data_type: string, limitsArray: ControlLimits,
                     displayName: val_name + ":",
                     value: (value[i] == null) ? "" : (prop_limits ? (<number>value[i] * 100).toFixed(2) + '%' : (<number>value[i]).toFixed(2))
                 }];
-            if (value[i] === null && upperLimit[i] === null && lowerLimit[i] === null) {
+            if (value[i] === null && upperLimit99[i] === null && lowerLimit99[i] === null) {
                 return base;
             }
             if(data_type != "run") {
                 base = base.concat([{
                     displayName: "Upper 99% Limit",
-                    value: (prop_limits ? (<number>upperLimit[i] * 100).toFixed(2) + '%' : (<number>upperLimit[i]).toFixed(2))
+                    value: (prop_limits ? (<number>upperLimit99[i] * 100).toFixed(2) + '%' : (<number>upperLimit99[i]).toFixed(2))
                 },{
                     displayName: "Lower 99% Limit",
-                    value: (prop_limits ? (<number>lowerLimit[i] * 100).toFixed(2) + '%' : (<number>lowerLimit[i]).toFixed(2))
+                    value: (prop_limits ? (<number>lowerLimit99[i] * 100).toFixed(2) + '%' : (<number>lowerLimit99[i]).toFixed(2))
                 }])
             }
             if(inc_numdem && numerator_values != null && denominator_values != null) {

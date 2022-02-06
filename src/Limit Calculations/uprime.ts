@@ -15,8 +15,8 @@ function uprime_limits(key: string[], value: number[], denominator: number[]): C
         key: key,
         value: val,
         centerline: rep(cl, key.length),
-        lowerLimit: subtract(cl, multiply(3,sigma)).map(d => d < 0 ? 0 : d),
-        upperLimit: add(cl, multiply(3,sigma)),
+        lowerLimit99: subtract(cl, multiply(3,sigma)).map(d => d < 0 ? 0 : d),
+        upperLimit99: add(cl, multiply(3,sigma)),
         count: null
     }
     return limits;

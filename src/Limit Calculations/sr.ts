@@ -7,8 +7,8 @@ function sr_limits(key: string[], value: number[], denominator: number[]): Contr
         key: key,
         value: divide(value,denominator),
         centerline: rep(1, key.length),
-        lowerLimit: denominator.map(d => (stats.chisquare.quantile(0.001, 2 * d) / 2.0) / d),
-        upperLimit: denominator.map(d => (stats.chisquare.quantile(0.999, 2 * (d + 1)) / 2.0) / d),
+        lowerLimit99: denominator.map(d => (stats.chisquare.quantile(0.001, 2 * d) / 2.0) / d),
+        upperLimit99: denominator.map(d => (stats.chisquare.quantile(0.999, 2 * (d + 1)) / 2.0) / d),
         count: null
     }
     return limits;
