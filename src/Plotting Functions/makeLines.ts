@@ -27,30 +27,30 @@ function makeLines(LineObject: any,
                    viewModel: ViewModel,
                    highlights: boolean) {
     let l99_width: number = settings.lines.width_99.value;
+    let l95_width: number = settings.lines.width_95.value;
     let main_width: number = settings.lines.width_main.value;
     let target_width: number = settings.lines.width_target.value;
     let l99_colour: string = settings.lines.colour_99.value;
+    let l95_colour: string = settings.lines.colour_95.value;
     let main_colour: string = settings.lines.colour_main.value;
     let target_colour: string = settings.lines.colour_target.value;
-    let stroke_opacity: number = settings.scatter.opacity.value;
-    let stroke_opacity_unsel: number = settings.scatter.opacity_unselected.value;
     
     let GroupedLines = viewModel.groupedLines;
     let group_keys: string[] = GroupedLines.map(d => d.key)
 
     let line_color = d3.scaleOrdinal()
                        .domain(group_keys)
-                       .range([l99_colour, l99_colour, main_colour, target_colour]);
+                       .range([l99_colour, l95_colour, l95_colour, l99_colour, target_colour, main_colour]);
 
     let line_width = d3.scaleOrdinal()
                        .domain(group_keys)
-                       .range([l99_width, l99_width, main_width, target_width]);
+                       .range([l99_width, l95_width, l95_width, l99_width, target_width, main_width]);
     
     const lineMerged = LineObject.enter()
                                  .append("path")
                                  .merge(<any>LineObject);
     lineMerged.classed('line', true);                              
-    lineMerged.attr("d", function (d) {
+    lineMerged.attr("d", d => {
                         return d3.line<groupedData>()
                             .x(d => x_scale(d.x))
                             .y(d => y_scale(d.value))

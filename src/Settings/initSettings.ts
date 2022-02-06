@@ -60,6 +60,10 @@ function initSettings() {
                 default: 2,
                 value: 2
             },
+            width_95: {
+                default: 2,
+                value: 2
+            },
             width_main: {
                 default: 1,
                 value: 1
@@ -69,6 +73,10 @@ function initSettings() {
                 value: 1.5
             },
             colour_99: {
+                default: "#6495ED",
+                value: "#6495ED"
+            },
+            colour_95: {
                 default: "#6495ED",
                 value: "#6495ED"
             },

@@ -169,6 +169,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             limitsArray.value = limitsArray.value.concat(d.value);
             limitsArray.centerline = limitsArray.centerline.concat(d.centerline);
             limitsArray.upperLimit99 = limitsArray.upperLimit99.concat(d.upperLimit99);
+            limitsArray.upperLimit95 = limitsArray.upperLimit95.concat(d.upperLimit95);
+            limitsArray.lowerLimit95 = limitsArray.lowerLimit95.concat(d.lowerLimit95);
             limitsArray.lowerLimit99 = limitsArray.lowerLimit99.concat(d.lowerLimit99);
             limitsArray.count = limitsArray.count.concat(d.count);
 
@@ -176,6 +178,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             limitsArray.value.push(null)
             limitsArray.centerline.push(null)
             limitsArray.upperLimit99.push(null)
+            limitsArray.upperLimit95.push(null)
+            limitsArray.lowerLimit95.push(null)
             limitsArray.lowerLimit99.push(null)
             limitsArray.count.push(null)
         })
@@ -196,18 +200,28 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         });
         viewModel.lineData.push({
             x: x,
+            group: "ll95",
+            value: <number>limitsArray.lowerLimit95[i]
+        });
+        viewModel.lineData.push({
+            x: x,
+            group: "ul95",
+            value: <number>limitsArray.upperLimit95[i]
+        });
+        viewModel.lineData.push({
+            x: x,
             group: "ul99",
             value: <number>limitsArray.upperLimit99[i]
         });
         viewModel.lineData.push({
             x: x,
-            group: "val",
-            value: <number>limitsArray.value[i]
+            group: "target",
+            value: <number>limitsArray.centerline[i]
         });
         viewModel.lineData.push({
             x: x,
-            group: "target",
-            value: <number>limitsArray.centerline[i]
+            group: "val",
+            value: <number>limitsArray.value[i]
         });
     }
     viewModel.lineData.map(d => d.value = (d.value !== null) ? d.value * multiplier : null)

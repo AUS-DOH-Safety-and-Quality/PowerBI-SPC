@@ -66,6 +66,13 @@ function updateSettings(settings: any, objects: DataViewObjects) {
         },
         settings.lines.width_99.default
     )
+    settings.lines.width_95.value = dataViewObjects.getValue(
+        objects, {
+            objectName: "lines",
+            propertyName: "width_95"
+        },
+        settings.lines.width_95.default
+    )
     settings.lines.width_main.value = dataViewObjects.getValue(
         objects, {
             objectName: "lines",
@@ -86,6 +93,13 @@ function updateSettings(settings: any, objects: DataViewObjects) {
             propertyName: "colour_99"
         },
         settings.lines.colour_99.default
+    )
+    settings.lines.colour_95.value = dataViewObjects.getFillColor(
+        objects, {
+            objectName: "lines",
+            propertyName: "colour_95"
+        },
+        settings.lines.colour_95.default
     )
     settings.lines.colour_main.value = dataViewObjects.getFillColor(
         objects, {
