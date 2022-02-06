@@ -296,6 +296,11 @@
                             "for": {
                                 "in": "denominator"
                             }
+                        },
+                        {
+                            "for": {
+                                "in": "chart_type"
+                            }
                         }
                     ]
                 }

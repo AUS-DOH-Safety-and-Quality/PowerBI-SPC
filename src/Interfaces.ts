@@ -37,7 +37,8 @@ interface ViewModel {
     minLimit: number;
     maxLimit: number;
     highlights: boolean;
-    groupedLines: nestArray[]
+    groupedLines: nestArray[];
+    data_type: string;
 };
 
 interface ToolTips {
