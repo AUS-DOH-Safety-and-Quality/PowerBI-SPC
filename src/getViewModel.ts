@@ -58,6 +58,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
 
     // Get  categorical view of the data
     let view: DataViewCategorical = dv[0].categorical;
+    data_type = view.values[2] ? view.values[2][0] : data_type;
 
     if(!view.values[0]
         || !view.categories[0]
@@ -83,6 +84,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
 
     // Get numerator
     let denominator: DataViewValueColumn = view.values[1];
+    // Get numerator
 
     // Get groups of dots to highlight
     let highlights: powerbi.PrimitiveValue[] = numerator.highlights;

@@ -27,6 +27,11 @@
             "kind": "Grouping"
         },
         {
+            "displayName": "Optional: Chart Type",
+            "name": "chart_type",
+            "kind": "Measure"
+        },
+        {
             "displayName": "Grouping (xbar/s)",
             "name": "groups",
             "kind": "Grouping"
