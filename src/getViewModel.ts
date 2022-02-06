@@ -36,7 +36,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let denom_split: string = settings.spc.denom_split.value;
     let axes_split: string[] = denom_split ? denom_split.split(",") : null;
     let input_names: string[] = dv[0].metadata.columns.map(d => Object.keys(d.roles)[0]);
-    console.log("a")
+
     let viewModel: ViewModel = {
         plotData: [],
         lineData: [],
@@ -46,7 +46,6 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         groupedLines: [{ key: "null", values: undefined, value: 0}],
         data_type: data_type
     };
-    console.log(dv)
 
     if(!dv
         || !dv[0]
@@ -57,14 +56,10 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         || !dv[0].metadata) {
             return viewModel;
     }
-    console.log("c")
 
     // Get  categorical view of the data
     let view: DataViewCategorical = dv[0].categorical;
-    console.log("d")
     data_type = view.values[2] ? <string>view.values[2].values[0] : data_type;
-    console.log("e")
-    console.log(data_type);
 
     if(!view.values[0]
         || !view.categories[0]
