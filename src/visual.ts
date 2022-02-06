@@ -21,7 +21,7 @@ import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
 import initSettings from "../src/Settings/initSettings"
 import initTooltipTracking from "./Plotting Functions/initTooltipTracking";
 import * as d3 from "d3";
-import { PlotData } from "../src/Interfaces"
+import { groupedData, PlotData, nestArray } from "../src/Interfaces"
 import { ViewModel } from "../src/Interfaces"
 
 type LineType = d3.Selection<d3.BaseType, PlotData[], SVGElement, any>;
@@ -32,12 +32,9 @@ export class Visual implements IVisual {
     private svg: d3.Selection<SVGElement, any, any, any>;
     private listeningRect: d3.Selection<SVGElement, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
-    private dots: d3.Selection<any, any, any, any>;
-    private linesMain: d3.Selection<any, any, any, any>;
+    private dotSelection: d3.Selection<any, any, any, any>;
     private lineGroup: d3.Selection<SVGElement, any, any, any>;
-    private UL99Group: d3.Selection<SVGElement, any, any, any>;
-    private LL99Group: d3.Selection<SVGElement, any, any, any>;
-    private targetGroup: d3.Selection<SVGElement, any, any, any>;
+    private lineSelection: any;
     private xAxisGroup: d3.Selection<SVGGElement, any, any, any>;
     private xAxisLabels: d3.Selection<SVGGElement, any, any, any>;
     private yAxisGroup: d3.Selection<SVGGElement, any, any, any>;
@@ -63,18 +60,10 @@ export class Visual implements IVisual {
 
         this.listeningRect = this.svg.append("g")
                                      .classed("listen-group", true);
-
+        this.lineGroup = this.svg.append("g")
+                                .classed("line-group", true);
         this.dotGroup = this.svg.append("g")
                                 .classed("dot-group", true);
-
-        this.UL99Group = this.svg.append("g")
-                                .classed("ul-line-group", true);
-        this.LL99Group = this.svg.append("g")
-                                .classed("ll-line-group", true);
-        this.targetGroup = this.svg.append("g")
-                                .classed("tg-line-group", true);
-        this.lineGroup = this.svg.append("g")
-                                .classed("mn-line-group", true);
 
         // Add a grouping ('g') element to the canvas that will later become the x-axis
         this.xAxisGroup = this.svg.append("g")
@@ -91,8 +80,8 @@ export class Visual implements IVisual {
 
         // Update dot highlighting on initialisation
         this.selectionManager.registerOnSelectCallback(() => {
-            highlightIfSelected(this.dots,
-                                this.linesMain,
+            highlightIfSelected(this.dotSelection,
+                                this.lineSelection,
                                 this.selectionManager.getSelectionIds() as ISelectionId[],
                                 this.settings.scatter.opacity.value,
                                 this.settings.scatter.opacity_unselected.value);
@@ -145,13 +134,6 @@ export class Visual implements IVisual {
         initTooltipTracking(this.svg, this.listeningRect, width, height - xAxisPadding,
             xScale, yScale, this.host.tooltipService, this.viewModel);
 
-        // Specify inverse scaling that will return a plot axis value given an input
-        //   screen height. Used to display line chart tooltips.
-        let yScale_inv: d3.ScaleLinear<number, number, never>
-            = d3.scaleLinear()
-                .domain([height - xAxisPadding, 0])
-                .range([this.viewModel.minLimit, this.viewModel.maxLimit]);
-
         let xLabels: (number|string)[][] = this.viewModel.plotData.map(d => d.tick_labels);
 
         let yAxis: d3.Axis<d3.NumberValue>
@@ -185,15 +167,6 @@ export class Visual implements IVisual {
             .style("text-anchor", "end")
             // Scale font
             .style("font-size","x-small");
- 
-        // Bind input data to dotGroup reference
-        this.dots = this.dotGroup
-                       // List all child elements of dotGroup that have CSS class '.dot'
-                       .selectAll(".dot")
-                       // Matches input array to a list, returns three result sets
-                       //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
-                       .data(this.viewModel.plotData);
-
 
         this.xAxisLabels.attr("x",width/2)
             .attr("y",height - xAxisPadding/10)
@@ -206,39 +179,21 @@ export class Visual implements IVisual {
             .text(this.settings.axis.ylimit_label.value)
             .style("text-anchor", "end");
 
-        let linesLL99: LineType = this.LL99Group
-            .selectAll(".line")
-            .data([this.viewModel.plotData]);
+        this.lineSelection = this.lineGroup
+                                 .selectAll(".line")
+                                 .data(this.viewModel.groupedLines);
 
-        let linesUL99: LineType = this.UL99Group
-            .selectAll(".line")
-            .data([this.viewModel.plotData]);
-        
-        let lineTarget: LineType = this.targetGroup
-                                       .selectAll(".line")
-                                       .data([this.viewModel.plotData]);
-        // Initial construction of lines, run when plot is first rendered.
-        //   Text argument specifies which type of line is required (controls aesthetics),
-        //   inverse scale objects used to display tooltips on drawn control limits 
-        [
-         [linesLL99, "Lower"],
-         [linesUL99, "Upper"],
-         [lineTarget, "Target"]
-        ].map(d => makeLines(<LineType>d[0], this.settings,
-                             xScale, yScale, <string>d[1],
-                             this.viewModel, this.host.tooltipService,
-                             this.viewModel.highlights, yScale_inv));
-        // Bind calculated control limits and target line to respective plotting objects
-        this.linesMain = this.lineGroup
-            .selectAll(".line")
-            .data([this.viewModel.plotData]);
+        const lineMerged = makeLines(this.lineSelection, this.settings, xScale, yScale, this.viewModel, this.viewModel.highlights);
 
-        let MergedMain: MergedLineType =  makeLines(this.linesMain, this.settings,
-                                                    xScale, yScale, "Main",
-                                                    this.viewModel, this.host.tooltipService,
-                                                    this.viewModel.highlights, yScale_inv);
-        // Plotting of scatter points
-        makeDots(this.dots, MergedMain, this.settings,
+        // Bind input data to dotGroup reference
+         this.dotSelection = this.dotGroup
+                       // List all child elements of dotGroup that have CSS class '.dot'
+                       .selectAll(".dot")
+                       // Matches input array to a list, returns three result sets
+                       //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
+                       .data(this.viewModel.plotData);
+
+        makeDots(this.dotSelection, lineMerged, this.settings,
                     this.viewModel.highlights, this.selectionManager,
                     this.host.tooltipService, xScale, yScale, this.svg);
 
@@ -251,6 +206,10 @@ export class Visual implements IVisual {
             });
             (<any>d3).event.preventDefault();
         });
+
+        if (this.viewModel.highlights) {
+            lineMerged.style("stroke-opacity", this.settings.scatter.opacity_unselected.value)
+        }
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane

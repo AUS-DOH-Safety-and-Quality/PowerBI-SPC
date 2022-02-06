@@ -11,6 +11,12 @@ interface groupedData {
     width: number
 };
 
+interface nestArray {
+    key: string;
+    values: undefined;
+    value: number;
+}
+
 // Used to represent the different datapoints on the chart
 interface PlotData {
     x: number,
@@ -36,7 +42,7 @@ interface ViewModel {
     minLimit: number;
     maxLimit: number;
     highlights: boolean;
-    groupedLines: any
+    groupedLines: nestArray[]
 };
 
 interface ToolTips {
@@ -53,8 +59,10 @@ interface ControlLimits {
     count: number[];
 }
 
+
 export { PlotData }
 export { ViewModel }
 export { ToolTips }
 export { ControlLimits }
 export { groupedData }
+export { nestArray }

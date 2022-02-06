@@ -8,7 +8,7 @@ import DataViewValueColumn = powerbi.DataViewValueColumn
 import * as d3 from "d3";
 import getLimitsArray from "../src/getLimitsArray";
 import getTooltips from "../src/getTooltips";
-import { ToolTips, ControlLimits, groupedData, ViewModel } from "./Interfaces";
+import { ToolTips, ControlLimits, groupedData, ViewModel, nestArray } from "./Interfaces";
 
 //Function to handle string-to-date conversions with JS's weird conventions
 function str_to_dmy(text: string[]) {
@@ -43,7 +43,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         minLimit: 0,
         maxLimit: 0,
         highlights: false,
-        groupedLines: []
+        groupedLines: [{ key: "null", values: undefined, value: 0}]
     };
 
     if(!dv
@@ -224,9 +224,9 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         });
     }
     viewModel.lineData.map(d => d.value = (d.value !== null) ? d.value * multiplier : null)
-    viewModel.groupedLines.push(d3.nest()
-                               .key(function(d: groupedData) { return d.group; })
-                               .entries(viewModel.lineData));
+    viewModel.groupedLines = (d3.nest()
+                                  .key(function(d: groupedData) { return d.group; })
+                                  .entries(viewModel.lineData));
     for (let i = 0; i < limitsArray.key.length;  i++) {
         viewModel.plotData.push({
             x: (limitsArray.value[i] !== null) ? i+1 : i,

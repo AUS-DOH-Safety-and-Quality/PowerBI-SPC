@@ -39,8 +39,8 @@ function initSettings() {
         },
         scatter: {
             size: {
-                default: 3,
-                value: 3
+                default: 2.5,
+                value: 2.5
             },
             colour: {
                 default: "#000000",
