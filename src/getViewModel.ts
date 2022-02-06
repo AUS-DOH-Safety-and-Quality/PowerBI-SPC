@@ -150,6 +150,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             value: new Array(),
             centerline: new Array(),
             upperLimit99: new Array(),
+            upperLimit95: new Array(),
+            lowerLimit95: new Array(),
             lowerLimit99: new Array(),
             count: new Array()
         };

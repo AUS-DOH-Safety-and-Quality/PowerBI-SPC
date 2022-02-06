@@ -18,6 +18,8 @@ function i_limits(key: string[], value: number[], denominator?: number[]): Contr
         value: ratio.map(d => isNaN(d) ? 0 : d),
         centerline: rep(cl, key.length),
         lowerLimit99: rep(cl - 3*sigma, key.length),
+        lowerLimit95: rep(cl - 2*sigma, key.length),
+        upperLimit95: rep(cl + 2*sigma, key.length),
         upperLimit99: rep(cl + 3*sigma, key.length),
         count: null
     }

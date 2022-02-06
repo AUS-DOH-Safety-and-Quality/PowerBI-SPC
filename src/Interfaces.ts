@@ -50,6 +50,8 @@ interface ControlLimits {
     value: number[];
     centerline: number[];
     upperLimit99: number[];
+    upperLimit95: number[];
+    lowerLimit95: number[];
     lowerLimit99: number[];
     count: number[];
 }

@@ -9,6 +9,8 @@ function t_limits(key: string[], value: number[]): ControlLimits {
     limits.centerline = pow(limits.centerline, 3.6);
     limits.value = pow(limits.value, 3.6);
     limits.lowerLimit99 = pow(limits.lowerLimit99, 3.6).map(d => d < 0 ? 0 : d);
+    limits.lowerLimit95 = pow(limits.lowerLimit95, 3.6).map(d => d < 0 ? 0 : d);
+    limits.upperLimit95 = pow(limits.upperLimit95, 3.6);
     limits.upperLimit99 = pow(limits.upperLimit99, 3.6);
 
     return limits;

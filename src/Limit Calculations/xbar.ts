@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { a3 } from "./Constants";
-import { sqrt, pow, subtract, add, rep, multiply } from "./HelperFunctions";
+import { sqrt, pow, subtract, add, rep, multiply, divide } from "./HelperFunctions";
 import { ControlLimits } from "../Interfaces";
 
 function xbar_limits(value: number[], group: string[]): ControlLimits {
@@ -44,6 +44,8 @@ function xbar_limits(value: number[], group: string[]): ControlLimits {
         value: group_means,
         centerline: rep(cl, unique_groups.length),
         lowerLimit99: subtract(cl, multiply(A3,sd)),
+        lowerLimit95: subtract(cl, multiply(multiply(divide(A3,3),2),sd)),
+        upperLimit95: add(cl, multiply(multiply(divide(A3,3),2),sd)),
         upperLimit99: add(cl, multiply(A3,sd)),
         count: count_per_group
     }
