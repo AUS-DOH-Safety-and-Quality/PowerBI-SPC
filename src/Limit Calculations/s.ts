@@ -37,6 +37,8 @@ function s_limits(value: number[], group: string[]): ControlLimits {
         value: group_sd,
         centerline: rep(cl, unique_groups.length),
         lowerLimit99: multiply(cl, B3),
+        lowerLimit95: multiply(cl, multiply(divide(B3, 3), 2)),
+        upperLimit95: multiply(cl, multiply(divide(B4, 3), 2)),
         upperLimit99: multiply(cl, B4),
         count: count_per_group
     }

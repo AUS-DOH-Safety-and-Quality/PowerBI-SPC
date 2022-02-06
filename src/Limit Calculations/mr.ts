@@ -18,6 +18,8 @@ function mr_limits(key: string[], value: number[], denominator?: number[]): Cont
         value: [null].concat(consec_diff),
         centerline: rep(cl, key.length),
         lowerLimit99: rep(0, key.length),
+        lowerLimit95: rep(0, key.length),
+        upperLimit95: rep((3.267 / 3) * 2 *cl, key.length),
         upperLimit99: rep(3.267*cl, key.length),
         count: null
     }

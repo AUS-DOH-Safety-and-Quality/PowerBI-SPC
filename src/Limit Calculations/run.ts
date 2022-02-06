@@ -11,6 +11,8 @@ function run_limits(key: string[], value: number[], denominator?: number[]): Con
         value: ratio.map(d => isNaN(d) ? 0 : d),
         centerline: rep(cl, key.length),
         lowerLimit99: rep(null, key.length),
+        lowerLimit95: rep(null, key.length),
+        upperLimit95: rep(null, key.length),
         upperLimit99: rep(null, key.length),
         count: null
     }

@@ -251,9 +251,11 @@ export class Visual implements IVisual {
                         objectName: propertyGroupName,
                         properties: {
                             width_99: this.settings.lines.width_99.value,
+                            width_95: this.settings.lines.width_95.value,
                             width_main: this.settings.lines.width_main.value,
                             width_target: this.settings.lines.width_target.value,
                             colour_99: this.settings.lines.colour_99.value,
+                            colour_95: this.settings.lines.colour_95.value,
                             colour_main: this.settings.lines.colour_main.value,
                             colour_target: this.settings.lines.colour_target.value
                         },

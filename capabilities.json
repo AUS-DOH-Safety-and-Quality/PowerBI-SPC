@@ -151,6 +151,12 @@
                         "numeric": true
                     }
                 },
+                "width_95": {
+                    "displayName": "95% Line Width",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "width_main": {
                     "displayName": "Main Line Width",
                     "type": {
@@ -165,6 +171,16 @@
                 },
                 "colour_99":{
                     "displayName": "99.8% Line Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "colour_95":{
+                    "displayName": "95% Line Colour",
                     "type": {
                         "fill": {
                             "solid": {
