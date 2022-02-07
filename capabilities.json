@@ -30,6 +30,16 @@
             "displayName": "Grouping (xbar/s)",
             "name": "groups",
             "kind": "Grouping"
+        },
+        {
+            "displayName": "Optional: Chart Type",
+            "name": "chart_type",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Optional: Multiplier",
+            "name": "chart_multiplier",
+            "kind": "Measure"
         }
     ],
     "objects": {
@@ -290,6 +300,16 @@
                         {
                             "for": {
                                 "in": "denominator"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "chart_type"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "chart_multiplier"
                             }
                         }
                     ]

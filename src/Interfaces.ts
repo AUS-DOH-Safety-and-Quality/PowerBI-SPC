@@ -2,6 +2,12 @@ import powerbi from "powerbi-visuals-api";
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import ISelectionId = powerbi.visuals.ISelectionId;
 
+interface measureIndex {
+    numerator: number,
+    denominator: number,
+    chart_type: number,
+    chart_multiplier: number
+}
 
 interface groupedData {
     x: number,
@@ -37,7 +43,9 @@ interface ViewModel {
     minLimit: number;
     maxLimit: number;
     highlights: boolean;
-    groupedLines: nestArray[]
+    groupedLines: nestArray[];
+    data_type: string;
+    multiplier: number;
 };
 
 interface ToolTips {
@@ -63,3 +71,4 @@ export { ToolTips }
 export { ControlLimits }
 export { groupedData }
 export { nestArray }
+export { measureIndex }
