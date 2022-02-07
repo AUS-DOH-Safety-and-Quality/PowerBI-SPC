@@ -309,7 +309,7 @@
                         },
                         {
                             "for": {
-                                "in": "multiplier"
+                                "in": "chart_multiplier"
                             }
                         }
                     ]

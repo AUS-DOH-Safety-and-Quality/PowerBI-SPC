@@ -8,7 +8,7 @@ import DataViewValueColumn = powerbi.DataViewValueColumn
 import * as d3 from "d3";
 import getLimitsArray from "../src/getLimitsArray";
 import getTooltips from "../src/getTooltips";
-import { ToolTips, ControlLimits, groupedData, ViewModel, nestArray } from "./Interfaces";
+import { ToolTips, ControlLimits, groupedData, ViewModel, measureIndex } from "./Interfaces";
 
 //Function to handle string-to-date conversions with JS's weird conventions
 function str_to_dmy(text: string[]) {
@@ -48,6 +48,13 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         multiplier: 1
     };
 
+    let indices: measureIndex = {
+        numerator: undefined,
+        denominator: undefined,
+        chart_multiplier: undefined,
+        chart_type: undefined
+    }
+
     if(!dv
         || !dv[0]
         || !dv[0].categorical
@@ -60,11 +67,24 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
 
     // Get  categorical view of the data
     let view: DataViewCategorical = dv[0].categorical;
-    data_type = view.values[2] ? <string>view.values[2].values[0] : data_type;
+
+    for (let i = 0; i < view.values.length; i++) {
+        if (view.values[i].source.roles.numerator) {
+            indices.numerator = i
+        } else if (view.values[i].source.roles.denominator) {
+            indices.denominator = i
+        } else if (view.values[i].source.roles.chart_multiplier) {
+            indices.chart_multiplier = i
+        } else if (view.values[i].source.roles.chart_type) {
+            indices.chart_type = i
+        }
+    }
+
+    data_type = indices.chart_type ? <string>view.values[indices.chart_type].values[0] : data_type;
 
     if(!view.values[0]
         || !view.categories[0]
-        || (data_type == "p" && !view.values[1])
+        || (data_type == "p" && !view.values[indices.denominator])
         || (!(data_type == "xbar" || data_type == "s") && input_names.slice(-1)[0] == "groups")) {
             return viewModel;
     }
@@ -82,10 +102,10 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     let categories: DataViewCategoryColumn = view.categories[1] ? view.categories[1] : view.categories[0];
 
     // Get numerator
-    let numerator: DataViewValueColumn = view.values[0];
+    let numerator: DataViewValueColumn = view.values[indices.numerator];
 
     // Get numerator
-    let denominator: DataViewValueColumn = view.values[1];
+    let denominator: DataViewValueColumn = view.values[indices.denominator];
     // Get numerator
 
     // Get groups of dots to highlight
@@ -190,7 +210,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     } else {
         limitsArray = getLimitsArray(data_type, key_valid, numerator_in, denominator_in, groups_in);
     }
-    let multiplier: number = view.values[3] ? <number>view.values[3].values[0] : settings.spc.multiplier.value;
+    let multiplier: number = indices.chart_multiplier ? <number>view.values[indices.chart_multiplier].values[0] : settings.spc.multiplier.value;
     let prop_labels: boolean = data_type == "p" && multiplier == 1;
     let tooltipsArray: ToolTips[][] = getTooltips(data_type, limitsArray, numerator_in, denominator_in, key_valid, prop_labels);
     // Loop over all input Category/Value pairs and push into ViewModel for plotting
