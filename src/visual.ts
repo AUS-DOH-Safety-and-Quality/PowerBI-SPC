@@ -31,6 +31,7 @@ export class Visual implements IVisual {
     private host: IVisualHost;
     private svg: d3.Selection<SVGElement, any, any, any>;
     private listeningRect: d3.Selection<SVGElement, any, any, any>;
+    private listeningRectSelection: d3.Selection<any, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
     private dotSelection: d3.Selection<any, any, any, any>;
     private lineGroup: d3.Selection<SVGElement, any, any, any>;
@@ -60,6 +61,8 @@ export class Visual implements IVisual {
 
         this.listeningRect = this.svg.append("g")
                                      .classed("listen-group", true);
+        this.listeningRect = this.svg.append("g")
+                                    .classed("listen-group", true);
         this.lineGroup = this.svg.append("g")
                                 .classed("line-group", true);
         this.dotGroup = this.svg.append("g")
@@ -115,6 +118,7 @@ export class Visual implements IVisual {
         let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : this.viewModel.maxLimit;
         let data_type: string = this.settings.spc.data_type.value;
         let multiplier: number = this.settings.spc.multiplier.value;
+        let displayAxes: boolean = this.viewModel.plotData.length > 1;
 
         // Dynamically scale chart to use all available space
         this.svg.attr("width", width)
@@ -133,8 +137,12 @@ export class Visual implements IVisual {
                 .domain([xAxisMin, xAxisMax])
                 .range([yAxisPadding, width - yAxisEndPadding]);
 
+        this.listeningRectSelection = this.listeningRect
+                                          .selectAll(".obs-sel")
+                                          .data(this.viewModel.plotData);
+
         if (this.viewModel.plotData.length > 1) {
-            initTooltipTracking(this.svg, this.listeningRect, width, height - xAxisPadding,
+            initTooltipTracking(this.svg, this.listeningRectSelection, width, height - xAxisPadding,
                 xScale, yScale, this.host.tooltipService, this.viewModel);
         }
 
@@ -155,34 +163,37 @@ export class Visual implements IVisual {
                     d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
                 )
 
-        // Draw axes on plot
-        this.yAxisGroup
-            .call(yAxis)
-            .attr("transform", "translate(" +  yAxisPadding + ",0)");
+            // Draw axes on plot
+            this.yAxisGroup
+                .call(yAxis)
+                .attr("color", displayAxes ? "#000000" : "#FFFFFF")
+                .attr("transform", "translate(" +  yAxisPadding + ",0)");
 
-        this.xAxisGroup
-            .call(xAxis)
-            // Plots the axis at the correct height
-            .attr("transform", "translate(0, " + (height - xAxisPadding) + ")")
-            .selectAll("text")
-            // Rotate tick labels
-            .attr("transform","rotate(-35)")
-            // Right-align
-            .style("text-anchor", "end")
-            // Scale font
-            .style("font-size","x-small");
+            this.xAxisGroup
+                .call(xAxis)
+                .attr("color", displayAxes ? "#000000" : "#FFFFFF")
+                // Plots the axis at the correct height
+                .attr("transform", "translate(0, " + (height - xAxisPadding) + ")")
+                .selectAll("text")
+                // Rotate tick labels
+                .attr("transform","rotate(-35)")
+                // Right-align
+                .style("text-anchor", "end")
+                // Scale font
+                .style("font-size","x-small");
 
-        this.xAxisLabels.attr("x",width/2)
-            .attr("y",height - xAxisPadding/10)
-            .style("text-anchor", "middle")
-            .text(this.settings.axis.xlimit_label.value);
-        this.yAxisLabels
-            .attr("x",yAxisPadding)
-            .attr("y",height/2)
-            .attr("transform","rotate(-90," + yAxisPadding/3 +"," + height/2 +")")
-            .text(this.settings.axis.ylimit_label.value)
-            .style("text-anchor", "end");
+            this.xAxisLabels.attr("x",width/2)
+                .attr("y",height - xAxisPadding/10)
+                .style("text-anchor", "middle")
+                .text(this.settings.axis.xlimit_label.value);
+            this.yAxisLabels
+                .attr("x",yAxisPadding)
+                .attr("y",height/2)
+                .attr("transform","rotate(-90," + yAxisPadding/3 +"," + height/2 +")")
+                .text(this.settings.axis.ylimit_label.value)
+                .style("text-anchor", "end");
 
+        
         this.lineSelection = this.lineGroup
                                  .selectAll(".line")
                                  .data(this.viewModel.groupedLines);
@@ -214,6 +225,7 @@ export class Visual implements IVisual {
         if (this.viewModel.highlights) {
             lineMerged.style("stroke-opacity", this.settings.scatter.opacity_unselected.value)
         }
+        this.listeningRectSelection.exit().remove()
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane
