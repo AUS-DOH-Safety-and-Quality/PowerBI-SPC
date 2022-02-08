@@ -17,7 +17,7 @@ interface groupedData {
 
 interface nestArray {
     key: string;
-    values: undefined;
+    values: number;
     value: number;
 }
 

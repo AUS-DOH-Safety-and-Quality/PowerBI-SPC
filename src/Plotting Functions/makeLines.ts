@@ -46,21 +46,23 @@ function makeLines(LineObject: any,
                        .domain(group_keys)
                        .range([l99_width, l95_width, l95_width, l99_width, target_width, main_width]);
     
-    const lineMerged = LineObject.enter()
+    let lineMerged = LineObject.enter()
                                  .append("path")
                                  .merge(<any>LineObject);
-    lineMerged.classed('line', true);                              
+
+    lineMerged.classed('line', true);                      
     lineMerged.attr("d", d => {
                         return d3.line<groupedData>()
                             .x(d => x_scale(d.x))
                             .y(d => y_scale(d.value))
                             .defined(function(d) {return d.value !== null})
                             (d.values)
-                    })
-                    .attr("fill", "none")
+                    });
+    lineMerged.attr("fill", "none")
                     .attr("stroke", d => <string>line_color(d.key))
                     .attr("stroke-width", d => <number>line_width(d.key));
-    
+
+    LineObject.exit().remove()
     return lineMerged;
 }
 

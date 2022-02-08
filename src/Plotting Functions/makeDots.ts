@@ -31,7 +31,7 @@ function makeDots(DotObject: d3.Selection<SVGCircleElement, any, any, any>,
     let dot_opacity_unsel: number = settings.scatter.opacity_unselected.value;
 
     // Update the datapoints if data is refreshed
-    const MergedDotObject: d3.Selection<SVGCircleElement, any, any, any>
+    let MergedDotObject: d3.Selection<SVGCircleElement, any, any, any>
             = DotObject.enter()
                   .append("circle")
                   .merge(<any>DotObject);

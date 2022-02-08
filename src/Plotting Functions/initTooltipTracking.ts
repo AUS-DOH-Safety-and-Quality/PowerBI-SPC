@@ -50,6 +50,7 @@ function initTooltipTracking(svg: d3.Selection<SVGElement, any, any, any>,
                 });
                 xAxisLine.style("fill-opacity", 0);
             });
+            listeningRect.exit().remove()
 }
 
 export default initTooltipTracking
