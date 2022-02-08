@@ -43,7 +43,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         minLimit: 0,
         maxLimit: 0,
         highlights: false,
-        groupedLines: [{ key: "null", values: undefined, value: 0}],
+        groupedLines: [{ key: "null", values: 0, value: 0}],
         data_type: data_type,
         multiplier: 1
     };
@@ -61,7 +61,8 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
         || !dv[0].categorical.categories
         || !dv[0].categorical.categories[0].source
         || !dv[0].categorical.values
-        || !dv[0].metadata) {
+        || !dv[0].metadata
+        || dv[0].categorical.values[0].values.length < 2) {
             return viewModel;
     }
 
@@ -248,6 +249,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             value: <number>limitsArray.value[i]
         });
     }
+
     viewModel.lineData.map(d => d.value = (d.value !== null) ? d.value * multiplier : null)
     viewModel.groupedLines = (d3.nest()
                                 .key(function(d: groupedData) { return d.group; })
@@ -273,6 +275,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
             tick_labels: (data_type == "t" || data_type == "g") ? [i+1, (i+1).toFixed(0)] : [i+1, <string>limitsArray.key[i]]
         });
     }
+
     let minLimit: number = d3.min(limitsArray.lowerLimit99);
     let minPoint: number = d3.min(limitsArray.value);
     let maxLimit: number = d3.max(limitsArray.upperLimit99);
@@ -286,6 +289,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
     viewModel.highlights = viewModel.plotData.filter(d => d.highlighted).length > 0;
     viewModel.data_type = data_type;
     viewModel.multiplier = multiplier;
+
 
     return viewModel;
 }

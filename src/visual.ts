@@ -97,9 +97,9 @@ export class Visual implements IVisual {
         //   control limits
         this.viewModel = getViewModel(options, this.settings, this.host);
 
-        this.settings.spc.data_type.value = this.viewModel.data_type;
-        this.settings.spc.multiplier.value = this.viewModel.multiplier;
-
+        this.settings.spc.data_type.value = this.viewModel.data_type ? this.viewModel.data_type : this.settings.spc.data_type.value;
+        this.settings.spc.multiplier.value = this.viewModel.multiplier ? this.viewModel.multiplier : this.settings.spc.multiplier.value;
+        
         // Get the width and height of plotting space
         let width: number = options.viewport.width;
         let height: number = options.viewport.height;
@@ -133,9 +133,10 @@ export class Visual implements IVisual {
                 .domain([xAxisMin, xAxisMax])
                 .range([yAxisPadding, width - yAxisEndPadding]);
 
-
-        initTooltipTracking(this.svg, this.listeningRect, width, height - xAxisPadding,
-            xScale, yScale, this.host.tooltipService, this.viewModel);
+        if (this.viewModel.plotData.length > 1) {
+            initTooltipTracking(this.svg, this.listeningRect, width, height - xAxisPadding,
+                xScale, yScale, this.host.tooltipService, this.viewModel);
+        }
 
         let xLabels: (number|string)[][] = this.viewModel.plotData.map(d => d.tick_labels);
 
@@ -186,8 +187,8 @@ export class Visual implements IVisual {
                                  .selectAll(".line")
                                  .data(this.viewModel.groupedLines);
 
-        const lineMerged = makeLines(this.lineSelection, this.settings, xScale, yScale, this.viewModel, this.viewModel.highlights);
-
+        let lineMerged = makeLines(this.lineSelection, this.settings, xScale, yScale, this.viewModel, this.viewModel.highlights);
+        
         // Bind input data to dotGroup reference
          this.dotSelection = this.dotGroup
                        // List all child elements of dotGroup that have CSS class '.dot'
