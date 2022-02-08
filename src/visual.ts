@@ -32,8 +32,6 @@ export class Visual implements IVisual {
     private svg: d3.Selection<SVGElement, any, any, any>;
     private listeningRect: d3.Selection<SVGElement, any, any, any>;
     private listeningRectSelection: d3.Selection<any, any, any, any>;
-    private AxisRect: d3.Selection<SVGElement, any, any, any>;
-    private AxidRectSelection: d3.Selection<any, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
     private dotSelection: d3.Selection<any, any, any, any>;
     private lineGroup: d3.Selection<SVGElement, any, any, any>;
