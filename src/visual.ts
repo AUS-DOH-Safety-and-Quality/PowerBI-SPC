@@ -32,6 +32,8 @@ export class Visual implements IVisual {
     private svg: d3.Selection<SVGElement, any, any, any>;
     private listeningRect: d3.Selection<SVGElement, any, any, any>;
     private listeningRectSelection: d3.Selection<any, any, any, any>;
+    private tooltipLineGroup: d3.Selection<SVGElement, any, any, any>;
+    private tooltipLineSelection: d3.Selection<any, any, any, any>;
     private dotGroup: d3.Selection<SVGElement, any, any, any>;
     private dotSelection: d3.Selection<any, any, any, any>;
     private lineGroup: d3.Selection<SVGElement, any, any, any>;
@@ -61,8 +63,8 @@ export class Visual implements IVisual {
 
         this.listeningRect = this.svg.append("g")
                                      .classed("listen-group", true);
-        this.listeningRect = this.svg.append("g")
-                                    .classed("listen-group", true);
+        this.tooltipLineGroup = this.svg.append("g")
+                                .classed("tooltip-group", true);
         this.lineGroup = this.svg.append("g")
                                 .classed("line-group", true);
         this.dotGroup = this.svg.append("g")
@@ -102,7 +104,7 @@ export class Visual implements IVisual {
 
         this.settings.spc.data_type.value = this.viewModel.data_type ? this.viewModel.data_type : this.settings.spc.data_type.value;
         this.settings.spc.multiplier.value = this.viewModel.multiplier ? this.viewModel.multiplier : this.settings.spc.multiplier.value;
-        
+
         // Get the width and height of plotting space
         let width: number = options.viewport.width;
         let height: number = options.viewport.height;
@@ -140,9 +142,12 @@ export class Visual implements IVisual {
         this.listeningRectSelection = this.listeningRect
                                           .selectAll(".obs-sel")
                                           .data(this.viewModel.plotData);
+        this.tooltipLineSelection = this.tooltipLineGroup
+                                          .selectAll(".ttip-line")
+                                          .data(this.viewModel.plotData);
 
         if (this.viewModel.plotData.length > 1) {
-            initTooltipTracking(this.svg, this.listeningRectSelection, width, height - xAxisPadding,
+            initTooltipTracking(this.svg, this.listeningRectSelection, this.tooltipLineSelection, width, height - xAxisPadding,
                 xScale, yScale, this.host.tooltipService, this.viewModel);
         }
 
@@ -193,13 +198,13 @@ export class Visual implements IVisual {
                 .text(this.settings.axis.ylimit_label.value)
                 .style("text-anchor", "end");
 
-        
+
         this.lineSelection = this.lineGroup
                                  .selectAll(".line")
                                  .data(this.viewModel.groupedLines);
 
         let lineMerged = makeLines(this.lineSelection, this.settings, xScale, yScale, this.viewModel, this.viewModel.highlights);
-        
+
         // Bind input data to dotGroup reference
          this.dotSelection = this.dotGroup
                        // List all child elements of dotGroup that have CSS class '.dot'
@@ -229,7 +234,7 @@ export class Visual implements IVisual {
     }
 
     // Function to render the properties specified in capabilities.json to the properties pane
-    public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): 
+    public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions):
         VisualObjectInstanceEnumeration {
             let propertyGroupName: string = options.objectName;
             // Object that holds the specified settings/options to be rendered
@@ -249,7 +254,7 @@ export class Visual implements IVisual {
                         },
                         selector: null
                     });
-                break; 
+                break;
                 case "scatter":
                     properties.push({
                         objectName: propertyGroupName,
@@ -261,7 +266,7 @@ export class Visual implements IVisual {
                         },
                         selector: null
                     });
-                break; 
+                break;
                 case "lines":
                     properties.push({
                         objectName: propertyGroupName,
@@ -291,7 +296,7 @@ export class Visual implements IVisual {
                         },
                         selector: null
                     });
-                break; 
+                break;
             };
             return properties;
         }
