@@ -26,7 +26,7 @@ function str_to_dmy(text: string[]) {
  * @param options  - VisualUpdateOptions object containing user data
  * @param settings - Object containing user-specified plot settings
  * @param host     - Reference to base IVisualHost object
- * 
+ *
  * @returns ViewModel object containing calculated limits and all
  *            data needed for plotting
 */
@@ -68,7 +68,10 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
 
     // Get  categorical view of the data
     let view: DataViewCategorical = dv[0].categorical;
-
+    if (!view.values[0].source.roles.numerator ||
+        !view.values[1].source.roles.denominator) {
+     return viewModel;
+    }
     for (let i = 0; i < view.values.length; i++) {
         if (view.values[i].source.roles.numerator) {
             indices.numerator = i
@@ -136,7 +139,7 @@ function getViewModel(options: VisualUpdateOptions, settings: any, host: IVisual
 
     (<number[]>numerator.values).map((d,idx) => {
         let valid: boolean = (d != null && key_in[idx] != null);
-        
+
         if(data_type == "p" || data_type == "pp" ||
            data_type == "u" || data_type == "up") {
             valid = (valid && <number>denominator.values[idx] != null && <number>denominator.values[idx] > 0);
