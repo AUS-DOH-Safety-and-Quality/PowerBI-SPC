@@ -13,12 +13,11 @@ import VisualObjectInstance = powerbi.VisualObjectInstance;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ISelectionId = powerbi.visuals.ISelectionId;
+import settingsObject from "./Classes/settingsObject"
 import makeDots from "./Plotting Functions/makeDots";
 import makeLines from "./Plotting Functions/makeLines";
-import updateSettings from "./Settings/updateSettings";
 import getViewModel from "../src/getViewModel";
 import highlightIfSelected from "./Selection Helpers/highlightIfSelected";
-import initSettings from "../src/Settings/initSettings"
 import initTooltipTracking from "./Plotting Functions/initTooltipTracking";
 import * as d3 from "d3";
 import { groupedData, PlotData, nestArray } from "../src/Interfaces"
@@ -49,7 +48,7 @@ export class Visual implements IVisual {
     private selectionManager: ISelectionManager;
 
     // Settings for plot aesthetics
-    private settings = initSettings();
+    private settings: settingsObject;
 
     constructor(options: VisualConstructorOptions) {
         // Add reference to host object, for accessing environment (e.g. colour)
@@ -82,6 +81,7 @@ export class Visual implements IVisual {
 
         // Request a new selectionManager tied to the visual
         this.selectionManager = this.host.createSelectionManager();
+        this.settings = new settingsObject();
 
         // Update dot highlighting on initialisation
         this.selectionManager.registerOnSelectCallback(() => {
@@ -94,17 +94,18 @@ export class Visual implements IVisual {
     }
 
     public update(options: VisualUpdateOptions) {
+     console.log("a")
         // Update settings object with user-specified values (if present)
-        updateSettings(this.settings, options.dataViews[0].metadata.objects);
-
+        this.settings.updateSettings(options.dataViews[0].metadata.objects);
+      console.log("a1")
         // Insert the viewModel object containing the user-input data
         //   This function contains the construction of the spc
         //   control limits
         this.viewModel = getViewModel(options, this.settings, this.host);
-
+      console.log("a2")
         this.settings.spc.data_type.value = this.viewModel.data_type ? this.viewModel.data_type : this.settings.spc.data_type.value;
         this.settings.spc.multiplier.value = this.viewModel.multiplier ? this.viewModel.multiplier : this.settings.spc.multiplier.value;
-
+      console.log("b")
         // Get the width and height of plotting space
         let width: number = options.viewport.width;
         let height: number = options.viewport.height;
@@ -121,7 +122,7 @@ export class Visual implements IVisual {
         let data_type: string = this.settings.spc.data_type.value;
         let multiplier: number = this.settings.spc.multiplier.value;
         let displayAxes: boolean = this.viewModel.plotData.length > 1;
-
+      console.log("c")
         // Dynamically scale chart to use all available space
         this.svg.attr("width", width)
                 .attr("height", height);
@@ -138,7 +139,7 @@ export class Visual implements IVisual {
             = d3.scaleLinear()
                 .domain([xAxisMin, xAxisMax])
                 .range([yAxisPadding, width - yAxisEndPadding]);
-
+      console.log("d")
         this.listeningRectSelection = this.listeningRect
                                           .selectAll(".obs-sel")
                                           .data(this.viewModel.plotData);
@@ -233,71 +234,17 @@ export class Visual implements IVisual {
         this.listeningRectSelection.exit().remove()
     }
 
-    // Function to render the properties specified in capabilities.json to the properties pane
-    public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions):
-        VisualObjectInstanceEnumeration {
-            let propertyGroupName: string = options.objectName;
-            // Object that holds the specified settings/options to be rendered
-            let properties: VisualObjectInstance[] = [];
-
-            // Call a different function for each specified property group
-            switch (propertyGroupName) {
-                // Specify behaviour for x-axis settings
-                case "spc":
-                    // Add y-axis settings to object to be rendered
-                    properties.push({
-                        objectName: propertyGroupName,
-                        properties: {
-                            data_type: this.settings.spc.data_type.value,
-                            multiplier: this.settings.spc.multiplier.value,
-                            denom_split: this.settings.spc.denom_split.value
-                        },
-                        selector: null
-                    });
-                break;
-                case "scatter":
-                    properties.push({
-                        objectName: propertyGroupName,
-                        properties: {
-                            size: this.settings.scatter.size.value,
-                            colour: this.settings.scatter.colour.value,
-                            opacity: this.settings.scatter.opacity.value,
-                            opacity_unselected: this.settings.scatter.opacity_unselected.value
-                        },
-                        selector: null
-                    });
-                break;
-                case "lines":
-                    properties.push({
-                        objectName: propertyGroupName,
-                        properties: {
-                            width_99: this.settings.lines.width_99.value,
-                            width_95: this.settings.lines.width_95.value,
-                            width_main: this.settings.lines.width_main.value,
-                            width_target: this.settings.lines.width_target.value,
-                            colour_99: this.settings.lines.colour_99.value,
-                            colour_95: this.settings.lines.colour_95.value,
-                            colour_main: this.settings.lines.colour_main.value,
-                            colour_target: this.settings.lines.colour_target.value
-                        },
-                        selector: null
-                    });
-                break;
-                case "axis":
-                    properties.push({
-                        objectName: propertyGroupName,
-                        properties: {
-                            xlimit_label: this.settings.axis.xlimit_label.value,
-                            ylimit_label: this.settings.axis.ylimit_label.value,
-                            ylimit_l: this.settings.axis.ylimit_l.value,
-                            ylimit_u: this.settings.axis.ylimit_u.value,
-                            xlimit_l: this.settings.axis.xlimit_l.value,
-                            xlimit_u: this.settings.axis.xlimit_u.value
-                        },
-                        selector: null
-                    });
-                break;
-            };
-            return properties;
-        }
+  // Function to render the properties specified in capabilities.json to the properties pane
+  public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions):
+    VisualObjectInstanceEnumeration {
+      let propertyGroupName: string = options.objectName;
+      // Object that holds the specified settings/options to be rendered
+      let properties: VisualObjectInstance[] = [];
+      properties.push({
+        objectName: propertyGroupName,
+        properties: this.settings.returnValues(propertyGroupName),
+        selector: null
+      });
+      return properties;
+  }
 }
