@@ -15,33 +15,33 @@ import { ControlLimits } from "./Interfaces";
 
 function getLimitsArray(chart_type: string, key: string[], numerator: number[],
                         denominator: number[], group: string[]): ControlLimits {
-   if (chart_type == "i") {
-      return i_limits(key, numerator, denominator);
-    } else if (chart_type == "p") {
-        return p_limits(key, numerator, denominator);
-    } else if (chart_type == "u") {
-        return u_limits(key, numerator, denominator);
-    } else if (chart_type == "c") {
-        return c_limits(key, numerator);
-    } else if (chart_type == "xbar") {
-        return xbar_limits(numerator, group);
-    } else if (chart_type == "up") {
-        return uprime_limits(key, numerator, denominator);
-    } else if (chart_type == "pp") {
-        return pprime_limits(key, numerator, denominator);
-    } else if (chart_type == "run") {
-        return run_limits(key, numerator, denominator);
-    } else if (chart_type == "mr") {
-        return mr_limits(key, numerator, denominator);
-    } else if (chart_type == "s") {
-        return s_limits(numerator, group);
-    } else if (chart_type == "g") {
-        return g_limits(key, numerator);
-    } else if (chart_type == "t") {
-        return t_limits(key, numerator);
-    } else if (chart_type == "sr") {
-        return sr_limits(key, numerator, denominator);
-    }
+  if (chart_type == "i") {
+    return i_limits(key, numerator, denominator);
+  } else if (chart_type == "p") {
+    return p_limits(key, numerator, denominator);
+  } else if (chart_type == "u") {
+    return u_limits(key, numerator, denominator);
+  } else if (chart_type == "c") {
+    return c_limits(key, numerator);
+  } else if (chart_type == "xbar") {
+    return xbar_limits(numerator, group);
+  } else if (chart_type == "up") {
+    return uprime_limits(key, numerator, denominator);
+  } else if (chart_type == "pp") {
+    return pprime_limits(key, numerator, denominator);
+  } else if (chart_type == "run") {
+    return run_limits(key, numerator, denominator);
+  } else if (chart_type == "mr") {
+    return mr_limits(key, numerator, denominator);
+  } else if (chart_type == "s") {
+    return s_limits(numerator, group);
+  } else if (chart_type == "g") {
+    return g_limits(key, numerator);
+  } else if (chart_type == "t") {
+    return t_limits(key, numerator);
+  } else if (chart_type == "sr") {
+    return sr_limits(key, numerator, denominator);
+  }
 }
 
 export default getLimitsArray;
