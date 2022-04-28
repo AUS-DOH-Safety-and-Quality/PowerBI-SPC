@@ -20,7 +20,8 @@ class chartObject {
   constructor(args: chartObjectConstructor) {
     this.inputData = args.inputData;
     this.inputSettings = args.inputSettings;
-    this.limitFunction = limitFunctions[args.inputData.chart_type + "Limits"]
+    console.log(args.inputData.chart_type + "Limits")
+    this.limitFunction = limitFunctions[args.inputData.chart_type]
   }
 }
 

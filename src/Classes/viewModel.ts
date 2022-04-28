@@ -66,6 +66,7 @@ class viewModelObject {
 
     let formattedLines: lineData[] = new Array<lineData>();
     let nLimits = this.calculatedLimits.keys.length;
+    console.log(this.calculatedLimits)
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
         formattedLines.push({

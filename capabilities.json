@@ -46,7 +46,7 @@
         "spc" : {
             "displayName": "Data Settings",
             "properties": {
-                "data_type": {
+                "chart_type": {
                     "displayName": "Chart Type",
                     "type" : {
                         "enumeration" : [
