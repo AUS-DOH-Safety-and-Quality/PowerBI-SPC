@@ -105,6 +105,7 @@ export class Visual implements IVisual {
         // Get the width and height of plotting space
         this.width = options.viewport.width;
         this.height = options.viewport.height;
+        let min: number = d3.min([d3.min(this.viewModel.calculatedLimits.ll99),d3.min(this.viewModel.calculatedLimits.values)])
 
         // Add appropriate padding so that plotted data doesn't overlay axis
         let xAxisPadding: number = this.settings.axispad.x.padding.value;
@@ -113,8 +114,8 @@ export class Visual implements IVisual {
         let yAxisEndPadding: number = this.settings.axispad.y.end_padding.value;
         let xAxisMin: number = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
         let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotPoints.map(point => point.x)) + 1;
-        let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : d3.min(this.viewModel.calculatedLimits.ll99);
-        let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : d3.max(this.viewModel.calculatedLimits.ul99);
+        let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : min - Math.abs(min * 0.0025)
+        let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : d3.max(this.viewModel.calculatedLimits.ul99) + Math.abs(d3.max(this.viewModel.calculatedLimits.ul99) * 0.025) ;
         let displayAxes: boolean = this.viewModel.plotPoints.length > 1;
       console.log("c")
         // Dynamically scale chart to use all available space
@@ -143,7 +144,7 @@ export class Visual implements IVisual {
         if (this.viewModel.plotPoints.length > 1) {
         //    initTooltipTracking(this.svg, this.listeningRectSelection, this.tooltipLineSelection, width, height - xAxisPadding,
         //        xScale, yScale, this.host.tooltipService, this.viewModel);
-        //this.initTooltipTracking();
+        this.initTooltipTracking();
       console.log("e1")
         }
 
