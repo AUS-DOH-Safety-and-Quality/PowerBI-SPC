@@ -18,7 +18,6 @@ class dataObject {
   multiplier: number;
   highlights: powerbi.PrimitiveValue[];
 
-
   constructor(args: dataObjectConstructor) {
     let numerators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.numerators)[0];
 

@@ -15,13 +15,13 @@ import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import checkIDSelected from "./Selection Helpers/checkIDSelected";
 import settingsObject from "./Classes/settingsObject"
-import getViewModel from "../src/getViewModel";
+import viewModelObject from "./Classes/viewModel"
+import plotData from "./Classes/plotData";
 import * as d3 from "d3";
-import { groupedData, PlotData, nestArray } from "../src/Interfaces"
-import { ViewModel } from "../src/Interfaces"
+import lineData from "./Classes/lineData"
 
-type LineType = d3.Selection<d3.BaseType, PlotData[], SVGElement, any>;
-type MergedLineType = d3.Selection<SVGPathElement, PlotData[], SVGElement, any>;
+type LineType = d3.Selection<d3.BaseType, plotData[], SVGElement, any>;
+type MergedLineType = d3.Selection<SVGPathElement, plotData[], SVGElement, any>;
 
 export class Visual implements IVisual {
     private host: IVisualHost;
@@ -38,7 +38,7 @@ export class Visual implements IVisual {
     private xAxisLabels: d3.Selection<SVGGElement, any, any, any>;
     private yAxisGroup: d3.Selection<SVGGElement, any, any, any>;
     private yAxisLabels: d3.Selection<SVGGElement, any, any, any>;
-    private viewModel: ViewModel;
+    private viewModel: viewModelObject;
     private height: number;
     private width: number;
     private xScale: d3.ScaleLinear<number, number, never>
@@ -98,11 +98,10 @@ export class Visual implements IVisual {
         // Insert the viewModel object containing the user-input data
         //   This function contains the construction of the spc
         //   control limits
-        this.viewModel = getViewModel(options, this.settings, this.host);
-      console.log("a2")
-        this.settings.spc.data_type.value = this.viewModel.data_type ? this.viewModel.data_type : this.settings.spc.data_type.value;
-        this.settings.spc.multiplier.value = this.viewModel.multiplier ? this.viewModel.multiplier : this.settings.spc.multiplier.value;
-      console.log("b")
+        this.viewModel = new viewModelObject({ options: options,
+                                              inputSettings: this.settings,
+                                              host: this.host });
+        console.log("b")
         // Get the width and height of plotting space
         this.width = options.viewport.width;
         this.height = options.viewport.height;
@@ -113,12 +112,10 @@ export class Visual implements IVisual {
         let xAxisEndPadding: number = this.settings.axispad.x.end_padding.value;
         let yAxisEndPadding: number = this.settings.axispad.y.end_padding.value;
         let xAxisMin: number = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
-        let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotData.map(d => d.x)) + 1;
-        let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : this.viewModel.minLimit;
-        let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : this.viewModel.maxLimit;
-        let data_type: string = this.settings.spc.data_type.value;
-        let multiplier: number = this.settings.spc.multiplier.value;
-        let displayAxes: boolean = this.viewModel.plotData.length > 1;
+        let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotPoints.map(point => point.x)) + 1;
+        let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : d3.min(this.viewModel.calculatedLimits.ll99);
+        let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : d3.max(this.viewModel.calculatedLimits.ul99);
+        let displayAxes: boolean = this.viewModel.plotPoints.length > 1;
       console.log("c")
         // Dynamically scale chart to use all available space
         this.svg.attr("width", this.width)
@@ -137,25 +134,25 @@ export class Visual implements IVisual {
       console.log("d")
         this.listeningRectSelection = this.listeningRect
                                           .selectAll(".obs-sel")
-                                          .data(this.viewModel.plotData);
+                                          .data(this.viewModel.plotPoints);
         this.tooltipLineSelection = this.tooltipLineGroup
                                           .selectAll(".ttip-line")
-                                          .data(this.viewModel.plotData);
+                                          .data(this.viewModel.plotPoints);
 
-        if (this.viewModel.plotData.length > 1) {
+        if (this.viewModel.plotPoints.length > 1) {
         //    initTooltipTracking(this.svg, this.listeningRectSelection, this.tooltipLineSelection, width, height - xAxisPadding,
         //        xScale, yScale, this.host.tooltipService, this.viewModel);
         this.initTooltipTracking();
         }
 
-        let xLabels: (number|string)[][] = this.viewModel.plotData.map(d => d.tick_labels);
+        let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
 
         let yAxis: d3.Axis<d3.NumberValue>
             = d3.axisLeft(this.yScale)
                 .tickFormat(
                     d => {
                       // If axis displayed on % scale, then disable axis values > 100%
-                      let prop_limits: boolean = data_type == "p" && multiplier == 1;
+                      let prop_limits: boolean = this.viewModel.inputData.chart_type == "p" && this.viewModel.inputData.multiplier == 1;
                       return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
                     }
                 );
@@ -208,11 +205,11 @@ export class Visual implements IVisual {
                        .selectAll(".dot")
                        // Matches input array to a list, returns three result sets
                        //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
-                       .data(this.viewModel.plotData);
+                       .data(this.viewModel.plotPoints);
 
         this.makeDots(lineMerged);
 
-        if (this.viewModel.highlights) {
+        if (this.viewModel.anyHighlights) {
             lineMerged.style("stroke-opacity", this.settings.scatter.opacity_unselected.value)
         }
         this.addContextMenu()
@@ -268,7 +265,7 @@ export class Visual implements IVisual {
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
     MergedDotObject
-        .style("fill-opacity", d => this.viewModel.highlights ? (d.highlighted ? dot_opacity : dot_opacity_unsel) : dot_opacity)
+        .style("fill-opacity", d => this.viewModel.anyHighlights ? (d.highlighted ? dot_opacity : dot_opacity_unsel) : dot_opacity)
         .on("click", d => {
             // Pass identities of selected data back to PowerBI
             this.selectionManager
@@ -365,10 +362,10 @@ export class Visual implements IVisual {
 
     lineMerged.classed('line', true);
     lineMerged.attr("d", d => {
-                        return d3.line<groupedData>()
+                        return d3.line<lineData>()
                             .x(d => this.xScale(d.x))
-                            .y(d => this.yScale(d.value))
-                            .defined(function(d) {return d.value !== null})
+                            .y(d => this.yScale(d.line_value))
+                            .defined(function(d) {return d.line_value !== null})
                             (d.values)
                     });
     lineMerged.attr("fill", "none")
@@ -382,7 +379,7 @@ export class Visual implements IVisual {
     addContextMenu() {
       this.svg.on('contextmenu', () => {
           const eventTarget: EventTarget = (<any>d3).event.target;
-          let dataPoint: PlotData = <PlotData>(d3.select(<d3.BaseType>eventTarget).datum());
+          let dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
           this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
               x: (<any>d3).event.clientX,
               y: (<any>d3).event.clientY
@@ -413,17 +410,17 @@ export class Visual implements IVisual {
               .on("mousemove", d => {
                   let xval: number = this.xScale.invert((<any>d3).event.pageX);
 
-                  let x_dist: number[] = this.viewModel.plotData.map(d => d.x).map(d => {
+                  let x_dist: number[] = this.viewModel.plotPoints.map(d => d.x).map(d => {
                       return Math.abs(d - xval)
                   })
                   let minInd: number = d3.scan(x_dist,(a,b) => a-b);
 
-                  let scaled_x: number = this.xScale(this.viewModel.plotData[minInd].x)
-                  let scaled_y: number = this.yScale(this.viewModel.plotData[minInd].ratio)
+                  let scaled_x: number = this.xScale(this.viewModel.plotPoints[minInd].x)
+                  let scaled_y: number = this.yScale(this.viewModel.plotPoints[minInd].value)
 
                   this.host.tooltipService.show({
-                      dataItems: this.viewModel.plotData[minInd].tooltips,
-                      identities: [this.viewModel.plotData[minInd].identity],
+                      dataItems: this.viewModel.plotPoints[minInd].tooltip,
+                      identities: [this.viewModel.plotPoints[minInd].identity],
                       coordinates: [scaled_x, scaled_y],
                       isTouchEvent: false
                   });
