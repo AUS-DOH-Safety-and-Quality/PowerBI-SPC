@@ -13,6 +13,7 @@
     "@stdlib/stats": "^0.0.13",
     "core-js": "3.22.2",
     "d3": "5.12.0",
+    "minimist": "^1.2.6",
     "powerbi-visuals-api": "~4.0.0",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1",
     "regenerator-runtime": "^0.13.9"
@@ -20,7 +21,7 @@
   "devDependencies": {
     "@types/d3": "5.7.2",
     "process": "^0.11.10",
-    "ts-loader": "6.1.0",
+    "ts-loader": "9.2.9",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "3.6.3"
