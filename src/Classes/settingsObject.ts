@@ -1,4 +1,4 @@
-import powerbi from "powerbi-visuals-api";
+import powerbi from "powerbi-visuals-api"
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
 
 class settingsPair<T> {
@@ -34,12 +34,12 @@ class axispadSettings {
 };
 
 class spcSettings {
-  data_type: settingsPair<string>;
+  chart_type: settingsPair<string>;
   multiplier: settingsPair<number>;
   denom_split: settingsPair<string>;
 
   constructor() {
-    this.data_type = new settingsPair("i");
+    this.chart_type = new settingsPair("i");
     this.multiplier = new settingsPair(1);
     this.denom_split = new settingsPair(null);
   }

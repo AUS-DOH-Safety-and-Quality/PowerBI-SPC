@@ -1,22 +1,21 @@
 import * as d3 from "d3";
 import rep from "../Functions/rep";
-import { ControlLimits } from "../Interfaces";
+import dataObject from "../Classes/dataObject"
+import controlLimits from "../Type Definitions/controlLimits"
 
-function c_limits(key: string[], value: number[]): ControlLimits {
-  let cl: number = d3.mean(value);
+function cLimits(inputData: dataObject): controlLimits {
+  let cl: number = d3.mean(inputData.numerators);
   let sigma: number = Math.sqrt(cl);
 
-  let limits: ControlLimits = {
-    key: key,
-    value: value,
-    centerline: rep(cl, key.length),
-    lowerLimit99: rep(Math.max(cl - 3*sigma, 0), key.length),
-    lowerLimit95: rep(Math.max(cl - 2*sigma, 0), key.length),
-    upperLimit95: rep(cl + 2*sigma, key.length),
-    upperLimit99: rep(cl + 3*sigma, key.length),
-    count: null
-  }
-  return limits;
+  return {
+    keys: inputData.keys,
+    values: inputData.numerators,
+    targets: rep(cl, inputData.keys.length),
+    ll99: rep(Math.max(cl - 3 * sigma, 0), inputData.keys.length),
+    ll95: rep(Math.max(cl - 2 * sigma, 0), inputData.keys.length),
+    ul95: rep(cl + 2*sigma, inputData.keys.length),
+    ul99: rep(cl + 3*sigma, inputData.keys.length),
+  };
 }
 
-export default c_limits;
+export default cLimits;

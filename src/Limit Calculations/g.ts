@@ -1,24 +1,22 @@
 import * as d3 from "d3";
 import { sqrt } from "../Function Broadcasting/UnaryFunctions";
 import rep from "../Functions/rep";
-import { ControlLimits } from "../Interfaces";
+import dataObject from "../Classes/dataObject";
+import controlLimits from "../Type Definitions/controlLimits";
 
-function g_limits(key: string[], value: number[]): ControlLimits {
-  let cl: number = d3.mean(value);
+function gLimits(inputData: dataObject): controlLimits {
+  let cl: number = d3.mean(inputData.numerators);
   let sigma: number = sqrt(cl * (cl + 1));
 
-  let limits: ControlLimits = {
-    key: key,
-    value: value,
-    centerline: rep(cl, key.length),
-    lowerLimit99: rep(0, key.length),
-    lowerLimit95: rep(0, key.length),
-    upperLimit95: rep(cl + 2*sigma, key.length),
-    upperLimit99: rep(cl + 3*sigma, key.length),
-    count: null
-  }
-
-  return limits;
+  return {
+    keys: inputData.keys,
+    values: inputData.numerators,
+    targets: rep(cl, inputData.keys.length),
+    ll99: rep(0, inputData.keys.length),
+    ll95: rep(0, inputData.keys.length),
+    ul95: rep(cl + 2*sigma, inputData.keys.length),
+    ul99: rep(cl + 3*sigma, inputData.keys.length)
+  };
 }
 
-export default g_limits;
+export default gLimits;

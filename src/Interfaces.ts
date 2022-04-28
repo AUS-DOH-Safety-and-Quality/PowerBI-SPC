@@ -53,22 +53,12 @@ interface ToolTips {
     value: string;
 }
 
-interface ControlLimits {
-    key: string[];
-    value: number[];
-    centerline: number[];
-    upperLimit99: number[];
-    upperLimit95: number[];
-    lowerLimit95: number[];
-    lowerLimit99: number[];
-    count: number[];
-}
+
 
 
 export { PlotData }
 export { ViewModel }
 export { ToolTips }
-export { ControlLimits }
 export { groupedData }
 export { nestArray }
 export { measureIndex }

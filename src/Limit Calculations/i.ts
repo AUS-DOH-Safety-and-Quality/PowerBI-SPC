@@ -3,10 +3,13 @@ import diff from "../Functions/diff"
 import rep from "../Functions/rep";
 import { abs } from "../Function Broadcasting/UnaryFunctions"
 import { divide } from "../Function Broadcasting/BinaryFunctions";
-import { ControlLimits } from "../Interfaces";
+import dataObject from "../Classes/dataObject";
+import controlLimits from "../Type Definitions/controlLimits";
 
-function i_limits(key: string[], value: number[], denominator?: number[]): ControlLimits {
-  let ratio: number[] = (denominator && denominator.length > 0) ? divide(value, denominator) : value;
+function iLimits(inputData: dataObject): controlLimits {
+  let ratio: number[] = (inputData.denominators && inputData.denominators.length > 0)
+    ? divide(inputData.numerators, inputData.denominators)
+    : inputData.numerators;
 
   let cl: number = d3.mean(ratio);
 
@@ -16,17 +19,15 @@ function i_limits(key: string[], value: number[], denominator?: number[]): Contr
 
   let sigma: number = d3.mean(consec_diff_valid) / 1.128;
 
-  let limits: ControlLimits = {
-    key: key,
-    value: ratio.map(d => isNaN(d) ? 0 : d),
-    centerline: rep(cl, key.length),
-    lowerLimit99: rep(cl - 3 * sigma, key.length),
-    lowerLimit95: rep(cl - 2 * sigma, key.length),
-    upperLimit95: rep(cl + 2 * sigma, key.length),
-    upperLimit99: rep(cl + 3 * sigma, key.length),
-    count: null
-  }
-  return limits;
+  return {
+    keys: inputData.keys,
+    values: ratio.map(d => isNaN(d) ? 0 : d),
+    targets: rep(cl, inputData.keys.length),
+    ll99: rep(cl - 3 * sigma, inputData.keys.length),
+    ll95: rep(cl - 2 * sigma, inputData.keys.length),
+    ul95: rep(cl + 2 * sigma, inputData.keys.length),
+    ul99: rep(cl + 3 * sigma, inputData.keys.length)
+  };
 }
 
-export default i_limits;
+export default iLimits;
