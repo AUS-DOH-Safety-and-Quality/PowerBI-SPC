@@ -9,6 +9,7 @@ import lineData from "./lineData"
 import controlLimits from "../Type Definitions/controlLimits";
 import plotData from "./plotData"
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
+import buildTooltip from "../Functions/buildTooltip"
 
 type nestReturnT = {
   key: string;
@@ -35,8 +36,16 @@ class viewModelObject {
         colour: this.inputSettings.scatter.colour.value,
         identity: null,
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
-        tooltip: [{displayName: "Date", value: this.calculatedLimits.keys[i].label},
-                  {displayName: "Value", value: this.calculatedLimits.values[i].toFixed(2)}],
+        tooltip: buildTooltip({date: this.calculatedLimits.keys[i].label,
+                                value: this.calculatedLimits.values[i],
+                                target: this.calculatedLimits.targets[i],
+                                limits: {
+                                  ll99: this.calculatedLimits.ll99[i],
+                                  ul99: this.calculatedLimits.ul99[i]
+                                },
+                                chart_type: this.inputData.chart_type,
+                                multiplier: this.inputData.multiplier,
+                                prop_labels: ["p", "pp"].includes(this.inputData.chart_type)}),
         tick_label: {x: i, label: this.calculatedLimits.keys[i].label}
       })
     }
