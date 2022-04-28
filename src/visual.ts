@@ -261,8 +261,8 @@ export class Visual implements IVisual {
 
     MergedDotObject.classed("dot", true);
 
-    MergedDotObject.filter(d => (d.ratio != null))
-              .attr("cy", d => this.yScale(d.ratio))
+    MergedDotObject.filter(d => (d.value != null))
+              .attr("cy", d => this.yScale(d.value))
               .attr("cx", d => this.xScale(d.x))
               .attr("r", dot_size)
             // Fill each dot with the colour in each DataPoint
@@ -302,7 +302,7 @@ export class Visual implements IVisual {
             let y = (<any>d3).event.pageY;
 
             this.host.tooltipService.show({
-                dataItems: d.tooltips,
+                dataItems: d.tooltip,
                 identities: [d.identity],
                 coordinates: [x, y],
                 isTouchEvent: false
@@ -319,7 +319,7 @@ export class Visual implements IVisual {
 
             // Use the 'move' service for more responsive display
             this.host.tooltipService.move({
-                dataItems: d.tooltips,
+                dataItems: d.tooltip,
                 identities: [d.identity],
                 coordinates: [x, y],
                 isTouchEvent: false
