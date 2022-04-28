@@ -149,7 +149,7 @@ export class Visual implements IVisual {
 
       console.log("f")
         let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
-
+        console.log(xLabels)
         let yAxis: d3.Axis<d3.NumberValue>
             = d3.axisLeft(this.yScale)
                 .tickFormat(
@@ -163,7 +163,7 @@ export class Visual implements IVisual {
         let xAxis: d3.Axis<d3.NumberValue>
             = d3.axisBottom(this.xScale)
                 .tickFormat(
-                    d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
+                    d => <string>xLabels.filter(key => <number>d == key.x).map(key => key.label)[0]
                 )
 
       console.log("g")

@@ -3,6 +3,8 @@ import settingsObject from "./settingsObject"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "../Type Definitions/plotKey"
+import isDate from "../Functions/isDate"
+import strToDMY from "../Functions/stringToDMY"
 
 type dataObjectConstructor = {
   inputView?: powerbi.DataViewCategorical;
@@ -40,6 +42,7 @@ class dataObject {
       if(checkValidInput(numerators[i], denominators[i], chart_type)) {
         valid_ids.push(i);
         let allCategories: string[] = <string[]>args.inputView.categories.map(category => category.values[i]);
+        allCategories = allCategories.map(category => isDate(category) ? strToDMY(category) : category);
         valid_keys.push({id: i, label: allCategories.join(" ") })
       }
     }

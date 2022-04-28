@@ -13,7 +13,6 @@ function truncate<T extends number | number[]>(
     }
   }
   if (limits.upper) {
-    console.log("here")
     if (Array.isArray(rtn)) {
       rtn = rtn.map(d => d > limits.upper ? limits.upper : d) as T;
     } else if (typeof rtn === "number") {
