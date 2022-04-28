@@ -9,6 +9,7 @@ import strToDMY from "../Functions/stringToDMY"
 type dataObjectConstructor = {
   inputView?: powerbi.DataViewCategorical;
   inputSettings?: settingsObject
+  empty?: boolean
 }
 
 class dataObject {
@@ -22,6 +23,17 @@ class dataObject {
   categories: powerbi.DataViewCategoryColumn;
 
   constructor(args: dataObjectConstructor) {
+    if (args.empty) {
+      this.keys = null;
+      this.numerators = null;
+      this.denominators = null;
+      this.groups = null;
+      this.chart_type = null;
+      this.multiplier = null;
+      this.highlights = null;
+      this.categories = null;
+      return;
+    }
     let numerators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.numerators)[0];
 
     let groups_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.groups)[0];
@@ -38,14 +50,18 @@ class dataObject {
 
     let valid_keys: plotKey[] = new Array<plotKey>();
 
+    console.log("d length: ", denominators.length)
+
     for (let i: number = 0; i < denominators.length; i++) {
       if(checkValidInput(numerators[i], denominators[i], chart_type)) {
         valid_ids.push(i);
         let allCategories: string[] = <string[]>args.inputView.categories.map(category => category.values[i]);
         allCategories = allCategories.map(category => isDate(category) ? strToDMY(category) : category);
-        valid_keys.push({id: i, label: allCategories.join(" ") })
+        valid_keys.push({ x: null, id: i, label: allCategories.join(" ") })
       }
     }
+
+    valid_keys.forEach((d, idx) => { d.x = idx });
 
     this.keys = valid_keys;
     this.numerators = extractValues(numerators, valid_ids);

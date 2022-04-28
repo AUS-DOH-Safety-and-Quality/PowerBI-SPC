@@ -10,6 +10,7 @@ import controlLimits from "../Type Definitions/controlLimits";
 import plotData from "./plotData"
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
+import axisLimits from "./axisLimits"
 
 type nestReturnT = {
   key: string;
@@ -25,11 +26,13 @@ class viewModelObject {
   plotPoints: plotData[];
   groupedLines: nestReturnT[];
   anyHighlights: boolean;
+  axisLimits: axisLimits;
+  displayPlot: boolean;
 
   getPlotData(): plotData[] {
     let plotPoints = new Array<plotData>();
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
-      let index: number = this.calculatedLimits.keys[i].id;
+      let index: number = this.calculatedLimits.keys[i].x;
       plotPoints.push({
         x: index,
         value: this.calculatedLimits.values[i],
@@ -46,7 +49,7 @@ class viewModelObject {
                                 chart_type: this.inputData.chart_type,
                                 multiplier: this.inputData.multiplier,
                                 prop_labels: ["p", "pp"].includes(this.inputData.chart_type)}),
-        tick_label: {x: i, label: this.calculatedLimits.keys[i].label}
+        tick_label: {x: index, label: this.calculatedLimits.keys[i].label}
       })
     }
     return plotPoints;
@@ -79,7 +82,7 @@ class viewModelObject {
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
         formattedLines.push({
-          x: this.calculatedLimits.keys[i].id,
+          x: this.calculatedLimits.keys[i].x,
           line_value: this.calculatedLimits[label][i],
           group: label,
           colour: colours[label],
@@ -98,13 +101,20 @@ class viewModelObject {
     console.log("vm constructor")
     let dv: powerbi.DataView[] = args.options.dataViews;
     if (checkInvalidDataView(dv)) {
-      this.inputData = new dataObject({});
+      console.log("start")
+      this.inputData = new dataObject({empty: true});
+      console.log("data")
       this.inputSettings = args.inputSettings;
+      console.log("settings")
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = [new plotData({ empty: true })];
       this.groupedLines = [{ key: null, value: null, values: new lineData() }];
       this.anyHighlights = null;
+      console.log("bbefore axis")
+      this.axisLimits = new axisLimits({ empty: true })
+      this.displayPlot = false
+      console.log("finish")
       return;
     }
 
@@ -128,6 +138,10 @@ class viewModelObject {
                             .createSelectionId()
     })
     this.groupedLines = this.getGroupedLines();
+    this.axisLimits = new axisLimits({ inputData: this.inputData,
+                                        inputSettings: this.inputSettings,
+                                        calculatedLimits: this.calculatedLimits });
+    this.displayPlot = this.plotPoints.length > 1
   }
 }
 

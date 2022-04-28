@@ -17,7 +17,7 @@ function xbarLimits(inputData: dataObject): controlLimits {
 
   // Get the unique groupings to summarise
   let unique_groups: plotKey[] = unique_group_names.map((group_name, idx) => {
-    return {id: idx, label: group_name}
+    return { x: idx, id: idx, label: group_name }
   });
 
 

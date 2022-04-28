@@ -16,7 +16,7 @@ function sLimits(inputData: dataObject): controlLimits {
   );
 
   let unique_groups: plotKey[] = unique_group_names.map((group_name, idx) => {
-    return {id: idx, label: group_name}
+    return { x: idx, id: idx, label: group_name }
   });
 
   // Calculate number of observations in each group

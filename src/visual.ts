@@ -105,33 +105,14 @@ export class Visual implements IVisual {
         // Get the width and height of plotting space
         this.width = options.viewport.width;
         this.height = options.viewport.height;
-        let min: number = d3.min([d3.min(this.viewModel.calculatedLimits.ll99),d3.min(this.viewModel.calculatedLimits.values)])
 
-        // Add appropriate padding so that plotted data doesn't overlay axis
-        let xAxisPadding: number = this.settings.axispad.x.padding.value;
-        let yAxisPadding: number = this.settings.axispad.y.padding.value;
-        let xAxisEndPadding: number = this.settings.axispad.x.end_padding.value;
-        let yAxisEndPadding: number = this.settings.axispad.y.end_padding.value;
-        let xAxisMin: number = this.settings.axis.xlimit_l.value ? this.settings.axis.xlimit_l.value : 0;
-        let xAxisMax: number = this.settings.axis.xlimit_u.value ? this.settings.axis.xlimit_u.value : d3.max(this.viewModel.plotPoints.map(point => point.x)) + 1;
-        let yAxisMin: number = this.settings.axis.ylimit_l.value ? this.settings.axis.ylimit_l.value : min - Math.abs(min * 0.0025)
-        let yAxisMax: number = this.settings.axis.ylimit_u.value ? this.settings.axis.ylimit_u.value : d3.max(this.viewModel.calculatedLimits.ul99) + Math.abs(d3.max(this.viewModel.calculatedLimits.ul99) * 0.025) ;
-        let displayAxes: boolean = this.viewModel.plotPoints.length > 1;
-      console.log("c")
         // Dynamically scale chart to use all available space
         this.svg.attr("width", this.width)
                 .attr("height", this.height);
 
-        // Define axes for chart.
-        //   Takes a given plot axis value and returns the appropriate screen height
-        //     to plot at.
-        this.yScale = d3.scaleLinear()
-                .domain([yAxisMin, yAxisMax])
-                .range([this.height - xAxisPadding, xAxisEndPadding]);
+        this.drawXAxis();
+        this.drawYAxis();
 
-        this.xScale = d3.scaleLinear()
-                .domain([xAxisMin, xAxisMax])
-                .range([yAxisPadding, this.width - yAxisEndPadding]);
       console.log("d")
         this.listeningRectSelection = this.listeningRect
                                           .selectAll(".obs-sel")
@@ -148,58 +129,6 @@ export class Visual implements IVisual {
       console.log("e1")
         }
 
-      console.log("f")
-        let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
-        console.log(xLabels)
-        let yAxis: d3.Axis<d3.NumberValue>
-            = d3.axisLeft(this.yScale)
-                .tickFormat(
-                    d => {
-                      // If axis displayed on % scale, then disable axis values > 100%
-                      let prop_limits: boolean = this.viewModel.inputData.chart_type == "p" && this.viewModel.inputData.multiplier == 1;
-                      return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
-                    }
-                );
-      console.log("f")
-        let xAxis: d3.Axis<d3.NumberValue>
-            = d3.axisBottom(this.xScale)
-                .tickFormat(
-                    d => <string>xLabels.filter(key => <number>d == key.x).map(key => key.label)[0]
-                )
-
-      console.log("g")
-            // Draw axes on plot
-            this.yAxisGroup
-                .call(yAxis)
-                .attr("color", displayAxes ? "#000000" : "#FFFFFF")
-                .attr("transform", "translate(" +  yAxisPadding + ",0)");
-
-            this.xAxisGroup
-                .call(xAxis)
-                .attr("color", displayAxes ? "#000000" : "#FFFFFF")
-                // Plots the axis at the correct height
-                .attr("transform", "translate(0, " + (this.height - xAxisPadding) + ")")
-                .selectAll("text")
-                // Rotate tick labels
-                .attr("transform","rotate(-35)")
-                // Right-align
-                .style("text-anchor", "end")
-                // Scale font
-                .style("font-size","x-small");
-
-            this.xAxisLabels.attr("x",this.width/2)
-                .attr("y",this.height - xAxisPadding/10)
-                .style("text-anchor", "middle")
-                .text(this.settings.axis.xlimit_label.value);
-            this.yAxisLabels
-                .attr("x",yAxisPadding)
-                .attr("y",this.height/2)
-                .attr("transform","rotate(-90," + yAxisPadding/3 +"," + this.height/2 +")")
-                .text(this.settings.axis.ylimit_label.value)
-                .style("text-anchor", "end");
-
-
-      console.log("h")
         this.lineSelection = this.lineGroup
                                  .selectAll(".line")
                                  .data(this.viewModel.groupedLines);
@@ -224,6 +153,82 @@ export class Visual implements IVisual {
         this.addContextMenu()
         this.listeningRectSelection.exit().remove()
     }
+
+  drawYAxis(): void {
+    let yAxisMin: number = this.viewModel.axisLimits.y.lower;
+    let yAxisMax: number = this.viewModel.axisLimits.y.upper;
+    let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
+    let yAxisPadding: number = this.viewModel.axisLimits.y.padding;
+    let xAxisEndPadding: number = this.settings.axispad.x.end_padding.value;
+
+    this.yScale = d3.scaleLinear()
+                    .domain([yAxisMin, yAxisMax])
+                    .range([this.height - xAxisPadding, xAxisEndPadding]);
+
+    let yAxis: d3.Axis<d3.NumberValue>
+      = d3.axisLeft(this.yScale)
+          .tickFormat(
+              d => {
+                // If axis displayed on % scale, then disable axis values > 100%
+                let prop_limits: boolean = this.viewModel.inputData.chart_type == "p" && this.viewModel.inputData.multiplier == 1;
+                return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
+              }
+          );
+
+    // Draw axes on plot
+    this.yAxisGroup
+        .call(yAxis)
+        .attr("color", this.viewModel.displayPlot ? "#000000" : "#FFFFFF")
+        .attr("transform", "translate(" +  yAxisPadding + ",0)");
+
+
+    this.yAxisLabels
+        .attr("x",yAxisPadding)
+        .attr("y",this.height/2)
+        .attr("transform","rotate(-90," + yAxisPadding/3 +"," + this.height/2 +")")
+        .text(this.settings.axis.ylimit_label.value)
+        .style("text-anchor", "end");
+  }
+
+  drawXAxis(): void {
+    let xAxisMin: number = this.viewModel.axisLimits.x.lower;
+    let xAxisMax: number = this.viewModel.axisLimits.x.upper;
+    let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
+    let yAxisPadding: number = this.viewModel.axisLimits.y.padding;
+    let yAxisEndPadding: number = this.settings.axispad.y.end_padding.value;
+    this.xScale = d3.scaleLinear()
+                    .domain([xAxisMin, xAxisMax])
+                    .range([yAxisPadding, this.width - yAxisEndPadding]);
+
+    let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
+    console.log(xLabels)
+    let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.xScale)
+        .tickFormat(
+            d => {
+              let label = <string>xLabels.filter(key => <number>d == key.x).map(key => key.label)[0]
+              console.log(d,", ",label)
+              return label;
+            }
+        )
+
+    this.xAxisGroup
+        .call(xAxis)
+        .attr("color", this.viewModel.displayPlot ? "#000000" : "#FFFFFF")
+        // Plots the axis at the correct height
+        .attr("transform", "translate(0, " + (this.height - xAxisPadding) + ")")
+        .selectAll("text")
+        // Rotate tick labels
+        .attr("transform","rotate(-35)")
+        // Right-align
+        .style("text-anchor", "end")
+        // Scale font
+        .style("font-size","x-small");
+
+    this.xAxisLabels.attr("x",this.width/2)
+        .attr("y",this.height - xAxisPadding/10)
+        .style("text-anchor", "middle")
+        .text(this.settings.axis.xlimit_label.value);
+  }
 
   highlightIfSelected(LineObject: d3.Selection<SVGPathElement, any, any, any>) {
     if (!this.dotSelection || !this.selectionManager.getSelectionIds()) {
