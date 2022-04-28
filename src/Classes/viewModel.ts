@@ -110,6 +110,13 @@ class viewModelObject {
     console.log("chart object initialised")
     this.calculatedLimits = this.chartBase.getLimits();
     this.plotPoints = this.getPlotData();
+    this.plotPoints.forEach((point, idx) => {
+      point.identity = args.host
+                            .createSelectionIdBuilder()
+                            .withCategory(this.inputData.categories,
+                                            this.inputData.keys[idx].id)
+                            .createSelectionId()
+    })
     this.groupedLines = this.getGroupedLines();
   }
 }

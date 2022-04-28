@@ -339,6 +339,7 @@ export class Visual implements IVisual {
     this.svg.on('click', (d) => {
         this.selectionManager.clear();
         LineObject.style("stroke-opacity", dot_opacity);
+        MergedDotObject.style("fill-opacity", dot_opacity);
         this.highlightIfSelected(LineObject);
     });
   }

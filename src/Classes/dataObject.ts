@@ -17,6 +17,7 @@ class dataObject {
   chart_type: string;
   multiplier: number;
   highlights: powerbi.PrimitiveValue[];
+  categories: powerbi.DataViewCategoryColumn;
 
   constructor(args: dataObjectConstructor) {
     let numerators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.numerators)[0];
@@ -50,6 +51,7 @@ class dataObject {
     this.chart_type = chart_type;
     this.multiplier = multiplier;
     this.highlights = numerators_raw.highlights;
+    this.categories = args.inputView.categories[0]
   }
 }
 
