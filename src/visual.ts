@@ -138,13 +138,16 @@ export class Visual implements IVisual {
         this.tooltipLineSelection = this.tooltipLineGroup
                                           .selectAll(".ttip-line")
                                           .data(this.viewModel.plotPoints);
+      console.log("e")
 
         if (this.viewModel.plotPoints.length > 1) {
         //    initTooltipTracking(this.svg, this.listeningRectSelection, this.tooltipLineSelection, width, height - xAxisPadding,
         //        xScale, yScale, this.host.tooltipService, this.viewModel);
-        this.initTooltipTracking();
+        //this.initTooltipTracking();
+      console.log("e1")
         }
 
+      console.log("f")
         let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
 
         let yAxis: d3.Axis<d3.NumberValue>
@@ -156,12 +159,14 @@ export class Visual implements IVisual {
                       return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
                     }
                 );
+      console.log("f")
         let xAxis: d3.Axis<d3.NumberValue>
             = d3.axisBottom(this.xScale)
                 .tickFormat(
                     d => <string>xLabels.filter(d2 => <number>d == d2[0]).map(d3 => d3[1])[0]
                 )
 
+      console.log("g")
             // Draw axes on plot
             this.yAxisGroup
                 .call(yAxis)
@@ -193,6 +198,7 @@ export class Visual implements IVisual {
                 .style("text-anchor", "end");
 
 
+      console.log("h")
         this.lineSelection = this.lineGroup
                                  .selectAll(".line")
                                  .data(this.viewModel.groupedLines);
@@ -207,11 +213,13 @@ export class Visual implements IVisual {
                        //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
                        .data(this.viewModel.plotPoints);
 
+      console.log("i")
         this.makeDots(lineMerged);
 
         if (this.viewModel.anyHighlights) {
             lineMerged.style("stroke-opacity", this.settings.scatter.opacity_unselected.value)
         }
+      console.log("j")
         this.addContextMenu()
         this.listeningRectSelection.exit().remove()
     }
@@ -347,6 +355,9 @@ export class Visual implements IVisual {
 
     let GroupedLines = this.viewModel.groupedLines;
     let group_keys: string[] = GroupedLines.map(d => d.key)
+
+    console.log(GroupedLines);
+    console.log(group_keys)
 
     let line_color = d3.scaleOrdinal()
                         .domain(group_keys)

@@ -35,7 +35,8 @@ class viewModelObject {
         colour: this.inputSettings.scatter.colour.value,
         identity: null,
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
-        tooltip: [],
+        tooltip: [{displayName: "Date", value: this.calculatedLimits.keys[i].label},
+                  {displayName: "Value", value: this.calculatedLimits.values[i].toFixed(2)}],
         tick_label: {x: i, label: this.calculatedLimits.keys[i].label}
       })
     }
@@ -45,23 +46,23 @@ class viewModelObject {
   getGroupedLines(): nestReturnT[] {
     let multiplier: number = this.inputData.multiplier;
     let colours = {
-      l99: this.inputSettings.lines.colour_99.value,
-      l95: this.inputSettings.lines.colour_95.value,
-      u95: this.inputSettings.lines.colour_95.value,
-      u99: this.inputSettings.lines.colour_99.value,
+      ll99: this.inputSettings.lines.colour_99.value,
+      ll95: this.inputSettings.lines.colour_95.value,
+      ul95: this.inputSettings.lines.colour_95.value,
+      ul99: this.inputSettings.lines.colour_99.value,
       targets: this.inputSettings.lines.colour_target.value,
-      main: this.inputSettings.lines.colour_main.value
+      values: this.inputSettings.lines.colour_main.value
     }
     let widths = {
-      l99: this.inputSettings.lines.width_99.value,
-      l95: this.inputSettings.lines.width_95.value,
-      u95: this.inputSettings.lines.width_95.value,
-      u99: this.inputSettings.lines.width_99.value,
-      target: this.inputSettings.lines.width_target.value,
-      main: this.inputSettings.lines.width_main.value
+      ll99: this.inputSettings.lines.width_99.value,
+      ll95: this.inputSettings.lines.width_95.value,
+      ul95: this.inputSettings.lines.width_95.value,
+      ul99: this.inputSettings.lines.width_99.value,
+      targets: this.inputSettings.lines.width_target.value,
+      values: this.inputSettings.lines.width_main.value
     }
 
-    let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "target", "main"];
+    let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values"];
 
     let formattedLines: lineData[] = new Array<lineData>();
     let nLimits = this.calculatedLimits.keys.length;
@@ -69,7 +70,7 @@ class viewModelObject {
       labels.forEach(label => {
         formattedLines.push({
           x: this.calculatedLimits.keys[i].id,
-          line_value: this.calculatedLimits.values[i],
+          line_value: this.calculatedLimits[label][i],
           group: label,
           colour: colours[label],
           width: widths[label]
@@ -84,6 +85,7 @@ class viewModelObject {
   constructor(args: { options: VisualUpdateOptions;
                       inputSettings: settingsObject;
                       host: IVisualHost; }) {
+    console.log("vm constructor")
     let dv: powerbi.DataView[] = args.options.dataViews;
     if (checkInvalidDataView(dv)) {
       this.inputData = new dataObject({});
@@ -96,12 +98,16 @@ class viewModelObject {
       return;
     }
 
+    console.log("invalid data checked")
     this.inputData = new dataObject({ inputView: dv[0].categorical,
                                       inputSettings: args.inputSettings})
+    console.log("input data extracted")
     this.inputSettings = args.inputSettings;
     this.anyHighlights = this.inputData.highlights ? true : false;
+    console.log("settings extracted")
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
+    console.log("chart object initialised")
     this.calculatedLimits = this.chartBase.getLimits();
     this.plotPoints = this.getPlotData();
     this.groupedLines = this.getGroupedLines();
