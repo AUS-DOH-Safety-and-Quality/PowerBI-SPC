@@ -28,6 +28,7 @@ class viewModelObject {
   anyHighlights: boolean;
   axisLimits: axisLimits;
   displayPlot: boolean;
+  percentLabels: boolean;
 
   getPlotData(): plotData[] {
     let plotPoints = new Array<plotData>();
@@ -132,7 +133,9 @@ class viewModelObject {
     this.axisLimits = new axisLimits({ inputData: this.inputData,
                                         inputSettings: this.inputSettings,
                                         calculatedLimits: this.calculatedLimits });
-    this.displayPlot = this.plotPoints.length > 1
+    this.displayPlot = this.plotPoints.length > 1;
+    this.percentLabels = ["p", "pp"].includes(this.inputData.chart_type)
+                            && this.inputData.multiplier == 1
   }
 }
 

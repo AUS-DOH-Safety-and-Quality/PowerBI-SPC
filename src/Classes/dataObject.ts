@@ -67,7 +67,7 @@ class dataObject {
     this.groups = extractValues(groups, valid_ids);
     this.chart_type = chart_type;
     this.multiplier = multiplier;
-    this.highlights = numerators_raw.highlights;
+    this.highlights = numerators_raw.highlights ? extractValues(numerators_raw.highlights, valid_ids) : numerators_raw.highlights;
     this.categories = args.inputView.categories[0]
   }
 }
