@@ -21,6 +21,8 @@ import lineData from "./Classes/lineData"
 import plotPropertiesClass from "./Classes/plotProperties"
 import svgObjectClass from "./Classes/svgObjectClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
+import getGroupKeys from "./Functions/getGroupKeys"
+import { groupKeysT } from "./Functions/getGroupKeys"
 
 type SelectionAny = d3.Selection<any, any, any, any>;
 type SelectionSVG = d3.Selection<SVGElement, any, any, any>;
@@ -44,7 +46,6 @@ export class Visual implements IVisual {
                   .append("svg");
 
     this.svgObjects = new svgObjectClass(this.svg);
-    this.svgSelections = new svgSelectionClass();
 
     this.selectionManager = this.host.createSelectionManager();
     this.settings = new settingsObject();
@@ -62,6 +63,9 @@ export class Visual implements IVisual {
     this.viewModel = new viewModelObject({ options: options,
                                           inputSettings: this.settings,
                                           host: this.host });
+
+    this.svgSelections = new svgSelectionClass({ svgObjects: this.svgObjects,
+                                                  viewModel: this.viewModel});
 
     this.plotProperties = new plotPropertiesClass({
       options: options,
@@ -98,12 +102,6 @@ export class Visual implements IVisual {
   }
 
   initTooltipTracking(): void {
-    this.svgSelections.listeningRectSelection = this.svgObjects.listeningRect
-                                                  .selectAll(".obs-sel")
-                                                  .data(this.viewModel.plotPoints);
-    this.svgSelections.tooltipLineSelection = this.svgObjects.tooltipLineGroup
-                                    .selectAll(".ttip-line")
-                                    .data(this.viewModel.plotPoints);
     let xAxisLine = this.svgSelections.tooltipLineSelection
                         .enter()
                         .append("rect")
@@ -216,31 +214,18 @@ export class Visual implements IVisual {
   }
 
   drawLines(): void {
-    let l99_width: number = this.settings.lines.width_99.value;
-    let l95_width: number = this.settings.lines.width_95.value;
-    let main_width: number = this.settings.lines.width_main.value;
-    let target_width: number = this.settings.lines.width_target.value;
-    let l99_colour: string = this.settings.lines.colour_99.value;
-    let l95_colour: string = this.settings.lines.colour_95.value;
-    let main_colour: string = this.settings.lines.colour_main.value;
-    let target_colour: string = this.settings.lines.colour_target.value;
+    let lineMetadata: groupKeysT = getGroupKeys({ inputSettings: this.settings,
+                                                  viewModel: this.viewModel})
     let opacity: number = this.settings.scatter.opacity.value;
     let opacity_unsel: number = this.settings.scatter.opacity_unselected.value;
 
-    let GroupedLines = this.viewModel.groupedLines;
-    let group_keys: string[] = GroupedLines.map(d => d.key)
-
-    this.svgSelections.lineSelection = this.svgObjects.lineGroup
-                              .selectAll(".line")
-                              .data(this.viewModel.groupedLines);
-
     let line_color = d3.scaleOrdinal()
-                        .domain(group_keys)
-                        .range([l99_colour, l95_colour, l95_colour, l99_colour, target_colour, main_colour]);
+                        .domain(lineMetadata.keys)
+                        .range(lineMetadata.colours);
 
     let line_width = d3.scaleOrdinal()
-                        .domain(group_keys)
-                        .range([l99_width, l95_width, l95_width, l99_width, target_width, main_width]);
+                        .domain(lineMetadata.keys)
+                        .range(lineMetadata.widths);
 
     this.plottingMerged.linesMerged = this.svgSelections.lineSelection
                           .enter()
@@ -269,13 +254,6 @@ export class Visual implements IVisual {
     let dot_opacity: number = this.settings.scatter.opacity.value;
     let dot_opacity_unsel: number = this.settings.scatter.opacity_unselected.value;
 
-    // Bind input data to dotGroup reference
-    this.svgSelections.dotSelection = this.svgObjects.dotGroup
-                            // List all child elements of dotGroup that have CSS class '.dot'
-                            .selectAll(".dot")
-                            // Matches input array to a list, returns three result sets
-                            //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
-                            .data(this.viewModel.plotPoints);
     // Update the datapoints if data is refreshed
     this.plottingMerged.dotsMerged = this.svgSelections.dotSelection.enter()
                   .append("circle")
