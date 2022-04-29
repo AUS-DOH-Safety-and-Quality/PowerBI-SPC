@@ -43,6 +43,8 @@ export class Visual implements IVisual {
     private width: number;
     private xScale: d3.ScaleLinear<number, number, never>
     private yScale: d3.ScaleLinear<number, number, never>;
+    private plottingMerged: { dotsMerged: d3.Selection<any, any, any, any>,
+                              linesMerged: d3.Selection<any, any, any, any> };
 
     // Method for notifying PowerBI of changes in the visual to propagate to the
     //   rest of the report
@@ -84,9 +86,12 @@ export class Visual implements IVisual {
       this.selectionManager = this.host.createSelectionManager();
       this.settings = new settingsObject();
 
+      this.plottingMerged = { dotsMerged: null, linesMerged: null };
+
       // Update dot highlighting on initialisation
       this.selectionManager.registerOnSelectCallback(() => {
-        this.highlightIfSelected();
+      console.log("callback")
+        this.updateHighlighting();
       })
     }
 
@@ -194,24 +199,35 @@ export class Visual implements IVisual {
         .text(this.settings.axis.xlimit_label.value);
   }
 
-  highlightIfSelected(): void {
-    if (!this.dotSelection || !this.selectionManager.getSelectionIds()) {
-      this.dotSelection
-          .style("fill-opacity",
-                  this.settings.scatter.opacity.value);
-        this.lineSelection
-            .style("stroke-opacity",
-                    this.settings.scatter.opacity.value);
+  updateHighlighting(): void {
+    if (!this.plottingMerged.dotsMerged) {
         return;
     }
-    this.dotSelection.each(d => {
-        const opacity: number
-            = checkIDSelected(this.selectionManager.getSelectionIds() as ISelectionId[], d.identity)
-              ? this.settings.scatter.opacity.value
-              : this.settings.scatter.opacity_unselected.value;
-        (<any>d3).select(this.dotSelection)
-                  .style("fill-opacity", opacity);
-    });
+    if (!this.plottingMerged.linesMerged) {
+        return;
+    }
+    let anyHighlights: boolean = this.viewModel.anyHighlights;
+    let allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+
+
+    let opacityFull: number = this.settings.scatter.opacity.value;
+    let opacityReduced: number = this.settings.scatter.opacity_unselected.value;
+
+    let defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
+                                    ? opacityReduced
+                                    : opacityFull;
+    this.plottingMerged.linesMerged.style("stroke-opacity", defaultOpacity);
+    this.plottingMerged.dotsMerged.style("fill-opacity", defaultOpacity);
+
+    if (anyHighlights || (allSelectionIDs.length > 0)) {
+    this.dotSelection.style("fill-opacity", (dot: plotData) => {
+      let currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
+        return currentSelectionId.includes(dot.identity);
+      });
+      let currentPointHighlighted: boolean = dot.highlighted;
+      return (currentPointSelected || currentPointHighlighted) ? opacityFull : opacityReduced;
+    })
+    }
   }
 
   drawDots(): void {
@@ -228,27 +244,22 @@ export class Visual implements IVisual {
                             //   - HTML element for which there are no matching datapoint (if so, creates new elements to be appended)
                             .data(this.viewModel.plotPoints);
     // Update the datapoints if data is refreshed
-    this.dotSelection = this.dotSelection.enter()
+    this.plottingMerged.dotsMerged = this.dotSelection.enter()
                   .append("circle")
                   .merge(<any>this.dotSelection);
 
-    this.dotSelection.classed("dot", true);
+    this.plottingMerged.dotsMerged.classed("dot", true);
 
-    this.dotSelection.filter(d => (d.value != null))
+    this.plottingMerged.dotsMerged.filter(d => (d.value != null))
               .attr("cy", d => this.yScale(d.value))
               .attr("cx", d => this.xScale(d.x))
               .attr("r", dot_size)
             // Fill each dot with the colour in each DataPoint
               .style("fill", d => dot_colour);
 
-    this.highlightIfSelected();
-
-    console.log("highlights: ", this.viewModel.inputData.highlights)
-
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
-    this.dotSelection
-        .style("fill-opacity", d => this.viewModel.anyHighlights ? (d.highlighted ? dot_opacity : dot_opacity_unsel) : dot_opacity)
+    this.plottingMerged.dotsMerged
         .on("click", d => {
             // Pass identities of selected data back to PowerBI
             this.selectionManager
@@ -257,13 +268,15 @@ export class Visual implements IVisual {
                 .select(d.identity, (<any>d3).event.ctrlKey)
                 // Change opacity of non-selected dots
                 .then(ids => {
-                  this.dotSelection.style(
+                  let anySelected: boolean = ids.length > 0;
+                  this.plottingMerged.dotsMerged.style(
                         "fill-opacity", d =>
-                        ids.length > 0 ?
+                        anySelected ?
                         (ids.indexOf(d.identity) >= 0 ? dot_opacity : dot_opacity_unsel)
                         : dot_opacity
                     );
-                    this.lineSelection.style("stroke-opacity", ids.length > 0 ? dot_opacity_unsel : dot_opacity)
+                  this.plottingMerged.linesMerged.style("stroke-opacity",
+                    anySelected ? dot_opacity_unsel : dot_opacity);
                 });
                 (<any>d3).event.stopPropagation();
           })
@@ -308,13 +321,13 @@ export class Visual implements IVisual {
             })
         });
 
+    this.updateHighlighting();
     this.dotSelection.exit().remove();
-    this.lineSelection.exit().remove();
-    this.svg.on('click', (d) => {
+    this.plottingMerged.dotsMerged.exit().remove();
+
+    this.svg.on('click', () => {
         this.selectionManager.clear();
-        this.lineSelection.style("stroke-opacity", dot_opacity);
-        this.dotSelection.style("fill-opacity", dot_opacity);
-        this.highlightIfSelected();
+        this.updateHighlighting();
     });
   }
 
@@ -327,6 +340,8 @@ export class Visual implements IVisual {
     let l95_colour: string = this.settings.lines.colour_95.value;
     let main_colour: string = this.settings.lines.colour_main.value;
     let target_colour: string = this.settings.lines.colour_target.value;
+    let opacity: number = this.settings.scatter.opacity.value;
+    let opacity_unsel: number = this.settings.scatter.opacity_unselected.value;
 
     let GroupedLines = this.viewModel.groupedLines;
     let group_keys: string[] = GroupedLines.map(d => d.key)
@@ -343,24 +358,25 @@ export class Visual implements IVisual {
                         .domain(group_keys)
                         .range([l99_width, l95_width, l95_width, l99_width, target_width, main_width]);
 
-    this.lineSelection = this.lineSelection
+    this.plottingMerged.linesMerged = this.lineSelection
                           .enter()
                           .append("path")
                           .merge(<any>this.lineSelection);
 
-    this.lineSelection.classed('line', true);
-    this.lineSelection.attr("d", d => {
+    this.plottingMerged.linesMerged.classed('line', true);
+    this.plottingMerged.linesMerged.attr("d", d => {
                         return d3.line<lineData>()
                                   .x(d => this.xScale(d.x))
                                   .y(d => this.yScale(d.line_value))
                                   .defined(function(d) {return d.line_value !== null})
                                   (d.values)
                     });
-    this.lineSelection.attr("fill", "none")
+    this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => <string>line_color(d.key))
                     .attr("stroke-width", d => <number>line_width(d.key))
-                    .attr("stroke-opacity", () => this.viewModel.anyHighlights ? this.settings.scatter.opacity_unselected.value : this.settings.scatter.opacity.value);
+                    .attr("stroke-opacity", this.viewModel.anyHighlights ? opacity_unsel : opacity);
     this.lineSelection.exit().remove();
+    this.plottingMerged.linesMerged.exit().remove();
   }
 
   addContextMenu(): void {
