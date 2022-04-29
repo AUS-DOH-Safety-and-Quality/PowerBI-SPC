@@ -14,10 +14,10 @@ function checkIDSelected(globalSelectionIds: ISelectionId[],
   if (!globalSelectionIds || !currentSelectionId) {
     return false;
   }
+  console.log(globalSelectionIds)
+  console.log(currentSelectionId)
 
-  return globalSelectionIds.some(d => {
-    return d.includes(currentSelectionId);
-  });
+  return globalSelectionIds.includes(currentSelectionId);
 }
 
 export default checkIDSelected;
