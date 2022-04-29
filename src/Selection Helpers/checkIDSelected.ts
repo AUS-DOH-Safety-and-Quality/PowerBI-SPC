@@ -14,8 +14,6 @@ function checkIDSelected(globalSelectionIds: ISelectionId[],
   if (!globalSelectionIds || !currentSelectionId) {
     return false;
   }
-  console.log(globalSelectionIds)
-  console.log(currentSelectionId)
 
   return globalSelectionIds.includes(currentSelectionId);
 }

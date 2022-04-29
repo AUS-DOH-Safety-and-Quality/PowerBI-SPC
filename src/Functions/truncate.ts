@@ -3,7 +3,6 @@ type ScalarT<T extends number | number[]> = T extends number ? number : number[]
 function truncate<T extends number | number[]>(
   val: T, limits: {lower?: number, upper?: number}
 ): T {
-  console.log(limits)
   let rtn: T = val;
   if (limits.lower || limits.lower == 0) {
     if (Array.isArray(val)) {

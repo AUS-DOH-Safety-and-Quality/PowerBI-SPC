@@ -50,8 +50,6 @@ class dataObject {
 
     let valid_keys: plotKey[] = new Array<plotKey>();
 
-    console.log("d length: ", denominators.length)
-
     for (let i: number = 0; i < denominators.length; i++) {
       if(checkValidInput(numerators[i], denominators[i], chart_type)) {
         valid_ids.push(i);

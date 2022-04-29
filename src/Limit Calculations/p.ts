@@ -9,8 +9,7 @@ import truncate from "../Functions/truncate"
 function pLimits(inputData: dataObject): controlLimits {
   let cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
   let sigma: number[] = sqrt(divide(cl * (1 - cl), inputData.denominators));
-  console.log("plimits")
-  console.log("sigma: ", sigma)
+
   return {
     keys: inputData.keys,
     values: divide(inputData.numerators, inputData.denominators),

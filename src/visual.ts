@@ -109,10 +109,10 @@ export class Visual implements IVisual {
       this.svg.attr("width", this.width)
               .attr("height", this.height);
 
+      this.initTooltipTracking();
+
       this.drawXAxis();
       this.drawYAxis();
-
-      this.initTooltipTracking();
 
       this.drawLines();
       this.drawDots();
@@ -167,12 +167,10 @@ export class Visual implements IVisual {
                     .range([yAxisPadding, this.width - yAxisEndPadding]);
 
     let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
-    console.log(xLabels)
     let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.xScale)
         .tickFormat(
             d => {
               let label = <string>xLabels.filter(key => <number>d == key.x).map(key => key.label)[0]
-              console.log(d,", ",label)
               return label;
             }
         )
@@ -198,7 +196,6 @@ export class Visual implements IVisual {
 
   highlightIfSelected(): void {
     if (!this.dotSelection || !this.selectionManager.getSelectionIds()) {
-      console.log("no selection")
       this.dotSelection
           .style("fill-opacity",
                   this.settings.scatter.opacity.value);
@@ -207,21 +204,11 @@ export class Visual implements IVisual {
                     this.settings.scatter.opacity.value);
         return;
     }
-    console.log("selection here");/*
-    (<any>d3).select(this.lineSelection)
-              .style("stroke-opacity",
-                      this.settings.scatter.opacity_unselected.value);
-*/
-                      console.log("selection here2");
-    this.dotSelection.each((d, idx) => {console.log(idx);console.log(checkIDSelected(this.selectionManager.getSelectionIds() as ISelectionId[], d.identity))});
     this.dotSelection.each(d => {
-      console.log("selection here3");
         const opacity: number
             = checkIDSelected(this.selectionManager.getSelectionIds() as ISelectionId[], d.identity)
               ? this.settings.scatter.opacity.value
               : this.settings.scatter.opacity_unselected.value;
-              console.log("selection here4");
-        console.log("opacity: ", opacity);
         (<any>d3).select(this.dotSelection)
                   .style("fill-opacity", opacity);
     });
@@ -255,6 +242,8 @@ export class Visual implements IVisual {
               .style("fill", d => dot_colour);
 
     this.highlightIfSelected();
+
+    console.log("highlights: ", this.viewModel.inputData.highlights)
 
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots

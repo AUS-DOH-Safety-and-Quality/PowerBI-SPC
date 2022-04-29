@@ -78,7 +78,7 @@ class viewModelObject {
 
     let formattedLines: lineData[] = new Array<lineData>();
     let nLimits = this.calculatedLimits.keys.length;
-    console.log(this.calculatedLimits)
+
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
         formattedLines.push({
@@ -98,36 +98,27 @@ class viewModelObject {
   constructor(args: { options: VisualUpdateOptions;
                       inputSettings: settingsObject;
                       host: IVisualHost; }) {
-    console.log("vm constructor")
+
     let dv: powerbi.DataView[] = args.options.dataViews;
     if (checkInvalidDataView(dv)) {
-      console.log("start")
       this.inputData = new dataObject({empty: true});
-      console.log("data")
       this.inputSettings = args.inputSettings;
-      console.log("settings")
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = [new plotData({ empty: true })];
       this.groupedLines = [{ key: null, value: null, values: new lineData() }];
       this.anyHighlights = null;
-      console.log("bbefore axis")
       this.axisLimits = new axisLimits({ empty: true })
       this.displayPlot = false
-      console.log("finish")
       return;
     }
 
-    console.log("invalid data checked")
     this.inputData = new dataObject({ inputView: dv[0].categorical,
                                       inputSettings: args.inputSettings})
-    console.log("input data extracted")
     this.inputSettings = args.inputSettings;
     this.anyHighlights = this.inputData.highlights ? true : false;
-    console.log("settings extracted")
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
-    console.log("chart object initialised")
     this.calculatedLimits = this.chartBase.getLimits();
     this.plotPoints = this.getPlotData();
     this.plotPoints.forEach((point, idx) => {

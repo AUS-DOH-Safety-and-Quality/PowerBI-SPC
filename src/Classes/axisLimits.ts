@@ -44,8 +44,6 @@ class axisLimits {
       padding: args.inputSettings.axispad.x.padding.value
     };
 
-    console.log(this.x.upper)
-
     this.y = {
       lower: yLowerInput ? yLowerInput : lowerLimit,
       upper: yUpperInput ? yUpperInput : upperLimit,
