@@ -60,7 +60,6 @@ class viewModelObject {
   }
 
   getGroupedLines(): nestReturnT[] {
-    let multiplier: number = this.inputData.multiplier;
     let colours = {
       ll99: this.inputSettings.lines.colour_99.value,
       ll95: this.inputSettings.lines.colour_95.value,
@@ -104,6 +103,7 @@ class viewModelObject {
                       host: IVisualHost; }) {
 
     let dv: powerbi.DataView[] = args.options.dataViews;
+    console.log("before invalid")
     if (checkInvalidDataView(dv)) {
       this.inputData = new dataObject({empty: true});
       this.inputSettings = args.inputSettings;
@@ -114,16 +114,21 @@ class viewModelObject {
       this.anyHighlights = null;
       this.axisLimits = new axisLimits({ empty: true })
       this.displayPlot = false
+    console.log("after invalid - a")
       return;
     }
+    console.log("after invalid - b")
 
     this.inputData = new dataObject({ inputView: dv[0].categorical,
                                       inputSettings: args.inputSettings})
+    console.log("Initialised data")
     this.inputSettings = args.inputSettings;
     this.anyHighlights = this.inputData.highlights ? true : false;
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
+    console.log("Initialised chart")
     this.calculatedLimits = this.chartBase.getLimits();
+    console.log(this.calculatedLimits)
     this.plotPoints = this.getPlotData();
     this.plotPoints.forEach((point, idx) => {
       point.identity = args.host

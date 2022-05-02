@@ -41,6 +41,7 @@ export class Visual implements IVisual {
   private settings: settingsObject;
 
   constructor(options: VisualConstructorOptions) {
+    console.log("Constructor start")
     this.host = options.host;
     this.svg = d3.select(options.element)
                   .append("svg");
@@ -55,14 +56,18 @@ export class Visual implements IVisual {
     this.selectionManager.registerOnSelectCallback(() => {
       this.updateHighlighting();
     })
+    console.log("Constructor finish")
   }
 
   public update(options: VisualUpdateOptions) {
     this.settings.updateSettings(options.dataViews[0].metadata.objects);
+    console.log("Updated settings")
 
     this.viewModel = new viewModelObject({ options: options,
                                           inputSettings: this.settings,
                                           host: this.host });
+    console.log("Created viewmodel")
+    console.log(this.viewModel)
 
     this.svgSelections = new svgSelectionClass({ svgObjects: this.svgObjects,
                                                   viewModel: this.viewModel});
@@ -73,18 +78,26 @@ export class Visual implements IVisual {
       inputSettings: this.settings
     });
 
+    console.log(this.plotProperties)
+
     this.svg.attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height);
 
     this.initTooltipTracking();
+    console.log("finish tooltip")
 
     this.drawXAxis();
+    console.log("finish x-axis")
     this.drawYAxis();
+    console.log("finish y-axis")
 
     this.drawLines();
+    console.log("finish lines")
     this.drawDots();
+    console.log("finish dots")
 
     this.addContextMenu();
+    console.log("finish context menu")
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane
@@ -112,18 +125,22 @@ export class Visual implements IVisual {
             .attr("height", this.plotProperties.height)
             .style("fill-opacity", 0);
 
-    this.svgSelections.listeningRectSelection
+    let tooltipMerged
         = this.svgSelections
               .listeningRectSelection
               .enter()
               .append("rect")
               .merge(<any>this.svgSelections.listeningRectSelection)
-    this.svgSelections.listeningRectSelection.classed("obs-sel", true);
+    tooltipMerged.classed("obs-sel", true);
 
-    this.svgSelections.listeningRectSelection.style("fill","transparent")
+    tooltipMerged.style("fill","transparent")
             .attr("width", this.plotProperties.width)
-            .attr("height", this.plotProperties.height)
-            .on("mousemove", d => {
+            .attr("height", this.plotProperties.height);
+    console.log("display: ", this.viewModel.displayPlot)
+    if (this.viewModel.displayPlot) {
+    console.log("here")
+      tooltipMerged.on("mousemove", () => {
+        console.log("here")
                 let xValue: number = this.plotProperties
                                               .xScale
                                               .invert((<any>d3).event.pageX);
@@ -143,22 +160,30 @@ export class Visual implements IVisual {
                 });
                 xAxisLine.style("fill-opacity", 1)
                         .attr("transform", "translate(" + scaled_x + ",0)");
-            })
-            .on("mouseleave", d => {
+            });
+            tooltipMerged.on("mouseleave", () => {
                 this.host.tooltipService.hide({
                     immediately: true,
                     isTouchEvent: false
                 });
                 xAxisLine.style("fill-opacity", 0);
             });
+    } else {
+      tooltipMerged.on("mousemove", () => {});
+      tooltipMerged.on("mouseleave", () => {});
+    }
     xAxisLine.exit().remove()
+    tooltipMerged.exit().remove()
     this.svgSelections.listeningRectSelection.exit().remove()
   }
 
   drawXAxis(): void {
     let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
-    let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.plotProperties.xScale)
-        .tickFormat(d => this.viewModel.tickLabels[<number>d].label)
+    let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.plotProperties.xScale);
+
+    if (this.viewModel.displayPlot) {
+      xAxis.tickFormat(d => this.viewModel.tickLabels[<number>d].label)
+    }
 
     this.svgObjects.xAxisGroup
         .call(xAxis)
@@ -207,21 +232,27 @@ export class Visual implements IVisual {
   }
 
   drawLines(): void {
+    console.log("start")
     let lineMetadata: groupKeysT = getGroupKeys({ inputSettings: this.settings,
                                                   viewModel: this.viewModel})
+    console.log("get keys")
+    console.log(lineMetadata)
     let line_color = d3.scaleOrdinal()
                         .domain(lineMetadata.keys)
                         .range(lineMetadata.colours);
+    console.log("set colours")
 
     let line_width = d3.scaleOrdinal()
                         .domain(lineMetadata.keys)
                         .range(lineMetadata.widths);
+    console.log("set widths")
 
     this.plottingMerged.linesMerged = this.svgSelections.lineSelection
                           .enter()
                           .append("path")
                           .merge(<any>this.svgSelections.lineSelection);
 
+    console.log("merge lines")
     this.plottingMerged.linesMerged.classed('line', true);
     this.plottingMerged.linesMerged.attr("d", d => {
         return d3.line<lineData>()
@@ -230,9 +261,11 @@ export class Visual implements IVisual {
                   .defined(function(d) {return d.line_value !== null})
                   (d.values)
     });
+    console.log("add data")
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => <string>line_color(d.key))
                     .attr("stroke-width", d => <number>line_width(d.key));
+    console.log("add aesthetics")
     this.svgSelections.lineSelection.exit().remove();
     this.plottingMerged.linesMerged.exit().remove();
   }
@@ -267,30 +300,36 @@ export class Visual implements IVisual {
                 // Change opacity of non-selected dots
                 .then(() => { this.updateHighlighting(); });
                 (<any>d3).event.stopPropagation();
-          })
-        // Display tooltip content on mouseover
-        .on("mouseover", d => {
-            // Get screen coordinates of mouse pointer, tooltip will
-            //   be displayed at these coordinates
-            //    Needs the '<any>' prefix, otherwise PowerBI doesn't defer
-            //      to d3 properly
-            let x = (<any>d3).event.pageX;
-            let y = (<any>d3).event.pageY;
+          });
+    if (this.viewModel.displayPlot) {
+          // Display tooltip content on mouseover
+      this.plottingMerged.dotsMerged.on("mouseover", d => {
+              // Get screen coordinates of mouse pointer, tooltip will
+              //   be displayed at these coordinates
+              //    Needs the '<any>' prefix, otherwise PowerBI doesn't defer
+              //      to d3 properly
+              let x = (<any>d3).event.pageX;
+              let y = (<any>d3).event.pageY;
 
-            this.host.tooltipService.show({
-                dataItems: d.tooltip,
-                identities: [d.identity],
-                coordinates: [x, y],
-                isTouchEvent: false
-            });
-        })
-        // Hide tooltip when mouse moves out of dot
-        .on("mouseout", () => {
-            this.host.tooltipService.hide({
-                immediately: true,
-                isTouchEvent: false
-            })
-        });
+              this.host.tooltipService.show({
+                  dataItems: d.tooltip,
+                  identities: [d.identity],
+                  coordinates: [x, y],
+                  isTouchEvent: false
+              });
+          })
+          // Hide tooltip when mouse moves out of dot
+          .on("mouseout", () => {
+              this.host.tooltipService.hide({
+                  immediately: true,
+                  isTouchEvent: false
+              })
+          });
+    } else {
+      this.plottingMerged.dotsMerged.on("mousemove", d => {})
+                                    .on("mouseleave", d => {});
+    }
+
 
     this.updateHighlighting();
     this.svgSelections.dotSelection.exit().remove();

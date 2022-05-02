@@ -36,12 +36,13 @@ class dataObject {
     }
     let numerators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.numerators)[0];
 
+    let denominators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.denominators)[0];
     let groups_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.groups)[0];
     let chart_type_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_type)[0];
     let multiplier_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_multiplier)[0];
 
     let numerators: number[] = <number[]>numerators_raw.values;
-    let denominators: number[] = <number[]>args.inputView.values.filter(d => d.source.roles.denominators)[0].values;
+    let denominators: number[] = denominators_raw ? <number[]>denominators_raw.values : null;
     let groups: string[] = groups_raw ? <string[]>groups_raw.values : [];
     let chart_type: string = chart_type_raw ? <string>chart_type_raw.values[0] : args.inputSettings.spc.chart_type.value;
     let multiplier: number = multiplier_raw ? <number>multiplier_raw.values[0] : args.inputSettings.spc.multiplier.value;
@@ -50,8 +51,11 @@ class dataObject {
 
     let valid_keys: plotKey[] = new Array<plotKey>();
 
-    for (let i: number = 0; i < denominators.length; i++) {
-      if(checkValidInput(numerators[i], denominators[i], chart_type)) {
+    console.log("numerators: ", numerators)
+    console.log(groups)
+
+    for (let i: number = 0; i < numerators.length; i++) {
+      if(checkValidInput(numerators[i], denominators ? denominators[i] : null, chart_type)) {
         valid_ids.push(i);
         let allCategories: string[] = <string[]>args.inputView.categories.map(category => category.values[i]);
         allCategories = allCategories.map(category => isDate(category) ? strToDMY(category) : category);

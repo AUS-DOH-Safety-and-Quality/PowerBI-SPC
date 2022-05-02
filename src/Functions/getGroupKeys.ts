@@ -33,7 +33,7 @@ function getGroupKeys(args: { inputSettings: settingsObject,
   ]
 
   return {
-    keys: inputKeys,
+    keys: inputKeys ? inputKeys : lineColours,
     colours: lineColours,
     widths: lineWidths
   };

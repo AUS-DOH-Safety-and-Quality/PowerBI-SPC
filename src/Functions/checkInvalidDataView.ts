@@ -14,14 +14,12 @@ function checkInvalidDataView(inputDV: powerbi.DataView[]): boolean {
 
   let flag2: boolean =
     !inputDV[0].categorical.categories[0].source
-    || inputDV[0].categorical.values.length < 2
 
   if (flag2) {
     return flag2;
   }
   let flag3: boolean =
     !inputDV[0].categorical.values[0].source.roles.numerators
-    || !inputDV[0].categorical.values[1].source.roles.denominators
 
   if (flag3) {
     return flag3;
