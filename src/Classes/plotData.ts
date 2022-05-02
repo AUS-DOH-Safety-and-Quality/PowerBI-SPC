@@ -26,7 +26,6 @@ class plotData {
   highlighted: boolean;
   // Tooltip data to print
   tooltip: VisualTooltipDataItem[];
-  tick_label: { x: number, label: string};
 
   constructor(args: plotDataConstructor) {
     if (args.empty) {
@@ -36,7 +35,6 @@ class plotData {
       this.identity = null;
       this.highlighted = null;
       this.tooltip = [null];
-      this.tick_label = {x: null, label: null};
       return;
     }
 
@@ -46,7 +44,6 @@ class plotData {
     this.identity = args.identity;
     this.highlighted = args.highlighted;
     this.tooltip = [];
-    this.tick_label = args.tick_label
   }
 };
 

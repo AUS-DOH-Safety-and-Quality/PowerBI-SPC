@@ -29,9 +29,11 @@ class viewModelObject {
   axisLimits: axisLimits;
   displayPlot: boolean;
   percentLabels: boolean;
+  tickLabels: { x: number; label: string; }[];
 
   getPlotData(): plotData[] {
     let plotPoints = new Array<plotData>();
+    let tickLabels = new Array<{ x: number; label: string; }>();
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
       plotPoints.push({
@@ -49,10 +51,11 @@ class viewModelObject {
                                 },
                                 chart_type: this.inputData.chart_type,
                                 multiplier: this.inputData.multiplier,
-                                prop_labels: ["p", "pp"].includes(this.inputData.chart_type)}),
-        tick_label: {x: index, label: this.calculatedLimits.keys[i].label}
+                                prop_labels: ["p", "pp"].includes(this.inputData.chart_type)})
       })
+      tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
     }
+    this.tickLabels = tickLabels;
     return plotPoints;
   }
 

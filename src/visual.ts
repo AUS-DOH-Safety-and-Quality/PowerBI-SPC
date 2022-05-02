@@ -112,28 +112,32 @@ export class Visual implements IVisual {
             .attr("height", this.plotProperties.height)
             .style("fill-opacity", 0);
 
-    this.svgSelections.listeningRectSelection = this.svgSelections.listeningRectSelection.enter()
-                                    .append("rect")
-                                    .merge(<any>this.svgSelections.listeningRectSelection)
+    this.svgSelections.listeningRectSelection
+        = this.svgSelections
+              .listeningRectSelection
+              .enter()
+              .append("rect")
+              .merge(<any>this.svgSelections.listeningRectSelection)
     this.svgSelections.listeningRectSelection.classed("obs-sel", true);
 
     this.svgSelections.listeningRectSelection.style("fill","transparent")
             .attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height)
             .on("mousemove", d => {
-                let xval: number = this.plotProperties.xScale.invert((<any>d3).event.pageX);
+                let xValue: number = this.plotProperties
+                                              .xScale
+                                              .invert((<any>d3).event.pageX);
+                let nearestDenominator: number = d3.bisectLeft(
+                  this.viewModel.plotPoints.map(d => d.x),
+                  xValue
+                );
 
-                let x_dist: number[] = this.viewModel.plotPoints.map(d => d.x).map(d => {
-                    return Math.abs(d - xval)
-                })
-                let minInd: number = d3.scan(x_dist,(a,b) => a-b);
-
-                let scaled_x: number = this.plotProperties.xScale(this.viewModel.plotPoints[minInd].x)
-                let scaled_y: number = this.plotProperties.yScale(this.viewModel.plotPoints[minInd].value)
+                let scaled_x: number = this.plotProperties.xScale(nearestDenominator)
+                let scaled_y: number = this.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
                 this.host.tooltipService.show({
-                    dataItems: this.viewModel.plotPoints[minInd].tooltip,
-                    identities: [this.viewModel.plotPoints[minInd].identity],
+                    dataItems: this.viewModel.plotPoints[nearestDenominator].tooltip,
+                    identities: [this.viewModel.plotPoints[nearestDenominator].identity],
                     coordinates: [scaled_x, scaled_y],
                     isTouchEvent: false
                 });
@@ -152,20 +156,9 @@ export class Visual implements IVisual {
   }
 
   drawXAxis(): void {
-    let xAxisMin: number = this.viewModel.axisLimits.x.lower;
-    let xAxisMax: number = this.viewModel.axisLimits.x.upper;
     let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
-    let yAxisPadding: number = this.viewModel.axisLimits.y.padding;
-    let yAxisEndPadding: number = this.settings.axispad.y.end_padding.value;
-
-    let xLabels: { x: number; label: string; }[] = this.viewModel.plotPoints.map(d => d.tick_label);
     let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.plotProperties.xScale)
-        .tickFormat(
-            d => {
-              let label = <string>xLabels.filter(key => <number>d == key.x).map(key => key.label)[0]
-              return label;
-            }
-        )
+        .tickFormat(d => this.viewModel.tickLabels[<number>d].label)
 
     this.svgObjects.xAxisGroup
         .call(xAxis)
@@ -193,9 +186,9 @@ export class Visual implements IVisual {
       = d3.axisLeft(this.plotProperties.yScale)
           .tickFormat(
               d => {
-                // If axis displayed on % scale, then disable axis values > 100%
-                let prop_limits: boolean = this.viewModel.inputData.chart_type == "p" && this.viewModel.inputData.multiplier == 1;
-                return prop_limits ? (d <= 1 ? (<number>d * 100).toFixed(2) + "%" : "" ) : <string><unknown>d;
+                return this.viewModel.percentLabels
+                  ? (<number>d * 100).toFixed(2) + "%"
+                  : d.toString();
               }
           );
 
@@ -216,9 +209,6 @@ export class Visual implements IVisual {
   drawLines(): void {
     let lineMetadata: groupKeysT = getGroupKeys({ inputSettings: this.settings,
                                                   viewModel: this.viewModel})
-    let opacity: number = this.settings.scatter.opacity.value;
-    let opacity_unsel: number = this.settings.scatter.opacity_unselected.value;
-
     let line_color = d3.scaleOrdinal()
                         .domain(lineMetadata.keys)
                         .range(lineMetadata.colours);
@@ -234,16 +224,15 @@ export class Visual implements IVisual {
 
     this.plottingMerged.linesMerged.classed('line', true);
     this.plottingMerged.linesMerged.attr("d", d => {
-                        return d3.line<lineData>()
-                                  .x(d => this.plotProperties.xScale(d.x))
-                                  .y(d => this.plotProperties.yScale(d.line_value))
-                                  .defined(function(d) {return d.line_value !== null})
-                                  (d.values)
-                    });
+        return d3.line<lineData>()
+                  .x(d => this.plotProperties.xScale(d.x))
+                  .y(d => this.plotProperties.yScale(d.line_value))
+                  .defined(function(d) {return d.line_value !== null})
+                  (d.values)
+    });
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => <string>line_color(d.key))
-                    .attr("stroke-width", d => <number>line_width(d.key))
-                    .attr("stroke-opacity", this.viewModel.anyHighlights ? opacity_unsel : opacity);
+                    .attr("stroke-width", d => <number>line_width(d.key));
     this.svgSelections.lineSelection.exit().remove();
     this.plottingMerged.linesMerged.exit().remove();
   }
@@ -251,8 +240,6 @@ export class Visual implements IVisual {
   drawDots(): void {
     let dot_size: number = this.settings.scatter.size.value;
     let dot_colour: string = this.settings.scatter.colour.value;
-    let dot_opacity: number = this.settings.scatter.opacity.value;
-    let dot_opacity_unsel: number = this.settings.scatter.opacity_unselected.value;
 
     // Update the datapoints if data is refreshed
     this.plottingMerged.dotsMerged = this.svgSelections.dotSelection.enter()
@@ -278,17 +265,7 @@ export class Visual implements IVisual {
                 //   PowerBI based on all selected dots
                 .select(d.identity, (<any>d3).event.ctrlKey)
                 // Change opacity of non-selected dots
-                .then(ids => {
-                  let anySelected: boolean = ids.length > 0;
-                  this.plottingMerged.dotsMerged.style(
-                        "fill-opacity", d =>
-                        anySelected ?
-                        (ids.indexOf(d.identity) >= 0 ? dot_opacity : dot_opacity_unsel)
-                        : dot_opacity
-                    );
-                  this.plottingMerged.linesMerged.style("stroke-opacity",
-                    anySelected ? dot_opacity_unsel : dot_opacity);
-                });
+                .then(() => { this.updateHighlighting(); });
                 (<any>d3).event.stopPropagation();
           })
         // Display tooltip content on mouseover
@@ -307,25 +284,8 @@ export class Visual implements IVisual {
                 isTouchEvent: false
             });
         })
-        // Specify that tooltips should move with the mouse
-        .on("mousemove", d => {
-            // Get screen coordinates of mouse pointer, tooltip will
-            //   be displayed at these coordinates
-            //    Needs the '<any>' prefix, otherwise PowerBI doesn't defer
-            //      to d3 properly
-            let x = (<any>d3).event.pageX;
-            let y = (<any>d3).event.pageY;
-
-            // Use the 'move' service for more responsive display
-            this.host.tooltipService.move({
-                dataItems: d.tooltip,
-                identities: [d.identity],
-                coordinates: [x, y],
-                isTouchEvent: false
-            });
-        })
         // Hide tooltip when mouse moves out of dot
-        .on("mouseout", d => {
+        .on("mouseout", () => {
             this.host.tooltipService.hide({
                 immediately: true,
                 isTouchEvent: false
@@ -355,19 +315,14 @@ export class Visual implements IVisual {
   }
 
   updateHighlighting(): void {
-    if (!this.plottingMerged.dotsMerged) {
-        return;
-    }
-    if (!this.plottingMerged.linesMerged) {
+    if (!this.plottingMerged.dotsMerged || !this.plottingMerged.linesMerged) {
         return;
     }
     let anyHighlights: boolean = this.viewModel.anyHighlights;
     let allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
-
     let opacityFull: number = this.settings.scatter.opacity.value;
     let opacityReduced: number = this.settings.scatter.opacity_unselected.value;
-
     let defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                     ? opacityReduced
                                     : opacityFull;
@@ -375,7 +330,7 @@ export class Visual implements IVisual {
     this.plottingMerged.dotsMerged.style("fill-opacity", defaultOpacity);
 
     if (anyHighlights || (allSelectionIDs.length > 0)) {
-    this.svgSelections.dotSelection.style("fill-opacity", (dot: plotData) => {
+    this.plottingMerged.dotsMerged.style("fill-opacity", (dot: plotData) => {
       let currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
         return currentSelectionId.includes(dot.identity);
       });
