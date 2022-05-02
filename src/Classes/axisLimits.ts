@@ -35,8 +35,8 @@ class axisLimits {
     let yLowerInput: number = args.inputSettings.axis.ylimit_l.value;
     let yUpperInput: number = args.inputSettings.axis.ylimit_u.value;
     let multiplier: number = args.inputData.multiplier;
-    let upperLimit: number = ["p", "pp"].includes(chart_type) ? 1 : (maxValueOrLimit + Math.abs(maxValueOrLimit) * 0.25);
-    let lowerLimit: number = ["p", "pp"].includes(chart_type) ? 0 : (minValueOrLimit - Math.abs(minValueOrLimit) * 0.25)
+    let upperLimit: number = ["p", "pp"].includes(chart_type) && multiplier == 1 ? 1 : (maxValueOrLimit + Math.abs(maxValueOrLimit) * 0.25);
+    let lowerLimit: number = ["p", "pp"].includes(chart_type) && multiplier == 1 ? 0 : (minValueOrLimit - Math.abs(minValueOrLimit) * 0.25)
 
     this.x = {
       lower: xLowerInput ? xLowerInput : 0,
