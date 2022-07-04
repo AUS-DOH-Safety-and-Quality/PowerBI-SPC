@@ -52,6 +52,7 @@ class dataObject {
     let valid_keys: plotKey[] = new Array<plotKey>();
 
     console.log("numerators: ", numerators)
+    console.log("denominators: ", denominators)
     console.log(groups)
 
     for (let i: number = 0; i < numerators.length; i++) {

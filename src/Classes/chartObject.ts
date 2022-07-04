@@ -3,6 +3,7 @@ import dataObject from "./dataObject";
 import settingsObject from "./settingsObject";
 import controlLimits from "../Type Definitions/controlLimits";
 import { multiply } from "../Function Broadcasting/BinaryFunctions";
+import plotKey from "../Type Definitions/plotKey"
 
 type chartObjectConstructor = {
   inputData: dataObject;
@@ -15,8 +16,44 @@ class chartObject {
   limitFunction: (x: dataObject) => controlLimits;
 
   getLimits(): controlLimits {
-    // Calculate control limits using user-specified type
-    let calcLimits: controlLimits = this.limitFunction(this.inputData);
+    let calcLimits: controlLimits;
+    
+    if (this.inputSettings.spc.denom_split.value !== null) {
+      let split_vals: string[] = this.inputSettings.spc.denom_split.value.split(",")
+      let indexes: number[] = split_vals.map(d => this.inputData.keys.map(d2 => d2.label).indexOf(d))
+                                        .concat([this.inputData.keys.length - 1])
+                                        .sort((a,b) => a - b);
+    
+      let groupedData: dataObject[] = indexes.map((d, idx) => {
+        // Force a deep copy
+        let data = JSON.parse(JSON.stringify(this.inputData));
+         if(idx === 0) {
+          data.denominators = data.denominators.slice(0, d)
+          data.numerators = data.numerators.slice(0, d)
+          data.keys = data.keys.slice(0, d)
+         } else {
+          data.denominators = data.denominators.slice(indexes[idx - 1], d + 1)
+          data.numerators = data.numerators.slice(indexes[idx - 1], d + 1)
+          data.keys = data.keys.slice(indexes[idx - 1], d + 1)
+         }
+        return data;
+      })
+      
+      let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
+
+      calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
+        console.log(Object.entries(all))
+        let allInner: controlLimits = all;
+        Object.entries(all).forEach(entry => {
+          allInner[entry[0]] = all[entry[0]].concat(curr[entry[0]]);
+        })
+        return allInner;
+      })
+
+    } else {
+      // Calculate control limits using user-specified type
+      calcLimits = this.limitFunction(this.inputData);
+    }
 
     // Scale limits using provided multiplier
     let multiplier: number = this.inputData.multiplier;
