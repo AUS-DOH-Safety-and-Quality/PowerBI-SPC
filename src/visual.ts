@@ -138,17 +138,19 @@ export class Visual implements IVisual {
             .attr("height", this.plotProperties.height);
     console.log("display: ", this.viewModel.displayPlot)
     if (this.viewModel.displayPlot) {
-    console.log("here")
       tooltipMerged.on("mousemove", () => {
-        console.log("here")
                 let xValue: number = this.plotProperties
                                               .xScale
                                               .invert((<any>d3).event.pageX);
+                let xRange: number[] = this.viewModel.plotPoints.map(d => d.x);
                 let nearestDenominator: number = d3.bisectLeft(
-                  this.viewModel.plotPoints.map(d => d.x),
-                  xValue
+                  xRange,
+                  xValue,
+                  0,
+                  xRange.length - 1
                 );
-
+                console.log("nearestDenominator: ", nearestDenominator);
+                console.log("plotPoints: ", this.viewModel.plotPoints);
                 let scaled_x: number = this.plotProperties.xScale(nearestDenominator)
                 let scaled_y: number = this.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
