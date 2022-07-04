@@ -1,19 +1,23 @@
-import i_limits from "./i";
-import { pow } from "./HelperFunctions";
-import { ControlLimits } from "../Interfaces";
+import iLimits from "./i"
+import { pow } from "../Function Broadcasting/BinaryFunctions";
+import controlLimits from "../Type Definitions/controlLimits";
+import dataObject from "../Classes/dataObject";
+import truncate from "../Functions/truncate";
 
-function t_limits(key: string[], value: number[]): ControlLimits {
-    let val: number[] = pow(value, 1 / 3.6);
+function tLimits(inputData: dataObject): controlLimits {
+  let val: number[] = pow(inputData.numerators, 1 / 3.6);
+  let inputDataCopy = inputData;
+  inputDataCopy.numerators = val;
+  inputDataCopy.denominators = null;
+  let limits: controlLimits = iLimits(inputDataCopy);
+  limits.targets = pow(limits.targets, 3.6);
+  limits.values = pow(limits.values, 3.6);
+  limits.ll99 = truncate(pow(limits.ll99, 3.6), {lower: 0});
+  limits.ll95 = truncate(pow(limits.ll95, 3.6), {lower: 0});
+  limits.ul95 = pow(limits.ul95, 3.6);
+  limits.ul99 = pow(limits.ul99, 3.6);
 
-    let limits: ControlLimits = i_limits(key, val);
-    limits.centerline = pow(limits.centerline, 3.6);
-    limits.value = pow(limits.value, 3.6);
-    limits.lowerLimit99 = pow(limits.lowerLimit99, 3.6).map(d => d < 0 ? 0 : d);
-    limits.lowerLimit95 = pow(limits.lowerLimit95, 3.6).map(d => d < 0 ? 0 : d);
-    limits.upperLimit95 = pow(limits.upperLimit95, 3.6);
-    limits.upperLimit99 = pow(limits.upperLimit99, 3.6);
-
-    return limits;
+  return limits;
 }
 
-export default t_limits;
+export default tLimits;

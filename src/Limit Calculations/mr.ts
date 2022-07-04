@@ -1,29 +1,31 @@
 import * as d3 from "d3";
-import { diff, abs, rep, divide } from "./HelperFunctions";
-import { ControlLimits } from "../Interfaces";
+import diff from "../Functions/diff"
+import rep from "../Functions/rep";
+import { abs } from "../Function Broadcasting/UnaryFunctions"
+import {  divide } from "../Function Broadcasting/BinaryFunctions";
+import dataObject from "../Classes/dataObject";
+import controlLimits from "../Type Definitions/controlLimits";
 
-function mr_limits(key: string[], value: number[], denominator?: number[]): ControlLimits {
-    let ratio: number[];
-    if (denominator == null) {
-        ratio = value;
-    } else {
-        ratio = divide(value,denominator);
-    }
+function mrLimits(inputData: dataObject): controlLimits {
+  let ratio: number[];
+  if (inputData.denominators == null) {
+    ratio = inputData.numerators;
+  } else {
+    ratio = divide(inputData.numerators, inputData.denominators);
+  }
 
-    let consec_diff: number[] = abs(diff(ratio));
-    let cl: number = d3.mean(consec_diff);
+  let consec_diff: number[] = abs(diff(ratio));
+  let cl: number = d3.mean(consec_diff);
 
-    let limits: ControlLimits = {
-        key: key,
-        value: [null].concat(consec_diff),
-        centerline: rep(cl, key.length),
-        lowerLimit99: rep(0, key.length),
-        lowerLimit95: rep(0, key.length),
-        upperLimit95: rep((3.267 / 3) * 2 *cl, key.length),
-        upperLimit99: rep(3.267*cl, key.length),
-        count: null
-    }
-    return limits;
+  return {
+    keys: inputData.keys,
+    values: consec_diff,
+    targets: rep(cl, inputData.keys.length),
+    ll99: rep(0, inputData.keys.length),
+    ll95: rep(0, inputData.keys.length),
+    ul95: rep((3.267 / 3) * 2 * cl, inputData.keys.length),
+    ul99: rep(3.267 * cl, inputData.keys.length)
+  };
 }
 
-export default mr_limits;
+export default mrLimits;

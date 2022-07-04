@@ -1,23 +1,24 @@
 import * as d3 from "d3";
-import { sqrt, subtract, add, rep, divide, multiply } from "./HelperFunctions";
-import { ControlLimits } from "../Interfaces";
+import rep from "../Functions/rep";
+import { sqrt } from "../Function Broadcasting/UnaryFunctions";
+import { subtract, add, divide, multiply } from "../Function Broadcasting/BinaryFunctions";
+import controlLimits from "../Type Definitions/controlLimits";
+import dataObject from "../Classes/dataObject";
+import truncate from "../Functions/truncate"
 
-function p_limits(key: string[], value: number[], denominator: number[]): ControlLimits {
-    let cl: number = d3.sum(value) / d3.sum(denominator);
-    let sigma: number[] = sqrt(divide(cl*(1-cl),denominator));
+function pLimits(inputData: dataObject): controlLimits {
+  let cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
+  let sigma: number[] = sqrt(divide(cl * (1 - cl), inputData.denominators));
 
-    let limits: ControlLimits = {
-        key: key,
-        value: divide(value, denominator),
-        centerline: rep(cl, key.length),
-        lowerLimit99: subtract(cl, multiply(3,sigma)).map(d => d < 0 ? 0 : d),
-        lowerLimit95: subtract(cl, multiply(2,sigma)).map(d => d < 0 ? 0 : d),
-        upperLimit95: add(cl, multiply(2,sigma)).map(d => d > 1 ? 1 : d),
-        upperLimit99: add(cl, multiply(3,sigma)).map(d => d > 1 ? 1 : d),
-        count: null
-    }
-
-    return limits;
+  return {
+    keys: inputData.keys,
+    values: divide(inputData.numerators, inputData.denominators),
+    targets: rep(cl, inputData.keys.length),
+    ll99: truncate(subtract(cl, multiply(3, sigma)), {lower: 0}),
+    ll95: truncate(subtract(cl, multiply(2, sigma)), {lower: 0}),
+    ul95: truncate(add(cl, multiply(2, sigma)), {upper: 1}),
+    ul99: truncate(add(cl, multiply(2, sigma)), {upper: 1})
+  }
 }
 
-export default p_limits;
+export default pLimits;

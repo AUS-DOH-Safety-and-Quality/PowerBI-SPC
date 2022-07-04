@@ -13,12 +13,12 @@
     "dataRoles": [
         {
             "displayName": "Outcome/Numerator",
-            "name": "numerator",
+            "name": "numerators",
             "kind": "Measure"
         },
         {
             "displayName": "Denominator",
-            "name": "denominator",
+            "name": "denominators",
             "kind": "Measure"
         },
         {
@@ -46,7 +46,7 @@
         "spc" : {
             "displayName": "Data Settings",
             "properties": {
-                "data_type": {
+                "chart_type": {
                     "displayName": "Chart Type",
                     "type" : {
                         "enumeration" : [
@@ -97,10 +97,6 @@
                           {
                             "displayName" : "t - Time Between Events",
                             "value" : "t"
-                          },
-                          {
-                            "displayName" : "SR - Standardised Ratios (e.g., HSMR)",
-                            "value" : "sr"
                           }
                         ]
                     }
@@ -267,10 +263,22 @@
         {
             "conditions": [
                 {
-                    "dates": {
+                    "key": {
                         "max": 1
                     },
-                    "numerator": {
+                    "numerators": {
+                        "max": 1
+                    },
+                    "denominators": {
+                        "max": 1
+                    },
+                    "groups": {
+                        "max": 1
+                    },
+                    "chart_type": {
+                        "max": 1
+                    },
+                    "multiplier": {
                         "max": 1
                     }
                 }
@@ -294,12 +302,12 @@
                     "select": [
                         {
                             "for": {
-                                "in": "numerator"
+                                "in": "numerators"
                             }
                         },
                         {
                             "for": {
-                                "in": "denominator"
+                                "in": "denominators"
                             }
                         },
                         {
