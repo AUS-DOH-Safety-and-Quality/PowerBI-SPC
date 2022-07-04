@@ -17,9 +17,18 @@ class chartObject {
 
   getLimits(): controlLimits {
     let calcLimits: controlLimits;
+    let rebaselineLimits: boolean;
+    let split_vals: string[];
     
     if (this.inputSettings.spc.denom_split.value !== null) {
-      let split_vals: string[] = this.inputSettings.spc.denom_split.value.split(",")
+      let split_vals_raw: string[] = this.inputSettings.spc.denom_split.value.split(",")
+      split_vals = split_vals_raw.filter(d => this.inputData.keys.map(d2 => d2.label).includes(d));
+      rebaselineLimits = split_vals.length > 0;
+    } else {
+      rebaselineLimits = false;
+    }
+
+    if (rebaselineLimits) {
       let indexes: number[] = split_vals.map(d => this.inputData.keys.map(d2 => d2.label).indexOf(d))
                                         .concat([this.inputData.keys.length - 1])
                                         .sort((a,b) => a - b);
@@ -63,7 +72,9 @@ class chartObject {
     calcLimits.ul95 = multiply(calcLimits.ul95, multiplier);
     calcLimits.ul99 = multiply(calcLimits.ul99, multiplier);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
-
+    
+    console.log("inputData: ", this.inputData);
+    console.log("calcLimits: ", calcLimits)
     return calcLimits;
   }
 
