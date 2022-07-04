@@ -10,4 +10,5 @@ export { default as t} from "./t"
 export { default as u} from "./u"
 export { default as up} from "./uprime"
 export { default as xbar} from "./xbar"
+export { default as run} from "./run"
 

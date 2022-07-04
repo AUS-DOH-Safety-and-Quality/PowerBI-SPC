@@ -3,7 +3,6 @@ import dataObject from "./dataObject";
 import settingsObject from "./settingsObject";
 import controlLimits from "../Type Definitions/controlLimits";
 import { multiply } from "../Function Broadcasting/BinaryFunctions";
-import plotKey from "../Type Definitions/plotKey"
 
 type chartObjectConstructor = {
   inputData: dataObject;
