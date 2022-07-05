@@ -11,7 +11,7 @@ function checkValidInput(numerator: number, denominator: number, data_type: stri
     : true;
   let runIChartDenominatorValid: boolean
     = (denominatorConstraintForRunIChart.includes(data_type) && !(denominator === null))
-    ? ((numerator <= denominator) && (denominator > 0))
+    ? (denominator != 0)
     : true;
   return numeratorValid && denominatorValid && proportionDenominatorValid && runIChartDenominatorValid;
 }

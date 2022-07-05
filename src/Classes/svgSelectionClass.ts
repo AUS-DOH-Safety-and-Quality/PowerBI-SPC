@@ -25,15 +25,11 @@ class svgSelectionClass {
     this.listeningRectSelection = args.svgObjects
                                       .listeningRect
                                       .selectAll(".obs-sel")
-                                      .data(args.viewModel.plotPoints)
-                                      .enter()
-                                      .append("rect");
+                                      .data(args.viewModel.plotPoints);
     this.tooltipLineSelection = args.svgObjects
                                     .tooltipLineGroup
                                     .selectAll(".ttip-line")
-                                    .data(args.viewModel.plotPoints)
-                                    .enter()
-                                    .append("rect");
+                                    .data(args.viewModel.plotPoints);
   }
 }
 
