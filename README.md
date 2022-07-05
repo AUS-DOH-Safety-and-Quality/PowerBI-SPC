@@ -15,12 +15,10 @@ The following chart types are (currently) implemented:
   - s: Sample SDs
   - g: Number of Non-events Between Events
   - t: Time Between Events
-  - SR: Indirectly Standardised Ratios
-
 
 # Installing the Visual
 
-The most recent version of the visual can be downloaded from the ['Releases' section](https://github.com/andrjohns/PowerBI-SPC/releases/tag/latest) and added to PowerBI using the 'Import visual from a file' option:
+The most recent version of the visual can be downloaded from the ['Releases' section](https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC/releases/tag/latest) and added to PowerBI using the 'Import visual from a file' option:
 
 ![image](https://user-images.githubusercontent.com/27717896/128833977-51ae139d-43f2-4d32-8c8c-4cdcabc2bdaf.png)
 
@@ -28,15 +26,15 @@ The most recent version of the visual can be downloaded from the ['Releases' sec
 
 Once you have installed the visual and added it to your report, you can add the desired data (numerators, denominators, and dates) to the visual:
 
-![image](https://user-images.githubusercontent.com/27717896/128966635-21d44a5a-42ef-46c0-8230-b39fa659052b.png)
+![image](https://user-images.githubusercontent.com/27717896/177291124-2215ff5b-d81c-4195-a948-e6fa2d20a544.png)
 
 The visual will default to displaying an i-Chart:
 
-![image](https://user-images.githubusercontent.com/27717896/128966833-b60ce732-0a4a-44aa-b747-8faa7ec418c0.png)
+![image](https://user-images.githubusercontent.com/27717896/177291187-a8d8b875-e083-4d49-93f8-b4fbcdf4eebb.png)
 
 You can change this through the 'Data Settings' menu:
 
-![image](https://user-images.githubusercontent.com/27717896/128966866-bb04e37b-7df9-47c0-ab6d-0a442e637c8a.png)
+![image](https://user-images.githubusercontent.com/27717896/177291297-35346801-d049-4c05-86c1-41ee5cc51f9d.png)
 
 Aesthetic options for the lines, scatter dots, and chart axes are also available.
 
