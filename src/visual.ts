@@ -137,6 +137,8 @@ export class Visual implements IVisual {
             .attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height);
     console.log("display: ", this.viewModel.displayPlot)
+    console.log("tooltip width: ", this.plotProperties.width)
+    console.log("tooltip height: ", this.plotProperties.height)
     if (this.viewModel.displayPlot) {
       tooltipMerged.on("mousemove", () => {
                 let xValue: number = this.plotProperties
@@ -149,8 +151,6 @@ export class Visual implements IVisual {
                   0,
                   xRange.length - 1
                 );
-                console.log("nearestDenominator: ", nearestDenominator);
-                console.log("plotPoints: ", this.viewModel.plotPoints);
                 let scaled_x: number = this.plotProperties.xScale(nearestDenominator)
                 let scaled_y: number = this.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
@@ -176,7 +176,7 @@ export class Visual implements IVisual {
     }
     xAxisLine.exit().remove()
     tooltipMerged.exit().remove()
-    this.svgSelections.listeningRectSelection.exit().remove()
+   // this.svgSelections.listeningRectSelection.exit().remove()
   }
 
   drawXAxis(): void {
@@ -186,6 +186,9 @@ export class Visual implements IVisual {
     if (this.viewModel.displayPlot) {
       xAxis.tickFormat(d => this.viewModel.tickLabels[<number>d].label)
     }
+    
+    console.log("x-axis width: ", this.plotProperties.width)
+    console.log("x-axis height: ", this.plotProperties.height)
 
     this.svgObjects.xAxisGroup
         .call(xAxis)

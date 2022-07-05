@@ -37,7 +37,9 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
   });
   tooltip.push({
     displayName: valueNames[args.chart_type],
-    value: (args.value).toFixed(2)
+    value: args.prop_labels
+      ? (args.value * 100).toFixed(2) + "%"
+      : args.value.toFixed(4)
   })
   if(args.denominator) {
     tooltip.push({
@@ -47,15 +49,21 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
   }
   tooltip.push({
     displayName: "Upper 99% Limit",
-    value: args.prop_labels ? args.limits.ul99.toFixed(2) + "%" : args.limits.ul99.toFixed(4)
+    value: args.prop_labels
+      ? (args.limits.ul99 * 100).toFixed(2) + "%"
+      : args.limits.ul99.toFixed(4)
   })
   tooltip.push({
     displayName: "Centerline",
-    value: args.prop_labels ? args.target.toFixed(2) + "%" : args.target.toFixed(4)
+    value: args.prop_labels
+      ? (args.target * 100).toFixed(2) + "%"
+      : args.target.toFixed(4)
   })
   tooltip.push({
     displayName: "Lower 99% Limit",
-    value: args.prop_labels ? args.limits.ll99.toFixed(2) + "%" : args.limits.ll99.toFixed(4)
+    value: args.prop_labels
+      ? (args.limits.ll99 * 100).toFixed(2) + "%"
+      : args.limits.ll99.toFixed(4)
   })
 
   return tooltip;

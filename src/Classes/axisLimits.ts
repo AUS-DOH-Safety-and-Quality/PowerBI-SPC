@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import controlLimits from "../Type Definitions/controlLimits"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject"
+import truncate from "../Functions/truncate";
 
 class axisLimits {
   x: {
@@ -35,8 +36,16 @@ class axisLimits {
     let yLowerInput: number = args.inputSettings.axis.ylimit_l.value;
     let yUpperInput: number = args.inputSettings.axis.ylimit_u.value;
     let multiplier: number = args.inputData.multiplier;
-    let upperLimit: number = ["p", "pp"].includes(chart_type) && multiplier == 1 ? 1 : (maxValueOrLimit + Math.abs(maxValueOrLimit) * 0.25);
-    let lowerLimit: number = ["p", "pp"].includes(chart_type) && multiplier == 1 ? 0 : (minValueOrLimit - Math.abs(minValueOrLimit) * 0.25)
+    let upperLimitRaw: number = (maxValueOrLimit + Math.abs(maxValueOrLimit) * 0.25);
+    let lowerLimitRaw: number = (minValueOrLimit - Math.abs(minValueOrLimit) * 0.25);
+    let upperLimit: number
+      = ["p", "pp"].includes(chart_type) && multiplier == 1
+      ? truncate(upperLimitRaw, {upper: 1})
+      : upperLimitRaw;
+    let lowerLimit: number
+      = ["p", "pp"].includes(chart_type) && multiplier == 1
+      ? truncate(lowerLimitRaw, {lower: 0})
+      : lowerLimitRaw;
 
     this.x = {
       lower: xLowerInput ? xLowerInput : 0,
@@ -44,11 +53,13 @@ class axisLimits {
       padding: args.inputSettings.axispad.x.padding.value
     };
 
+
     this.y = {
       lower: yLowerInput ? yLowerInput : lowerLimit,
       upper: yUpperInput ? yUpperInput : upperLimit,
       padding: args.inputSettings.axispad.y.padding.value
     };
+    console.log("this.y: ", this.y)
   }
 }
 
