@@ -111,7 +111,7 @@ export class Visual implements IVisual {
       let properties: VisualObjectInstance[] = [];
       properties.push({
         objectName: propertyGroupName,
-        properties: this.settings.returnValues(propertyGroupName),
+        properties: this.settings.returnValues(propertyGroupName, this.viewModel.inputData),
         selector: null
       });
       return properties;

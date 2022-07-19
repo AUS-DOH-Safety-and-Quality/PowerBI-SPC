@@ -1,5 +1,6 @@
 import powerbi from "powerbi-visuals-api"
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
+import dataObject from "./dataObject";
 
 class settingsPair<T> {
   default: T;
@@ -128,16 +129,25 @@ class settingsObject {
     })
   }
 
-  returnValues(settingGroupName: string) {
-    let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName])
+  settingInData(settingGroupName: string, settingName: string): boolean {
+    let settingsInData: string[] = ["chart_type", "multiplier"];
+    return settingGroupName === "spc" && settingsInData.includes(settingName);
+  }
+
+  returnValues(settingGroupName: string, inputData: dataObject) {
+    let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
     let firstSettingObject = {
-      [settingNames[0]]: this[settingGroupName][settingNames[0]].value
+      [settingNames[0]]: this.settingInData(settingGroupName, settingNames[0])
+        ? inputData[settingNames[0]]
+        : this[settingGroupName][settingNames[0]].value
     };
     return settingNames.reduce((previousSetting, currentSetting) => {
       return {
         ...previousSetting,
         ...{
-          [currentSetting]: this[settingGroupName][currentSetting].value
+          [currentSetting]: this.settingInData(settingGroupName, currentSetting)
+            ? inputData[currentSetting]
+            : this[settingGroupName][currentSetting].value
         }
       }
     }, firstSettingObject);
