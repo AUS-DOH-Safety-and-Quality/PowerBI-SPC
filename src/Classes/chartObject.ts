@@ -1,7 +1,7 @@
 import * as limitFunctions from "../Limit Calculations"
 import dataObject from "./dataObject";
 import settingsObject from "./settingsObject";
-import controlLimits from "../Type Definitions/controlLimits";
+import controlLimits from "./controlLimits";
 import { multiply } from "../Function Broadcasting/BinaryFunctions";
 
 type chartObjectConstructor = {
@@ -18,7 +18,7 @@ class chartObject {
     let calcLimits: controlLimits;
     let rebaselineLimits: boolean;
     let split_vals: string[];
-    
+
     if (this.inputSettings.spc.denom_split.value !== null) {
       let split_vals_raw: string[] = this.inputSettings.spc.denom_split.value.split(",")
       split_vals = split_vals_raw.filter(d => this.inputData.keys.map(d2 => d2.label).includes(d));
@@ -31,7 +31,7 @@ class chartObject {
       let indexes: number[] = split_vals.map(d => this.inputData.keys.map(d2 => d2.label).indexOf(d))
                                         .concat([this.inputData.keys.length - 1])
                                         .sort((a,b) => a - b);
-    
+
       let groupedData: dataObject[] = indexes.map((d, idx) => {
         // Force a deep copy
         let data = JSON.parse(JSON.stringify(this.inputData));
@@ -46,7 +46,7 @@ class chartObject {
          }
         return data;
       })
-      
+
       let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
 
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
@@ -71,7 +71,7 @@ class chartObject {
     calcLimits.ul95 = multiply(calcLimits.ul95, multiplier);
     calcLimits.ul99 = multiply(calcLimits.ul99, multiplier);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
-    
+
     console.log("inputData: ", this.inputData);
     console.log("calcLimits: ", calcLimits)
     return calcLimits;

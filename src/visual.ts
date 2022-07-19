@@ -71,18 +71,21 @@ export class Visual implements IVisual {
 
     this.svgSelections = new svgSelectionClass({ svgObjects: this.svgObjects,
                                                   viewModel: this.viewModel});
+    console.log("Made svgSelections")
 
     this.plotProperties = new plotPropertiesClass({
       options: options,
       viewModel: this.viewModel,
       inputSettings: this.settings
     });
+    console.log("Made plot properties")
 
     console.log(this.plotProperties)
 
     this.svg.attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height);
 
+    console.log("start tooltip")
     this.initTooltipTracking();
     console.log("finish tooltip")
 
@@ -186,7 +189,7 @@ export class Visual implements IVisual {
     if (this.viewModel.displayPlot) {
       xAxis.tickFormat(d => this.viewModel.tickLabels[<number>d].label)
     }
-    
+
     console.log("x-axis width: ", this.plotProperties.width)
     console.log("x-axis height: ", this.plotProperties.height)
 

@@ -4,10 +4,11 @@ import rep from "../Functions/rep";
 import { abs } from "../Function Broadcasting/UnaryFunctions"
 import { divide } from "../Function Broadcasting/BinaryFunctions";
 import dataObject from "../Classes/dataObject";
-import controlLimits from "../Type Definitions/controlLimits";
+import controlLimits from "../Classes/controlLimits";
 
 function iLimits(inputData: dataObject): controlLimits {
-  let ratio: number[] = (inputData.denominators && inputData.denominators.length > 0)
+  let useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
+  let ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
     : inputData.numerators;
 
@@ -19,15 +20,17 @@ function iLimits(inputData: dataObject): controlLimits {
 
   let sigma: number = d3.mean(consec_diff_valid) / 1.128;
 
-  return {
+  return new controlLimits({
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
+    numerators: useRatio ? inputData.numerators : undefined,
+    denominators: useRatio ? inputData.denominators : undefined,
     targets: rep(cl, inputData.keys.length),
     ll99: rep(cl - 3 * sigma, inputData.keys.length),
     ll95: rep(cl - 2 * sigma, inputData.keys.length),
     ul95: rep(cl + 2 * sigma, inputData.keys.length),
     ul99: rep(cl + 3 * sigma, inputData.keys.length)
-  };
+  });
 }
 
 export default iLimits;

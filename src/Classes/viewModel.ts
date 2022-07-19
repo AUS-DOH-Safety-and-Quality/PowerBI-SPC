@@ -6,7 +6,7 @@ import chartObject from "./chartObject"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
 import lineData from "./lineData"
-import controlLimits from "../Type Definitions/controlLimits";
+import controlLimits from "./controlLimits";
 import plotData from "./plotData"
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
@@ -44,6 +44,8 @@ class viewModelObject {
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
         tooltip: buildTooltip({date: this.calculatedLimits.keys[i].label,
                                 value: this.calculatedLimits.values[i],
+                                numerator: this.calculatedLimits.numerators ? this.calculatedLimits.numerators[i] : null,
+                                denominator: this.calculatedLimits.denominators ? this.calculatedLimits.denominators[i] : null,
                                 target: this.calculatedLimits.targets[i],
                                 limits: {
                                   ll99: this.calculatedLimits.ll99[i],
@@ -130,6 +132,7 @@ class viewModelObject {
     this.calculatedLimits = this.chartBase.getLimits();
     console.log(this.calculatedLimits)
     this.plotPoints = this.getPlotData();
+    console.log("Got plot data")
     this.plotPoints.forEach((point, idx) => {
       point.identity = args.host
                             .createSelectionIdBuilder()
@@ -138,9 +141,11 @@ class viewModelObject {
                             .createSelectionId()
     })
     this.groupedLines = this.getGroupedLines();
+    console.log("Grouped lines for plotting")
     this.axisLimits = new axisLimits({ inputData: this.inputData,
                                         inputSettings: this.inputSettings,
                                         calculatedLimits: this.calculatedLimits });
+    console.log("Made axis limits")
     this.displayPlot = this.plotPoints.length > 1;
     this.percentLabels = ["p", "pp"].includes(this.inputData.chart_type)
                             && this.inputData.multiplier == 1

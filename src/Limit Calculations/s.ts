@@ -3,7 +3,7 @@ import { b3, b4 } from "../Functions/Constants";
 import rep from "../Functions/rep";
 import { sqrt } from "../Function Broadcasting/UnaryFunctions";
 import { subtract, pow, multiply, divide } from "../Function Broadcasting/BinaryFunctions";
-import controlLimits from "../Type Definitions/controlLimits";
+import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import plotKey from "../Type Definitions/plotKey";
 
@@ -42,7 +42,7 @@ function sLimits(inputData: dataObject): controlLimits {
   let B3: number[] = b3(count_per_group);
   let B4: number[] = b4(count_per_group);
 
-  return {
+  return new controlLimits({
     keys: unique_groups,
     values: group_sd,
     targets: rep(cl, unique_groups.length),
@@ -50,7 +50,7 @@ function sLimits(inputData: dataObject): controlLimits {
     ll95: multiply(cl, multiply(divide(B3, 3), 2)),
     ul95: multiply(cl, multiply(divide(B4, 3), 2)),
     ul99: multiply(cl, B4)
-  }
+  });
 }
 
 export default sLimits;
