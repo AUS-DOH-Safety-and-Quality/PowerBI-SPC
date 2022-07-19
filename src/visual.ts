@@ -187,11 +187,12 @@ export class Visual implements IVisual {
     let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.plotProperties.xScale);
 
     if (this.viewModel.displayPlot) {
-      xAxis.tickFormat(d => this.viewModel.tickLabels[<number>d].label)
+      xAxis.tickFormat(d => {
+        return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
+          ? this.viewModel.tickLabels[<number>d].label
+          : "";
+      })
     }
-
-    console.log("x-axis width: ", this.plotProperties.width)
-    console.log("x-axis height: ", this.plotProperties.height)
 
     this.svgObjects.xAxisGroup
         .call(xAxis)

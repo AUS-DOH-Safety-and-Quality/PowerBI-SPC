@@ -53,7 +53,7 @@ class viewModelObject {
                                 },
                                 chart_type: this.inputData.chart_type,
                                 multiplier: this.inputData.multiplier,
-                                prop_labels: ["p", "pp"].includes(this.inputData.chart_type)})
+                                prop_labels: this.percentLabels})
       })
       tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
     }
@@ -128,6 +128,8 @@ class viewModelObject {
     this.anyHighlights = this.inputData.highlights ? true : false;
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
+    this.percentLabels = ["p", "pp"].includes(this.inputData.chart_type)
+                            && this.inputData.multiplier == 1;
     console.log("Initialised chart")
     this.calculatedLimits = this.chartBase.getLimits();
     console.log(this.calculatedLimits)
@@ -147,8 +149,6 @@ class viewModelObject {
                                         calculatedLimits: this.calculatedLimits });
     console.log("Made axis limits")
     this.displayPlot = this.plotPoints.length > 1;
-    this.percentLabels = ["p", "pp"].includes(this.inputData.chart_type)
-                            && this.inputData.multiplier == 1
   }
 }
 
