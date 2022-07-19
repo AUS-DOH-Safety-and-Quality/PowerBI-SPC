@@ -3,7 +3,7 @@ import { a3 } from "../Functions/Constants";
 import rep from "../Functions/rep";
 import { sqrt } from "../Function Broadcasting/UnaryFunctions"
 import { pow, subtract, add, multiply, divide } from "../Function Broadcasting/BinaryFunctions";
-import controlLimits from "../Type Definitions/controlLimits";
+import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import plotKey from "../Type Definitions/plotKey";
 
@@ -51,7 +51,7 @@ function xbarLimits(inputData: dataObject): controlLimits {
   // Sample-size dependent constant
   let A3: number[] = a3(count_per_group);
 
-  return {
+  return new controlLimits({
     keys: unique_groups,
     values: group_means,
     targets: rep(cl, unique_groups.length),
@@ -60,7 +60,7 @@ function xbarLimits(inputData: dataObject): controlLimits {
     ul95: add(cl, multiply(multiply(divide(A3, 3), 2), sd)),
     ul99: add(cl, multiply(A3, sd)),
     count: count_per_group
-  }
+  })
 }
 
 export default xbarLimits;

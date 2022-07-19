@@ -112,6 +112,18 @@
                     "type": {
                         "text": true
                     }
+                },
+                "ll_truncate": {
+                    "displayName": "Truncate Lower Limits at:",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "ul_truncate": {
+                    "displayName": "Truncate Upper Limits at:",
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         },

@@ -37,11 +37,15 @@ class spcSettings {
   chart_type: settingsPair<string>;
   multiplier: settingsPair<number>;
   denom_split: settingsPair<string>;
+  ll_truncate: settingsPair<number>;
+  ul_truncate: settingsPair<number>;
 
   constructor() {
     this.chart_type = new settingsPair("i");
     this.multiplier = new settingsPair(1);
     this.denom_split = new settingsPair(null);
+    this.ul_truncate = new settingsPair(null);
+    this.ll_truncate = new settingsPair(null);
   }
 }
 

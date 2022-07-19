@@ -21,6 +21,7 @@ class dataObject {
   multiplier: number;
   highlights: powerbi.PrimitiveValue[];
   categories: powerbi.DataViewCategoryColumn;
+  limit_truncs: {lower?: number, upper?: number};
 
   constructor(args: dataObjectConstructor) {
     if (args.empty) {
@@ -74,6 +75,10 @@ class dataObject {
     this.multiplier = multiplier;
     this.highlights = numerators_raw.highlights ? extractValues(numerators_raw.highlights, valid_ids) : numerators_raw.highlights;
     this.categories = args.inputView.categories[0]
+    this.limit_truncs = {
+      lower: args.inputSettings.spc.ll_truncate.value,
+      upper: args.inputSettings.spc.ul_truncate.value
+    }
   }
 }
 
