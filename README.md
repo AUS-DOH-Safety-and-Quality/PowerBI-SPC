@@ -18,9 +18,11 @@ The following chart types are (currently) implemented:
 
 # Installing the Visual
 
-The most recent version of the visual can be downloaded from the ['Releases' section](https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC/releases/tag/latest) and added to PowerBI using the 'Import visual from a file' option:
+The most recent version of the visual can be downloaded from the ['Releases' section](https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC/releases/tag/latest).  Save the file to your desktop.   Within Power BI, use the Visuals pane and add using the 'Import visual from a file' option:
 
 ![image](https://user-images.githubusercontent.com/27717896/128833977-51ae139d-43f2-4d32-8c8c-4cdcabc2bdaf.png)
+
+Find the file on your desktop and click OK.  The custom visual will show as a new icon.
 
 # Using the Visual
 
