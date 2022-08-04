@@ -4,12 +4,12 @@
         "displayName":"SPC Charts",
         "guid":"PBISPC",
         "visualClassName":"Visual",
-        "version":"1.1.5",
+        "version":"1.1.6",
         "description":"A PowerBI custom visual for SPC charts",
         "supportUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC",
         "gitHubUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC"
         },
-    "apiVersion":"4.0.0",
+    "apiVersion":"3.2.0",
     "author":{
         "name":"Andrew Johnson",
         "email":"Andrew.Johnson@health.wa.gov.au"
