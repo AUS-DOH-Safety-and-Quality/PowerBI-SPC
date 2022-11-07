@@ -1,9 +1,9 @@
 import * as math from '@stdlib/math/base/special';
 import * as d3 from "d3";
 
-function trend(val: number[], n: number): boolean[] {
+function shift(val: number[], targets: number[], n: number): boolean[] {
   let lagged_sign: number[] = val.map((d, i) => {
-    return (i == 0) ? i : Math.sign(d - val[i - 1]);
+    return Math.sign(d - targets[i]);
   });
   let lagged_sign_sum: number[] = lagged_sign.map((d, i) => {
     let lower = (i >= (n - 1)) ? i - n - 1 : i;
@@ -14,4 +14,4 @@ function trend(val: number[], n: number): boolean[] {
   })
 }
 
-export default trend
+export default shift

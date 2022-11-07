@@ -133,6 +133,26 @@
                 "astronomical": {
                     "displayName": "Astronomical Points",
                     "type" : { "bool" : true }
+                },
+                "shift": {
+                    "displayName": "Shifts",
+                    "type" : { "bool" : true }
+                },
+                "trend": {
+                    "displayName": "Trends",
+                    "type" : { "bool" : true }
+                },
+                "two_in_three": {
+                    "displayName": "Two-in-Three",
+                    "type" : { "bool" : true }
+                },
+                "shift_n": {
+                    "displayName": "Shift Points",
+                    "type" : { "numeric": true }
+                },
+                "trend_n": {
+                    "displayName": "Trend Points",
+                    "type" : { "numeric": true }
                 }
             }
         },

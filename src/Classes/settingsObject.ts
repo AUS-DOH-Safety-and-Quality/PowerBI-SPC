@@ -108,9 +108,19 @@ class axisSettings {
 
 class outliersSettings {
   astronomical: settingsPair<boolean>;
+  shift: settingsPair<boolean>;
+  trend: settingsPair<boolean>;
+  two_in_three: settingsPair<boolean>;
+  shift_n: settingsPair<number>;
+  trend_n: settingsPair<number>;
 
   constructor() {
-    this.astronomical = new settingsPair(<boolean>false);
+    this.astronomical = new settingsPair(false);
+    this.shift = new settingsPair(false);
+    this.trend = new settingsPair(false);
+    this.two_in_three = new settingsPair(false);
+    this.shift_n = new settingsPair(7);
+    this.trend_n = new settingsPair(5);
   };
 }
 
