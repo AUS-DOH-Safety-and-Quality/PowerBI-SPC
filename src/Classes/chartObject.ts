@@ -5,6 +5,7 @@ import controlLimits from "./controlLimits";
 import { multiply } from "../Function Broadcasting/BinaryFunctions";
 import truncate from "../Functions/truncate"
 import astronomical from "../Outlier Flagging/astronomical"
+import trend from "../Outlier Flagging/trend"
 
 type chartObjectConstructor = {
   inputData: dataObject;
@@ -18,6 +19,7 @@ class chartObject {
 
   flagOutliers(calcLimits: controlLimits): controlLimits {
     calcLimits.astpoint = astronomical(calcLimits.values, calcLimits.ll99, calcLimits.ul99);
+    calcLimits.trend = trend(calcLimits.values, 5);
     return calcLimits;
   }
 

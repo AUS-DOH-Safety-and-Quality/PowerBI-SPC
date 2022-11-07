@@ -26,6 +26,7 @@ class controlLimits {
   ul99: number[];
   count?: number[];
   astpoint: boolean[];
+  trend: boolean[];
 
   constructor(args: controlLimitsArgs) {
     this.keys = args.keys;
@@ -42,6 +43,7 @@ class controlLimits {
     this.ul95 = args.ul95;
     this.ul99 = args.ul99;
     this.astpoint = rep(false, args.values.length);
+    this.trend = rep(false, args.values.length);
     if (args.count || !(args.count === null || args.count === undefined)) {
       this.count = args.count;
     }
