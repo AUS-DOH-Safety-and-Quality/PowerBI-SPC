@@ -4,6 +4,7 @@ import settingsObject from "./settingsObject";
 import controlLimits from "./controlLimits";
 import { multiply } from "../Function Broadcasting/BinaryFunctions";
 import truncate from "../Functions/truncate"
+import astronomical from "../Outlier Flagging/astronomical"
 
 type chartObjectConstructor = {
   inputData: dataObject;
@@ -14,6 +15,11 @@ class chartObject {
   inputData: dataObject;
   inputSettings: settingsObject;
   limitFunction: (x: dataObject) => controlLimits;
+
+  flagOutliers(calcLimits: controlLimits): controlLimits {
+    calcLimits.astpoint = astronomical(calcLimits.values, calcLimits.ll99, calcLimits.ul99);
+    return calcLimits;
+  }
 
   getLimits(): controlLimits {
     let calcLimits: controlLimits;
@@ -51,7 +57,6 @@ class chartObject {
       let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
 
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
-        console.log(Object.entries(all))
         let allInner: controlLimits = all;
         Object.entries(all).forEach(entry => {
           allInner[entry[0]] = all[entry[0]].concat(curr[entry[0]]);
@@ -63,6 +68,8 @@ class chartObject {
       // Calculate control limits using user-specified type
       calcLimits = this.limitFunction(this.inputData);
     }
+
+    calcLimits = this.flagOutliers(calcLimits);
 
     // Scale limits using provided multiplier
     let multiplier: number = this.inputData.multiplier;

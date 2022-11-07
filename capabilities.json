@@ -127,6 +127,15 @@
                 }
             }
         },
+        "outliers" : {
+            "displayName": "Outlier Highlighting",
+            "properties": {
+                "astronomical": {
+                    "displayName": "Astronomical Points",
+                    "type" : { "bool" : true }
+                }
+            }
+        },
         "scatter": {
             "displayName": "Scatter Settings",
             "properties": {

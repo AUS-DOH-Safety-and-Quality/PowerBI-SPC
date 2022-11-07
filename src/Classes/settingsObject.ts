@@ -106,9 +106,18 @@ class axisSettings {
   };
 }
 
+class outliersSettings {
+  astronomical: settingsPair<boolean>;
+
+  constructor() {
+    this.astronomical = new settingsPair(<boolean>false);
+  };
+}
+
 class settingsObject {
   axispad: axispadSettings;
   spc: spcSettings;
+  outliers: outliersSettings;
   scatter: scatterSettings;
   lines: lineSettings;
   axis: axisSettings;
@@ -156,6 +165,7 @@ class settingsObject {
   constructor() {
     this.axispad = new axispadSettings();
     this.spc = new spcSettings();
+    this.outliers = new outliersSettings();
     this.scatter = new scatterSettings();
     this.lines = new lineSettings();
     this.axis = new axisSettings();

@@ -1,3 +1,4 @@
+import rep from "../Functions/rep";
 import plotKey from "../Type Definitions/plotKey"
 
 type controlLimitsArgs = {
@@ -24,6 +25,7 @@ class controlLimits {
   ul95: number[];
   ul99: number[];
   count?: number[];
+  astpoint: boolean[];
 
   constructor(args: controlLimitsArgs) {
     this.keys = args.keys;
@@ -39,6 +41,7 @@ class controlLimits {
     this.ll95 = args.ll95;
     this.ul95 = args.ul95;
     this.ul99 = args.ul99;
+    this.astpoint = rep(false, args.values.length);
     if (args.count || !(args.count === null || args.count === undefined)) {
       this.count = args.count;
     }
