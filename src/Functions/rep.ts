@@ -1,4 +1,4 @@
-function rep(x: number, n: number) : number[] {
+function rep<T>(x: T, n: number) : T[] {
   return Array.apply(null, Array(n)).map(() => x)
 }
 

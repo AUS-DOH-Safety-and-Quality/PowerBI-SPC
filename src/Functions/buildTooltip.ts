@@ -11,7 +11,11 @@ type tooltipArgs = {
   limits: { ll99: number, ul99: number},
   chart_type: string,
   multiplier: number,
-  prop_labels: boolean
+  prop_labels: boolean,
+  astpoint: boolean,
+  trend: boolean,
+  shift: boolean,
+  two_in_three: boolean
 }
 
 let valueNames = {
@@ -74,6 +78,26 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
       ? (args.limits.ll99 * 100).toFixed(2) + "%"
       : args.limits.ll99.toFixed(4)
   })
+
+  if (args.astpoint || args.trend || args.shift || args.two_in_three) {
+    let patterns: string[] = new Array<string>();
+    if (args.astpoint) {
+      patterns.push("Astronomical Point")
+    }
+    if (args.trend) {
+      patterns.push("Trend")
+    }
+    if (args.shift) {
+      patterns.push("Shift")
+    }
+    if (args.two_in_three) {
+      patterns.push("Two-in-Three")
+    }
+    tooltip.push({
+      displayName: "Patterns",
+      value: patterns.join("\n")
+    })
+  }
 
   return tooltip;
 }

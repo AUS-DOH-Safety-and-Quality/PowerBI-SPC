@@ -51,7 +51,6 @@ class chartObject {
       let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
 
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
-        console.log(Object.entries(all))
         let allInner: controlLimits = all;
         Object.entries(all).forEach(entry => {
           allInner[entry[0]] = all[entry[0]].concat(curr[entry[0]]);
@@ -63,6 +62,8 @@ class chartObject {
       // Calculate control limits using user-specified type
       calcLimits = this.limitFunction(this.inputData);
     }
+
+    calcLimits.flagOutliers(this.inputSettings);
 
     // Scale limits using provided multiplier
     let multiplier: number = this.inputData.multiplier;

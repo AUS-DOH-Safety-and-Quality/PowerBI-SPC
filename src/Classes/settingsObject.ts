@@ -106,19 +106,59 @@ class axisSettings {
   };
 }
 
+class outliersSettings {
+  astronomical: settingsPair<boolean>;
+  ast_colour: settingsPair<string>;
+  shift: settingsPair<boolean>;
+  shift_colour: settingsPair<string>;
+  trend: settingsPair<boolean>;
+  trend_colour: settingsPair<string>;
+  two_in_three: settingsPair<boolean>;
+  twointhree_colour: settingsPair<string>;
+  shift_n: settingsPair<number>;
+  trend_n: settingsPair<number>;
+
+  constructor() {
+    this.astronomical = new settingsPair(true);
+    this.ast_colour = new settingsPair("#12239E");
+    this.shift = new settingsPair(true);
+    this.shift_colour = new settingsPair("#12239E");
+    this.trend = new settingsPair(true);
+    this.trend_colour = new settingsPair("#12239E");
+    this.two_in_three = new settingsPair(true);
+    this.twointhree_colour = new settingsPair("#12239E");
+    this.shift_n = new settingsPair(7);
+    this.trend_n = new settingsPair(5);
+  };
+}
+
 class settingsObject {
   axispad: axispadSettings;
   spc: spcSettings;
+  outliers: outliersSettings;
   scatter: scatterSettings;
   lines: lineSettings;
   axis: axisSettings;
 
   updateSettings(inputObjects: powerbi.DataViewObjects): void {
-    let allSettingGroups: string[] = Object.getOwnPropertyNames(this);
+    let allSettingGroups: string[] = Object.getOwnPropertyNames(this)
+                                           .filter(groupName => groupName !== "axispad");
     allSettingGroups.forEach(settingGroup => {
       let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
-      settingNames.forEach(settingName => {
+      let valueSettings: string[] = settingNames.filter(name => !name.includes("colour"))
+      let colourSettings: string[] = settingNames.filter(name => name.includes("colour"))
+      valueSettings.forEach(settingName => {
         this[settingGroup][settingName].value = dataViewObjects.getValue(
+          inputObjects, {
+            objectName: settingGroup,
+            propertyName: settingName
+          },
+          this[settingGroup][settingName].default
+        )
+      })
+
+      colourSettings.forEach(settingName => {
+        this[settingGroup][settingName].value = dataViewObjects.getFillColor(
           inputObjects, {
             objectName: settingGroup,
             propertyName: settingName
@@ -156,6 +196,7 @@ class settingsObject {
   constructor() {
     this.axispad = new axispadSettings();
     this.spc = new spcSettings();
+    this.outliers = new outliersSettings();
     this.scatter = new scatterSettings();
     this.lines = new lineSettings();
     this.axis = new axisSettings();
