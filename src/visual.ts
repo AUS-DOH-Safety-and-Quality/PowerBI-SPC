@@ -295,7 +295,7 @@ export class Visual implements IVisual {
               .attr("cx", d => this.plotProperties.xScale(d.x))
               .attr("r", dot_size)
             // Fill each dot with the colour in each DataPoint
-              .style("fill", d => dot_colour);
+              .style("fill", d => d.colour);
 
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots

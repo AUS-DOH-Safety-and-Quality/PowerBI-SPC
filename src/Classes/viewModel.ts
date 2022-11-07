@@ -34,12 +34,26 @@ class viewModelObject {
   getPlotData(): plotData[] {
     let plotPoints = new Array<plotData>();
     let tickLabels = new Array<{ x: number; label: string; }>();
+
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
+      let dot_colour: string = this.inputSettings.scatter.colour.value;
+      if (this.calculatedLimits.astpoint[i]) {
+        dot_colour = this.inputSettings.outliers.ast_colour.value;
+      }
+      if (this.calculatedLimits.shift[i]) {
+        dot_colour = this.inputSettings.outliers.shift_colour.value;
+      }
+      if (this.calculatedLimits.trend[i]) {
+        dot_colour = this.inputSettings.outliers.trend_colour.value;
+      }
+      if (this.calculatedLimits.two_in_three[i]) {
+        dot_colour = this.inputSettings.outliers.twointhree_colour.value;
+      }
       plotPoints.push({
         x: index,
         value: this.calculatedLimits.values[i],
-        colour: this.inputSettings.scatter.colour.value,
+        colour: dot_colour,
         identity: null,
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
         tooltip: buildTooltip({date: this.calculatedLimits.keys[i].label,

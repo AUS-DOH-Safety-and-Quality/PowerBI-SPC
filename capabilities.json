@@ -134,18 +134,58 @@
                     "displayName": "Astronomical Points",
                     "type" : { "bool" : true }
                 },
+                "ast_colour":{
+                    "displayName": "Ast. Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
                 "shift": {
                     "displayName": "Shifts",
                     "type" : { "bool" : true }
                 },
+                "shift_colour":{
+                    "displayName": "Shift Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
                 "trend": {
                     "displayName": "Trends",
                     "type" : { "bool" : true }
                 },
+                "trend_colour":{
+                    "displayName": "Trend Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
                 "two_in_three": {
                     "displayName": "Two-in-Three",
                     "type" : { "bool" : true }
                 },
+                "twointhree_colour":{
+                    "displayName": "Two-in-Three Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
                 "shift_n": {
                     "displayName": "Shift Points",
                     "type" : { "numeric": true }
