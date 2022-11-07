@@ -6,8 +6,7 @@ function trend(val: number[], n: number): boolean[] {
     return (i == 0) ? i : Math.sign(d - val[i - 1]);
   });
   let lagged_sign_sum: number[] = lagged_sign.map((d, i) => {
-    let lower = (i >= (n - 1)) ? i - n - 1 : i;
-    return d3.sum(lagged_sign.slice(lower, i));
+    return d3.sum(lagged_sign.slice(Math.max(0, i - n), i));
   })
   return lagged_sign_sum.map(d => {
     return math.abs(d) >= (n - 1);
