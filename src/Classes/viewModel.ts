@@ -38,9 +38,6 @@ class viewModelObject {
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
       let dot_colour: string = this.inputSettings.scatter.colour.value;
-      if (this.calculatedLimits.astpoint[i]) {
-        dot_colour = this.inputSettings.outliers.ast_colour.value;
-      }
       if (this.calculatedLimits.shift[i]) {
         dot_colour = this.inputSettings.outliers.shift_colour.value;
       }
@@ -49,6 +46,9 @@ class viewModelObject {
       }
       if (this.calculatedLimits.two_in_three[i]) {
         dot_colour = this.inputSettings.outliers.twointhree_colour.value;
+      }
+      if (this.calculatedLimits.astpoint[i]) {
+        dot_colour = this.inputSettings.outliers.ast_colour.value;
       }
       plotPoints.push({
         x: index,
@@ -67,7 +67,11 @@ class viewModelObject {
                                 },
                                 chart_type: this.inputData.chart_type,
                                 multiplier: this.inputData.multiplier,
-                                prop_labels: this.percentLabels})
+                                prop_labels: this.percentLabels,
+                               astpoint: this.calculatedLimits.astpoint[i],
+                               trend: this.calculatedLimits.trend[i],
+                               shift: this.calculatedLimits.shift[i],
+                               two_in_three: this.calculatedLimits.two_in_three[i]})
       })
       tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
     }
