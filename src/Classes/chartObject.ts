@@ -20,6 +20,7 @@ class chartObject {
     let rebaselineLimits: boolean;
     let split_vals: string[];
 
+
     if (this.inputSettings.spc.denom_split.value !== null) {
       let split_vals_raw: string[] = this.inputSettings.spc.denom_split.value.split(",")
       split_vals = split_vals_raw.filter(d => this.inputData.keys.map(d2 => d2.label).includes(d));
@@ -37,13 +38,13 @@ class chartObject {
         // Force a deep copy
         let data = JSON.parse(JSON.stringify(this.inputData));
          if(idx === 0) {
-          data.denominators = data.denominators.slice(0, d)
-          data.numerators = data.numerators.slice(0, d)
-          data.keys = data.keys.slice(0, d)
+          data.denominators = data.denominators.slice(0, d + 1)
+          data.numerators = data.numerators.slice(0, d + 1)
+          data.keys = data.keys.slice(0, d + 1)
          } else {
-          data.denominators = data.denominators.slice(indexes[idx - 1], d + 1)
-          data.numerators = data.numerators.slice(indexes[idx - 1], d + 1)
-          data.keys = data.keys.slice(indexes[idx - 1], d + 1)
+          data.denominators = data.denominators.slice(indexes[idx - 1] + 1, d + 1)
+          data.numerators = data.numerators.slice(indexes[idx - 1] + 1, d + 1)
+          data.keys = data.keys.slice(indexes[idx - 1] + 1, d + 1)
          }
         return data;
       })
@@ -78,8 +79,6 @@ class chartObject {
                                 this.inputData.limit_truncs);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
 
-    console.log("inputData: ", this.inputData);
-    console.log("calcLimits: ", calcLimits)
     return calcLimits;
   }
 
