@@ -6,7 +6,7 @@ function shift(val: number[], targets: number[], n: number): boolean[] {
     return Math.sign(d - targets[i]);
   });
   let lagged_sign_sum: number[] = lagged_sign.map((d, i) => {
-    return d3.sum(lagged_sign.slice(Math.max(0, i + 1 - n), i + 1));
+    return d3.sum(lagged_sign.slice(Math.max(0, i - (n - 1)), i + 1));
   })
   return lagged_sign_sum.map(d => {
     return math.abs(d) >= n;

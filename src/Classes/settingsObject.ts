@@ -81,10 +81,10 @@ class lineSettings {
     this.width_main = new settingsPair(1);
     this.width_target = new settingsPair(1.5);
     this.width_main = new settingsPair(1);
-    this.colour_99 = new settingsPair("#6495ED");
-    this.colour_95 = new settingsPair("#6495ED");
-    this.colour_main = new settingsPair("#000000");
-    this.colour_target = new settingsPair("#6495ED");
+    this.colour_99 = new settingsPair("#00667B");
+    this.colour_95 = new settingsPair("#00667B");
+    this.colour_main = new settingsPair("#00667B");
+    this.colour_target = new settingsPair("#00667B");
   }
 }
 
