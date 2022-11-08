@@ -5,7 +5,7 @@ import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, pow, multiply, divide } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
-import plotKey from "../Type Definitions/plotKey";
+import plotKey from "../Classes/plotKey";
 
 function sLimits(inputData: dataObject): controlLimits {
   let groups: string[] = inputData.groups;
