@@ -2,7 +2,7 @@ import * as limitFunctions from "../Limit Calculations"
 import dataObject from "./dataObject";
 import settingsObject from "./settingsObject";
 import controlLimits from "./controlLimits";
-import { multiply } from "../Function Broadcasting/BinaryFunctions";
+import { multiply } from "../Functions/BinaryFunctions";
 import truncate from "../Functions/truncate"
 
 type chartObjectConstructor = {

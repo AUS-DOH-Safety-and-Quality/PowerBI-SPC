@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { sqrt } from "../Function Broadcasting/UnaryFunctions";
+import { sqrt } from "../Functions/UnaryFunctions";
 import rep from "../Functions/rep";
 import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";

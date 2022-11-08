@@ -1,5 +1,5 @@
-import { sqrt, exp, lgamma, square } from "../Function Broadcasting/UnaryFunctions";
-import { subtract, add, multiply, divide } from "../Function Broadcasting/BinaryFunctions";
+import { sqrt, exp, lgamma, square } from "./UnaryFunctions";
+import { subtract, add, multiply, divide } from "./BinaryFunctions";
 
 function c4(sampleSizes: number[]): number[] {
   let filt_samp: number[] = sampleSizes.map(d => d <= 1 ? null : d);

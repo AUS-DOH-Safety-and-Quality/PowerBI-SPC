@@ -1,5 +1,5 @@
 import iLimits from "./i"
-import { pow } from "../Function Broadcasting/BinaryFunctions";
+import { pow } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import truncate from "../Functions/truncate";

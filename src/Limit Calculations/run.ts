@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import rep from "../Functions/rep";
-import { divide } from "../Function Broadcasting/BinaryFunctions";
+import { divide } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 
