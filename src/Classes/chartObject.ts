@@ -20,7 +20,6 @@ class chartObject {
     let rebaselineLimits: boolean;
     let split_vals: string[];
 
-
     if (this.inputSettings.spc.denom_split.value !== null) {
       let split_vals_raw: string[] = this.inputSettings.spc.denom_split.value.split(",")
       split_vals = split_vals_raw.filter(d => this.inputData.keys.map(d2 => d2.label).includes(d));
