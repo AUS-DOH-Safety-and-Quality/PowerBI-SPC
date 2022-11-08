@@ -34,7 +34,6 @@ let valueNames = {
 }
 
 function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
-  console.log(args)
   let tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
     displayName: "Date",
@@ -47,14 +46,12 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
       : args.value.toFixed(4)
   })
   if(args.numerator || !(args.numerator === null || args.numerator === undefined)) {
-    console.log("push num")
     tooltip.push({
       displayName: "Numerator",
       value: (args.numerator).toFixed(2)
     })
   }
   if(args.denominator || !(args.denominator === null || args.denominator === undefined)) {
-    console.log("push denom")
     tooltip.push({
       displayName: "Denominator",
       value: (args.denominator).toFixed(2)
