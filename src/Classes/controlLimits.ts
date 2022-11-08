@@ -1,5 +1,5 @@
 import rep from "../Functions/rep";
-import plotKey from "../Type Definitions/plotKey"
+import plotKey from "./plotKey"
 import astronomical from "../Outlier Flagging/astronomical"
 import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
