@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 import { a3 } from "../Functions/Constants";
 import rep from "../Functions/rep";
-import { sqrt } from "../Function Broadcasting/UnaryFunctions"
-import { pow, subtract, add, multiply, divide } from "../Function Broadcasting/BinaryFunctions";
+import { sqrt } from "../Functions/UnaryFunctions"
+import { pow, subtract, add, multiply, divide } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import plotKey from "../Type Definitions/plotKey";

@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 import diff from "../Functions/diff"
 import rep from "../Functions/rep";
-import { abs } from "../Function Broadcasting/UnaryFunctions"
-import {  divide } from "../Function Broadcasting/BinaryFunctions";
+import { abs } from "../Functions/UnaryFunctions"
+import {  divide } from "../Functions/BinaryFunctions";
 import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
 
