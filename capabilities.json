@@ -138,7 +138,7 @@
                     "displayName": "Ast. Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -152,7 +152,7 @@
                     "displayName": "Shift Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -166,7 +166,7 @@
                     "displayName": "Trend Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -180,7 +180,7 @@
                     "displayName": "Two-in-Three Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -221,7 +221,7 @@
                     "displayName": "Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -256,11 +256,87 @@
                         "numeric": true
                     }
                 },
+                "type_99": {
+                  "displayName": "99.8% Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
+                "type_95": {
+                  "displayName": "95% Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
+                "type_main": {
+                  "displayName": "Main Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
+                "type_target": {
+                  "displayName": "Target Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
                 "colour_99":{
                     "displayName": "99.8% Line Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -270,7 +346,7 @@
                     "displayName": "95% Line Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -280,7 +356,7 @@
                     "displayName": "Main Line Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }
@@ -290,7 +366,7 @@
                     "displayName": "Target Line Colour",
                     "type": {
                         "fill": {
-                            "solid": {
+                            "10 0": {
                                 "color": true
                             }
                         }

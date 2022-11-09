@@ -256,6 +256,12 @@ export class Visual implements IVisual {
                         .range(lineMetadata.widths);
     console.log("set widths")
 
+    let line_type = d3.scaleOrdinal()
+                        .domain(lineMetadata.keys)
+                        .range(lineMetadata.types);
+    console.log("set types")
+
+
     this.plottingMerged.linesMerged = this.svgSelections.lineSelection
                           .enter()
                           .append("path")
@@ -273,7 +279,8 @@ export class Visual implements IVisual {
     console.log("add data")
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => <string>line_color(d.key))
-                    .attr("stroke-width", d => <number>line_width(d.key));
+                    .attr("stroke-width", d => <number>line_width(d.key))
+                    .attr("stroke-dasharray", d => <string>line_type(d.key));
     console.log("add aesthetics")
     this.svgSelections.lineSelection.exit().remove();
     this.plottingMerged.linesMerged.exit().remove();
@@ -281,7 +288,6 @@ export class Visual implements IVisual {
 
   drawDots(): void {
     let dot_size: number = this.settings.scatter.size.value;
-    let dot_colour: string = this.settings.scatter.colour.value;
 
     // Update the datapoints if data is refreshed
     this.plottingMerged.dotsMerged = this.svgSelections.dotSelection.enter()

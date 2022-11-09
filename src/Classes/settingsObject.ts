@@ -69,18 +69,24 @@ class lineSettings {
   width_95: settingsPair<number>;
   width_main: settingsPair<number>;
   width_target: settingsPair<number>;
+  type_99: settingsPair<string>;
+  type_95: settingsPair<string>;
+  type_main: settingsPair<string>;
+  type_target: settingsPair<string>;
   colour_99: settingsPair<string>;
   colour_95: settingsPair<string>;
   colour_main: settingsPair<string>;
   colour_target: settingsPair<string>;
-  colour_alt_target: settingsPair<string>;
 
   constructor() {
     this.width_99 = new settingsPair(2);
     this.width_95 = new settingsPair(2);
     this.width_main = new settingsPair(1);
     this.width_target = new settingsPair(1.5);
-    this.width_main = new settingsPair(1);
+    this.type_99 = new settingsPair("10 10");
+    this.type_95 = new settingsPair("2 5");
+    this.type_main = new settingsPair("10 0");
+    this.type_target = new settingsPair("10 0");
     this.colour_99 = new settingsPair("#00667B");
     this.colour_95 = new settingsPair("#00667B");
     this.colour_main = new settingsPair("#00667B");
