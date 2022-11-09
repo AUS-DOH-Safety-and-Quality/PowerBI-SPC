@@ -113,6 +113,7 @@ class axisSettings {
 }
 
 class outliersSettings {
+  flag_direction: settingsPair<string>;
   astronomical: settingsPair<boolean>;
   ast_colour: settingsPair<string>;
   shift: settingsPair<boolean>;
@@ -125,6 +126,7 @@ class outliersSettings {
   trend_n: settingsPair<number>;
 
   constructor() {
+    this.flag_direction = new settingsPair("both");
     this.astronomical = new settingsPair(true);
     this.ast_colour = new settingsPair("#E1C233");
     this.shift = new settingsPair(true);

@@ -36,17 +36,18 @@ class controlLimits {
   shift: boolean[];
 
   flagOutliers(inputSettings: settingsObject) {
+    let flag_direction: string = inputSettings.outliers.flag_direction.value;
     if (inputSettings.outliers.astronomical.value) {
-      this.astpoint = astronomical(this.values, this.ll99, this.ul99);
+      this.astpoint = astronomical(flag_direction, this.values, this.ll99, this.ul99);
     }
     if (inputSettings.outliers.trend.value) {
-      this.trend = trend(this.values, inputSettings.outliers.trend_n.value);
+      this.trend = trend(flag_direction, this.values, inputSettings.outliers.trend_n.value);
     }
     if (inputSettings.outliers.shift.value) {
-      this.shift = shift(this.values, this.targets, inputSettings.outliers.shift_n.value);
+      this.shift = shift(flag_direction, this.values, this.targets, inputSettings.outliers.shift_n.value);
     }
     if (inputSettings.outliers.two_in_three.value) {
-      this.two_in_three = two_in_three(this.values, this.ll95, this.ul95);
+      this.two_in_three = two_in_three(flag_direction, this.values, this.ll95, this.ul95);
     }
   }
 
