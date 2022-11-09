@@ -15,7 +15,7 @@ function two_in_three(flag_direction: string, val: number[], ll95: number[], ul9
       } else if (flag_direction === "upper") {
         return d >= 2;
       } else if (flag_direction === "lower") {
-        return d <= 2;
+        return d <= -2;
       }
     } else {
       return false;

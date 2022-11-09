@@ -15,7 +15,7 @@ function shift(flag_direction: string, val: number[], targets: number[], n: numb
       } else if (flag_direction === "upper") {
         return d >= n;
       } else if (flag_direction === "lower") {
-        return d <= n;
+        return d <= -n;
       }
     } else {
       return false;

@@ -36,6 +36,7 @@ class controlLimits {
   shift: boolean[];
 
   flagOutliers(flag_direction: string, inputSettings: settingsObject) {
+    console.log("dir: ", flag_direction)
     if (inputSettings.outliers.astronomical.value) {
       this.astpoint = astronomical(flag_direction, this.values, this.ll99, this.ul99);
     }

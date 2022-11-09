@@ -461,6 +461,9 @@
                     },
                     "multiplier": {
                         "max": 1
+                    },
+                    "outlier_direction": {
+                        "max": 1
                     }
                 }
             ],
@@ -499,6 +502,11 @@
                         {
                             "for": {
                                 "in": "chart_multiplier"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "outlier_direction"
                             }
                         }
                     ]

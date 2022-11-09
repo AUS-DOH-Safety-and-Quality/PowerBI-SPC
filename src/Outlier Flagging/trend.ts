@@ -15,7 +15,7 @@ function trend(flag_direction: string, val: number[], n: number): boolean[] {
       } else if (flag_direction === "upper") {
         return d >= (n - 1);
       } else if (flag_direction === "lower") {
-        return d <= (n - 1);
+        return d <= -(n - 1);
       }
     } else {
       return false;

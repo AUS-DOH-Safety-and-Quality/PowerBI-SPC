@@ -44,7 +44,6 @@ class dataObject {
     let chart_type_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_type)[0];
     let multiplier_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_multiplier)[0];
     let outlier_direction_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.outlier_direction)[0];
-
     let numerators: number[] = <number[]>numerators_raw.values;
     let denominators: number[] = denominators_raw ? <number[]>denominators_raw.values : null;
     let groups: string[] = groups_raw ? <string[]>groups_raw.values : [];
@@ -77,7 +76,7 @@ class dataObject {
     this.groups = extractValues(groups, valid_ids);
     this.chart_type = chart_type;
     this.multiplier = multiplier;
-    this.flag_direction = flag_direction;
+    this.flag_direction = flag_direction.toLowerCase();
     this.highlights = numerators_raw.highlights ? extractValues(numerators_raw.highlights, valid_ids) : numerators_raw.highlights;
     this.categories = args.inputView.categories[0]
     this.limit_truncs = {
