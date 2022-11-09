@@ -138,7 +138,7 @@
                     "displayName": "Ast. Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -152,7 +152,7 @@
                     "displayName": "Shift Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -166,7 +166,7 @@
                     "displayName": "Trend Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -180,7 +180,7 @@
                     "displayName": "Two-in-Three Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -221,7 +221,7 @@
                     "displayName": "Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -336,7 +336,7 @@
                     "displayName": "99.8% Line Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -346,7 +346,7 @@
                     "displayName": "95% Line Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -356,7 +356,7 @@
                     "displayName": "Main Line Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }
@@ -366,7 +366,7 @@
                     "displayName": "Target Line Colour",
                     "type": {
                         "fill": {
-                            "10 0": {
+                            "solid": {
                                 "color": true
                             }
                         }

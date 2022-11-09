@@ -126,13 +126,13 @@ class outliersSettings {
 
   constructor() {
     this.astronomical = new settingsPair(true);
-    this.ast_colour = new settingsPair("#12239E");
+    this.ast_colour = new settingsPair("#E1C233");
     this.shift = new settingsPair(true);
-    this.shift_colour = new settingsPair("#12239E");
+    this.shift_colour = new settingsPair("#E1C233");
     this.trend = new settingsPair(true);
-    this.trend_colour = new settingsPair("#12239E");
+    this.trend_colour = new settingsPair("#E1C233");
     this.two_in_three = new settingsPair(true);
-    this.twointhree_colour = new settingsPair("#12239E");
+    this.twointhree_colour = new settingsPair("#E1C233");
     this.shift_n = new settingsPair(7);
     this.trend_n = new settingsPair(5);
   };
