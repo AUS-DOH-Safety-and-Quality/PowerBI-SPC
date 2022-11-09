@@ -256,6 +256,82 @@
                         "numeric": true
                     }
                 },
+                "type_99": {
+                  "displayName": "99.8% Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
+                "type_95": {
+                  "displayName": "95% Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
+                "type_main": {
+                  "displayName": "Main Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
+                "type_target": {
+                  "displayName": "Target Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
                 "colour_99":{
                     "displayName": "99.8% Line Colour",
                     "type": {

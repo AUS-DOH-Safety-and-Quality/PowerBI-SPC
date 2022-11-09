@@ -80,23 +80,6 @@ class viewModelObject {
   }
 
   getGroupedLines(): nestReturnT[] {
-    let colours = {
-      ll99: this.inputSettings.lines.colour_99.value,
-      ll95: this.inputSettings.lines.colour_95.value,
-      ul95: this.inputSettings.lines.colour_95.value,
-      ul99: this.inputSettings.lines.colour_99.value,
-      targets: this.inputSettings.lines.colour_target.value,
-      values: this.inputSettings.lines.colour_main.value
-    }
-    let widths = {
-      ll99: this.inputSettings.lines.width_99.value,
-      ll95: this.inputSettings.lines.width_95.value,
-      ul95: this.inputSettings.lines.width_95.value,
-      ul99: this.inputSettings.lines.width_99.value,
-      targets: this.inputSettings.lines.width_target.value,
-      values: this.inputSettings.lines.width_main.value
-    }
-
     let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values"];
 
     let formattedLines: lineData[] = new Array<lineData>();
@@ -107,9 +90,7 @@ class viewModelObject {
         formattedLines.push({
           x: this.calculatedLimits.keys[i].x,
           line_value: this.calculatedLimits[label][i],
-          group: label,
-          colour: colours[label],
-          width: widths[label]
+          group: label
         })
       })
     }
