@@ -35,8 +35,7 @@ class controlLimits {
   two_in_three: boolean[];
   shift: boolean[];
 
-  flagOutliers(inputSettings: settingsObject) {
-    let flag_direction: string = inputSettings.outliers.flag_direction.value;
+  flagOutliers(flag_direction: string, inputSettings: settingsObject) {
     if (inputSettings.outliers.astronomical.value) {
       this.astpoint = astronomical(flag_direction, this.values, this.ll99, this.ul99);
     }

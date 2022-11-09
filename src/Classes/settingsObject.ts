@@ -178,8 +178,8 @@ class settingsObject {
   }
 
   settingInData(settingGroupName: string, settingName: string): boolean {
-    let settingsInData: string[] = ["chart_type", "multiplier"];
-    return settingGroupName === "spc" && settingsInData.includes(settingName);
+    let settingsInData: string[] = ["chart_type", "multiplier", "flag_direction"];
+    return ["spc", "outliers"].includes(settingGroupName) && settingsInData.includes(settingName);
   }
 
   returnValues(settingGroupName: string, inputData: dataObject) {

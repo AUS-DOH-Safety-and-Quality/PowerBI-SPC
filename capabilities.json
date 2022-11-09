@@ -40,6 +40,11 @@
             "displayName": "Optional: Multiplier",
             "name": "chart_multiplier",
             "kind": "Measure"
+        },
+        {
+            "displayName": "Optional: Outlier Direction",
+            "name": "outlier_direction",
+            "kind": "Measure"
         }
     ],
     "objects": {
