@@ -19,6 +19,7 @@ class dataObject {
   groups: string[];
   chart_type: string;
   multiplier: number;
+  flag_direction: string;
   highlights: powerbi.PrimitiveValue[];
   categories: powerbi.DataViewCategoryColumn;
   limit_truncs: {lower?: number, upper?: number};
@@ -30,6 +31,7 @@ class dataObject {
       this.denominators = null;
       this.groups = null;
       this.chart_type = null;
+      this.flag_direction = null;
       this.multiplier = null;
       this.highlights = null;
       this.categories = null;
@@ -41,12 +43,13 @@ class dataObject {
     let groups_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.groups)[0];
     let chart_type_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_type)[0];
     let multiplier_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_multiplier)[0];
-
+    let outlier_direction_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.outlier_direction)[0];
     let numerators: number[] = <number[]>numerators_raw.values;
     let denominators: number[] = denominators_raw ? <number[]>denominators_raw.values : null;
     let groups: string[] = groups_raw ? <string[]>groups_raw.values : [];
     let chart_type: string = chart_type_raw ? <string>chart_type_raw.values[0] : args.inputSettings.spc.chart_type.value;
     let multiplier: number = multiplier_raw ? <number>multiplier_raw.values[0] : args.inputSettings.spc.multiplier.value;
+    let flag_direction: string = outlier_direction_raw ? <string>outlier_direction_raw.values[0] : args.inputSettings.outliers.flag_direction.value;
 
     let valid_ids: number[] = new Array<number>();
 
@@ -73,6 +76,7 @@ class dataObject {
     this.groups = extractValues(groups, valid_ids);
     this.chart_type = chart_type;
     this.multiplier = multiplier;
+    this.flag_direction = flag_direction.toLowerCase();
     this.highlights = numerators_raw.highlights ? extractValues(numerators_raw.highlights, valid_ids) : numerators_raw.highlights;
     this.categories = args.inputView.categories[0]
     this.limit_truncs = {

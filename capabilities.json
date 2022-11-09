@@ -40,6 +40,11 @@
             "displayName": "Optional: Multiplier",
             "name": "chart_multiplier",
             "kind": "Measure"
+        },
+        {
+            "displayName": "Optional: Outlier Direction",
+            "name": "outlier_direction",
+            "kind": "Measure"
         }
     ],
     "objects": {
@@ -130,6 +135,25 @@
         "outliers" : {
             "displayName": "Outlier Highlighting",
             "properties": {
+              "flag_direction": {
+                  "displayName": "Direction to Flag",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Both",
+                        "value" : "both"
+                      },
+                      {
+                        "displayName" : "Upper",
+                        "value" : "upper"
+                      },
+                      {
+                        "displayName" : "Lower",
+                        "value" : "lower"
+                      }
+                    ]
+                  }
+              },
                 "astronomical": {
                     "displayName": "Astronomical Points",
                     "type" : { "bool" : true }
@@ -437,6 +461,9 @@
                     },
                     "multiplier": {
                         "max": 1
+                    },
+                    "outlier_direction": {
+                        "max": 1
                     }
                 }
             ],
@@ -475,6 +502,11 @@
                         {
                             "for": {
                                 "in": "chart_multiplier"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "outlier_direction"
                             }
                         }
                     ]

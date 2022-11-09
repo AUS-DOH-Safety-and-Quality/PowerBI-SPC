@@ -113,6 +113,7 @@ class axisSettings {
 }
 
 class outliersSettings {
+  flag_direction: settingsPair<string>;
   astronomical: settingsPair<boolean>;
   ast_colour: settingsPair<string>;
   shift: settingsPair<boolean>;
@@ -125,6 +126,7 @@ class outliersSettings {
   trend_n: settingsPair<number>;
 
   constructor() {
+    this.flag_direction = new settingsPair("both");
     this.astronomical = new settingsPair(true);
     this.ast_colour = new settingsPair("#E1C233");
     this.shift = new settingsPair(true);
@@ -176,8 +178,8 @@ class settingsObject {
   }
 
   settingInData(settingGroupName: string, settingName: string): boolean {
-    let settingsInData: string[] = ["chart_type", "multiplier"];
-    return settingGroupName === "spc" && settingsInData.includes(settingName);
+    let settingsInData: string[] = ["chart_type", "multiplier", "flag_direction"];
+    return ["spc", "outliers"].includes(settingGroupName) && settingsInData.includes(settingName);
   }
 
   returnValues(settingGroupName: string, inputData: dataObject) {

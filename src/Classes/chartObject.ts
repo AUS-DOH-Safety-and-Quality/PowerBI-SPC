@@ -63,7 +63,7 @@ class chartObject {
       calcLimits = this.limitFunction(this.inputData);
     }
 
-    calcLimits.flagOutliers(this.inputSettings);
+    calcLimits.flagOutliers(this.inputData.flag_direction, this.inputSettings);
 
     // Scale limits using provided multiplier
     let multiplier: number = this.inputData.multiplier;
