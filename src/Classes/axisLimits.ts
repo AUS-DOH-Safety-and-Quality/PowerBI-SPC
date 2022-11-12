@@ -25,19 +25,25 @@ class axisLimits {
       this.y = {lower: null, upper: null, padding: null};
       return;
     }
+    let limitMultiplier: number = args.inputSettings.axis.limit_multiplier.value;
     let chart_type: string = args.inputData.chart_type;
     let values: number[] = args.calculatedLimits.values;
     let ul99: number[] = args.calculatedLimits.ul99;
     let ll99: number[] = args.calculatedLimits.ll99;
     let maxValueOrLimit: number = d3.max(values.concat(ul99));
     let minValueOrLimit: number = d3.min(values.concat(ll99));
+    let maxTarget: number = d3.max(args.calculatedLimits.targets);
+    let minTarget: number = d3.min(args.calculatedLimits.targets);
+
     let xLowerInput: number = args.inputSettings.axis.xlimit_l.value;
     let xUpperInput: number = args.inputSettings.axis.xlimit_u.value;
     let yLowerInput: number = args.inputSettings.axis.ylimit_l.value;
     let yUpperInput: number = args.inputSettings.axis.ylimit_u.value;
     let multiplier: number = args.inputData.multiplier;
-    let upperLimitRaw: number = (maxValueOrLimit + Math.abs(maxValueOrLimit) * 0.25);
-    let lowerLimitRaw: number = (minValueOrLimit - Math.abs(minValueOrLimit) * 0.25);
+
+    let upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
+    let lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
+
     let upperLimit: number
       = ["p", "pp"].includes(chart_type) && multiplier == 1
       ? truncate(upperLimitRaw, {upper: 1})
@@ -59,7 +65,6 @@ class axisLimits {
       upper: yUpperInput ? yUpperInput : upperLimit,
       padding: args.inputSettings.axispad.y.padding.value
     };
-    console.log("this.y: ", this.y)
   }
 }
 

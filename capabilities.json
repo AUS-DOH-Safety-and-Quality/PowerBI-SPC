@@ -413,6 +413,12 @@
                         "text": true
                     }
                 },
+                "limit_multiplier": {
+                    "displayName": "Axis Scaling Factor",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "ylimit_l": {
                     "displayName": "Y-Axis Lower Limit",
                     "type": {
