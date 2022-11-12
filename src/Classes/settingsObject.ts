@@ -156,7 +156,7 @@ class settingsObject {
       let valueSettings: string[] = settingNames.filter(name => !name.includes("colour"))
       let colourSettings: string[] = settingNames.filter(name => name.includes("colour"))
       valueSettings.forEach(settingName => {
-        this[settingGroup][settingName].value = dataViewObjects.getValue(
+        this[settingGroup][settingName].value = dataViewObjects["getValue"](
           inputObjects, {
             objectName: settingGroup,
             propertyName: settingName
@@ -166,7 +166,7 @@ class settingsObject {
       })
 
       colourSettings.forEach(settingName => {
-        this[settingGroup][settingName].value = dataViewObjects.getFillColor(
+        this[settingGroup][settingName].value = dataViewObjects["getFillColor"](
           inputObjects, {
             objectName: settingGroup,
             propertyName: settingName

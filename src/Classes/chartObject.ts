@@ -49,14 +49,17 @@ class chartObject {
       })
 
       let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
-
+      console.log("start reduce")
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
         let allInner: controlLimits = all;
         Object.entries(all).forEach(entry => {
-          allInner[entry[0]] = all[entry[0]].concat(curr[entry[0]]);
+          if (this.inputData.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
+            allInner[entry[0]] = all[entry[0]].concat(curr[entry[0]]);
+          }
         })
         return allInner;
       })
+      console.log("finish reduce")
 
     } else {
       // Calculate control limits using user-specified type
