@@ -16,13 +16,13 @@ function runLimits(inputData: dataObject): controlLimits {
   return new controlLimits({
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
-    numerators: useRatio ? inputData.numerators : null,
-    denominators: useRatio ? inputData.denominators : null,
+    numerators: useRatio ? inputData.numerators : <number[]>null,
+    denominators: useRatio ? inputData.denominators : <number[]>null,
     targets: rep(cl, inputData.keys.length),
-    ll99: rep(null, inputData.keys.length),
-    ll95: rep(null, inputData.keys.length),
-    ul95: rep(null, inputData.keys.length),
-    ul99: rep(null, inputData.keys.length)
+    ll99: <number[]>null,
+    ll95: <number[]>null,
+    ul95: <number[]>null,
+    ul99: <number[]>null
   });
 }
 

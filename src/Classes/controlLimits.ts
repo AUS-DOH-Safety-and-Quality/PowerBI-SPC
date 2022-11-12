@@ -5,6 +5,7 @@ import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
 import settingsObject from "./settingsObject";
+import dataObject from "./dataObject";
 
 type controlLimitsArgs = {
   keys: plotKey[];
@@ -35,19 +36,20 @@ class controlLimits {
   two_in_three: boolean[];
   shift: boolean[];
 
-  flagOutliers(flag_direction: string, inputSettings: settingsObject) {
-    console.log("dir: ", flag_direction)
-    if (inputSettings.outliers.astronomical.value) {
-      this.astpoint = astronomical(flag_direction, this.values, this.ll99, this.ul99);
+  flagOutliers(inputData: dataObject, inputSettings: settingsObject) {
+    if (inputData.chart_type !== "run") {
+      if (inputSettings.outliers.astronomical.value) {
+        this.astpoint = astronomical(inputData.flag_direction, this.values, this.ll99, this.ul99);
+      }
+      if (inputSettings.outliers.two_in_three.value) {
+        this.two_in_three = two_in_three(inputData.flag_direction, this.values, this.ll95, this.ul95);
+      }
     }
     if (inputSettings.outliers.trend.value) {
-      this.trend = trend(flag_direction, this.values, inputSettings.outliers.trend_n.value);
+      this.trend = trend(inputData.flag_direction, this.values, inputSettings.outliers.trend_n.value);
     }
     if (inputSettings.outliers.shift.value) {
-      this.shift = shift(flag_direction, this.values, this.targets, inputSettings.outliers.shift_n.value);
-    }
-    if (inputSettings.outliers.two_in_three.value) {
-      this.two_in_three = two_in_three(flag_direction, this.values, this.ll95, this.ul95);
+      this.shift = shift(inputData.flag_direction, this.values, this.targets, inputSettings.outliers.shift_n.value);
     }
   }
 

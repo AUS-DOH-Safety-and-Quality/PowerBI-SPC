@@ -62,8 +62,8 @@ class viewModelObject {
                                 denominator: this.calculatedLimits.denominators ? this.calculatedLimits.denominators[i] : null,
                                 target: this.calculatedLimits.targets[i],
                                 limits: {
-                                  ll99: this.calculatedLimits.ll99[i],
-                                  ul99: this.calculatedLimits.ul99[i]
+                                  ll99: this.calculatedLimits.ll99 ? this.calculatedLimits.ll99[i] : null,
+                                  ul99: this.calculatedLimits.ll99 ? this.calculatedLimits.ul99[i] : null
                                 },
                                 chart_type: this.inputData.chart_type,
                                 multiplier: this.inputData.multiplier,
@@ -89,7 +89,7 @@ class viewModelObject {
       labels.forEach(label => {
         formattedLines.push({
           x: this.calculatedLimits.keys[i].x,
-          line_value: this.calculatedLimits[label][i],
+          line_value: this.calculatedLimits[label] ? this.calculatedLimits[label][i] : null,
           group: label
         })
       })

@@ -63,20 +63,24 @@ class chartObject {
       calcLimits = this.limitFunction(this.inputData);
     }
 
-    calcLimits.flagOutliers(this.inputData.flag_direction, this.inputSettings);
+    calcLimits.flagOutliers(this.inputData, this.inputSettings);
 
     // Scale limits using provided multiplier
     let multiplier: number = this.inputData.multiplier;
+
     calcLimits.values = multiply(calcLimits.values, multiplier);
-    calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier),
-                                this.inputData.limit_truncs);
-    calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier),
-                                this.inputData.limit_truncs);
-    calcLimits.ul95 = truncate(multiply(calcLimits.ul95, multiplier),
-                                this.inputData.limit_truncs);
-    calcLimits.ul99 = truncate(multiply(calcLimits.ul99, multiplier),
-                                this.inputData.limit_truncs);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
+
+    if (this.inputData.chart_type !== "run") {
+      calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier),
+                                  this.inputData.limit_truncs);
+      calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier),
+                                  this.inputData.limit_truncs);
+      calcLimits.ul95 = truncate(multiply(calcLimits.ul95, multiplier),
+                                  this.inputData.limit_truncs);
+      calcLimits.ul99 = truncate(multiply(calcLimits.ul99, multiplier),
+                                  this.inputData.limit_truncs);
+    }
 
     return calcLimits;
   }
