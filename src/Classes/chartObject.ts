@@ -48,7 +48,6 @@ class chartObject {
       })
 
       let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
-      console.log("start reduce")
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
         let allInner: controlLimits = all;
         Object.entries(all).forEach(entry => {
