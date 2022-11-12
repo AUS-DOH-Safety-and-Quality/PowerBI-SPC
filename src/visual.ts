@@ -279,7 +279,10 @@ export class Visual implements IVisual {
     console.log("add data")
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => <string>line_color(d.key))
-                    .attr("stroke-width", d => <number>line_width(d.key))
+                    .attr("stroke-width", d => {
+                      console.log("d: ", d)
+                      return <number>line_width(d.key);
+                    })
                     .attr("stroke-dasharray", d => <string>line_type(d.key));
     console.log("add aesthetics")
     this.svgSelections.lineSelection.exit().remove();

@@ -32,7 +32,6 @@ class chartObject {
       let indexes: number[] = split_vals.map(d => this.inputData.keys.map(d2 => d2.label).indexOf(d))
                                         .concat([this.inputData.keys.length - 1])
                                         .sort((a,b) => a - b);
-
       let groupedData: dataObject[] = indexes.map((d, idx) => {
         // Force a deep copy
         let data = JSON.parse(JSON.stringify(this.inputData));
@@ -59,8 +58,7 @@ class chartObject {
         })
         return allInner;
       })
-      console.log("finish reduce")
-
+      calcLimits.split_indexes = indexes.slice(0,indexes.length - 1)
     } else {
       // Calculate control limits using user-specified type
       calcLimits = this.limitFunction(this.inputData);
@@ -84,7 +82,6 @@ class chartObject {
       calcLimits.ul99 = truncate(multiply(calcLimits.ul99, multiplier),
                                   this.inputData.limit_truncs);
     }
-
     return calcLimits;
   }
 

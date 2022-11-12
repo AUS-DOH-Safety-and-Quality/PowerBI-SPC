@@ -35,6 +35,7 @@ class controlLimits {
   trend: boolean[];
   two_in_three: boolean[];
   shift: boolean[];
+  split_indexes?: number[];
 
   flagOutliers(inputData: dataObject, inputSettings: settingsObject) {
     if (inputData.chart_type !== "run") {
