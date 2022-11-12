@@ -24,7 +24,7 @@ class viewModelObject {
   chartBase: chartObject;
   calculatedLimits: controlLimits;
   plotPoints: plotData[];
-  groupedLines: nestReturnT[];
+  groupedLines: [string, lineData[]][];
   anyHighlights: boolean;
   axisLimits: axisLimits;
   displayPlot: boolean;
@@ -79,7 +79,7 @@ class viewModelObject {
     return plotPoints;
   }
 
-  getGroupedLines(): nestReturnT[] {
+  getGroupedLines(): [string, lineData[]][] {
     let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values"];
 
     let formattedLines: lineData[] = new Array<lineData>();
@@ -94,9 +94,7 @@ class viewModelObject {
         })
       })
     }
-    return d3.nest<lineData>()
-              .key(function(d: lineData) { return d.group; })
-              .entries(formattedLines)
+    return d3.groups(formattedLines, d => d.group);
   }
 
   constructor(args: { options: VisualUpdateOptions;
@@ -111,7 +109,7 @@ class viewModelObject {
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = [new plotData({ empty: true })];
-      this.groupedLines = [{ key: null, value: null, values: new lineData() }];
+      this.groupedLines = <[string, lineData[]][]>null;
       this.anyHighlights = null;
       this.axisLimits = new axisLimits({ empty: true })
       this.displayPlot = false
