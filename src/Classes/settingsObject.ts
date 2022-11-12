@@ -87,10 +87,10 @@ class lineSettings {
     this.type_95 = new settingsPair("2 5");
     this.type_main = new settingsPair("10 0");
     this.type_target = new settingsPair("10 0");
-    this.colour_99 = new settingsPair("#00667B");
-    this.colour_95 = new settingsPair("#00667B");
-    this.colour_main = new settingsPair("#00667B");
-    this.colour_target = new settingsPair("#00667B");
+    this.colour_99 = new settingsPair("#6495ED");
+    this.colour_95 = new settingsPair("#6495ED");
+    this.colour_main = new settingsPair("#000000");
+    this.colour_target = new settingsPair("#6495ED");
   }
 }
 

@@ -57,24 +57,28 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
       value: (args.denominator).toFixed(2)
     })
   }
-  tooltip.push({
-    displayName: "Upper 99% Limit",
-    value: args.prop_labels
-      ? (args.limits.ul99 * 100).toFixed(2) + "%"
-      : args.limits.ul99.toFixed(4)
-  })
+  if (args.chart_type !== "run") {
+    tooltip.push({
+      displayName: "Upper 99% Limit",
+      value: args.prop_labels
+        ? (args.limits.ul99 * 100).toFixed(2) + "%"
+        : args.limits.ul99.toFixed(4)
+    })
+  }
   tooltip.push({
     displayName: "Centerline",
     value: args.prop_labels
       ? (args.target * 100).toFixed(2) + "%"
       : args.target.toFixed(4)
   })
-  tooltip.push({
-    displayName: "Lower 99% Limit",
-    value: args.prop_labels
-      ? (args.limits.ll99 * 100).toFixed(2) + "%"
-      : args.limits.ll99.toFixed(4)
-  })
+  if (args.chart_type !== "run") {
+    tooltip.push({
+      displayName: "Lower 99% Limit",
+      value: args.prop_labels
+        ? (args.limits.ll99 * 100).toFixed(2) + "%"
+        : args.limits.ll99.toFixed(4)
+    })
+  }
 
   if (args.astpoint || args.trend || args.shift || args.two_in_three) {
     let patterns: string[] = new Array<string>();
@@ -91,7 +95,7 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
       patterns.push("Two-in-Three")
     }
     tooltip.push({
-      displayName: "Patterns",
+      displayName: "Pattern(s)",
       value: patterns.join("\n")
     })
   }
