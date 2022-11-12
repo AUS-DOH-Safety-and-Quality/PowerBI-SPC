@@ -97,6 +97,7 @@ class lineSettings {
 class axisSettings {
   xlimit_label: settingsPair<string>;
   ylimit_label: settingsPair<string>;
+  limit_multiplier: settingsPair<number>;
   xlimit_l: settingsPair<number>;
   xlimit_u: settingsPair<number>;
   ylimit_l: settingsPair<number>;
@@ -105,6 +106,7 @@ class axisSettings {
   constructor() {
     this.xlimit_label = new settingsPair(<string>null);
     this.ylimit_label = new settingsPair(<string>null);
+    this.limit_multiplier = new settingsPair(1.5);
     this.xlimit_l = new settingsPair(<number>null);
     this.xlimit_u = new settingsPair(<number>null);
     this.ylimit_l = new settingsPair(<number>null);
