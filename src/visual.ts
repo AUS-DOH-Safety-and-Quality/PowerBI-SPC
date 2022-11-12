@@ -143,10 +143,10 @@ export class Visual implements IVisual {
     console.log("tooltip width: ", this.plotProperties.width)
     console.log("tooltip height: ", this.plotProperties.height)
     if (this.viewModel.displayPlot) {
-      tooltipMerged.on("mousemove", () => {
+      tooltipMerged.on("mousemove", (event) => {
                 let xValue: number = this.plotProperties
                                               .xScale
-                                              .invert((<any>d3).event.pageX);
+                                              .invert(event.pageX);
                 let xRange: number[] = this.viewModel.plotPoints.map(d => d.x);
                 let nearestDenominator: number = d3.bisectLeft(
                   xRange,
@@ -274,13 +274,13 @@ export class Visual implements IVisual {
                   .x(d => this.plotProperties.xScale(d.x))
                   .y(d => this.plotProperties.yScale(d.line_value))
                   .defined(function(d) {return d.line_value !== null})
-                  (d.values)
+                  (d[1])
     });
     console.log("add data")
     this.plottingMerged.linesMerged.attr("fill", "none")
-                    .attr("stroke", d => <string>line_color(d.key))
-                    .attr("stroke-width", d => <number>line_width(d.key))
-                    .attr("stroke-dasharray", d => <string>line_type(d.key));
+                    .attr("stroke", d => <string>line_color(d[0]))
+                    .attr("stroke-width", d => <number>line_width(d[0]))
+                    .attr("stroke-dasharray", d => <string>line_type(d[0]));
     console.log("add aesthetics")
     this.svgSelections.lineSelection.exit().remove();
     this.plottingMerged.linesMerged.exit().remove();
@@ -306,25 +306,25 @@ export class Visual implements IVisual {
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
     this.plottingMerged.dotsMerged
-        .on("click", d => {
+        .on("click", (event, d) => {
             // Pass identities of selected data back to PowerBI
             this.selectionManager
                 // Propagate identities of selected data back to
                 //   PowerBI based on all selected dots
-                .select(d.identity, (<any>d3).event.ctrlKey)
+                .select(d.identity, event.ctrlKey)
                 // Change opacity of non-selected dots
                 .then(() => { this.updateHighlighting(); });
-                (<any>d3).event.stopPropagation();
+                event.stopPropagation();
           });
     if (this.viewModel.displayPlot) {
           // Display tooltip content on mouseover
-      this.plottingMerged.dotsMerged.on("mouseover", d => {
+      this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
               // Get screen coordinates of mouse pointer, tooltip will
               //   be displayed at these coordinates
               //    Needs the '<any>' prefix, otherwise PowerBI doesn't defer
               //      to d3 properly
-              let x = (<any>d3).event.pageX;
-              let y = (<any>d3).event.pageY;
+              let x = event.pageX;
+              let y = event.pageY;
 
               this.host.tooltipService.show({
                   dataItems: d.tooltip,
@@ -357,14 +357,14 @@ export class Visual implements IVisual {
   }
 
   addContextMenu(): void {
-    this.svg.on('contextmenu', () => {
-        const eventTarget: EventTarget = (<any>d3).event.target;
+    this.svg.on('contextmenu', (event) => {
+        const eventTarget: EventTarget = event.target;
         let dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
         this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
-            x: (<any>d3).event.clientX,
-            y: (<any>d3).event.clientY
+            x: event.clientX,
+            y: event.clientY
         });
-        (<any>d3).event.preventDefault();
+        event.preventDefault();
     });
   }
 

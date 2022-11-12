@@ -28,7 +28,7 @@ function getGroupKeys(args: { inputSettings: settingsObject,
 
   let inputKeys: string[] = args.viewModel
                                     .groupedLines
-                                    .map(d => d.key);
+                                    .map(d => d[0]);
 
   let lineColours: string[] = [
     l99_colour, l95_colour, l95_colour, l99_colour,
