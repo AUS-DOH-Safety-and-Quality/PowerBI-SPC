@@ -25,5 +25,8 @@
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "3.6.3"
+  },
+  "override": {
+    "powerbi-visuals-api": "$powerbi-visuals-api"
   }
 }
