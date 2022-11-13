@@ -63,7 +63,7 @@ export class Visual implements IVisual {
     this.settings.updateSettings(options.dataViews[0].metadata.objects);
     console.log("Updated settings")
 
-    this.viewModel = new viewModelObject({ options: options,
+    this.viewModel = new viewModelObject({ dv: options.dataViews,
                                           inputSettings: this.settings,
                                           host: this.host });
     console.log("Created viewmodel")
@@ -139,10 +139,7 @@ export class Visual implements IVisual {
     tooltipMerged.style("fill","transparent")
             .attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height);
-    console.log("display: ", this.viewModel.displayPlot)
-    console.log("tooltip width: ", this.plotProperties.width)
-    console.log("tooltip height: ", this.plotProperties.height)
-    if (this.viewModel.displayPlot) {
+    if (this.viewModel.plotPoints.length > 0) {
       tooltipMerged.on("mousemove", (event) => {
                 let xValue: number = this.plotProperties
                                               .xScale
@@ -186,7 +183,7 @@ export class Visual implements IVisual {
     let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
     let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.plotProperties.xScale);
 
-    if (this.viewModel.displayPlot) {
+    if (this.viewModel.plotPoints.length > 0) {
       xAxis.tickFormat(d => {
         return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
           ? this.viewModel.tickLabels[<number>d].label
@@ -196,7 +193,7 @@ export class Visual implements IVisual {
 
     this.svgObjects.xAxisGroup
         .call(xAxis)
-        .attr("color", this.viewModel.displayPlot ? "#000000" : "#FFFFFF")
+        .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + (this.plotProperties.height - xAxisPadding) + ")")
         .selectAll("text")
@@ -220,7 +217,7 @@ export class Visual implements IVisual {
       = d3.axisLeft(this.plotProperties.yScale)
           .tickFormat(
               d => {
-                return this.viewModel.percentLabels
+                return this.viewModel.inputData.percentLabels
                   ? (<number>d * 100).toFixed(2) + "%"
                   : d.toString();
               }
@@ -229,7 +226,7 @@ export class Visual implements IVisual {
     // Draw axes on plot
     this.svgObjects.yAxisGroup
         .call(yAxis)
-        .attr("color", this.viewModel.displayPlot ? "#000000" : "#FFFFFF")
+        .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
         .attr("transform", "translate(" +  yAxisPadding + ",0)");
 
     this.svgObjects.yAxisLabels
@@ -316,7 +313,7 @@ export class Visual implements IVisual {
                 .then(() => { this.updateHighlighting(); });
                 event.stopPropagation();
           });
-    if (this.viewModel.displayPlot) {
+    if (this.viewModel.plotPoints.length > 0) {
           // Display tooltip content on mouseover
       this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
               // Get screen coordinates of mouse pointer, tooltip will
@@ -372,7 +369,7 @@ export class Visual implements IVisual {
     if (!this.plottingMerged.dotsMerged || !this.plottingMerged.linesMerged) {
         return;
     }
-    let anyHighlights: boolean = this.viewModel.anyHighlights;
+    let anyHighlights: boolean = this.viewModel.inputData.anyHighlights;
     let allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
     let opacityFull: number = this.settings.scatter.opacity.value;
@@ -384,13 +381,13 @@ export class Visual implements IVisual {
     this.plottingMerged.dotsMerged.style("fill-opacity", defaultOpacity);
 
     if (anyHighlights || (allSelectionIDs.length > 0)) {
-    this.plottingMerged.dotsMerged.style("fill-opacity", (dot: plotData) => {
-      let currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
-        return currentSelectionId.includes(dot.identity);
-      });
-      let currentPointHighlighted: boolean = dot.highlighted;
-      return (currentPointSelected || currentPointHighlighted) ? opacityFull : opacityReduced;
-    })
+      this.plottingMerged.dotsMerged.style("fill-opacity", (dot: plotData) => {
+        let currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
+          return currentSelectionId.includes(dot.identity);
+        });
+        let currentPointHighlighted: boolean = dot.highlighted;
+        return (currentPointSelected || currentPointHighlighted) ? opacityFull : opacityReduced;
+      })
     }
   }
 }

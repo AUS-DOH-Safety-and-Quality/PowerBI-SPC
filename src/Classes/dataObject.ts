@@ -6,12 +6,6 @@ import plotKey from "./plotKey"
 import isDate from "../Functions/isDate"
 import strToDMY from "../Functions/stringToDMY"
 
-type dataObjectConstructor = {
-  inputView?: powerbi.DataViewCategorical;
-  inputSettings?: settingsObject
-  empty?: boolean
-}
-
 class dataObject {
   keys: plotKey[];
   numerators: number[];
@@ -21,48 +15,33 @@ class dataObject {
   multiplier: number;
   flag_direction: string;
   highlights: powerbi.PrimitiveValue[];
+  anyHighlights: boolean;
+  percentLabels: boolean;
   categories: powerbi.DataViewCategoryColumn;
   limit_truncs: {lower?: number, upper?: number};
 
-  constructor(args: dataObjectConstructor) {
-    if (args.empty) {
-      this.keys = null;
-      this.numerators = null;
-      this.denominators = null;
-      this.groups = null;
-      this.chart_type = null;
-      this.flag_direction = null;
-      this.multiplier = null;
-      this.highlights = null;
-      this.categories = null;
-      return;
-    }
-    let numerators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.numerators)[0];
+  constructor(inputView: powerbi.DataViewCategorical, inputSettings: settingsObject) {
+    let numerators_raw: powerbi.DataViewValueColumn = inputView.values.filter(d => d.source.roles.numerators)[0];
+    let denominators_raw: powerbi.DataViewValueColumn = inputView.values.filter(d => d.source.roles.denominators)[0];
+    let groups_raw: powerbi.DataViewValueColumn = inputView.values.filter(d => d.source.roles.groups)[0];
+    let chart_type_raw: powerbi.DataViewValueColumn = inputView.values.filter(d => d.source.roles.chart_type)[0];
+    let multiplier_raw: powerbi.DataViewValueColumn = inputView.values.filter(d => d.source.roles.chart_multiplier)[0];
+    let outlier_direction_raw: powerbi.DataViewValueColumn = inputView.values.filter(d => d.source.roles.outlier_direction)[0];
 
-    let denominators_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.denominators)[0];
-    let groups_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.groups)[0];
-    let chart_type_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_type)[0];
-    let multiplier_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.chart_multiplier)[0];
-    let outlier_direction_raw: powerbi.DataViewValueColumn = args.inputView.values.filter(d => d.source.roles.outlier_direction)[0];
     let numerators: number[] = <number[]>numerators_raw.values;
     let denominators: number[] = denominators_raw ? <number[]>denominators_raw.values : null;
     let groups: string[] = groups_raw ? <string[]>groups_raw.values : [];
-    let chart_type: string = chart_type_raw ? <string>chart_type_raw.values[0] : args.inputSettings.spc.chart_type.value;
-    let multiplier: number = multiplier_raw ? <number>multiplier_raw.values[0] : args.inputSettings.spc.multiplier.value;
-    let flag_direction: string = outlier_direction_raw ? <string>outlier_direction_raw.values[0] : args.inputSettings.outliers.flag_direction.value;
+    let chart_type: string = chart_type_raw ? <string>chart_type_raw.values[0] : inputSettings.spc.chart_type.value;
+    let multiplier: number = multiplier_raw ? <number>multiplier_raw.values[0] : inputSettings.spc.multiplier.value;
+    let flag_direction: string = outlier_direction_raw ? <string>outlier_direction_raw.values[0] : inputSettings.outliers.flag_direction.value;
 
     let valid_ids: number[] = new Array<number>();
-
     let valid_keys: plotKey[] = new Array<plotKey>();
 
-    console.log("numerators: ", numerators)
-    console.log("denominators: ", denominators)
-    console.log(groups)
-
     for (let i: number = 0; i < numerators.length; i++) {
-      if(checkValidInput(numerators[i], denominators ? denominators[i] : null, chart_type)) {
+      if (checkValidInput(numerators[i], denominators ? denominators[i] : null, chart_type)) {
         valid_ids.push(i);
-        let allCategories: string[] = <string[]>args.inputView.categories.map(category => category.values[i]);
+        let allCategories: string[] = <string[]>inputView.categories.map(category => category.values[i]);
         allCategories = allCategories.map(category => isDate(category) ? strToDMY(category) : category);
         valid_keys.push({ x: null, id: i, label: allCategories.join(" ") })
       }
@@ -78,10 +57,12 @@ class dataObject {
     this.multiplier = multiplier;
     this.flag_direction = flag_direction.toLowerCase();
     this.highlights = numerators_raw.highlights ? extractValues(numerators_raw.highlights, valid_ids) : numerators_raw.highlights;
-    this.categories = args.inputView.categories[0]
+    this.anyHighlights = this.highlights ? true : false
+    this.categories = inputView.categories[0];
+    this.percentLabels = ["p", "pp"].includes(chart_type) && (multiplier == 1 || multiplier == 100);
     this.limit_truncs = {
-      lower: args.inputSettings.spc.ll_truncate.value,
-      upper: args.inputSettings.spc.ul_truncate.value
+      lower: inputSettings.spc.ll_truncate.value,
+      upper: inputSettings.spc.ul_truncate.value
     }
   }
 }
