@@ -1,9 +1,8 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import chartObject from "./chartObject"
-import settingsObject from "./Settings/settingsObject";
+import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
 import lineData from "./lineData"
 import controlLimits from "./controlLimits";
@@ -107,16 +106,22 @@ class viewModelObject {
       return;
     }
 
-    //
+    // Extract input data, filter out invalid values, and identify any settings passed as data
     this.inputData = new dataObject(args.dv[0].categorical, args.inputSettings)
     this.inputSettings = args.inputSettings;
 
+    // Initialise a new chartObject class which can be used to calculate the control limits
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
 
+    // Use initialised chartObject to calculate control limits
     this.calculatedLimits = this.chartBase.getLimits();
+
+    // Structure the data and calculated limits to the format needed for plotting
     this.plotPoints = this.getPlotData(args.host);
     this.groupedLines = this.getGroupedLines();
+
+    // Use the input data and calculated limits to dynamically determine the axis limits
     this.axisLimits = new axisLimits({ inputData: this.inputData,
                                         inputSettings: this.inputSettings,
                                         calculatedLimits: this.calculatedLimits });

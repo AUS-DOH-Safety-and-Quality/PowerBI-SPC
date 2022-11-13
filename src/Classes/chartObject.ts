@@ -1,6 +1,6 @@
 import * as limitFunctions from "../Limit Calculations"
 import dataObject from "./dataObject";
-import settingsObject from "./Settings/settingsObject";
+import settingsObject from "./settingsObject";
 import controlLimits from "./controlLimits";
 import { multiply } from "../Functions/BinaryFunctions";
 import truncate from "../Functions/truncate"

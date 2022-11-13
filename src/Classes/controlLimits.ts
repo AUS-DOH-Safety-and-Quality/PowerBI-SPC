@@ -4,7 +4,7 @@ import astronomical from "../Outlier Flagging/astronomical"
 import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
-import settingsObject from "./Settings/settingsObject";
+import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
 
 type controlLimitsArgs = {

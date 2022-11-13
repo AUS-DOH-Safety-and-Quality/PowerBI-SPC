@@ -1,5 +1,5 @@
 import powerbi from "powerbi-visuals-api"
-import settingsObject from "./Settings/settingsObject"
+import settingsObject from "./settingsObject"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"

@@ -13,7 +13,7 @@ import VisualObjectInstance = powerbi.VisualObjectInstance;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ISelectionId = powerbi.visuals.ISelectionId;
-import settingsObject from "./Classes/Settings/settingsObject"
+import settingsObject from "./Classes/settingsObject"
 import viewModelObject from "./Classes/viewModel"
 import plotData from "./Classes/plotData";
 import * as d3 from "d3";
@@ -61,46 +61,32 @@ export class Visual implements IVisual {
 
   public update(options: VisualUpdateOptions) {
     this.settings.updateSettings(options.dataViews[0].metadata.objects);
-    console.log("Updated settings")
 
     this.viewModel = new viewModelObject({ dv: options.dataViews,
                                           inputSettings: this.settings,
                                           host: this.host });
-    console.log("Created viewmodel")
-    console.log(this.viewModel)
 
     this.svgSelections = new svgSelectionClass({ svgObjects: this.svgObjects,
                                                   viewModel: this.viewModel});
-    console.log("Made svgSelections")
 
     this.plotProperties = new plotPropertiesClass({
       options: options,
       viewModel: this.viewModel,
       inputSettings: this.settings
     });
-    console.log("Made plot properties")
-
-    console.log(this.plotProperties)
 
     this.svg.attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height);
 
-    console.log("start tooltip")
     this.initTooltipTracking();
-    console.log("finish tooltip")
 
     this.drawXAxis();
-    console.log("finish x-axis")
     this.drawYAxis();
-    console.log("finish y-axis")
 
     this.drawLines();
-    console.log("finish lines")
     this.drawDots();
-    console.log("finish dots")
 
     this.addContextMenu();
-    console.log("finish context menu")
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane
@@ -341,7 +327,6 @@ export class Visual implements IVisual {
       this.plottingMerged.dotsMerged.on("mousemove", d => {})
                                     .on("mouseleave", d => {});
     }
-
 
     this.updateHighlighting();
     this.svgSelections.dotSelection.exit().remove();
