@@ -1,6 +1,6 @@
 import powerbi from "powerbi-visuals-api"
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
-import dataObject from "../dataObject";
+import dataObject from "./dataObject";
 import {
   axispadSettings,
   spcSettings,

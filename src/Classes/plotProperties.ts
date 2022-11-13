@@ -3,7 +3,7 @@ import powerbi from "powerbi-visuals-api";
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import axisLimits from "./axisLimits"
 import viewModelObject from "./viewModel";
-import settingsObject from "./Settings/settingsObject";
+import settingsObject from "./settingsObject";
 
 class plotPropertiesClass {
   width: number;

@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import controlLimits from "./controlLimits"
-import settingsObject from "./Settings/settingsObject";
+import settingsObject from "./settingsObject";
 import dataObject from "./dataObject"
 import truncate from "../Functions/truncate";
 

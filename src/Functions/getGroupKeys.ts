@@ -1,4 +1,4 @@
-import settingsObject from "../Classes/Settings/settingsObject"
+import settingsObject from "../Classes/settingsObject"
 import viewModel from "../Classes/viewModel"
 
 type groupKeysT = {

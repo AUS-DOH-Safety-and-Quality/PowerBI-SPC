@@ -1,9 +1,8 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import chartObject from "./chartObject"
-import settingsObject from "./Settings/settingsObject";
+import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
 import lineData from "./lineData"
 import controlLimits from "./controlLimits";
@@ -12,12 +11,6 @@ import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import axisLimits from "./axisLimits"
 
-type nestReturnT = {
-  key: string;
-  values: any;
-  value: undefined;
-}
-
 class viewModelObject {
   inputData: dataObject;
   inputSettings: settingsObject;
@@ -25,13 +18,10 @@ class viewModelObject {
   calculatedLimits: controlLimits;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
-  anyHighlights: boolean;
   axisLimits: axisLimits;
-  displayPlot: boolean;
-  percentLabels: boolean;
   tickLabels: { x: number; label: string; }[];
 
-  getPlotData(): plotData[] {
+  getPlotData(host: IVisualHost): plotData[] {
     let plotPoints = new Array<plotData>();
     let tickLabels = new Array<{ x: number; label: string; }>();
 
@@ -54,7 +44,10 @@ class viewModelObject {
         x: index,
         value: this.calculatedLimits.values[i],
         colour: dot_colour,
-        identity: null,
+        identity: host.createSelectionIdBuilder()
+                      .withCategory(this.inputData.categories,
+                                    this.inputData.keys[i].id)
+                      .createSelectionId(),
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
         tooltip: buildTooltip({date: this.calculatedLimits.keys[i].label,
                                 value: this.calculatedLimits.values[i],
@@ -67,7 +60,7 @@ class viewModelObject {
                                 },
                                 chart_type: this.inputData.chart_type,
                                 multiplier: this.inputData.multiplier,
-                                prop_labels: this.percentLabels,
+                                prop_labels: this.inputData.percentLabels,
                                astpoint: this.calculatedLimits.astpoint[i],
                                trend: this.calculatedLimits.trend[i],
                                shift: this.calculatedLimits.shift[i],
@@ -97,55 +90,41 @@ class viewModelObject {
     return d3.groups(formattedLines, d => d.group);
   }
 
-  constructor(args: { options: VisualUpdateOptions;
+  constructor(args: { dv: powerbi.DataView[];
                       inputSettings: settingsObject;
                       host: IVisualHost; }) {
-
-    let dv: powerbi.DataView[] = args.options.dataViews;
-    console.log("before invalid")
-    if (checkInvalidDataView(dv)) {
-      this.inputData = new dataObject({empty: true});
+    // Make sure that the construction returns early with null members so
+    // that the visual does not crash when trying to process invalid data
+    if (checkInvalidDataView(args.dv)) {
+      this.inputData = <dataObject>null;
       this.inputSettings = args.inputSettings;
       this.chartBase = null;
       this.calculatedLimits = null;
-      this.plotPoints = [new plotData({ empty: true })];
+      this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
-      this.anyHighlights = null;
-      this.axisLimits = new axisLimits({ empty: true })
-      this.displayPlot = false
-    console.log("after invalid - a")
+      this.axisLimits = <axisLimits>null;
       return;
     }
-    console.log("after invalid - b")
 
-    this.inputData = new dataObject({ inputView: dv[0].categorical,
-                                      inputSettings: args.inputSettings})
-    console.log("Initialised data")
+    // Extract input data, filter out invalid values, and identify any settings passed as data
+    this.inputData = new dataObject(args.dv[0].categorical, args.inputSettings)
     this.inputSettings = args.inputSettings;
-    this.anyHighlights = this.inputData.highlights ? true : false;
+
+    // Initialise a new chartObject class which can be used to calculate the control limits
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
-    this.percentLabels = ["p", "pp"].includes(this.inputData.chart_type)
-                            && this.inputData.multiplier == 1;
-    console.log("Initialised chart")
+
+    // Use initialised chartObject to calculate control limits
     this.calculatedLimits = this.chartBase.getLimits();
-    console.log(this.calculatedLimits)
-    this.plotPoints = this.getPlotData();
-    console.log("Got plot data")
-    this.plotPoints.forEach((point, idx) => {
-      point.identity = args.host
-                            .createSelectionIdBuilder()
-                            .withCategory(this.inputData.categories,
-                                            this.inputData.keys[idx].id)
-                            .createSelectionId()
-    })
+
+    // Structure the data and calculated limits to the format needed for plotting
+    this.plotPoints = this.getPlotData(args.host);
     this.groupedLines = this.getGroupedLines();
-    console.log("Grouped lines for plotting")
+
+    // Use the input data and calculated limits to dynamically determine the axis limits
     this.axisLimits = new axisLimits({ inputData: this.inputData,
                                         inputSettings: this.inputSettings,
                                         calculatedLimits: this.calculatedLimits });
-    console.log("Made axis limits")
-    this.displayPlot = this.plotPoints.length > 1;
   }
 }
 
