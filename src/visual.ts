@@ -311,7 +311,7 @@ export class Visual implements IVisual {
             this.selectionManager
                 // Propagate identities of selected data back to
                 //   PowerBI based on all selected dots
-                .select(d.identity, event.ctrlKey)
+                .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
                 .then(() => { this.updateHighlighting(); });
                 event.stopPropagation();
