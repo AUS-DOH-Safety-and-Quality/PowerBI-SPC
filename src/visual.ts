@@ -13,7 +13,7 @@ import VisualObjectInstance = powerbi.VisualObjectInstance;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import ISelectionId = powerbi.visuals.ISelectionId;
-import settingsObject from "./Classes/settingsObject"
+import settingsObject from "./Classes/Settings/settingsObject"
 import viewModelObject from "./Classes/viewModel"
 import plotData from "./Classes/plotData";
 import * as d3 from "d3";

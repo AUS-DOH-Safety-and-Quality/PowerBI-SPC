@@ -3,7 +3,7 @@ import powerbi from "powerbi-visuals-api";
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import chartObject from "./chartObject"
-import settingsObject from "./settingsObject";
+import settingsObject from "./Settings/settingsObject";
 import dataObject from "./dataObject";
 import lineData from "./lineData"
 import controlLimits from "./controlLimits";

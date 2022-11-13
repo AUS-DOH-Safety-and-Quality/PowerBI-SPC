@@ -1,12 +1,13 @@
-import powerbi from "powerbi-visuals-api"
-import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
-import dataObject from "./dataObject";
-
-class settingsPair<T> {
+/**
+ * Base class defining the two types of settings values that are stored:
+ *   - default: The initial default value
+ *   - value: The value provided/chosen by the user
+ */
+ class settingsPair<T> {
   default: T;
   value: T;
 
-  constructor(initialValue: T) {
+  constructor(initialValue?: T) {
     this.default = initialValue;
     this.value = initialValue;
   }
@@ -44,9 +45,9 @@ class spcSettings {
   constructor() {
     this.chart_type = new settingsPair("i");
     this.multiplier = new settingsPair(1);
-    this.denom_split = new settingsPair(null);
-    this.ul_truncate = new settingsPair(null);
-    this.ll_truncate = new settingsPair(null);
+    this.denom_split = new settingsPair<string>(null);
+    this.ul_truncate = new settingsPair<number>(null);
+    this.ll_truncate = new settingsPair<number>(null);
   }
 }
 
@@ -104,13 +105,13 @@ class axisSettings {
   ylimit_u: settingsPair<number>;
 
   constructor() {
-    this.xlimit_label = new settingsPair(<string>null);
-    this.ylimit_label = new settingsPair(<string>null);
+    this.xlimit_label = new settingsPair<string>(null);
+    this.ylimit_label = new settingsPair<string>(null);
     this.limit_multiplier = new settingsPair(1.5);
-    this.xlimit_l = new settingsPair(<number>null);
-    this.xlimit_u = new settingsPair(<number>null);
-    this.ylimit_l = new settingsPair(<number>null);
-    this.ylimit_u = new settingsPair(<number>null);
+    this.xlimit_l = new settingsPair<number>(null);
+    this.xlimit_u = new settingsPair<number>(null);
+    this.ylimit_l = new settingsPair<number>(null);
+    this.ylimit_u = new settingsPair<number>(null);
   };
 }
 
@@ -142,64 +143,11 @@ class outliersSettings {
   };
 }
 
-class settingsObject {
-  axispad: axispadSettings;
-  spc: spcSettings;
-  outliers: outliersSettings;
-  scatter: scatterSettings;
-  lines: lineSettings;
-  axis: axisSettings;
-
-  updateSettings(inputObjects: powerbi.DataViewObjects): void {
-    let allSettingGroups: string[] = Object.getOwnPropertyNames(this)
-                                           .filter(groupName => groupName !== "axispad");
-    allSettingGroups.forEach(settingGroup => {
-      let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
-      settingNames.forEach(settingName => {
-        let method: string = settingName.includes("colour") ? "getFillColor" : "getValue";
-        this[settingGroup][settingName].value = dataViewObjects[method](
-          inputObjects, {
-            objectName: settingGroup,
-            propertyName: settingName
-          },
-          this[settingGroup][settingName].default
-        )
-      })
-    })
-  }
-
-  settingInData(settingGroupName: string, settingName: string): boolean {
-    let settingsInData: string[] = ["chart_type", "multiplier", "flag_direction"];
-    return ["spc", "outliers"].includes(settingGroupName) && settingsInData.includes(settingName);
-  }
-
-  returnValues(settingGroupName: string, inputData: dataObject) {
-    let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
-    let firstSettingObject = {
-      [settingNames[0]]: this.settingInData(settingGroupName, settingNames[0])
-        ? inputData[settingNames[0]]
-        : this[settingGroupName][settingNames[0]].value
-    };
-    return settingNames.reduce((previousSetting, currentSetting) => {
-      return {
-        ...previousSetting,
-        ...{
-          [currentSetting]: this.settingInData(settingGroupName, currentSetting)
-            ? inputData[currentSetting]
-            : this[settingGroupName][currentSetting].value
-        }
-      }
-    }, firstSettingObject);
-  }
-
-  constructor() {
-    this.axispad = new axispadSettings();
-    this.spc = new spcSettings();
-    this.outliers = new outliersSettings();
-    this.scatter = new scatterSettings();
-    this.lines = new lineSettings();
-    this.axis = new axisSettings();
-  }
+export {
+  axispadSettings,
+  spcSettings,
+  scatterSettings,
+  lineSettings,
+  axisSettings,
+  outliersSettings
 }
-
-export default settingsObject;
