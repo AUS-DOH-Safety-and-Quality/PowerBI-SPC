@@ -11,8 +11,8 @@
         },
     "apiVersion":"3.2.0",
     "author":{
-        "name":"Andrew Johnson",
-        "email":"Andrew.Johnson@health.wa.gov.au"
+        "name":"HQIU - WA Health",
+        "email":"safetyandquality@health.wa.gov.au"
     },
     "assets":{
         "icon":"assets/icon.png"
