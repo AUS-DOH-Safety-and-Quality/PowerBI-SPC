@@ -91,7 +91,7 @@ class lineSettings {
     this.colour_99 = new settingsPair("#6495ED");
     this.colour_95 = new settingsPair("#6495ED");
     this.colour_main = new settingsPair("#000000");
-    this.colour_target = new settingsPair("#6495ED");
+    this.colour_target = new settingsPair("#000000");
   }
 }
 
