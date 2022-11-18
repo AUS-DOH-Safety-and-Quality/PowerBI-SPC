@@ -130,13 +130,13 @@ class outliersSettings {
 
   constructor() {
     this.flag_direction = new settingsPair("both");
-    this.astronomical = new settingsPair(true);
+    this.astronomical = new settingsPair(false);
     this.ast_colour = new settingsPair("#E1C233");
-    this.shift = new settingsPair(true);
+    this.shift = new settingsPair(false);
     this.shift_colour = new settingsPair("#E1C233");
-    this.trend = new settingsPair(true);
+    this.trend = new settingsPair(false);
     this.trend_colour = new settingsPair("#E1C233");
-    this.two_in_three = new settingsPair(true);
+    this.two_in_three = new settingsPair(false);
     this.twointhree_colour = new settingsPair("#E1C233");
     this.shift_n = new settingsPair(7);
     this.trend_n = new settingsPair(5);
