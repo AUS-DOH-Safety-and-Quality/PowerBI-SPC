@@ -10,6 +10,7 @@ import plotKey from "../Classes/plotKey";
 function xbarLimits(inputData: dataObject): controlLimits {
   let groups: string[] = inputData.groups;
   let numerators: number[] = inputData.numerators;
+
     // Get the unique groupings to summarise
   let unique_group_names: string[] = groups.filter(
     (value, index, self) => self.indexOf(value) === index
@@ -19,7 +20,6 @@ function xbarLimits(inputData: dataObject): controlLimits {
   let unique_groups: plotKey[] = unique_group_names.map((group_name, idx) => {
     return { x: idx, id: idx, label: group_name }
   });
-
 
   // Calculate number of observations in each group
   let count_per_group: number[] = unique_groups.map(
