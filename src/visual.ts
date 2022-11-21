@@ -60,30 +60,40 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
+    console.log("Settings start")
     this.settings.updateSettings(options.dataViews[0].metadata.objects);
 
+    console.log("viewModel start")
     this.viewModel = new viewModelObject({ dv: options.dataViews,
                                           inputSettings: this.settings,
                                           host: this.host });
 
+    console.log("svgSelections start")
     this.svgSelections = new svgSelectionClass({ svgObjects: this.svgObjects,
                                                   viewModel: this.viewModel});
 
+    console.log("plotProperties start")
     this.plotProperties = new plotPropertiesClass({
       options: options,
       viewModel: this.viewModel,
       inputSettings: this.settings
     });
 
+    console.log("svg scale start")
     this.svg.attr("width", this.plotProperties.width)
             .attr("height", this.plotProperties.height);
 
+    console.log("TooltipTracking start")
     this.initTooltipTracking();
 
+    console.log("Draw axes start")
     this.drawXAxis();
     this.drawYAxis();
 
+    console.log("Draw Lines start")
     this.drawLines();
+
+    console.log("Draw dots start")
     this.drawDots();
 
     this.addContextMenu();
@@ -295,6 +305,7 @@ export class Visual implements IVisual {
               .then(() => { this.updateHighlighting(); });
               event.stopPropagation();
           });
+
     if (this.viewModel.plotPoints.length > 0) {
           // Display tooltip content on mouseover
       this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
@@ -323,6 +334,7 @@ export class Visual implements IVisual {
     }
 
     this.updateHighlighting();
+
     this.svgSelections.dotSelection.exit().remove();
     this.plottingMerged.dotsMerged.exit().remove();
 

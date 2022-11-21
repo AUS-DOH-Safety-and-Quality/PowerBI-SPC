@@ -1,6 +1,6 @@
 function checkValidInput(numerator: number, denominator: number, data_type: string): boolean {
   let denominatorConstraintRequired: string[] = ["p", "pprime", "u", "uprime"];
-  let denominatorRequired: string[] = ["p", "pprime", "u", "uprime", "s", "xbar"];
+  let denominatorRequired: string[] = ["p", "pprime", "u", "uprime"];
   let denominatorConstraintForRunIChart: string[] = ["i", "run"];
   let numeratorValid: boolean = numerator !== null && numerator !== undefined;
   let denominatorValid: boolean = denominatorRequired.includes(data_type)
