@@ -108,18 +108,14 @@ class viewModelObject {
 
     // Extract input data, filter out invalid values, and identify any settings passed as data
     this.inputData = new dataObject(args.dv[0].categorical, args.inputSettings)
-    console.log("inputData: ", this.inputData)
     this.inputSettings = args.inputSettings;
 
     // Initialise a new chartObject class which can be used to calculate the control limits
     this.chartBase = new chartObject({ inputData: this.inputData,
                                         inputSettings: this.inputSettings});
 
-    console.log("chartBase: ", this.chartBase)
-
     // Use initialised chartObject to calculate control limits
     this.calculatedLimits = this.chartBase.getLimits();
-    console.log("calculatedLimits: ", this.calculatedLimits)
 
     // Structure the data and calculated limits to the format needed for plotting
     this.plotPoints = this.getPlotData(args.host);
