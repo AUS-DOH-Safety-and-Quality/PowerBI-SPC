@@ -39,16 +39,18 @@ function sLimits(inputData: dataObject): controlLimits {
   let cl: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
 
   // Sample-size dependent constant
-  let B3: number[] = b3(count_per_group);
-  let B4: number[] = b4(count_per_group);
+  let B3: number[] = b3(count_per_group, false);
+  let B395: number[] = b3(count_per_group, true);
+  let B4: number[] = b4(count_per_group, false);
+  let B495: number[] = b4(count_per_group, true);
 
   return new controlLimits({
     keys: unique_groups,
     values: group_sd,
     targets: rep(cl, unique_groups.length),
     ll99: multiply(cl, B3),
-    ll95: multiply(cl, multiply(divide(B3, 3), 2)),
-    ul95: multiply(cl, multiply(divide(B4, 3), 2)),
+    ll95: multiply(cl, B395),
+    ul95: multiply(cl, B495),
     ul99: multiply(cl, B4)
   });
 }

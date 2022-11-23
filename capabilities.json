@@ -486,7 +486,12 @@
                                 "in": "groups"
                             }
                         }
-                    ]
+                    ],
+                    "dataReductionAlgorithm": {
+                      "window": {
+                          "count": 30000
+                      }
+                    }
                 },
                 "values": {
                     "select": [
