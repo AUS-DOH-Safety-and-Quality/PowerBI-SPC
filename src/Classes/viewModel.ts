@@ -116,6 +116,7 @@ class viewModelObject {
 
     // Use initialised chartObject to calculate control limits
     this.calculatedLimits = this.chartBase.getLimits();
+    console.log("calculatedLimits: ", this.calculatedLimits)
 
     // Structure the data and calculated limits to the format needed for plotting
     this.plotPoints = this.getPlotData(args.host);

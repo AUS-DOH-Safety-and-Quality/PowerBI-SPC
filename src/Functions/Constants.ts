@@ -21,16 +21,17 @@ function a3(sampleSizes: number[]): number[] {
   return divide(3, multiply(c4(filt_samp), sqrt(filt_samp)));
 }
 
-function b_helper(sampleSizes: number[]): number[] {
-  return divide(multiply(3, c5(sampleSizes)), c4(sampleSizes));
+function b_helper(sampleSizes: number[], use95: boolean): number[] {
+  let sigma: number = use95 ? 2 : 3;
+  return divide(multiply(sigma, c5(sampleSizes)), c4(sampleSizes));
 }
 
-function b3(sampleSizes: number[]): number[] {
-  return subtract(1, b_helper(sampleSizes));
+function b3(sampleSizes: number[], use95: boolean): number[] {
+  return subtract(1, b_helper(sampleSizes, use95));
 }
 
-function b4(sampleSizes: number[]): number[] {
-  return add(1, b_helper(sampleSizes));
+function b4(sampleSizes: number[], use95: boolean): number[] {
+  return add(1, b_helper(sampleSizes, use95));
 }
 
 export {
