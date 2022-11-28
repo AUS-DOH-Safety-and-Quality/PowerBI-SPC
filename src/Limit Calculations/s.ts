@@ -8,29 +8,8 @@ import dataObject from "../Classes/dataObject";
 import plotKey from "../Classes/plotKey";
 
 function sLimits(inputData: dataObject): controlLimits {
-  let groups: string[] = inputData.groups;
-  let numerators: number[] = inputData.numerators;
-  // Get the unique groupings to summarise
-  let unique_group_names: string[] = groups.filter(
-    (value, index, self) => self.indexOf(value) === index
-  );
-
-  let unique_groups: plotKey[] = unique_group_names.map((group_name, idx) => {
-    return { x: idx, id: idx, label: group_name }
-  });
-
-  // Calculate number of observations in each group
-  let count_per_group: number[] = unique_groups.map(
-    unique_group => groups.filter(group => group === unique_group.label).length
-  );
-
-  // Append date and value arrays so that the values can be filtered by their
-  //   associated date
-  let rbind_arrays: (string | number)[][] = numerators.map((d,idx) => [groups[idx],d]);
-
-  // Calculate the SD for each group
-  let group_sd: number[] = sqrt(unique_groups.map(
-    unique_group => d3.variance(rbind_arrays.filter(array_obs => array_obs[0] == unique_group.label).map(d3 => <number>d3[1]))));
+  let group_sd: number[] = inputData.numerators;
+  let count_per_group: number[] = inputData.denominators;
 
   // Per-group sample size minus 1
   let Nm1: number[] = subtract(count_per_group, 1);
@@ -45,9 +24,9 @@ function sLimits(inputData: dataObject): controlLimits {
   let B495: number[] = b4(count_per_group, true);
 
   return new controlLimits({
-    keys: unique_groups,
+    keys: inputData.keys,
     values: group_sd,
-    targets: rep(cl, unique_groups.length),
+    targets: rep(cl, inputData.keys.length),
     ll99: multiply(cl, B3),
     ll95: multiply(cl, B395),
     ul95: multiply(cl, B495),

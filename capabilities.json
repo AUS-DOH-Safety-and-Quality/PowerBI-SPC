@@ -27,9 +27,9 @@
             "kind": "Grouping"
         },
         {
-            "displayName": "Grouping (xbar/s)",
-            "name": "groups",
-            "kind": "Grouping"
+            "displayName": "SD (for xbar)",
+            "name": "xbar_sds",
+            "kind": "Measure"
         },
         {
             "displayName": "Optional: Chart Type",
@@ -480,11 +480,6 @@
                             "for": {
                                 "in": "key"
                             }
-                        },
-                        {
-                            "for": {
-                                "in": "groups"
-                            }
                         }
                     ],
                     "dataReductionAlgorithm": {
@@ -503,6 +498,11 @@
                         {
                             "for": {
                                 "in": "denominators"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "xbar_sds"
                             }
                         },
                         {
