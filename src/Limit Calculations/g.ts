@@ -11,7 +11,7 @@ function gLimits(inputData: dataObject): controlLimits {
   return new controlLimits({
     keys: inputData.keys,
     values: inputData.numerators,
-    targets: rep(cl, inputData.keys.length),
+    targets: rep(d3.median(inputData.numerators), inputData.keys.length),
     ll99: rep(0, inputData.keys.length),
     ll95: rep(0, inputData.keys.length),
     ul95: rep(cl + 2*sigma, inputData.keys.length),
