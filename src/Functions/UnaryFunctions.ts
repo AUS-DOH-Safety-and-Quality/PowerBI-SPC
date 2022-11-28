@@ -11,7 +11,7 @@ function broadcast_unary(fun: (x: number) => number) {
 }
 
 const sqrt = broadcast_unary(math.sqrt);
-const abs = broadcast_unary(math.abs);
+const abs = broadcast_unary((x: number) => (x ? math.abs(x) : x));
 const exp = broadcast_unary(math.exp);
 const lgamma = broadcast_unary(math.gammaln);
 const square = broadcast_unary(d => math.pow(d, 2));
