@@ -398,8 +398,8 @@
                 }
             }
         },
-        "axis": {
-            "displayName": "Axis Settings",
+        "x_axis": {
+            "displayName": "X-Axis Settings",
             "properties": {
                 "xlimit_label": {
                     "displayName": "X-Axis Label",
@@ -407,10 +407,97 @@
                         "text": true
                     }
                 },
+                "xlimit_label_size": {
+                    "displayName": "X-Axis Label Font Size",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Smallest",
+                          "value" : "xx-small"
+                        },
+                        {
+                          "displayName" : "Very Small",
+                          "value" : "x-small"
+                        },
+                        {
+                          "displayName" : "Small",
+                          "value" : "small"
+                        },
+                        {
+                          "displayName" : "Medium",
+                          "value" : "medium"
+                        },
+                        {
+                          "displayName" : "Large",
+                          "value" : "large"
+                        },
+                        {
+                          "displayName" : "Very Large",
+                          "value" : "x-large"
+                        },
+                        {
+                          "displayName" : "Largest",
+                          "value" : "xx-large"
+                        }
+                      ]
+                    }
+                },
+                "xlimit_l": {
+                    "displayName": "X-Axis Lower Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "xlimit_u": {
+                    "displayName": "X-Axis Upper Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "y_axis": {
+            "displayName": "Y-Axis Settings",
+            "properties": {
                 "ylimit_label": {
                     "displayName": "Y-Axis Label",
                     "type": {
                         "text": true
+                    }
+                },
+                "ylimit_label_size": {
+                    "displayName": "X-Axis Label Font Size",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Smallest",
+                          "value" : "xx-small"
+                        },
+                        {
+                          "displayName" : "Very Small",
+                          "value" : "x-small"
+                        },
+                        {
+                          "displayName" : "Small",
+                          "value" : "small"
+                        },
+                        {
+                          "displayName" : "Medium",
+                          "value" : "medium"
+                        },
+                        {
+                          "displayName" : "Large",
+                          "value" : "large"
+                        },
+                        {
+                          "displayName" : "Very Large",
+                          "value" : "x-large"
+                        },
+                        {
+                          "displayName" : "Largest",
+                          "value" : "xx-large"
+                        }
+                      ]
                     }
                 },
                 "limit_multiplier": {
@@ -427,18 +514,6 @@
                 },
                 "ylimit_u": {
                     "displayName": "Y-Axis Upper Limit",
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "xlimit_l": {
-                    "displayName": "X-Axis Lower Limit",
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "xlimit_u": {
-                    "displayName": "X-Axis Upper Limit",
                     "type": {
                         "numeric": true
                     }

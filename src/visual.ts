@@ -203,7 +203,8 @@ export class Visual implements IVisual {
         .attr("x",this.plotProperties.width/2)
         .attr("y",this.plotProperties.height - xAxisPadding/10)
         .style("text-anchor", "middle")
-        .text(this.settings.axis.xlimit_label.value);
+        .text(this.settings.x_axis.xlimit_label.value)
+        .style("font-size", this.settings.x_axis.xlimit_label_size.value);
   }
 
   drawYAxis(): void {
@@ -231,8 +232,9 @@ export class Visual implements IVisual {
         .attr("x",yAxisPadding)
         .attr("y",this.plotProperties.height/2)
         .attr("transform","rotate(-90," + yAxisPadding/3 +"," + this.plotProperties.height/2 +")")
-        .text(this.settings.axis.ylimit_label.value)
-        .style("text-anchor", "end");
+        .text(this.settings.y_axis.ylimit_label.value)
+        .style("text-anchor", "end")
+        .style("font-size", this.settings.y_axis.ylimit_label_size.value);
   }
 
   drawLines(): void {
