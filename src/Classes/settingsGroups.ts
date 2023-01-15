@@ -97,6 +97,7 @@ class lineSettings {
 
 class xAxisSettings {
   xlimit_ticks: settingsPair<boolean>;
+  xlimit_tick_size: settingsPair<string>;
   xlimit_label: settingsPair<string>;
   xlimit_label_size: settingsPair<string>;
   xlimit_l: settingsPair<number>;
@@ -104,6 +105,7 @@ class xAxisSettings {
 
   constructor() {
     this.xlimit_ticks = new settingsPair(true);
+    this.xlimit_tick_size = new settingsPair("x-small");
     this.xlimit_label = new settingsPair<string>(null);
     this.xlimit_label_size = new settingsPair("x-small");
     this.xlimit_l = new settingsPair<number>(null);
@@ -113,6 +115,7 @@ class xAxisSettings {
 
 class yAxisSettings {
   ylimit_ticks: settingsPair<boolean>;
+  ylimit_tick_size: settingsPair<string>;
   ylimit_label: settingsPair<string>;
   ylimit_label_size: settingsPair<string>;
   limit_multiplier: settingsPair<number>;
@@ -121,6 +124,7 @@ class yAxisSettings {
 
   constructor() {
     this.ylimit_ticks = new settingsPair(true);
+    this.ylimit_tick_size = new settingsPair("x-small");
     this.ylimit_label = new settingsPair<string>(null);
     this.ylimit_label_size = new settingsPair("x-small");
     this.limit_multiplier = new settingsPair(1.5);

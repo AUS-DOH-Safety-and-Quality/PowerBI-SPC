@@ -202,7 +202,7 @@ export class Visual implements IVisual {
         // Right-align
         .style("text-anchor", "end")
         // Scale font
-        .style("font-size","x-small");
+        .style("font-size",this.settings.x_axis.xlimit_tick_size.value);
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
     let bottomMidpoint: number = this.plotProperties.height - (this.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
@@ -237,13 +237,12 @@ export class Visual implements IVisual {
         .yAxisGroup
         .call(yAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
-        .attr("transform", "translate(" +  yAxisPadding + ",0)");
+        .attr("transform", "translate(" +  yAxisPadding + ",0)")
+        // Scale font
+        .style("font-size",this.settings.y_axis.ylimit_tick_size.value);
 
-        let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
-        let leftMidpoint: number = yAxisCoordinates.x * 0.7;
-
-        console.log("pad:", yAxisPadding)
-        console.log("coord:", yAxisCoordinates)
+    let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
+    let leftMidpoint: number = yAxisCoordinates.x * 0.7;
 
     this.svgObjects
         .yAxisLabels

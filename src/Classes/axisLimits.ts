@@ -83,11 +83,18 @@ class axisLimits {
     let yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? fontSizeMap[yLabelSize] : 0;
 
     // Default padding is scaled to the "x-small" font size for axis ticks
+    let xPadding: number = args.inputSettings.axispad.x.padding.value;
+    let xTickSize: string = args.inputSettings.x_axis.xlimit_tick_size.value;
+    let xTickPadding: number = xPadding * (fontSizeMap[xTickSize] / fontSizeMap["x-small"]);
+
+    let yPadding: number = args.inputSettings.axispad.y.padding.value;
+    let yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
+    let yTickPadding: number = yPadding * (fontSizeMap[yTickSize] / fontSizeMap["x-small"]);
 
     this.x = {
       lower: xLowerInput ? xLowerInput : 0,
       upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
-      padding: args.inputSettings.axispad.x.padding.value + xLabelPadding,
+      padding: xTickPadding + xLabelPadding,
       end_padding: args.inputSettings.axispad.x.end_padding.value,
       ticks: args.inputSettings.x_axis.xlimit_ticks.value
     };
@@ -95,7 +102,7 @@ class axisLimits {
     this.y = {
       lower: yLowerInput ? yLowerInput : lowerLimit,
       upper: yUpperInput ? yUpperInput : upperLimit,
-      padding: args.inputSettings.axispad.y.padding.value + yLabelPadding,
+      padding: yTickPadding + yLabelPadding,
       end_padding: args.inputSettings.axispad.y.end_padding.value,
       ticks: args.inputSettings.y_axis.ylimit_ticks.value
     };
