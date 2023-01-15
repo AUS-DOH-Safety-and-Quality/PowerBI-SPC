@@ -8,12 +8,14 @@ class axisLimits {
   x: {
     lower: number,
     upper: number,
-    padding: number
+    padding: number,
+    end_padding: number
   };
   y: {
     lower: number,
     upper: number,
-    padding: number
+    padding: number,
+    end_padding: number
   }
 
   constructor(args: { inputData?: dataObject,
@@ -21,8 +23,8 @@ class axisLimits {
                       calculatedLimits?: controlLimits,
                       empty?: boolean }) {
     if (args.empty) {
-      this.x = {lower: null, upper: null, padding: null};
-      this.y = {lower: null, upper: null, padding: null};
+      this.x = {lower: null, upper: null, padding: null, end_padding: null};
+      this.y = {lower: null, upper: null, padding: null, end_padding: null};
       return;
     }
     let limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
@@ -53,17 +55,45 @@ class axisLimits {
       ? truncate(lowerLimitRaw, {lower: 0})
       : lowerLimitRaw;
 
+
+    // Axis & label padding is based on the browser default font size of 16px,
+    //    so need to scale accordingly if a different font size is used
+    let browserFontSize: number = Number(window.getComputedStyle(document.body).getPropertyValue('font-size').match(/\d+/)[0]);
+    let fontScaling: number = browserFontSize / 16;
+
+    // Map the default pixel sizes for each text label, based on browser default
+    //    so scaled
+    // https://careerkarma.com/blog/css-font-size/
+    let fontSizeMap = {
+      "xx-small" : 9 * fontScaling,
+      "x-small" : 10 * fontScaling,
+      "small" : 13 * fontScaling,
+      "medium" : 16 * fontScaling,
+      "large" : 18 * fontScaling,
+      "x-large" : 24 * fontScaling,
+      "xx-large" : 32 * fontScaling
+    };
+
+    // Only scale padding for label if a label is actually present
+    let xLabelSize: string = args.inputSettings.x_axis.xlimit_label_size.value;
+    let xLabelPadding: number = args.inputSettings.x_axis.xlimit_label.value ? fontSizeMap[xLabelSize] : 0;
+    let yLabelSize: string = args.inputSettings.y_axis.ylimit_label_size.value;
+    let yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? fontSizeMap[yLabelSize] : 0;
+
+    // Default padding is scaled to the "x-small" font size for axis ticks
+
     this.x = {
       lower: xLowerInput ? xLowerInput : 0,
       upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
-      padding: args.inputSettings.axispad.x.padding.value
+      padding: args.inputSettings.axispad.x.padding.value + xLabelPadding,
+      end_padding: args.inputSettings.axispad.x.end_padding.value
     };
-
 
     this.y = {
       lower: yLowerInput ? yLowerInput : lowerLimit,
       upper: yUpperInput ? yUpperInput : upperLimit,
-      padding: args.inputSettings.axispad.y.padding.value
+      padding: args.inputSettings.axispad.y.padding.value + yLabelPadding,
+      end_padding: args.inputSettings.axispad.y.end_padding.value
     };
   }
 }

@@ -198,10 +198,13 @@ export class Visual implements IVisual {
         // Scale font
         .style("font-size","x-small");
 
+    let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
+    let bottomMidpoint: number = this.plotProperties.height - (this.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
+
     this.svgObjects
         .xAxisLabels
         .attr("x",this.plotProperties.width/2)
-        .attr("y",this.plotProperties.height - xAxisPadding/10)
+        .attr("y", bottomMidpoint)
         .style("text-anchor", "middle")
         .text(this.settings.x_axis.xlimit_label.value)
         .style("font-size", this.settings.x_axis.xlimit_label_size.value);
@@ -227,13 +230,19 @@ export class Visual implements IVisual {
         .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
         .attr("transform", "translate(" +  yAxisPadding + ",0)");
 
+        let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
+        let leftMidpoint: number = yAxisCoordinates.x * 0.7;
+
+        console.log("pad:", yAxisPadding)
+        console.log("coord:", yAxisCoordinates)
+
     this.svgObjects
         .yAxisLabels
-        .attr("x",yAxisPadding)
+        .attr("x",leftMidpoint)
         .attr("y",this.plotProperties.height/2)
-        .attr("transform","rotate(-90," + yAxisPadding/3 +"," + this.plotProperties.height/2 +")")
+        .attr("transform","rotate(-90," + leftMidpoint +"," + this.plotProperties.height/2 +")")
         .text(this.settings.y_axis.ylimit_label.value)
-        .style("text-anchor", "end")
+        .style("text-anchor", "middle")
         .style("font-size", this.settings.y_axis.ylimit_label_size.value);
   }
 
