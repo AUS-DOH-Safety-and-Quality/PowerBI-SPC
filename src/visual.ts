@@ -174,14 +174,20 @@ export class Visual implements IVisual {
 
   drawXAxis(): void {
     let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
-    let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(this.plotProperties.xScale);
+    let xAxis: d3.Axis<d3.NumberValue>;
 
     if (this.viewModel.plotPoints.length > 0) {
-      xAxis.tickFormat(d => {
-        return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
-          ? this.viewModel.tickLabels[<number>d].label
-          : "";
-      })
+      if (this.viewModel.axisLimits.x.ticks) {
+        xAxis = d3.axisBottom(this.plotProperties.xScale).tickFormat(d => {
+          return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
+            ? this.viewModel.tickLabels[<number>d].label
+            : "";
+        })
+      } else {
+        xAxis = d3.axisBottom(this.plotProperties.xScale).tickValues([]);
+      }
+    } else {
+      xAxis = d3.axisBottom(this.plotProperties.xScale);
     }
 
     this.svgObjects
@@ -213,15 +219,18 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     let yAxisPadding: number = this.viewModel.axisLimits.y.padding;
 
-    let yAxis: d3.Axis<d3.NumberValue>
-      = d3.axisLeft(this.plotProperties.yScale)
-          .tickFormat(
-              d => {
-                return this.viewModel.inputData.percentLabels
-                  ? (<number>d * 100).toFixed(2) + "%"
-                  : d.toString();
-              }
-          );
+    let yAxis: d3.Axis<d3.NumberValue>;
+    if (this.viewModel.axisLimits.y.ticks) {
+      yAxis = d3.axisLeft(this.plotProperties.yScale).tickFormat(
+        d => {
+          return this.viewModel.inputData.percentLabels
+            ? (<number>d * 100).toFixed(2) + "%"
+            : d.toString();
+        }
+      );
+    } else {
+      yAxis = d3.axisLeft(this.plotProperties.yScale).tickValues([]);
+    }
 
     // Draw axes on plot
     this.svgObjects

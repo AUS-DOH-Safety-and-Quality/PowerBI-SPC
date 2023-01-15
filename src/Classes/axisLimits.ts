@@ -9,13 +9,15 @@ class axisLimits {
     lower: number,
     upper: number,
     padding: number,
-    end_padding: number
+    end_padding: number,
+    ticks: boolean
   };
   y: {
     lower: number,
     upper: number,
     padding: number,
-    end_padding: number
+    end_padding: number,
+    ticks: boolean
   }
 
   constructor(args: { inputData?: dataObject,
@@ -23,8 +25,8 @@ class axisLimits {
                       calculatedLimits?: controlLimits,
                       empty?: boolean }) {
     if (args.empty) {
-      this.x = {lower: null, upper: null, padding: null, end_padding: null};
-      this.y = {lower: null, upper: null, padding: null, end_padding: null};
+      this.x = {lower: null, upper: null, padding: null, end_padding: null, ticks: null};
+      this.y = {lower: null, upper: null, padding: null, end_padding: null, ticks: null};
       return;
     }
     let limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
@@ -86,14 +88,16 @@ class axisLimits {
       lower: xLowerInput ? xLowerInput : 0,
       upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
       padding: args.inputSettings.axispad.x.padding.value + xLabelPadding,
-      end_padding: args.inputSettings.axispad.x.end_padding.value
+      end_padding: args.inputSettings.axispad.x.end_padding.value,
+      ticks: args.inputSettings.x_axis.xlimit_ticks.value
     };
 
     this.y = {
       lower: yLowerInput ? yLowerInput : lowerLimit,
       upper: yUpperInput ? yUpperInput : upperLimit,
       padding: args.inputSettings.axispad.y.padding.value + yLabelPadding,
-      end_padding: args.inputSettings.axispad.y.end_padding.value
+      end_padding: args.inputSettings.axispad.y.end_padding.value,
+      ticks: args.inputSettings.y_axis.ylimit_ticks.value
     };
   }
 }

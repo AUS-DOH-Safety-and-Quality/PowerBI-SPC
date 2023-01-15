@@ -401,14 +401,18 @@
         "x_axis": {
             "displayName": "X-Axis Settings",
             "properties": {
+                "xlimit_ticks": {
+                    "displayName": "Draw Ticks",
+                    "type" : { "bool" : true }
+                },
                 "xlimit_label": {
-                    "displayName": "X-Axis Label",
+                    "displayName": "Label",
                     "type": {
                         "text": true
                     }
                 },
                 "xlimit_label_size": {
-                    "displayName": "X-Axis Label Font Size",
+                    "displayName": "Label Font Size",
                     "type": {
                       "enumeration" : [
                         {
@@ -443,13 +447,13 @@
                     }
                 },
                 "xlimit_l": {
-                    "displayName": "X-Axis Lower Limit",
+                    "displayName": "Lower Limit",
                     "type": {
                         "numeric": true
                     }
                 },
                 "xlimit_u": {
-                    "displayName": "X-Axis Upper Limit",
+                    "displayName": "Upper Limit",
                     "type": {
                         "numeric": true
                     }
@@ -459,14 +463,18 @@
         "y_axis": {
             "displayName": "Y-Axis Settings",
             "properties": {
+                "ylimit_ticks": {
+                    "displayName": "Draw Ticks",
+                    "type" : { "bool" : true }
+                },
                 "ylimit_label": {
-                    "displayName": "Y-Axis Label",
+                    "displayName": "Label",
                     "type": {
                         "text": true
                     }
                 },
                 "ylimit_label_size": {
-                    "displayName": "X-Axis Label Font Size",
+                    "displayName": "Label Font Size",
                     "type": {
                       "enumeration" : [
                         {
@@ -507,13 +515,13 @@
                     }
                 },
                 "ylimit_l": {
-                    "displayName": "Y-Axis Lower Limit",
+                    "displayName": "Lower Limit",
                     "type": {
                         "numeric": true
                     }
                 },
                 "ylimit_u": {
-                    "displayName": "Y-Axis Upper Limit",
+                    "displayName": "Upper Limit",
                     "type": {
                         "numeric": true
                     }
