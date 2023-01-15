@@ -398,19 +398,356 @@
                 }
             }
         },
-        "axis": {
-            "displayName": "Axis Settings",
+        "x_axis": {
+            "displayName": "X-Axis Settings",
             "properties": {
+                "xlimit_ticks": {
+                    "displayName": "Draw Ticks",
+                    "type" : { "bool" : true }
+                },
+                "xlimit_tick_font": {
+                    "displayName": "Tick Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
+                    }
+                },
+                "xlimit_tick_size": {
+                    "displayName": "Tick Font Size",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Smallest",
+                          "value" : "xx-small"
+                        },
+                        {
+                          "displayName" : "Very Small",
+                          "value" : "x-small"
+                        },
+                        {
+                          "displayName" : "Small",
+                          "value" : "small"
+                        },
+                        {
+                          "displayName" : "Medium",
+                          "value" : "medium"
+                        },
+                        {
+                          "displayName" : "Large",
+                          "value" : "large"
+                        },
+                        {
+                          "displayName" : "Very Large",
+                          "value" : "x-large"
+                        },
+                        {
+                          "displayName" : "Largest",
+                          "value" : "xx-large"
+                        }
+                      ]
+                    }
+                },
                 "xlimit_label": {
-                    "displayName": "X-Axis Label",
+                    "displayName": "Label",
                     "type": {
                         "text": true
                     }
                 },
+                "xlimit_label_font": {
+                    "displayName": "Label Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
+                    }
+                },
+                "xlimit_label_size": {
+                    "displayName": "Label Font Size",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Smallest",
+                          "value" : "xx-small"
+                        },
+                        {
+                          "displayName" : "Very Small",
+                          "value" : "x-small"
+                        },
+                        {
+                          "displayName" : "Small",
+                          "value" : "small"
+                        },
+                        {
+                          "displayName" : "Medium",
+                          "value" : "medium"
+                        },
+                        {
+                          "displayName" : "Large",
+                          "value" : "large"
+                        },
+                        {
+                          "displayName" : "Very Large",
+                          "value" : "x-large"
+                        },
+                        {
+                          "displayName" : "Largest",
+                          "value" : "xx-large"
+                        }
+                      ]
+                    }
+                },
+                "xlimit_l": {
+                    "displayName": "Lower Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "xlimit_u": {
+                    "displayName": "Upper Limit",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "y_axis": {
+            "displayName": "Y-Axis Settings",
+            "properties": {
+                "ylimit_ticks": {
+                    "displayName": "Draw Ticks",
+                    "type" : { "bool" : true }
+                },
+                "ylimit_tick_font": {
+                    "displayName": "Tick Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
+                    }
+                },
+                "ylimit_tick_size": {
+                    "displayName": "Tick Font Size",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Smallest",
+                          "value" : "xx-small"
+                        },
+                        {
+                          "displayName" : "Very Small",
+                          "value" : "x-small"
+                        },
+                        {
+                          "displayName" : "Small",
+                          "value" : "small"
+                        },
+                        {
+                          "displayName" : "Medium",
+                          "value" : "medium"
+                        },
+                        {
+                          "displayName" : "Large",
+                          "value" : "large"
+                        },
+                        {
+                          "displayName" : "Very Large",
+                          "value" : "x-large"
+                        },
+                        {
+                          "displayName" : "Largest",
+                          "value" : "xx-large"
+                        }
+                      ]
+                    }
+                },
                 "ylimit_label": {
-                    "displayName": "Y-Axis Label",
+                    "displayName": "Label",
                     "type": {
                         "text": true
+                    }
+                },
+                "ylimit_label_font": {
+                    "displayName": "Label Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
+                    }
+                },
+                "ylimit_label_size": {
+                    "displayName": "Label Font Size",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Smallest",
+                          "value" : "xx-small"
+                        },
+                        {
+                          "displayName" : "Very Small",
+                          "value" : "x-small"
+                        },
+                        {
+                          "displayName" : "Small",
+                          "value" : "small"
+                        },
+                        {
+                          "displayName" : "Medium",
+                          "value" : "medium"
+                        },
+                        {
+                          "displayName" : "Large",
+                          "value" : "large"
+                        },
+                        {
+                          "displayName" : "Very Large",
+                          "value" : "x-large"
+                        },
+                        {
+                          "displayName" : "Largest",
+                          "value" : "xx-large"
+                        }
+                      ]
                     }
                 },
                 "limit_multiplier": {
@@ -420,25 +757,13 @@
                     }
                 },
                 "ylimit_l": {
-                    "displayName": "Y-Axis Lower Limit",
+                    "displayName": "Lower Limit",
                     "type": {
                         "numeric": true
                     }
                 },
                 "ylimit_u": {
-                    "displayName": "Y-Axis Upper Limit",
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "xlimit_l": {
-                    "displayName": "X-Axis Lower Limit",
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "xlimit_u": {
-                    "displayName": "X-Axis Upper Limit",
+                    "displayName": "Upper Limit",
                     "type": {
                         "numeric": true
                     }

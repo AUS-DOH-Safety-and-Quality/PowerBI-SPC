@@ -9,7 +9,6 @@ class plotPropertiesClass {
   width: number;
   height: number;
   displayPlot: boolean;
-  axisLimits: axisLimits;
   xScale: d3.ScaleLinear<number, number, never>;
   yScale: d3.ScaleLinear<number, number, never>;
 
@@ -25,44 +24,17 @@ class plotPropertiesClass {
       ? args.viewModel.plotPoints.length > 1
       : null;
 
-    let yAxisMin: number = args.viewModel.axisLimits
-      ? args.viewModel.axisLimits.y.lower
-      : null;
-    let yAxisMax: number = args.viewModel.axisLimits
-      ? args.viewModel.axisLimits.y.upper
-      : null;
-    let xAxisMin: number = args.viewModel.axisLimits
-      ? args.viewModel.axisLimits.x.lower
-      : null;
-    let xAxisMax: number = args.viewModel.axisLimits
-      ? args.viewModel.axisLimits.x.upper
-      : null;
-
-    let xAxisPadding: number = args.inputSettings.axispad.x.padding.value;
-    let yAxisPadding: number = args.inputSettings.axispad.y.padding.value;
-
-    this.axisLimits = {
-      x: {
-        lower: xAxisMin,
-        upper: xAxisMax,
-        padding: xAxisPadding
-      },
-      y: {
-        lower: yAxisMin,
-        upper: yAxisMax,
-        padding: yAxisPadding
-      }
-    }
+    let currentLimits: axisLimits = args.viewModel.axisLimits;
 
     this.xScale = d3.scaleLinear()
-                    .domain([xAxisMin, xAxisMax])
-                    .range([yAxisPadding,
-                            this.width - args.inputSettings.axispad.y.end_padding.value]);
+                    .domain([currentLimits.x.lower, currentLimits.x.upper])
+                    .range([currentLimits.y.padding,
+                            this.width - currentLimits.y.end_padding]);
 
     this.yScale = d3.scaleLinear()
-                            .domain([yAxisMin, yAxisMax])
-                            .range([this.height - args.inputSettings.axispad.x.padding.value,
-                                    args.inputSettings.axispad.x.end_padding.value]);
+                            .domain([currentLimits.y.lower, currentLimits.y.upper])
+                            .range([this.height - currentLimits.x.padding,
+                                    currentLimits.x.end_padding]);
   }
 }
 

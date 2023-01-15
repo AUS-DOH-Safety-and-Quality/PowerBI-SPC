@@ -95,21 +95,47 @@ class lineSettings {
   }
 }
 
-class axisSettings {
+class xAxisSettings {
+  xlimit_ticks: settingsPair<boolean>;
+  xlimit_tick_font: settingsPair<string>;
+  xlimit_tick_size: settingsPair<string>;
   xlimit_label: settingsPair<string>;
-  ylimit_label: settingsPair<string>;
-  limit_multiplier: settingsPair<number>;
+  xlimit_label_font: settingsPair<string>;
+  xlimit_label_size: settingsPair<string>;
   xlimit_l: settingsPair<number>;
   xlimit_u: settingsPair<number>;
+
+  constructor() {
+    this.xlimit_ticks = new settingsPair(true);
+    this.xlimit_tick_font = new settingsPair("'Arial', sans-serif");
+    this.xlimit_tick_size = new settingsPair("x-small");
+    this.xlimit_label = new settingsPair<string>(null);
+    this.xlimit_label_font = new settingsPair("'Arial', sans-serif");
+    this.xlimit_label_size = new settingsPair("x-small");
+    this.xlimit_l = new settingsPair<number>(null);
+    this.xlimit_u = new settingsPair<number>(null);
+  };
+}
+
+class yAxisSettings {
+  ylimit_ticks: settingsPair<boolean>;
+  ylimit_tick_font: settingsPair<string>;
+  ylimit_tick_size: settingsPair<string>;
+  ylimit_label: settingsPair<string>;
+  ylimit_label_font: settingsPair<string>;
+  ylimit_label_size: settingsPair<string>;
+  limit_multiplier: settingsPair<number>;
   ylimit_l: settingsPair<number>;
   ylimit_u: settingsPair<number>;
 
   constructor() {
-    this.xlimit_label = new settingsPair<string>(null);
+    this.ylimit_ticks = new settingsPair(true);
+    this.ylimit_tick_font = new settingsPair("'Arial', sans-serif");
+    this.ylimit_tick_size = new settingsPair("x-small");
     this.ylimit_label = new settingsPair<string>(null);
+    this.ylimit_label_font = new settingsPair("'Arial', sans-serif");
+    this.ylimit_label_size = new settingsPair("x-small");
     this.limit_multiplier = new settingsPair(1.5);
-    this.xlimit_l = new settingsPair<number>(null);
-    this.xlimit_u = new settingsPair<number>(null);
     this.ylimit_l = new settingsPair<number>(null);
     this.ylimit_u = new settingsPair<number>(null);
   };
@@ -148,6 +174,7 @@ export {
   spcSettings,
   scatterSettings,
   lineSettings,
-  axisSettings,
+  xAxisSettings,
+  yAxisSettings,
   outliersSettings
 }

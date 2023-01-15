@@ -7,7 +7,8 @@ import {
   outliersSettings,
   scatterSettings,
   lineSettings,
-  axisSettings
+  xAxisSettings,
+  yAxisSettings
 } from "./settingsGroups"
 
 /**
@@ -23,7 +24,8 @@ class settingsObject {
   outliers: outliersSettings;
   scatter: scatterSettings;
   lines: lineSettings;
-  axis: axisSettings;
+  x_axis: xAxisSettings;
+  y_axis: yAxisSettings;
   // Specify the names of settings which can be provided as data
   // so that the correct value can be rendered to the settings pane
   settingsInData: string[];
@@ -91,7 +93,8 @@ class settingsObject {
     this.outliers = new outliersSettings();
     this.scatter = new scatterSettings();
     this.lines = new lineSettings();
-    this.axis = new axisSettings();
+    this.x_axis = new xAxisSettings();
+    this.y_axis = new yAxisSettings();
     this.settingsInData = ["chart_type", "multiplier", "flag_direction"];
   }
 }
