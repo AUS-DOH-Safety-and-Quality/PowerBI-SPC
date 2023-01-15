@@ -10,14 +10,24 @@ class axisLimits {
     upper: number,
     padding: number,
     end_padding: number,
-    ticks: boolean
+    ticks: boolean,
+    tick_size: string,
+    tick_font: string,
+    label: string,
+    label_size: string,
+    label_font: string
   };
   y: {
     lower: number,
     upper: number,
     padding: number,
     end_padding: number,
-    ticks: boolean
+    ticks: boolean,
+    tick_size: string,
+    tick_font: string,
+    label: string,
+    label_size: string,
+    label_font: string
   }
 
   constructor(args: { inputData?: dataObject,
@@ -25,8 +35,9 @@ class axisLimits {
                       calculatedLimits?: controlLimits,
                       empty?: boolean }) {
     if (args.empty) {
-      this.x = {lower: null, upper: null, padding: null, end_padding: null, ticks: null};
-      this.y = {lower: null, upper: null, padding: null, end_padding: null, ticks: null};
+      let nullObj = {lower: null, upper: null, padding: null, end_padding: null, ticks: null, tick_size: null, tick_font: null, label: null, label_size: null, label_font: null};
+      this.x = nullObj;
+      this.y = nullObj;
       return;
     }
     let limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
@@ -94,7 +105,12 @@ class axisLimits {
       upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
       padding: xPadding + fontSizeMap[xTickSize] + xLabelPadding,
       end_padding: args.inputSettings.axispad.x.end_padding.value,
-      ticks: args.inputSettings.x_axis.xlimit_ticks.value
+      ticks: args.inputSettings.x_axis.xlimit_ticks.value,
+      tick_size: xTickSize,
+      tick_font: args.inputSettings.x_axis.xlimit_tick_font.value,
+      label: args.inputSettings.x_axis.xlimit_label.value,
+      label_size: args.inputSettings.x_axis.xlimit_label_size.value,
+      label_font: args.inputSettings.x_axis.xlimit_label_font.value
     };
 
     this.y = {
@@ -102,7 +118,12 @@ class axisLimits {
       upper: yUpperInput ? yUpperInput : upperLimit,
       padding: yPadding + fontSizeMap[yTickSize] + yLabelPadding,
       end_padding: args.inputSettings.axispad.y.end_padding.value,
-      ticks: args.inputSettings.y_axis.ylimit_ticks.value
+      ticks: args.inputSettings.y_axis.ylimit_ticks.value,
+      tick_size: yTickSize,
+      tick_font: args.inputSettings.y_axis.ylimit_tick_font.value,
+      label: args.inputSettings.y_axis.ylimit_label.value,
+      label_size: args.inputSettings.y_axis.ylimit_label_size.value,
+      label_font: args.inputSettings.y_axis.ylimit_label_font.value
     };
   }
 }

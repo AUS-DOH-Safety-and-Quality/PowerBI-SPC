@@ -173,11 +173,11 @@ export class Visual implements IVisual {
   }
 
   drawXAxis(): void {
-    let xAxisPadding: number = this.viewModel.axisLimits.x.padding;
+    let xAxisProperties = this.viewModel.axisLimits.x;
     let xAxis: d3.Axis<d3.NumberValue>;
 
     if (this.viewModel.plotPoints.length > 0) {
-      if (this.viewModel.axisLimits.x.ticks) {
+      if (xAxisProperties.ticks) {
         xAxis = d3.axisBottom(this.plotProperties.xScale).tickFormat(d => {
           return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
             ? this.viewModel.tickLabels[<number>d].label
@@ -195,15 +195,15 @@ export class Visual implements IVisual {
         .call(xAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
         // Plots the axis at the correct height
-        .attr("transform", "translate(0, " + (this.plotProperties.height - xAxisPadding) + ")")
+        .attr("transform", "translate(0, " + (this.plotProperties.height - xAxisProperties.padding) + ")")
         .selectAll("text")
         // Rotate tick labels
         .attr("transform","rotate(-35)")
         // Right-align
         .style("text-anchor", "end")
         // Scale font
-        .style("font-size",this.settings.x_axis.xlimit_tick_size.value)
-        .style("font-family", this.settings.x_axis.xlimit_tick_font.value);
+        .style("font-size", xAxisProperties.tick_size)
+        .style("font-family", xAxisProperties.tick_font);
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
     let bottomMidpoint: number = this.plotProperties.height - (this.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
@@ -213,16 +213,16 @@ export class Visual implements IVisual {
         .attr("x",this.plotProperties.width/2)
         .attr("y", bottomMidpoint)
         .style("text-anchor", "middle")
-        .text(this.settings.x_axis.xlimit_label.value)
-        .style("font-size", this.settings.x_axis.xlimit_label_size.value)
-        .style("font-family", this.settings.x_axis.xlimit_label_font.value);
+        .text(xAxisProperties.label)
+        .style("font-size", xAxisProperties.label_size)
+        .style("font-family", xAxisProperties.label_font);
   }
 
   drawYAxis(): void {
-    let yAxisPadding: number = this.viewModel.axisLimits.y.padding;
-
+    let yAxisProperties = this.viewModel.axisLimits.y;
     let yAxis: d3.Axis<d3.NumberValue>;
-    if (this.viewModel.axisLimits.y.ticks) {
+
+    if (yAxisProperties.ticks) {
       yAxis = d3.axisLeft(this.plotProperties.yScale).tickFormat(
         d => {
           return this.viewModel.inputData.percentLabels
@@ -239,10 +239,10 @@ export class Visual implements IVisual {
         .yAxisGroup
         .call(yAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
-        .attr("transform", "translate(" +  yAxisPadding + ",0)")
+        .attr("transform", "translate(" + yAxisProperties.padding + ",0)")
         // Scale font
-        .style("font-size",this.settings.y_axis.ylimit_tick_size.value)
-        .style("font-family", this.settings.y_axis.ylimit_tick_font.value);
+        .style("font-size", yAxisProperties.tick_size)
+        .style("font-family", yAxisProperties.tick_font);
 
     let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
     let leftMidpoint: number = yAxisCoordinates.x * 0.7;
@@ -252,10 +252,10 @@ export class Visual implements IVisual {
         .attr("x",leftMidpoint)
         .attr("y",this.plotProperties.height/2)
         .attr("transform","rotate(-90," + leftMidpoint +"," + this.plotProperties.height/2 +")")
-        .text(this.settings.y_axis.ylimit_label.value)
+        .text(yAxisProperties.label)
         .style("text-anchor", "middle")
-        .style("font-size", this.settings.y_axis.ylimit_label_size.value)
-        .style("font-family", this.settings.y_axis.ylimit_label_font.value);
+        .style("font-size", yAxisProperties.label_size)
+        .style("font-family", yAxisProperties.label_font);
   }
 
   drawLines(): void {
