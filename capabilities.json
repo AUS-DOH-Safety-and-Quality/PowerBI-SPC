@@ -405,6 +405,49 @@
                     "displayName": "Draw Ticks",
                     "type" : { "bool" : true }
                 },
+                "xlimit_tick_font": {
+                    "displayName": "Tick Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
+                    }
+                },
                 "xlimit_tick_size": {
                     "displayName": "Tick Font Size",
                     "type": {
@@ -444,6 +487,49 @@
                     "displayName": "Label",
                     "type": {
                         "text": true
+                    }
+                },
+                "xlimit_label_font": {
+                    "displayName": "Label Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
                     }
                 },
                 "xlimit_label_size": {
@@ -502,6 +588,49 @@
                     "displayName": "Draw Ticks",
                     "type" : { "bool" : true }
                 },
+                "ylimit_tick_font": {
+                    "displayName": "Tick Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
+                    }
+                },
                 "ylimit_tick_size": {
                     "displayName": "Tick Font Size",
                     "type": {
@@ -541,6 +670,49 @@
                     "displayName": "Label",
                     "type": {
                         "text": true
+                    }
+                },
+                "ylimit_label_font": {
+                    "displayName": "Label Font",
+                    "type": {
+                      "enumeration" : [
+                        {
+                          "displayName" : "Arial",
+                          "value" : "'Arial', sans-serif"
+                        },
+                        {
+                          "displayName" : "Verdana",
+                          "value" : "'Verdana', sans-serif"
+                        },
+                        {
+                          "displayName" : "Tahoma",
+                          "value" : "'Tahoma', sans-serif"
+                        },
+                        {
+                          "displayName" : "Trebuchet MS",
+                          "value" : "'Trebuchet MS', sans-serif"
+                        },
+                        {
+                          "displayName" : "Times New Roman",
+                          "value" : "'Times New Roman', serif"
+                        },
+                        {
+                          "displayName" : "Georgia",
+                          "value" : "'Georgia', serif"
+                        },
+                        {
+                          "displayName" : "Garamond",
+                          "value" : "'Garamond', serif"
+                        },
+                        {
+                          "displayName" : "Courier New",
+                          "value" : "'Courier New', monospaced"
+                        },
+                        {
+                          "displayName" : "Brush Script MT",
+                          "value" : "'Brush Script MT', cursive"
+                        }
+                      ]
                     }
                 },
                 "ylimit_label_size": {

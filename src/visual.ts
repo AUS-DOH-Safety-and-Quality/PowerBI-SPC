@@ -202,7 +202,8 @@ export class Visual implements IVisual {
         // Right-align
         .style("text-anchor", "end")
         // Scale font
-        .style("font-size",this.settings.x_axis.xlimit_tick_size.value);
+        .style("font-size",this.settings.x_axis.xlimit_tick_size.value)
+        .style("font-family", this.settings.x_axis.xlimit_tick_font.value);
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
     let bottomMidpoint: number = this.plotProperties.height - (this.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
@@ -213,7 +214,8 @@ export class Visual implements IVisual {
         .attr("y", bottomMidpoint)
         .style("text-anchor", "middle")
         .text(this.settings.x_axis.xlimit_label.value)
-        .style("font-size", this.settings.x_axis.xlimit_label_size.value);
+        .style("font-size", this.settings.x_axis.xlimit_label_size.value)
+        .style("font-family", this.settings.x_axis.xlimit_label_font.value);
   }
 
   drawYAxis(): void {
@@ -239,7 +241,8 @@ export class Visual implements IVisual {
         .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
         .attr("transform", "translate(" +  yAxisPadding + ",0)")
         // Scale font
-        .style("font-size",this.settings.y_axis.ylimit_tick_size.value);
+        .style("font-size",this.settings.y_axis.ylimit_tick_size.value)
+        .style("font-family", this.settings.y_axis.ylimit_tick_font.value);
 
     let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
     let leftMidpoint: number = yAxisCoordinates.x * 0.7;
@@ -251,7 +254,8 @@ export class Visual implements IVisual {
         .attr("transform","rotate(-90," + leftMidpoint +"," + this.plotProperties.height/2 +")")
         .text(this.settings.y_axis.ylimit_label.value)
         .style("text-anchor", "middle")
-        .style("font-size", this.settings.y_axis.ylimit_label_size.value);
+        .style("font-size", this.settings.y_axis.ylimit_label_size.value)
+        .style("font-family", this.settings.y_axis.ylimit_label_font.value);
   }
 
   drawLines(): void {
