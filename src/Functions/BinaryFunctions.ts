@@ -17,7 +17,9 @@ function broadcast_binary(fun: (x: number, y: number) => number) {
   };
 }
 
-const pow = broadcast_binary(math.pow);
+// Need to have special handling for negative x, as pow will return NaN for
+// negative inputs with fractional exponents
+const pow = broadcast_binary((x, y) => (x >= 0.0) ? math.pow(x, y) : -math.pow(-x, y));
 const add = broadcast_binary((x, y) => x + y);
 const subtract = broadcast_binary((x, y) => x - y);
 const divide = broadcast_binary((x, y) => x / y);
