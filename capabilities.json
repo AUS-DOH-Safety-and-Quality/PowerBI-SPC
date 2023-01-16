@@ -158,8 +158,8 @@
                     "displayName": "Astronomical Points",
                     "type" : { "bool" : true }
                 },
-                "ast_colour":{
-                    "displayName": "Ast. Colour",
+                "ast_colour_upper":{
+                    "displayName": "Upper Ast. Colour",
                     "type": {
                         "fill": {
                             "solid": {
@@ -168,56 +168,96 @@
                         }
                     }
                  },
+                 "ast_colour_lower":{
+                     "displayName": "Lower Ast. Colour",
+                     "type": {
+                         "fill": {
+                             "solid": {
+                                 "color": true
+                             }
+                         }
+                     }
+                  },
                 "shift": {
                     "displayName": "Shifts",
                     "type" : { "bool" : true }
                 },
-                "shift_colour":{
-                    "displayName": "Shift Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
-                "trend": {
-                    "displayName": "Trends",
-                    "type" : { "bool" : true }
-                },
-                "trend_colour":{
-                    "displayName": "Trend Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
-                "two_in_three": {
-                    "displayName": "Two-in-Three",
-                    "type" : { "bool" : true }
-                },
-                "twointhree_colour":{
-                    "displayName": "Two-in-Three Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
                 "shift_n": {
                     "displayName": "Shift Points",
                     "type" : { "numeric": true }
                 },
+                "shift_colour_upper":{
+                    "displayName": "Upper Shift Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
+                 "shift_colour_lower":{
+                     "displayName": "Lower Shift Colour",
+                     "type": {
+                         "fill": {
+                             "solid": {
+                                 "color": true
+                             }
+                         }
+                     }
+                  },
+                "trend": {
+                    "displayName": "Trends",
+                    "type" : { "bool" : true }
+                },
                 "trend_n": {
                     "displayName": "Trend Points",
                     "type" : { "numeric": true }
-                }
+                },
+                "trend_colour_upper":{
+                    "displayName": "Upper Trend Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
+                 "trend_colour_lower":{
+                     "displayName": "Lower Trend Colour",
+                     "type": {
+                         "fill": {
+                             "solid": {
+                                 "color": true
+                             }
+                         }
+                     }
+                  },
+                "two_in_three": {
+                    "displayName": "Two-in-Three",
+                    "type" : { "bool" : true }
+                },
+                "twointhree_colour_upper":{
+                    "displayName": "Upper Two-in-Three Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                 },
+                 "twointhree_colour_lower":{
+                     "displayName": "Lower Two-in-Three Colour",
+                     "type": {
+                         "fill": {
+                             "solid": {
+                                 "color": true
+                             }
+                         }
+                     }
+                  }
             }
         },
         "scatter": {

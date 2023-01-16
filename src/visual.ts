@@ -97,6 +97,7 @@ export class Visual implements IVisual {
     this.drawDots();
 
     this.addContextMenu();
+    console.log("Update finished")
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane

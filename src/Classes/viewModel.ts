@@ -24,22 +24,39 @@ class viewModelObject {
   getPlotData(host: IVisualHost): plotData[] {
     let plotPoints = new Array<plotData>();
     let tickLabels = new Array<{ x: number; label: string; }>();
+    let shiftColourMap = {
+      "upper" : this.inputSettings.outliers.shift_colour_upper.value,
+      "lower" : this.inputSettings.outliers.shift_colour_lower.value
+    };
+    let trendColourMap = {
+      "upper" : this.inputSettings.outliers.trend_colour_upper.value,
+      "lower" : this.inputSettings.outliers.trend_colour_lower.value
+    };
+    let twoInThreeColourMap = {
+      "upper" : this.inputSettings.outliers.twointhree_colour_upper.value,
+      "lower" : this.inputSettings.outliers.twointhree_colour_lower.value
+    };
+    let astColourMap = {
+      "upper" : this.inputSettings.outliers.ast_colour_upper.value,
+      "lower" : this.inputSettings.outliers.ast_colour_lower.value
+    };
 
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
       let dot_colour: string = this.inputSettings.scatter.colour.value;
-      if (this.calculatedLimits.shift[i]) {
-        dot_colour = this.inputSettings.outliers.shift_colour.value;
+      if (this.calculatedLimits.shift[i] !== "none") {
+        dot_colour = shiftColourMap[this.calculatedLimits.shift[i]];
       }
-      if (this.calculatedLimits.trend[i]) {
-        dot_colour = this.inputSettings.outliers.trend_colour.value;
+      if (this.calculatedLimits.trend[i] !== "none") {
+        dot_colour = trendColourMap[this.calculatedLimits.trend[i]];
       }
-      if (this.calculatedLimits.two_in_three[i]) {
-        dot_colour = this.inputSettings.outliers.twointhree_colour.value;
+      if (this.calculatedLimits.two_in_three[i] !== "none") {
+        dot_colour = twoInThreeColourMap[this.calculatedLimits.two_in_three[i]];
       }
-      if (this.calculatedLimits.astpoint[i]) {
-        dot_colour = this.inputSettings.outliers.ast_colour.value;
+      if (this.calculatedLimits.astpoint[i] !== "none") {
+        dot_colour = astColourMap[this.calculatedLimits.astpoint[i]];
       }
+
       plotPoints.push({
         x: index,
         value: this.calculatedLimits.values[i],
