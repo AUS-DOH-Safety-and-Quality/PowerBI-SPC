@@ -80,7 +80,8 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
     })
   }
 
-  if (args.astpoint || args.trend || args.shift || args.two_in_three) {
+  if (args.astpoint !== "none" || args.trend !== "none" ||
+      args.shift !== "none" || args.two_in_three !== "none") {
     let patterns: string[] = new Array<string>();
     if (args.astpoint !== "none") {
       patterns.push("Astronomical Point")
