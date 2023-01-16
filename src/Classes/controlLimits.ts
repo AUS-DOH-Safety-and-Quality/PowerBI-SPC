@@ -31,26 +31,51 @@ class controlLimits {
   ul95: number[];
   ul99: number[];
   count?: number[];
-  astpoint: boolean[];
-  trend: boolean[];
-  two_in_three: boolean[];
-  shift: boolean[];
+  astpoint: string[];
+  trend: string[];
+  two_in_three: string[];
+  shift: string[];
   split_indexes?: number[];
 
   flagOutliers(inputData: dataObject, inputSettings: settingsObject) {
+    let flag_direction: string = inputData.flag_direction;
     if (inputData.chart_type !== "run") {
       if (inputSettings.outliers.astronomical.value) {
-        this.astpoint = astronomical(inputData.flag_direction, this.values, this.ll99, this.ul99);
+        this.astpoint = astronomical(this.values, this.ll99, this.ul99).map(d => {
+          if (flag_direction !== "both") {
+            return (d === flag_direction) ? d : "none"
+          } else {
+            return d
+          }
+        });
       }
       if (inputSettings.outliers.two_in_three.value) {
-        this.two_in_three = two_in_three(inputData.flag_direction, this.values, this.ll95, this.ul95);
+        this.two_in_three = two_in_three(this.values, this.ll95, this.ul95).map(d => {
+          if (flag_direction !== "both") {
+            return (d === flag_direction) ? d : "none"
+          } else {
+            return d
+          }
+        });
       }
     }
     if (inputSettings.outliers.trend.value) {
-      this.trend = trend(inputData.flag_direction, this.values, inputSettings.outliers.trend_n.value);
+      this.trend = trend(this.values, inputSettings.outliers.trend_n.value).map(d => {
+        if (flag_direction !== "both") {
+          return (d === flag_direction) ? d : "none"
+        } else {
+          return d
+        }
+      });
     }
     if (inputSettings.outliers.shift.value) {
-      this.shift = shift(inputData.flag_direction, this.values, this.targets, inputSettings.outliers.shift_n.value);
+      this.shift = shift(this.values, this.targets, inputSettings.outliers.shift_n.value).map(d => {
+        if (flag_direction !== "both") {
+          return (d === flag_direction) ? d : "none"
+        } else {
+          return d
+        }
+      });
     }
   }
 
@@ -68,10 +93,10 @@ class controlLimits {
     this.ll95 = args.ll95;
     this.ul95 = args.ul95;
     this.ul99 = args.ul99;
-    this.astpoint = rep(false, args.values.length);
-    this.trend = rep(false, args.values.length);
-    this.two_in_three = rep(false, args.values.length);
-    this.shift = rep(false, args.values.length);
+    this.astpoint = rep("none", args.values.length);
+    this.trend = rep("none", args.values.length);
+    this.two_in_three = rep("none", args.values.length);
+    this.shift = rep("none", args.values.length);
     if (args.count || !(args.count === null || args.count === undefined)) {
       this.count = args.count;
     }
