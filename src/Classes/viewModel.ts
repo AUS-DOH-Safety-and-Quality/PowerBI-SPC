@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import chartObject from "./chartObject"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
@@ -9,7 +10,7 @@ import controlLimits from "./controlLimits";
 import plotData from "./plotData"
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
-import axisLimits from "./axisLimits"
+import plotPropertiesClass from "./plotProperties"
 
 class viewModelObject {
   inputData: dataObject;
@@ -18,8 +19,8 @@ class viewModelObject {
   calculatedLimits: controlLimits;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
-  axisLimits: axisLimits;
   tickLabels: { x: number; label: string; }[];
+  plotProperties: plotPropertiesClass;
 
   getPlotData(host: IVisualHost): plotData[] {
     let plotPoints = new Array<plotData>();
@@ -107,24 +108,26 @@ class viewModelObject {
     return d3.groups(formattedLines, d => d.group);
   }
 
-  constructor(args: { dv: powerbi.DataView[];
+  constructor(args: { options: VisualUpdateOptions;
                       inputSettings: settingsObject;
                       host: IVisualHost; }) {
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
-    if (checkInvalidDataView(args.dv)) {
+    if (checkInvalidDataView(args.options.dataViews)) {
       this.inputData = <dataObject>null;
       this.inputSettings = args.inputSettings;
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
-      this.axisLimits = <axisLimits>null;
+      this.plotProperties = <plotPropertiesClass>null;
       return;
     }
 
+    let dv: powerbi.DataView[] = args.options.dataViews;
+
     // Extract input data, filter out invalid values, and identify any settings passed as data
-    this.inputData = new dataObject(args.dv[0].categorical, args.inputSettings)
+    this.inputData = new dataObject(dv[0].categorical, args.inputSettings)
     this.inputSettings = args.inputSettings;
 
     // Initialise a new chartObject class which can be used to calculate the control limits
@@ -139,10 +142,13 @@ class viewModelObject {
     this.plotPoints = this.getPlotData(args.host);
     this.groupedLines = this.getGroupedLines();
 
-    // Use the input data and calculated limits to dynamically determine the axis limits
-    this.axisLimits = new axisLimits({ inputData: this.inputData,
-                                        inputSettings: this.inputSettings,
-                                        calculatedLimits: this.calculatedLimits });
+    this.plotProperties = new plotPropertiesClass({
+      options: args.options,
+      plotPoints: this.plotPoints,
+      calculatedLimits: this.calculatedLimits,
+      inputData: this.inputData,
+      inputSettings: this.inputSettings
+    })
   }
 }
 
