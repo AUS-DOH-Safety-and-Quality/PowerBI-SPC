@@ -10,7 +10,7 @@ class svgSelectionClass {
   listeningRectSelection: SelectionAny;
   tooltipLineSelection: SelectionAny;
 
-  constructor(args: { svgObjects: svgObjectClass,
+  update(args: { svgObjects: svgObjectClass,
                       viewModel: viewModel }) {
     this.dotSelection =  args.svgObjects
                               .dotGroup
