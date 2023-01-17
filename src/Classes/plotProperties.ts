@@ -15,9 +15,11 @@ type axisProperties = {
   ticks: boolean,
   tick_size: string,
   tick_font: string,
+  tick_colour: string,
   label: string,
   label_size: string,
-  label_font: string
+  label_font: string,
+  label_colour: string
 };
 
 class plotPropertiesClass {
@@ -110,9 +112,11 @@ class plotPropertiesClass {
         ticks: args.inputSettings.x_axis.xlimit_ticks.value,
         tick_size: xTickSize,
         tick_font: args.inputSettings.x_axis.xlimit_tick_font.value,
+        tick_colour: args.inputSettings.x_axis.xlimit_tick_colour.value,
         label: args.inputSettings.x_axis.xlimit_label.value,
         label_size: args.inputSettings.x_axis.xlimit_label_size.value,
-        label_font: args.inputSettings.x_axis.xlimit_label_font.value
+        label_font: args.inputSettings.x_axis.xlimit_label_font.value,
+        label_colour: args.inputSettings.x_axis.xlimit_label_colour.value
       };
 
       this.yAxis = {
@@ -123,9 +127,11 @@ class plotPropertiesClass {
         ticks: args.inputSettings.y_axis.ylimit_ticks.value,
         tick_size: yTickSize,
         tick_font: args.inputSettings.y_axis.ylimit_tick_font.value,
+        tick_colour: args.inputSettings.y_axis.ylimit_tick_colour.value,
         label: args.inputSettings.y_axis.ylimit_label.value,
         label_size: args.inputSettings.y_axis.ylimit_label_size.value,
-        label_font: args.inputSettings.y_axis.ylimit_label_font.value
+        label_font: args.inputSettings.y_axis.ylimit_label_font.value,
+        label_colour: args.inputSettings.y_axis.ylimit_label_colour.value
       };
 
     this.xScale = d3.scaleLinear()

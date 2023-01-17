@@ -60,7 +60,7 @@ class dataObject {
     this.highlights = numerators_raw.highlights ? extractValues(numerators_raw.highlights, valid_ids) : numerators_raw.highlights;
     this.anyHighlights = this.highlights ? true : false
     this.categories = inputView.categories[0];
-    this.percentLabels = ["p", "pp"].includes(chart_type) && (multiplier == 1);
+    this.percentLabels = ["p", "pp"].includes(chart_type) && (multiplier === 1 || multiplier === 100);
     this.limit_truncs = {
       lower: inputSettings.spc.ll_truncate.value,
       upper: inputSettings.spc.ul_truncate.value

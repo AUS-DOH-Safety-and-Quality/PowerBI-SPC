@@ -199,7 +199,8 @@ export class Visual implements IVisual {
         .style("text-anchor", "end")
         // Scale font
         .style("font-size", xAxisProperties.tick_size)
-        .style("font-family", xAxisProperties.tick_font);
+        .style("font-family", xAxisProperties.tick_font)
+        .style("fill", xAxisProperties.tick_colour);
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
     let bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
@@ -211,7 +212,8 @@ export class Visual implements IVisual {
         .style("text-anchor", "middle")
         .text(xAxisProperties.label)
         .style("font-size", xAxisProperties.label_size)
-        .style("font-family", xAxisProperties.label_font);
+        .style("font-family", xAxisProperties.label_font)
+        .style("fill", xAxisProperties.label_colour);
   }
 
   drawYAxis(): void {
@@ -236,9 +238,11 @@ export class Visual implements IVisual {
         .call(yAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
         .attr("transform", "translate(" + yAxisProperties.padding + ",0)")
+        .selectAll("text")
         // Scale font
         .style("font-size", yAxisProperties.tick_size)
-        .style("font-family", yAxisProperties.tick_font);
+        .style("font-family", yAxisProperties.tick_font)
+        .style("fill", yAxisProperties.tick_colour);
 
     let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
     let leftMidpoint: number = yAxisCoordinates.x * 0.7;
@@ -251,7 +255,8 @@ export class Visual implements IVisual {
         .text(yAxisProperties.label)
         .style("text-anchor", "middle")
         .style("font-size", yAxisProperties.label_size)
-        .style("font-family", yAxisProperties.label_font);
+        .style("font-family", yAxisProperties.label_font)
+        .style("fill", yAxisProperties.label_colour);
   }
 
   drawLines(): void {

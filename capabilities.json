@@ -564,6 +564,16 @@
                       ]
                     }
                 },
+                "xlimit_tick_colour":{
+                    "displayName": "Tick Font Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
                 "xlimit_label": {
                     "displayName": "Label",
                     "type": {
@@ -646,6 +656,16 @@
                           "value" : "xx-large"
                         }
                       ]
+                    }
+                },
+                "xlimit_label_colour":{
+                    "displayName": "Label Font Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
                     }
                 },
                 "xlimit_l": {
@@ -747,6 +767,16 @@
                       ]
                     }
                 },
+                "ylimit_tick_colour":{
+                    "displayName": "Tick Font Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
                 "ylimit_label": {
                     "displayName": "Label",
                     "type": {
@@ -829,6 +859,16 @@
                           "value" : "xx-large"
                         }
                       ]
+                    }
+                },
+                "ylimit_label_colour":{
+                    "displayName": "Label Font Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
                     }
                 },
                 "limit_multiplier": {
