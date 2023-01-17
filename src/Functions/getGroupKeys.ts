@@ -14,17 +14,19 @@ function getGroupKeys(args: { inputSettings: settingsObject,
   let l95_width: number = args.inputSettings.lines.width_95.value;
   let target_width: number = args.inputSettings.lines.width_target.value;
   let main_width: number = args.inputSettings.lines.width_main.value;
+  let alt_target_width: number = args.inputSettings.lines.width_alt_target.value;
 
   let l99_colour: string = args.inputSettings.lines.colour_99.value;
   let l95_colour: string = args.inputSettings.lines.colour_95.value;
   let target_colour: string = args.inputSettings.lines.colour_target.value;
   let main_colour: string = args.inputSettings.lines.colour_main.value;
+  let alt_target_colour: string = args.inputSettings.lines.colour_alt_target.value;
 
   let l99_type: string = args.inputSettings.lines.type_99.value;
   let l95_type: string = args.inputSettings.lines.type_95.value;
   let target_type: string = args.inputSettings.lines.type_target.value;
   let main_type: string = args.inputSettings.lines.type_main.value;
-
+  let alt_target_type: string = args.inputSettings.lines.type_alt_target.value;
 
   let inputKeys: string[] = args.viewModel
                                     .groupedLines
@@ -32,17 +34,17 @@ function getGroupKeys(args: { inputSettings: settingsObject,
 
   let lineColours: string[] = [
     l99_colour, l95_colour, l95_colour, l99_colour,
-    target_colour, main_colour
+    target_colour, main_colour, alt_target_colour
   ]
 
   let lineWidths: number[] = [
     l99_width, l95_width, l95_width, l99_width,
-                  target_width, main_width
+                  target_width, main_width, alt_target_width
   ]
 
   let lineTypes: string[] = [
     l99_type, l95_type, l95_type, l99_type,
-                  target_type, main_type
+                  target_type, main_type, alt_target_type
   ]
 
   return {

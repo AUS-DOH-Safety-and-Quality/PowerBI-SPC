@@ -41,6 +41,7 @@ class spcSettings {
   denom_split: settingsPair<string>;
   ll_truncate: settingsPair<number>;
   ul_truncate: settingsPair<number>;
+  alt_target: settingsPair<number>;
 
   constructor() {
     this.chart_type = new settingsPair("i");
@@ -48,6 +49,7 @@ class spcSettings {
     this.denom_split = new settingsPair<string>(null);
     this.ul_truncate = new settingsPair<number>(null);
     this.ll_truncate = new settingsPair<number>(null);
+    this.alt_target = new settingsPair<number>(null);
   }
 }
 
@@ -70,28 +72,34 @@ class lineSettings {
   width_95: settingsPair<number>;
   width_main: settingsPair<number>;
   width_target: settingsPair<number>;
+  width_alt_target: settingsPair<number>;
   type_99: settingsPair<string>;
   type_95: settingsPair<string>;
   type_main: settingsPair<string>;
   type_target: settingsPair<string>;
+  type_alt_target: settingsPair<string>;
   colour_99: settingsPair<string>;
   colour_95: settingsPair<string>;
   colour_main: settingsPair<string>;
   colour_target: settingsPair<string>;
+  colour_alt_target: settingsPair<string>;
 
   constructor() {
     this.width_99 = new settingsPair(2);
     this.width_95 = new settingsPair(2);
     this.width_main = new settingsPair(1);
     this.width_target = new settingsPair(1.5);
+    this.width_alt_target = new settingsPair(1.5);
     this.type_99 = new settingsPair("10 10");
     this.type_95 = new settingsPair("2 5");
     this.type_main = new settingsPair("10 0");
     this.type_target = new settingsPair("10 0");
+    this.type_alt_target = new settingsPair("10 0");
     this.colour_99 = new settingsPair("#6495ED");
     this.colour_95 = new settingsPair("#6495ED");
     this.colour_main = new settingsPair("#000000");
     this.colour_target = new settingsPair("#000000");
+    this.colour_alt_target = new settingsPair("#000000");
   }
 }
 
