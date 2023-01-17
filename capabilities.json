@@ -129,6 +129,12 @@
                     "type": {
                         "numeric": true
                     }
+                },
+                "alt_target": {
+                    "displayName": "Additional Target Value:",
+                    "type": {
+                        "numeric": true
+                    }
                 }
             }
         },
@@ -320,6 +326,12 @@
                         "numeric": true
                     }
                 },
+                "width_alt_target": {
+                    "displayName": "Alt. Target Line Width",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "type_99": {
                   "displayName": "99.8% Line Type",
                   "type": {
@@ -396,6 +408,25 @@
                     ]
                   }
                 },
+                "type_alt_target": {
+                  "displayName": "Alt. Target Line Type",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Solid",
+                        "value" : "10 0"
+                      },
+                      {
+                        "displayName" : "Dashed",
+                        "value" : "10 10"
+                      },
+                      {
+                        "displayName" : "Dotted",
+                        "value" : "2 5"
+                      }
+                    ]
+                  }
+                },
                 "colour_99":{
                     "displayName": "99.8% Line Colour",
                     "type": {
@@ -428,6 +459,16 @@
                 },
                 "colour_target":{
                     "displayName": "Target Line Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "colour_alt_target":{
+                    "displayName": "Alt. Target Line Colour",
                     "type": {
                         "fill": {
                             "solid": {

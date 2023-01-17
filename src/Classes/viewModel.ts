@@ -91,7 +91,7 @@ class viewModelObject {
   }
 
   getGroupedLines(): [string, lineData[]][] {
-    let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values"];
+    let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values", "alt_targets"];
 
     let formattedLines: lineData[] = new Array<lineData>();
     let nLimits = this.calculatedLimits.keys.length;

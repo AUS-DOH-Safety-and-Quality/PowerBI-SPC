@@ -4,6 +4,7 @@ import settingsObject from "./settingsObject";
 import controlLimits from "./controlLimits";
 import { multiply } from "../Functions/BinaryFunctions";
 import truncate from "../Functions/truncate"
+import rep from "../Functions/rep"
 
 type chartObjectConstructor = {
   inputData: dataObject;
@@ -70,6 +71,7 @@ class chartObject {
 
     calcLimits.values = multiply(calcLimits.values, multiplier);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
+    calcLimits.alt_targets = rep(this.inputSettings.spc.alt_target.value, calcLimits.values.length)
 
     if (this.inputData.chart_type !== "run") {
       calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier),

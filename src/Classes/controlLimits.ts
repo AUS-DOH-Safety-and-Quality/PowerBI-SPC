@@ -13,6 +13,7 @@ type controlLimitsArgs = {
   numerators?: number[];
   denominators?: number[];
   targets: number[];
+  alt_targets?: number[];
   ll99: number[];
   ll95: number[];
   ul95: number[];
@@ -26,6 +27,7 @@ class controlLimits {
   numerators?: number[];
   denominators?: number[];
   targets: number[];
+  alt_targets?: number[];
   ll99: number[];
   ll95: number[];
   ul95: number[];
