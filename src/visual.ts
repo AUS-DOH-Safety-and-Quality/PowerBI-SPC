@@ -46,6 +46,8 @@ export class Visual implements IVisual {
                   .append("svg");
 
     this.svgObjects = new svgObjectClass(this.svg);
+    this.svgSelections = new svgSelectionClass();
+    this.viewModel = new viewModelObject();
 
     this.selectionManager = this.host.createSelectionManager();
     this.settings = new settingsObject();
@@ -59,17 +61,18 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
+    console.log("Update finished")
     console.log("Settings start")
-    this.settings.updateSettings(options.dataViews[0].metadata.objects);
+    this.settings.update(options.dataViews[0].metadata.objects);
 
     console.log("viewModel start")
-    this.viewModel = new viewModelObject({ options: options,
-                                          inputSettings: this.settings,
-                                          host: this.host });
+    this.viewModel.update({ options: options,
+                            inputSettings: this.settings,
+                            host: this.host });
 
     console.log("svgSelections start")
-    this.svgSelections = new svgSelectionClass({ svgObjects: this.svgObjects,
-                                                  viewModel: this.viewModel});
+    this.svgSelections.update({ svgObjects: this.svgObjects,
+                                viewModel: this.viewModel});
 
     console.log("svg scale start")
     this.svg.attr("width", this.viewModel.plotProperties.width)

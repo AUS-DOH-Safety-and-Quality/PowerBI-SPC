@@ -36,7 +36,7 @@ class settingsObject {
    *
    * @param inputObjects
    */
-  updateSettings(inputObjects: powerbi.DataViewObjects): void {
+  update(inputObjects: powerbi.DataViewObjects): void {
     // Get the names of all classes in settingsObject which have values to be updated
     let allSettingGroups: string[] = Object.getOwnPropertyNames(this)
                                            .filter(groupName => !(["axispad", "settingsInData"].includes(groupName)));

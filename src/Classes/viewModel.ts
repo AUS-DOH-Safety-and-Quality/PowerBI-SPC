@@ -108,9 +108,9 @@ class viewModelObject {
     return d3.groups(formattedLines, d => d.group);
   }
 
-  constructor(args: { options: VisualUpdateOptions;
-                      inputSettings: settingsObject;
-                      host: IVisualHost; }) {
+  update(args: { options: VisualUpdateOptions;
+                  inputSettings: settingsObject;
+                  host: IVisualHost; }) {
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(args.options.dataViews)) {
