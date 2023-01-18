@@ -104,6 +104,8 @@ class lineSettings {
 }
 
 class xAxisSettings {
+  xlimit_colour: settingsPair<string>;
+  xlimit_date_format: settingsPair<string>;
   xlimit_ticks: settingsPair<boolean>;
   xlimit_tick_font: settingsPair<string>;
   xlimit_tick_size: settingsPair<string>;
@@ -116,6 +118,8 @@ class xAxisSettings {
   xlimit_u: settingsPair<number>;
 
   constructor() {
+    this.xlimit_colour = new settingsPair("#000000");
+    this.xlimit_date_format = new settingsPair("DD/MM/YYYY");
     this.xlimit_ticks = new settingsPair(true);
     this.xlimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.xlimit_tick_size = new settingsPair("x-small");
@@ -130,6 +134,7 @@ class xAxisSettings {
 }
 
 class yAxisSettings {
+  ylimit_colour: settingsPair<string>;
   ylimit_ticks: settingsPair<boolean>;
   ylimit_tick_font: settingsPair<string>;
   ylimit_tick_size: settingsPair<string>;
@@ -143,6 +148,7 @@ class yAxisSettings {
   ylimit_u: settingsPair<number>;
 
   constructor() {
+    this.ylimit_colour = new settingsPair("#000000");
     this.ylimit_ticks = new settingsPair(true);
     this.ylimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.ylimit_tick_size = new settingsPair("x-small");

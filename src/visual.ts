@@ -189,7 +189,7 @@ export class Visual implements IVisual {
     this.svgObjects
         .xAxisGroup
         .call(xAxis)
-        .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
+        .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - xAxisProperties.padding) + ")")
         .selectAll("text")
@@ -236,7 +236,7 @@ export class Visual implements IVisual {
     this.svgObjects
         .yAxisGroup
         .call(yAxis)
-        .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
+        .attr("color", this.viewModel.plotPoints.length > 0 ? yAxisProperties.colour : "#FFFFFF")
         .attr("transform", "translate(" + yAxisProperties.padding + ",0)")
         .selectAll("text")
         // Scale font
