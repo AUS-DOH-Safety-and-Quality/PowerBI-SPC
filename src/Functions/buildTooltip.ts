@@ -33,7 +33,7 @@ let valueNames = {
   "up": "Rate"
 }
 
-function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
+function buildTooltip(args: tooltipArgs, sig_figs: number): VisualTooltipDataItem[] {
   let tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
     displayName: "Date",
@@ -42,41 +42,41 @@ function buildTooltip(args: tooltipArgs): VisualTooltipDataItem[] {
   tooltip.push({
     displayName: valueNames[args.chart_type],
     value: args.prop_labels
-      ? (args.value * 100).toFixed(2) + "%"
-      : args.value.toFixed(4)
+      ? (args.value * 100).toFixed(sig_figs) + "%"
+      : args.value.toFixed(sig_figs)
   })
   if(args.numerator || !(args.numerator === null || args.numerator === undefined)) {
     tooltip.push({
       displayName: "Numerator",
-      value: (args.numerator).toFixed(2)
+      value: (args.numerator).toFixed(sig_figs)
     })
   }
   if(args.denominator || !(args.denominator === null || args.denominator === undefined)) {
     tooltip.push({
       displayName: "Denominator",
-      value: (args.denominator).toFixed(2)
+      value: (args.denominator).toFixed(sig_figs)
     })
   }
   if (args.chart_type !== "run") {
     tooltip.push({
       displayName: "Upper 99% Limit",
       value: args.prop_labels
-        ? (args.limits.ul99 * 100).toFixed(2) + "%"
-        : args.limits.ul99.toFixed(4)
+        ? (args.limits.ul99 * 100).toFixed(sig_figs) + "%"
+        : args.limits.ul99.toFixed(sig_figs)
     })
   }
   tooltip.push({
     displayName: "Centerline",
     value: args.prop_labels
-      ? (args.target * 100).toFixed(2) + "%"
-      : args.target.toFixed(4)
+      ? (args.target * 100).toFixed(sig_figs) + "%"
+      : args.target.toFixed(sig_figs)
   })
   if (args.chart_type !== "run") {
     tooltip.push({
       displayName: "Lower 99% Limit",
       value: args.prop_labels
-        ? (args.limits.ll99 * 100).toFixed(2) + "%"
-        : args.limits.ll99.toFixed(4)
+        ? (args.limits.ll99 * 100).toFixed(sig_figs) + "%"
+        : args.limits.ll99.toFixed(sig_figs)
     })
   }
 

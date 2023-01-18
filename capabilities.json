@@ -112,6 +112,12 @@
                         "numeric": true
                     }
                 },
+                "sig_figs": {
+                    "displayName": "Decimals to Report:",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "denom_split": {
                     "displayName": "Split Limits at Date(s): ",
                     "type": {

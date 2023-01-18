@@ -219,13 +219,14 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     let yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
+    let sig_figs: number = this.settings.spc.sig_figs.value;
 
     if (yAxisProperties.ticks) {
       yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickFormat(
         d => {
           return this.viewModel.inputData.percentLabels
-            ? (<number>d * 100).toFixed(2) + "%"
-            : d.toString();
+            ? (<number>d * 100).toFixed(sig_figs) + "%"
+            : (<number>d).toFixed(sig_figs);
         }
       );
     } else {

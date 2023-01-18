@@ -38,6 +38,7 @@ class axispadSettings {
 class spcSettings {
   chart_type: settingsPair<string>;
   multiplier: settingsPair<number>;
+  sig_figs: settingsPair<number>;
   denom_split: settingsPair<string>;
   ll_truncate: settingsPair<number>;
   ul_truncate: settingsPair<number>;
@@ -46,6 +47,7 @@ class spcSettings {
   constructor() {
     this.chart_type = new settingsPair("i");
     this.multiplier = new settingsPair(1);
+    this.sig_figs = new settingsPair(2);
     this.denom_split = new settingsPair<string>(null);
     this.ul_truncate = new settingsPair<number>(null);
     this.ll_truncate = new settingsPair<number>(null);

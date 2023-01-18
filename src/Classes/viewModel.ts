@@ -82,7 +82,8 @@ class viewModelObject {
                                astpoint: this.calculatedLimits.astpoint[i],
                                trend: this.calculatedLimits.trend[i],
                                shift: this.calculatedLimits.shift[i],
-                               two_in_three: this.calculatedLimits.two_in_three[i]})
+                               two_in_three: this.calculatedLimits.two_in_three[i]},
+                               this.inputSettings.spc.sig_figs.value)
       })
       tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
     }
