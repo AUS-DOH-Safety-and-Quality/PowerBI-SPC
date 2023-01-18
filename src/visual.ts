@@ -189,7 +189,7 @@ export class Visual implements IVisual {
     this.svgObjects
         .xAxisGroup
         .call(xAxis)
-        .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
+        .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - xAxisProperties.padding) + ")")
         .selectAll("text")
@@ -219,13 +219,14 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     let yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
+    let sig_figs: number = this.settings.spc.sig_figs.value;
 
     if (yAxisProperties.ticks) {
       yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickFormat(
         d => {
           return this.viewModel.inputData.percentLabels
-            ? (<number>d * 100).toFixed(2) + "%"
-            : d.toString();
+            ? (<number>d * 100).toFixed(sig_figs) + "%"
+            : (<number>d).toFixed(sig_figs);
         }
       );
     } else {
@@ -236,7 +237,7 @@ export class Visual implements IVisual {
     this.svgObjects
         .yAxisGroup
         .call(yAxis)
-        .attr("color", this.viewModel.plotPoints.length > 0 ? "#000000" : "#FFFFFF")
+        .attr("color", this.viewModel.plotPoints.length > 0 ? yAxisProperties.colour : "#FFFFFF")
         .attr("transform", "translate(" + yAxisProperties.padding + ",0)")
         .selectAll("text")
         // Scale font

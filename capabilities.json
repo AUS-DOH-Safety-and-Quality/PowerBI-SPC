@@ -112,6 +112,12 @@
                         "numeric": true
                     }
                 },
+                "sig_figs": {
+                    "displayName": "Decimals to Report:",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "denom_split": {
                     "displayName": "Split Limits at Date(s): ",
                     "type": {
@@ -482,7 +488,40 @@
         "x_axis": {
             "displayName": "X-Axis Settings",
             "properties": {
-                "xlimit_ticks": {
+              "xlimit_colour":{
+                  "displayName": "Axis Colour",
+                  "type": {
+                      "fill": {
+                          "solid": {
+                              "color": true
+                          }
+                      }
+                  }
+              },
+              "xlimit_date_format": {
+                  "displayName": "Date Format",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "DD/MM/YYYY",
+                        "value" : "DD/MM/YYYY"
+                      },
+                      {
+                        "displayName" : "MM/DD/YYYY",
+                        "value" : "MM/DD/YYYY"
+                      },
+                      {
+                        "displayName" : "MM/YYYY",
+                        "value" : "MM/YYYY"
+                      },
+                      {
+                        "displayName" : "YYYY",
+                        "value" : "YYYY"
+                      }
+                    ]
+                  }
+              },
+              "xlimit_ticks": {
                     "displayName": "Draw Ticks",
                     "type" : { "bool" : true }
                 },
@@ -685,7 +724,17 @@
         "y_axis": {
             "displayName": "Y-Axis Settings",
             "properties": {
-                "ylimit_ticks": {
+              "ylimit_colour":{
+                "displayName": "Axis Colour",
+                "type": {
+                    "fill": {
+                        "solid": {
+                            "color": true
+                        }
+                    }
+                }
+            },
+            "ylimit_ticks": {
                     "displayName": "Draw Ticks",
                     "type" : { "bool" : true }
                 },
