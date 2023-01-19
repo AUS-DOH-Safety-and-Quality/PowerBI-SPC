@@ -122,8 +122,8 @@ class plotPropertiesClass {
       this.yAxis = {
         lower: yLowerInput ? yLowerInput : lowerLimit,
         upper: yUpperInput ? yUpperInput : upperLimit,
-        start_padding: args.inputSettings.canvas.lower_padding.value + fontSizeMap[yTickSize] + yLabelPadding,
-        end_padding: args.inputSettings.canvas.upper_padding.value,
+        start_padding: args.inputSettings.canvas.upper_padding.value,
+        end_padding: args.inputSettings.canvas.lower_padding.value + fontSizeMap[yTickSize] + yLabelPadding,
         colour: args.inputSettings.y_axis.ylimit_colour.value,
         ticks: args.inputSettings.y_axis.ylimit_ticks.value,
         tick_size: yTickSize,
@@ -142,8 +142,8 @@ class plotPropertiesClass {
 
     this.yScale = d3.scaleLinear()
                             .domain([this.yAxis.lower, this.yAxis.upper])
-                            .range([this.height - this.yAxis.start_padding,
-                                    this.yAxis.end_padding]);
+                            .range([this.height - this.yAxis.end_padding,
+                                    this.yAxis.start_padding]);
   }
 }
 

@@ -191,7 +191,7 @@ export class Visual implements IVisual {
         .call(xAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
-        .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.start_padding) + ")")
+        .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.end_padding) + ")")
         .selectAll("text")
         // Rotate tick labels
         .attr("transform","rotate(-35)")
