@@ -37,7 +37,7 @@ class controlLimits {
   trend: string[];
   two_in_three: string[];
   shift: string[];
-  split_indexes?: number[];
+  split_indexes: number[];
 
   flagOutliers(inputData: dataObject, inputSettings: settingsObject) {
     let flag_direction: string = inputData.flag_direction;

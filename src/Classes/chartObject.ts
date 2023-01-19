@@ -62,6 +62,7 @@ class chartObject {
     } else {
       // Calculate control limits using user-specified type
       calcLimits = this.limitFunction(this.inputData);
+      calcLimits.split_indexes = new Array<number>();
     }
 
     calcLimits.flagOutliers(this.inputData, this.inputSettings);
