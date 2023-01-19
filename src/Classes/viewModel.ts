@@ -99,6 +99,15 @@ class viewModelObject {
 
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
+        // By adding an additional null line value at each re-baseline point
+        // we avoid rendering a line joining each segment
+        if (this.calculatedLimits.split_indexes.includes(i - 1)) {
+          formattedLines.push({
+            x: this.calculatedLimits.keys[i].x,
+            line_value: null,
+            group: label
+          })
+        }
         formattedLines.push({
           x: this.calculatedLimits.keys[i].x,
           line_value: this.calculatedLimits[label] ? this.calculatedLimits[label][i] : null,
