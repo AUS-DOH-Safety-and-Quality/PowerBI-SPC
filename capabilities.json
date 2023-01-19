@@ -118,11 +118,9 @@
                         "numeric": true
                     }
                 },
-                "denom_split": {
-                    "displayName": "Split Limits at Date(s): ",
-                    "type": {
-                        "text": true
-                    }
+                "split_on_click": {
+                    "displayName": "Split Limits on Click",
+                    "type" : { "bool" : true }
                 },
                 "ll_truncate": {
                     "displayName": "Truncate Lower Limits at:",

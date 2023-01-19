@@ -21,6 +21,7 @@ class viewModelObject {
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
+  splitIndexes?: number[];
 
   getPlotData(host: IVisualHost): plotData[] {
     let plotPoints = new Array<plotData>();
@@ -101,7 +102,7 @@ class viewModelObject {
       labels.forEach(label => {
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
-        if (this.calculatedLimits.split_indexes.includes(i - 1)) {
+        if (this.chartBase.splitIndexes.includes(i - 1)) {
           formattedLines.push({
             x: this.calculatedLimits.keys[i].x,
             line_value: null,
@@ -142,7 +143,8 @@ class viewModelObject {
 
     // Initialise a new chartObject class which can be used to calculate the control limits
     this.chartBase = new chartObject({ inputData: this.inputData,
-                                        inputSettings: this.inputSettings});
+                                        inputSettings: this.inputSettings,
+                                        splitIndexes: this.splitIndexes ? this.splitIndexes : new Array<number>() });
 
     // Use initialised chartObject to calculate control limits
     this.calculatedLimits = this.chartBase.getLimits();

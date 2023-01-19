@@ -31,7 +31,7 @@ class spcSettings {
   chart_type: settingsPair<string>;
   multiplier: settingsPair<number>;
   sig_figs: settingsPair<number>;
-  denom_split: settingsPair<string>;
+  split_on_click: settingsPair<boolean>;
   ll_truncate: settingsPair<number>;
   ul_truncate: settingsPair<number>;
   alt_target: settingsPair<number>;
@@ -40,7 +40,7 @@ class spcSettings {
     this.chart_type = new settingsPair("i");
     this.multiplier = new settingsPair(1);
     this.sig_figs = new settingsPair(2);
-    this.denom_split = new settingsPair<string>(null);
+    this.split_on_click = new settingsPair(false);
     this.ul_truncate = new settingsPair<number>(null);
     this.ll_truncate = new settingsPair<number>(null);
     this.alt_target = new settingsPair<number>(null);
