@@ -272,6 +272,27 @@
                   }
             }
         },
+        "canvas": {
+            "displayName": "Canvas Settings",
+            "properties": {
+              "lower_padding":{
+                "displayName": "Padding Below Plot (pixels):",
+                "type": { "numeric": true }
+              },
+              "upper_padding":{
+                "displayName": "Padding Above Plot (pixels):",
+                "type": { "numeric": true }
+              },
+              "left_padding":{
+                "displayName": "Padding Left of Plot (pixels):",
+                "type": { "numeric": true }
+              },
+              "right_padding":{
+                "displayName": "Padding Right of Plot (pixels):",
+                "type": { "numeric": true }
+              }
+            }
+        },
         "scatter": {
             "displayName": "Scatter Settings",
             "properties": {
