@@ -191,7 +191,7 @@ export class Visual implements IVisual {
         .call(xAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
-        .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - xAxisProperties.padding) + ")")
+        .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.start_padding) + ")")
         .selectAll("text")
         // Rotate tick labels
         .attr("transform","rotate(-35)")
@@ -238,7 +238,7 @@ export class Visual implements IVisual {
         .yAxisGroup
         .call(yAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? yAxisProperties.colour : "#FFFFFF")
-        .attr("transform", "translate(" + yAxisProperties.padding + ",0)")
+        .attr("transform", "translate(" + this.viewModel.plotProperties.xAxis.start_padding + ",0)")
         .selectAll("text")
         // Scale font
         .style("font-size", yAxisProperties.tick_size)

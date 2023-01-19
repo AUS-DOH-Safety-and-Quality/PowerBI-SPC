@@ -2,7 +2,7 @@ import powerbi from "powerbi-visuals-api"
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
 import dataObject from "./dataObject";
 import {
-  axispadSettings,
+  canvasSettings,
   spcSettings,
   outliersSettings,
   scatterSettings,
@@ -19,7 +19,7 @@ import {
  * These are defined in the settingsGroups.ts file
  */
 class settingsObject {
-  axispad: axispadSettings;
+  canvas: canvasSettings;
   spc: spcSettings;
   outliers: outliersSettings;
   scatter: scatterSettings;
@@ -39,7 +39,7 @@ class settingsObject {
   update(inputObjects: powerbi.DataViewObjects): void {
     // Get the names of all classes in settingsObject which have values to be updated
     let allSettingGroups: string[] = Object.getOwnPropertyNames(this)
-                                           .filter(groupName => !(["axispad", "settingsInData"].includes(groupName)));
+                                           .filter(groupName => !(["settingsInData"].includes(groupName)));
 
     allSettingGroups.forEach(settingGroup => {
       // Get the names of all settings in a given class and
@@ -88,7 +88,7 @@ class settingsObject {
   }
 
   constructor() {
-    this.axispad = new axispadSettings();
+    this.canvas = new canvasSettings();
     this.spc = new spcSettings();
     this.outliers = new outliersSettings();
     this.scatter = new scatterSettings();

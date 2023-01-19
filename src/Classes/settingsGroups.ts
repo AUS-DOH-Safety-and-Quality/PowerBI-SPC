@@ -13,25 +13,17 @@
   }
 }
 
-class axispadSettings {
-  x: {
-    padding: settingsPair<number>,
-    end_padding: settingsPair<number>
-  };
-  y: {
-    padding: settingsPair<number>,
-    end_padding: settingsPair<number>
-  };
+class canvasSettings {
+  lower_padding: settingsPair<number>;
+  upper_padding: settingsPair<number>;
+  left_padding: settingsPair<number>;
+  right_padding: settingsPair<number>;
 
   constructor() {
-    this.x = {
-      padding: new settingsPair(50),
-      end_padding: new settingsPair(10)
-    };
-    this.y = {
-      padding: new settingsPair(50),
-      end_padding: new settingsPair(10)
-    };
+    this.lower_padding = new settingsPair(50);
+    this.upper_padding = new settingsPair(10);
+    this.left_padding = new settingsPair(50);
+    this.right_padding = new settingsPair(10);
   };
 };
 
@@ -202,7 +194,7 @@ class outliersSettings {
 }
 
 export {
-  axispadSettings,
+  canvasSettings,
   spcSettings,
   scatterSettings,
   lineSettings,

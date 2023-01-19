@@ -10,7 +10,7 @@ import controlLimits from "./controlLimits";
 type axisProperties = {
   lower: number,
   upper: number,
-  padding: number,
+  start_padding: number,
   end_padding: number,
   colour: string,
   ticks: boolean,
@@ -98,18 +98,16 @@ class plotPropertiesClass {
       let yLabelSize: string = args.inputSettings.y_axis.ylimit_label_size.value;
       let yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? fontSizeMap[yLabelSize] : 0;
 
-      let xPadding: number = args.inputSettings.axispad.x.padding.value;
       let xTickSize: string = args.inputSettings.x_axis.xlimit_tick_size.value;
 
-      let yPadding: number = args.inputSettings.axispad.y.padding.value;
       let yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
 
 
       this.xAxis = {
         lower: xLowerInput ? xLowerInput : 0,
         upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
-        padding: xPadding + fontSizeMap[xTickSize] + xLabelPadding,
-        end_padding: args.inputSettings.axispad.x.end_padding.value,
+        start_padding: args.inputSettings.canvas.left_padding.value + fontSizeMap[xTickSize] + xLabelPadding,
+        end_padding: args.inputSettings.canvas.right_padding.value,
         colour: args.inputSettings.x_axis.xlimit_colour.value,
         ticks: args.inputSettings.x_axis.xlimit_ticks.value,
         tick_size: xTickSize,
@@ -124,8 +122,8 @@ class plotPropertiesClass {
       this.yAxis = {
         lower: yLowerInput ? yLowerInput : lowerLimit,
         upper: yUpperInput ? yUpperInput : upperLimit,
-        padding: yPadding + fontSizeMap[yTickSize] + yLabelPadding,
-        end_padding: args.inputSettings.axispad.y.end_padding.value,
+        start_padding: args.inputSettings.canvas.lower_padding.value + fontSizeMap[yTickSize] + yLabelPadding,
+        end_padding: args.inputSettings.canvas.upper_padding.value,
         colour: args.inputSettings.y_axis.ylimit_colour.value,
         ticks: args.inputSettings.y_axis.ylimit_ticks.value,
         tick_size: yTickSize,
@@ -139,13 +137,13 @@ class plotPropertiesClass {
 
     this.xScale = d3.scaleLinear()
                     .domain([this.xAxis.lower, this.xAxis.upper])
-                    .range([this.yAxis.padding,
-                            this.width - this.yAxis.end_padding]);
+                    .range([this.xAxis.start_padding,
+                            this.width - this.xAxis.end_padding]);
 
     this.yScale = d3.scaleLinear()
                             .domain([this.yAxis.lower, this.yAxis.upper])
-                            .range([this.height - this.xAxis.padding,
-                                    this.xAxis.end_padding]);
+                            .range([this.height - this.yAxis.start_padding,
+                                    this.yAxis.end_padding]);
   }
 }
 
