@@ -31,6 +31,7 @@ type mergedSVGObjects = { dotsMerged: SelectionAny,
 
 export class Visual implements IVisual {
   private host: IVisualHost;
+  private updateOptions: VisualUpdateOptions;
   private svg: SelectionSVG;
   private svgObjects: svgObjectClass;
   private svgSelections: svgSelectionClass;
@@ -61,7 +62,9 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-    console.log("Update finished")
+    console.log("Update start")
+    this.updateOptions = options;
+
     console.log("Settings start")
     this.settings.update(options.dataViews[0].metadata.objects);
 
@@ -321,14 +324,29 @@ export class Visual implements IVisual {
     // Specify actions to take when clicking on dots
     this.plottingMerged.dotsMerged
         .on("click", (event, d) => {
-          // Pass identities of selected data back to PowerBI
-          this.selectionManager
-              // Propagate identities of selected data back to
-              //   PowerBI based on all selected dots
-              .select(d.identity, (event.ctrlKey || event.metaKey))
-              // Change opacity of non-selected dots
-              .then(() => { this.updateHighlighting(); });
-              event.stopPropagation();
+          if (this.settings.spc.split_on_click.value) {
+            if (this.viewModel.splitIndexes) {
+              let xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
+              if (xIndex > -1) {
+                this.viewModel.splitIndexes.splice(xIndex, 1)
+              } else {
+                this.viewModel.splitIndexes.push(d.x)
+              }
+            } else {
+              this.viewModel.splitIndexes = [d.x]
+            }
+            console.log(this.viewModel.splitIndexes)
+            this.update(this.updateOptions)
+          } else {
+            // Pass identities of selected data back to PowerBI
+            this.selectionManager
+                // Propagate identities of selected data back to
+                //   PowerBI based on all selected dots
+                .select(d.identity, (event.ctrlKey || event.metaKey))
+                // Change opacity of non-selected dots
+                .then(() => { this.updateHighlighting(); });
+                event.stopPropagation();
+          }
           });
 
     if (this.viewModel.plotPoints.length > 0) {

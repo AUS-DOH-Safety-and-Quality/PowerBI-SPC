@@ -9,30 +9,22 @@ import rep from "../Functions/rep"
 type chartObjectConstructor = {
   inputData: dataObject;
   inputSettings: settingsObject;
+  splitIndexes: number[];
 }
 
 class chartObject {
   inputData: dataObject;
   inputSettings: settingsObject;
+  splitIndexes: number[];
   limitFunction: (x: dataObject) => controlLimits;
 
   getLimits(): controlLimits {
     let calcLimits: controlLimits;
-    let rebaselineLimits: boolean;
-    let split_vals: string[];
 
-    if (this.inputSettings.spc.denom_split.value !== null) {
-      let split_vals_raw: string[] = this.inputSettings.spc.denom_split.value.split(",")
-      split_vals = split_vals_raw.filter(d => this.inputData.keys.map(d2 => d2.label).includes(d));
-      rebaselineLimits = split_vals.length > 0;
-    } else {
-      rebaselineLimits = false;
-    }
-
-    if (rebaselineLimits) {
-      let indexes: number[] = split_vals.map(d => this.inputData.keys.map(d2 => d2.label).indexOf(d))
-                                        .concat([this.inputData.keys.length - 1])
-                                        .sort((a,b) => a - b);
+    if (this.splitIndexes.length > 0) {
+      let indexes: number[] = this.splitIndexes
+                                  .concat([this.inputData.keys.length - 1])
+                                  .sort((a,b) => a - b);
       let groupedData: dataObject[] = indexes.map((d, idx) => {
         // Force a deep copy
         let data = JSON.parse(JSON.stringify(this.inputData));
@@ -58,11 +50,9 @@ class chartObject {
         })
         return allInner;
       })
-      calcLimits.split_indexes = indexes.slice(0,indexes.length - 1)
     } else {
       // Calculate control limits using user-specified type
       calcLimits = this.limitFunction(this.inputData);
-      calcLimits.split_indexes = new Array<number>();
     }
 
     calcLimits.flagOutliers(this.inputData, this.inputSettings);
@@ -90,6 +80,7 @@ class chartObject {
   constructor(args: chartObjectConstructor) {
     this.inputData = args.inputData;
     this.inputSettings = args.inputSettings;
+    this.splitIndexes = args.splitIndexes;
 
     this.limitFunction = limitFunctions[args.inputData.chart_type]
   }
