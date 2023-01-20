@@ -13,10 +13,10 @@ function broadcast_unary<ScalarInputT, ScalarReturnT>(fun: (x: ScalarInputT) => 
 }
 
 const sqrt = broadcast_unary(math.sqrt);
-const abs = broadcast_unary((x: number) => (x ? math.abs(x) : x));
+const abs = broadcast_unary((x: number): number => (x ? math.abs(x) : x));
 const exp = broadcast_unary(math.exp);
 const lgamma = broadcast_unary(math.gammaln);
-const square = broadcast_unary((x: number) => math.pow(x, 2));
+const square = broadcast_unary((x: number): number => math.pow(x, 2));
 
 export {
   sqrt,
