@@ -18,7 +18,7 @@ type tooltipArgs = {
   two_in_three: string
 }
 
-let valueNames = {
+let valueNames: { [key: string] : string } = {
   "i": "Observation",
   "c": "Count",
   "t": "Time",

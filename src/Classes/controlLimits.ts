@@ -22,6 +22,7 @@ type controlLimitsArgs = {
 }
 
 class controlLimits {
+  [key: string] : any;
   keys: plotKey[];
   values: number[];
   numerators?: number[];

@@ -26,19 +26,19 @@ class viewModelObject {
   getPlotData(host: IVisualHost): plotData[] {
     let plotPoints = new Array<plotData>();
     let tickLabels = new Array<{ x: number; label: string; }>();
-    let shiftColourMap = {
+    let shiftColourMap: { [key: string] : string } = {
       "upper" : this.inputSettings.outliers.shift_colour_upper.value,
       "lower" : this.inputSettings.outliers.shift_colour_lower.value
     };
-    let trendColourMap = {
+    let trendColourMap: { [key: string] : string } = {
       "upper" : this.inputSettings.outliers.trend_colour_upper.value,
       "lower" : this.inputSettings.outliers.trend_colour_lower.value
     };
-    let twoInThreeColourMap = {
+    let twoInThreeColourMap: { [key: string] : string } = {
       "upper" : this.inputSettings.outliers.twointhree_colour_upper.value,
       "lower" : this.inputSettings.outliers.twointhree_colour_lower.value
     };
-    let astColourMap = {
+    let astColourMap: { [key: string] : string } = {
       "upper" : this.inputSettings.outliers.ast_colour_upper.value,
       "lower" : this.inputSettings.outliers.ast_colour_lower.value
     };

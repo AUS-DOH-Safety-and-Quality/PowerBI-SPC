@@ -43,9 +43,9 @@ class chartObject {
       let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
         let allInner: controlLimits = all;
-        Object.entries(all).forEach(entry => {
+        Object.entries(all).forEach((entry, idx) => {
           if (this.inputData.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
-            allInner[entry[0]] = all[entry[0]].concat(curr[entry[0]]);
+            allInner[entry[0] as keyof controlLimits] = entry[1].concat(Object.entries(curr)[idx][1]);
           }
         })
         return allInner;
@@ -82,7 +82,7 @@ class chartObject {
     this.inputSettings = args.inputSettings;
     this.splitIndexes = args.splitIndexes;
 
-    this.limitFunction = limitFunctions[args.inputData.chart_type]
+    this.limitFunction = limitFunctions[args.inputData.chart_type as keyof typeof limitFunctions]
   }
 }
 
