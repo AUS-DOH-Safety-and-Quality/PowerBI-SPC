@@ -4,6 +4,7 @@ import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
 import stringToDMY from "../Functions/stringToDMY"
+import dateFormat from "./dateFormat"
 
 class dataObject {
   keys: plotKey[];
@@ -31,7 +32,8 @@ class dataObject {
     let numerators: number[] = <number[]>numerators_raw.values;
     let denominators: number[] = denominators_raw ? <number[]>denominators_raw.values : null;
     let xbar_sds: number[] = xbar_sds_raw ? <number[]>xbar_sds_raw.values : null;
-    let keys: string[] = keys_raw.source.type.dateTime ? <string[]>(keys_raw.values.map(category => stringToDMY(<string>category, inputSettings.x_axis.xlimit_date_format.value))) : <string[]>(keys_raw.values);
+    let date_format: dateFormat = JSON.parse(inputSettings.x_axis.xlimit_date_format.value);
+    let keys: string[] = keys_raw.source.type.dateTime ? stringToDMY(<string[]>keys_raw.values, date_format) : <string[]>(keys_raw.values);
     let chart_type: string = chart_type_raw ? <string>chart_type_raw.values[0] : inputSettings.spc.chart_type.value;
     let multiplier: number = multiplier_raw ? <number>multiplier_raw.values[0] : inputSettings.spc.multiplier.value;
     let flag_direction: string = outlier_direction_raw ? <string>outlier_direction_raw.values[0] : inputSettings.outliers.flag_direction.value;

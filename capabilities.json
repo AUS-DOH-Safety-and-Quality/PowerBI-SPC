@@ -523,19 +523,111 @@
                     "enumeration" : [
                       {
                         "displayName" : "DD/MM/YYYY",
-                        "value" : "DD/MM/YYYY"
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "DD-MM-YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "DD MM YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
+                      },
+                      {
+                        "displayName" : "DD/Mon/YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "DD-Mon-YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "DD Mon YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
+                      },
+                      {
+                        "displayName" : "DD/Month/YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "DD-Month-YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "DD Month YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
                       },
                       {
                         "displayName" : "MM/DD/YYYY",
-                        "value" : "MM/DD/YYYY"
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "MM-DD-YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "MM DD YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
+                      },
+                      {
+                        "displayName" : "Mon/DD/YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "Mon-DD-YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "Mon DD YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
+                      },
+                      {
+                        "displayName" : "Month/DD/YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "Month-DD-YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "Month DD YYYY",
+                        "value" : "{ \"locale\": \"en-US\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
                       },
                       {
                         "displayName" : "MM/YYYY",
-                        "value" : "MM/YYYY"
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
                       },
                       {
-                        "displayName" : "YYYY",
-                        "value" : "YYYY"
+                        "displayName" : "MM-YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "MM YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
+                      },
+                      {
+                        "displayName" : "Mon/YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "Mon-YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "Mon YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"short\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
+                      },
+                      {
+                        "displayName" : "Month/YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }"
+                      },
+                      {
+                        "displayName" : "Month-YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \"-\" }"
+                      },
+                      {
+                        "displayName" : "Month YYYY",
+                        "value" : "{ \"locale\": \"en-GB\", \"options\": { \"month\" : \"long\", \"year\" : \"numeric\" }, \"delimiter\": \" \" }"
                       }
                     ]
                   }

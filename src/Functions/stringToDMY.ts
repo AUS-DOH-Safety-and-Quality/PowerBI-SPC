@@ -1,20 +1,14 @@
-//Function to handle string-to-date conversions with JS's weird conventions
-function stringToDMY(text: string, date_format: string): string {
-  let step1: Date = new Date(text);
-  let step2: Date = new Date(step1.getTime() + Math.abs(step1.getTimezoneOffset() * 60000));
-  let DD: string = step2.getUTCDate().toString().padStart(2, "0");
-  let MM: string = (step2.getUTCMonth() + 1).toString().padStart(2, "0");
-  let YYYY: string = step2.getUTCFullYear().toString();
+import dateFormat from "../Classes/dateFormat";
 
-  if (date_format === "DD/MM/YYYY") {
-    return DD + "/" + MM + "/" + YYYY;
-  } else if (date_format === "MM/DD/YYYY") {
-    return MM + "/" + DD + "/" + YYYY;
-  } else if (date_format === "MM/YYYY") {
-    return MM + "/" + YYYY;
-  } else if (date_format === "YYYY") {
-    return YYYY;
-  }
+//Function to handle string-to-date conversions with JS's weird conventions
+function stringToDMY(input_datestrings: string[], date_format: dateFormat): string[] {
+  return input_datestrings.map(dateString => {
+    let step1: Date = new Date(dateString);
+    let step2: Date = new Date(step1.getTime() + Math.abs(step1.getTimezoneOffset() * 60000));
+
+    return step2.toLocaleDateString(date_format.locale, date_format.options)
+                .replace(/(\/|(\s|,\s))/gi, date_format.delimiter);
+  })
 }
 
 export default stringToDMY;

@@ -189,12 +189,14 @@ export class Visual implements IVisual {
       xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale);
     }
 
+    let axisHeight: number = this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.end_padding;
+
     this.svgObjects
         .xAxisGroup
         .call(xAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
-        .attr("transform", "translate(0, " + (this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.end_padding) + ")")
+        .attr("transform", "translate(0, " + axisHeight + ")")
         .selectAll("text")
         // Rotate tick labels
         .attr("transform","rotate(-35)")
@@ -206,6 +208,23 @@ export class Visual implements IVisual {
         .style("fill", xAxisProperties.tick_colour);
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
+
+    // Large tick values might be rendered outside of the plotting space, so we need to
+    // detect when this happens and add appropriate padding
+    if (xAxisCoordinates.bottom > this.viewModel.plotProperties.height) {
+      let addPadding: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
+
+      this.svgObjects
+          .xAxisGroup
+          .attr("transform", "translate(0, " + (axisHeight - addPadding) + ")")
+
+      // Re-initialise d3 scale objects so that the y-axis is plotted correctly
+      this.viewModel.plotProperties.yAxis.end_padding += addPadding
+      this.viewModel.plotProperties.initialiseScale()
+
+      xAxisCoordinates = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
+    }
+
     let bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
 
     this.svgObjects
