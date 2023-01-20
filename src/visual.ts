@@ -25,14 +25,13 @@ import { groupKeysT } from "./Functions/getGroupKeys"
 import { axisProperties } from "./Classes/plotProperties"
 
 type SelectionAny = d3.Selection<any, any, any, any>;
-type SelectionSVG = d3.Selection<SVGElement, any, any, any>;
 type mergedSVGObjects = { dotsMerged: SelectionAny,
                           linesMerged: SelectionAny }
 
 export class Visual implements IVisual {
   private host: IVisualHost;
   private updateOptions: VisualUpdateOptions;
-  private svg: SelectionSVG;
+  private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private svgObjects: svgObjectClass;
   private svgSelections: svgSelectionClass;
   private viewModel: viewModelObject;
@@ -391,8 +390,8 @@ export class Visual implements IVisual {
         })
       });
     } else {
-      this.plottingMerged.dotsMerged.on("mousemove", d => {})
-                                    .on("mouseleave", d => {});
+      this.plottingMerged.dotsMerged.on("mousemove", () => {})
+                                    .on("mouseleave", () => {});
     }
 
     this.updateHighlighting();

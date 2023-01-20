@@ -1,5 +1,3 @@
-import dateFormat from "./dateFormat";
-
 /**
  * Base class defining the two types of settings values that are stored:
  *   - default: The initial default value

@@ -9,8 +9,6 @@ function runLimits(inputData: dataObject): controlLimits {
   let ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
     : inputData.numerators;
-  let denominators: number[] = inputData.denominators;
-  let numerators: number[] = inputData.numerators;
 
   let cl: number = d3.median(ratio);
   return new controlLimits({

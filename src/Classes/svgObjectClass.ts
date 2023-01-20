@@ -1,17 +1,18 @@
 import * as d3 from "d3";
+type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 
 class svgObjectClass {
-  listeningRect: d3.Selection<SVGElement, any, any, any>;
-  tooltipLineGroup: d3.Selection<SVGElement, any, any, any>;
-  dotGroup: d3.Selection<SVGElement, any, any, any>;
-  lineGroup: d3.Selection<SVGElement, any, any, any>;
+  listeningRect: SelectionBase;
+  tooltipLineGroup: SelectionBase;
+  dotGroup: SelectionBase;
+  lineGroup: SelectionBase;
   xAxisGroup: d3.Selection<SVGGElement, any, any, any>;
-  xAxisLabels: d3.Selection<SVGGElement, any, any, any>;
+  xAxisLabels: d3.Selection<SVGTextElement, unknown, null, undefined>;
   yAxisGroup: d3.Selection<SVGGElement, any, any, any>;
-  yAxisLabels: d3.Selection<SVGGElement, any, any, any>;
+  yAxisLabels: d3.Selection<SVGTextElement, unknown, null, undefined>;
 
-  constructor(svg: d3.Selection<SVGElement, any, any, any>) {
+  constructor(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) {
     this.tooltipLineGroup = svg.append("g");
     this.listeningRect = svg.append("g");
     this.lineGroup = svg.append("g");

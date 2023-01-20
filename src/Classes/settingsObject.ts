@@ -47,9 +47,6 @@ class settingsObject {
       // use those to extract and update the relevant values
       let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
-        // A different function is required for extracting colours provided by settings
-        let method: string = settingName.includes("colour") ? "getFillColor" : "getValue";
-
         if (settingName.includes("colour")) {
           this[settingGroup][settingName].value = dataViewObjects.getFillColor(
             inputObjects, {
