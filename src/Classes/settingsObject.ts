@@ -19,6 +19,7 @@ import {
  * These are defined in the settingsGroups.ts file
  */
 class settingsObject {
+  [key: string] : any;
   canvas: canvasSettings;
   spc: spcSettings;
   outliers: outliersSettings;
@@ -49,13 +50,23 @@ class settingsObject {
         // A different function is required for extracting colours provided by settings
         let method: string = settingName.includes("colour") ? "getFillColor" : "getValue";
 
-        this[settingGroup][settingName].value = dataViewObjects[method](
-          inputObjects, {
-            objectName: settingGroup,
-            propertyName: settingName
-          },
-          this[settingGroup][settingName].default
-        )
+        if (settingName.includes("colour")) {
+          this[settingGroup][settingName].value = dataViewObjects.getFillColor(
+            inputObjects, {
+              objectName: settingGroup,
+              propertyName: settingName
+            },
+            this[settingGroup][settingName].default
+          )
+        } else {
+          this[settingGroup][settingName].value = dataViewObjects.getValue(
+            inputObjects, {
+              objectName: settingGroup,
+              propertyName: settingName
+            },
+            this[settingGroup][settingName].default
+          )
+        }
       })
     })
   }
@@ -72,7 +83,7 @@ class settingsObject {
     let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
     let firstSettingObject = {
       [settingNames[0]]: this.settingsInData.includes(settingNames[0])
-        ? inputData[settingNames[0]]
+        ? inputData[settingNames[0] as keyof dataObject]
         : this[settingGroupName][settingNames[0]].value
     };
     return settingNames.reduce((previousSetting, currentSetting) => {
@@ -80,7 +91,7 @@ class settingsObject {
         ...previousSetting,
         ...{
           [currentSetting]: this.settingsInData.includes(currentSetting)
-            ? inputData[currentSetting]
+            ? inputData[currentSetting as keyof dataObject]
             : this[settingGroupName][currentSetting].value
         }
       }
