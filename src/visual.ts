@@ -206,7 +206,7 @@ export class Visual implements IVisual {
         .style("font-family", xAxisProperties.tick_font)
         .style("fill", xAxisProperties.tick_colour);
 
-    let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
+    let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
 
     // Large tick values might be rendered outside of the plotting space, so we need to
     // detect when this happens and add appropriate padding
@@ -221,7 +221,7 @@ export class Visual implements IVisual {
       this.viewModel.plotProperties.yAxis.end_padding += addPadding
       this.viewModel.plotProperties.initialiseScale()
 
-      xAxisCoordinates = this.svgObjects.xAxisGroup.node().getBoundingClientRect();
+      xAxisCoordinates = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
     }
 
     let bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
@@ -266,7 +266,7 @@ export class Visual implements IVisual {
         .style("font-family", yAxisProperties.tick_font)
         .style("fill", yAxisProperties.tick_colour);
 
-    let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect();
+    let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect() as DOMRect;
     let leftMidpoint: number = yAxisCoordinates.x * 0.7;
 
     this.svgObjects
