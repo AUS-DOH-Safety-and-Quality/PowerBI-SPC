@@ -1,3 +1,5 @@
+import dateFormat from "./dateFormat";
+
 /**
  * Base class defining the two types of settings values that are stored:
  *   - default: The initial default value
@@ -113,7 +115,7 @@ class xAxisSettings {
 
   constructor() {
     this.xlimit_colour = new settingsPair("#000000");
-    this.xlimit_date_format = new settingsPair("DD/MM/YYYY");
+    this.xlimit_date_format = new settingsPair("{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }");
     this.xlimit_ticks = new settingsPair(true);
     this.xlimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.xlimit_tick_size = new settingsPair("x-small");
