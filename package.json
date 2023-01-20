@@ -7,16 +7,16 @@
     "lint": "tslint -c tslint.json -p tsconfig.json"
   },
   "dependencies": {
-    "@babel/runtime": "7.17.9",
-    "@babel/runtime-corejs3": "7.17.9",
+    "@babel/runtime": "7.20.7",
+    "@babel/runtime-corejs3": "7.20.7",
     "@stdlib/math": "^0.0.11",
     "@stdlib/stats": "^0.0.13",
-    "core-js": "3.23.3",
-    "d3": "^7.6.1",
-    "minimist": "^1.2.6",
+    "core-js": "3.27.2",
+    "d3": "^7.8.2",
+    "minimist": "^1.2.7",
     "powerbi-visuals-api": "~3.2.0",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1",
-    "regenerator-runtime": "^0.13.9"
+    "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
