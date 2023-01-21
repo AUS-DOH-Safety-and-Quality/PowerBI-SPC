@@ -158,7 +158,8 @@ class yAxisSettings {
 }
 
 class outliersSettings {
-  flag_direction: settingsPair<string>;
+  process_flag_type: settingsPair<string>;
+  improvement_direction: settingsPair<string>;
   astronomical: settingsPair<boolean>;
   ast_colour_upper: settingsPair<string>;
   ast_colour_lower: settingsPair<string>;
@@ -175,7 +176,8 @@ class outliersSettings {
   twointhree_colour_lower: settingsPair<string>;
 
   constructor() {
-    this.flag_direction = new settingsPair("both");
+    this.process_flag_type = new settingsPair("both");
+    this.improvement_direction = new settingsPair("increase");
     this.astronomical = new settingsPair(false);
     this.ast_colour_upper = new settingsPair("#E1C233");
     this.ast_colour_lower = new settingsPair("#E1C233");
@@ -193,6 +195,8 @@ class outliersSettings {
   };
 }
 
+let settingsInData: string[] = ["chart_type", "multiplier", "process_flag_type", "improvement_direction"];
+
 export {
   canvasSettings,
   spcSettings,
@@ -200,5 +204,6 @@ export {
   lineSettings,
   xAxisSettings,
   yAxisSettings,
-  outliersSettings
+  outliersSettings,
+  settingsInData
 }
