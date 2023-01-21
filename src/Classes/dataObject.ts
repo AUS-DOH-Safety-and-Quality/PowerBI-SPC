@@ -7,7 +7,7 @@ import settingsObject from "./settingsObject"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
-import {determineFlagDirection} from "../Functions/checkFlagDirection";
+import { determineFlagDirection } from "../Functions/checkFlagDirection";
 
 class dataObject {
   keys: plotKey[];

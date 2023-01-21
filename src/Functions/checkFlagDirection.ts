@@ -17,16 +17,13 @@ function determineFlagDirection(process_flag_type: string, improvement_direction
     "increase" : "lower",
     "decrease" : "upper"
   }
-
-  if (process_flag_type === "both") {
-    return process_flag_type;
-  } else if (process_flag_type === "improvement") {
-    return improveFlagDirectionMap[improvement_direction];
-  } else if (process_flag_type === "deterioration") {
-    return deteriorateFlagDirectionMap[improvement_direction];
-  } else {
-    return "";
+  let flagDirectionMap: { [key: string] : string } = {
+    "both" : process_flag_type,
+    "improvement" : improveFlagDirectionMap[improvement_direction],
+    "deterioration" : deteriorateFlagDirectionMap[improvement_direction]
   }
+
+  return flagDirectionMap[process_flag_type];
 }
 
 const checkFlagDirection = broadcast_binary(checkFlagDirection_impl);
