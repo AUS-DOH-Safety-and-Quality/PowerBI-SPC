@@ -42,8 +42,13 @@
             "kind": "Measure"
         },
         {
-            "displayName": "Optional: Outlier Direction",
-            "name": "outlier_direction",
+            "displayName": "Optional: Change to Flag",
+            "name": "process_flag_type",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Optional: Improvement Direction",
+            "name": "improvement_direction",
             "kind": "Measure"
         }
     ],
@@ -145,8 +150,8 @@
         "outliers" : {
             "displayName": "Outlier Highlighting",
             "properties": {
-              "flag_direction": {
-                  "displayName": "Direction to Flag",
+              "process_flag_type": {
+                  "displayName": "Type of Change to Flag",
                   "type": {
                     "enumeration" : [
                       {
@@ -154,12 +159,27 @@
                         "value" : "both"
                       },
                       {
-                        "displayName" : "Upper",
-                        "value" : "upper"
+                        "displayName" : "Improvement",
+                        "value" : "improvement"
                       },
                       {
-                        "displayName" : "Lower",
-                        "value" : "lower"
+                        "displayName" : "Deterioration",
+                        "value" : "deterioration"
+                      }
+                    ]
+                  }
+              },
+              "improvement_direction": {
+                  "displayName": "Improvement Direction",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Increase",
+                        "value" : "increase"
+                      },
+                      {
+                        "displayName" : "Decrease",
+                        "value" : "decrease"
                       }
                     ]
                   }

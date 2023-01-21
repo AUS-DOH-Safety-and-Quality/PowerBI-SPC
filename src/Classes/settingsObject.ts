@@ -8,7 +8,8 @@ import {
   scatterSettings,
   lineSettings,
   xAxisSettings,
-  yAxisSettings
+  yAxisSettings,
+  settingsInData
 } from "./settingsGroups"
 
 /**
@@ -103,7 +104,7 @@ class settingsObject {
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();
     this.y_axis = new yAxisSettings();
-    this.settingsInData = ["chart_type", "multiplier", "flag_direction"];
+    this.settingsInData = Object.keys(settingsInData);
   }
 }
 

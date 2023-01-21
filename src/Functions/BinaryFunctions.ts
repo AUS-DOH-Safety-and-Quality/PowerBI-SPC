@@ -39,3 +39,5 @@ export {
   divide,
   multiply
 };
+
+export default broadcast_binary;

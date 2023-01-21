@@ -6,6 +6,7 @@ import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
+import checkFlagDirection from "../Functions/checkFlagDirection"
 
 type controlLimitsArgs = {
   keys: plotKey[];
@@ -43,41 +44,21 @@ class controlLimits {
     let flag_direction: string = inputData.flag_direction;
     if (inputData.chart_type !== "run") {
       if (inputSettings.outliers.astronomical.value) {
-        this.astpoint = astronomical(this.values, this.ll99, this.ul99).map(d => {
-          if (flag_direction !== "both") {
-            return (d === flag_direction) ? d : "none"
-          } else {
-            return d
-          }
-        });
+        this.astpoint = checkFlagDirection(astronomical(this.values, this.ll99, this.ul99),
+                                            flag_direction);
       }
       if (inputSettings.outliers.two_in_three.value) {
-        this.two_in_three = two_in_three(this.values, this.ll95, this.ul95).map(d => {
-          if (flag_direction !== "both") {
-            return (d === flag_direction) ? d : "none"
-          } else {
-            return d
-          }
-        });
+        this.two_in_three = checkFlagDirection(two_in_three(this.values, this.ll95, this.ul95),
+                                                flag_direction);
       }
     }
     if (inputSettings.outliers.trend.value) {
-      this.trend = trend(this.values, inputSettings.outliers.trend_n.value).map(d => {
-        if (flag_direction !== "both") {
-          return (d === flag_direction) ? d : "none"
-        } else {
-          return d
-        }
-      });
+      this.trend = checkFlagDirection(trend(this.values, inputSettings.outliers.trend_n.value),
+                                      flag_direction);
     }
     if (inputSettings.outliers.shift.value) {
-      this.shift = shift(this.values, this.targets, inputSettings.outliers.shift_n.value).map(d => {
-        if (flag_direction !== "both") {
-          return (d === flag_direction) ? d : "none"
-        } else {
-          return d
-        }
-      });
+      this.shift = checkFlagDirection(shift(this.values, this.targets, inputSettings.outliers.shift_n.value),
+                                      flag_direction);
     }
   }
 
