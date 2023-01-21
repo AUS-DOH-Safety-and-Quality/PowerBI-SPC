@@ -195,7 +195,12 @@ class outliersSettings {
   };
 }
 
-let settingsInData: string[] = ["chart_type", "multiplier", "process_flag_type", "improvement_direction"];
+let settingsInData: { [key: string] : string } = {
+  "chart_type" : "spc",
+  "multiplier" : "spc",
+  "process_flag_type" : "outliers",
+  "improvement_direction" : "outliers"
+}
 
 export {
   canvasSettings,

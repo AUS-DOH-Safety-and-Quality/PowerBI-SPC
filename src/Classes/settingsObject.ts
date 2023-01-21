@@ -104,7 +104,7 @@ class settingsObject {
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();
     this.y_axis = new yAxisSettings();
-    this.settingsInData = settingsInData;
+    this.settingsInData = Object.keys(settingsInData);
   }
 }
 
