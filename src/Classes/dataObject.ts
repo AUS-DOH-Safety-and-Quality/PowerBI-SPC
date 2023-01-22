@@ -7,7 +7,6 @@ import settingsObject from "./settingsObject"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
-import { determineFlagDirection } from "../Functions/checkFlagDirection";
 
 class dataObject {
   keys: plotKey[];
@@ -18,7 +17,6 @@ class dataObject {
   multiplier: number;
   process_flag_type: string;
   improvement_direction: string;
-  flag_direction: string;
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
   percentLabels: boolean;
@@ -58,7 +56,6 @@ class dataObject {
     this.multiplier = multiplier;
     this.process_flag_type = process_flag_type.toLowerCase();
     this.improvement_direction = improvement_direction.toLowerCase();
-    this.flag_direction = determineFlagDirection(this.process_flag_type, this.improvement_direction);
     this.highlights = inputView.values[0].highlights ? extractValues(inputView.values[0].highlights, valid_ids) : inputView.values[0].highlights;
     this.anyHighlights = this.highlights ? true : false
     this.categories = inputView.categories[0];

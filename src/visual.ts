@@ -20,9 +20,8 @@ import * as d3 from "d3";
 import lineData from "./Classes/lineData"
 import svgObjectClass from "./Classes/svgObjectClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
-import getGroupKeys from "./Functions/getGroupKeys"
-import { groupKeysT } from "./Functions/getGroupKeys"
 import { axisProperties } from "./Classes/plotProperties"
+import getAesthetic from "./Functions/getAesthetic"
 
 type SelectionAny = d3.Selection<any, any, any, any>;
 type mergedSVGObjects = { dotsMerged: SelectionAny,
@@ -282,20 +281,6 @@ export class Visual implements IVisual {
   }
 
   drawLines(): void {
-    let lineMetadata: groupKeysT = getGroupKeys({ inputSettings: this.settings,
-                                                  viewModel: this.viewModel})
-    let line_color = d3.scaleOrdinal()
-                        .domain(lineMetadata.keys)
-                        .range(lineMetadata.colours);
-
-    let line_width = d3.scaleOrdinal()
-                        .domain(lineMetadata.keys)
-                        .range(lineMetadata.widths);
-
-    let line_type = d3.scaleOrdinal()
-                        .domain(lineMetadata.keys)
-                        .range(lineMetadata.types);
-
     this.plottingMerged.linesMerged
       = this.svgSelections.lineSelection
                           .enter()
@@ -311,9 +296,15 @@ export class Visual implements IVisual {
                 (d[1])
     });
     this.plottingMerged.linesMerged.attr("fill", "none")
-                    .attr("stroke", d => <string>line_color(d[0]))
-                    .attr("stroke-width", d => <number>line_width(d[0]))
-                    .attr("stroke-dasharray", d => <string>line_type(d[0]));
+                    .attr("stroke", d => {
+                      return getAesthetic(d[0], "lines", "colour", this.settings)
+                    })
+                    .attr("stroke-width", d => {
+                      return getAesthetic(d[0], "lines", "width", this.settings)
+                    })
+                    .attr("stroke-dasharray", d => {
+                      return getAesthetic(d[0], "lines", "type", this.settings)
+                    });
     this.svgSelections.lineSelection.exit().remove();
     this.plottingMerged.linesMerged.exit().remove();
   }
@@ -353,7 +344,6 @@ export class Visual implements IVisual {
             } else {
               this.viewModel.splitIndexes = [d.x]
             }
-            console.log(this.viewModel.splitIndexes)
             this.update(this.updateOptions)
           } else {
             // Pass identities of selected data back to PowerBI

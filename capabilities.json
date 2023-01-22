@@ -159,11 +159,11 @@
                         "value" : "both"
                       },
                       {
-                        "displayName" : "Improvement",
+                        "displayName" : "Improvement (Imp.)",
                         "value" : "improvement"
                       },
                       {
-                        "displayName" : "Deterioration",
+                        "displayName" : "Deterioration (Det.)",
                         "value" : "deterioration"
                       }
                     ]
@@ -188,8 +188,8 @@
                     "displayName": "Astronomical Points",
                     "type" : { "bool" : true }
                 },
-                "ast_colour_upper":{
-                    "displayName": "Upper Ast. Colour",
+                "ast_colour_improvement":{
+                    "displayName": "Imp. Ast. Colour",
                     "type": {
                         "fill": {
                             "solid": {
@@ -198,8 +198,8 @@
                         }
                     }
                  },
-                 "ast_colour_lower":{
-                     "displayName": "Lower Ast. Colour",
+                 "ast_colour_deterioration":{
+                     "displayName": "Det. Ast. Colour",
                      "type": {
                          "fill": {
                              "solid": {
@@ -216,8 +216,8 @@
                     "displayName": "Shift Points",
                     "type" : { "numeric": true }
                 },
-                "shift_colour_upper":{
-                    "displayName": "Upper Shift Colour",
+                "shift_colour_improvement":{
+                    "displayName": "Imp. Shift Colour",
                     "type": {
                         "fill": {
                             "solid": {
@@ -226,8 +226,8 @@
                         }
                     }
                  },
-                 "shift_colour_lower":{
-                     "displayName": "Lower Shift Colour",
+                 "shift_colour_deterioration":{
+                     "displayName": "Det. Shift Colour",
                      "type": {
                          "fill": {
                              "solid": {
@@ -244,8 +244,8 @@
                     "displayName": "Trend Points",
                     "type" : { "numeric": true }
                 },
-                "trend_colour_upper":{
-                    "displayName": "Upper Trend Colour",
+                "trend_colour_improvement":{
+                    "displayName": "Imp. Trend Colour",
                     "type": {
                         "fill": {
                             "solid": {
@@ -254,8 +254,8 @@
                         }
                     }
                  },
-                 "trend_colour_lower":{
-                     "displayName": "Lower Trend Colour",
+                 "trend_colour_deterioration":{
+                     "displayName": "Det. Trend Colour",
                      "type": {
                          "fill": {
                              "solid": {
@@ -268,8 +268,8 @@
                     "displayName": "Two-in-Three",
                     "type" : { "bool" : true }
                 },
-                "twointhree_colour_upper":{
-                    "displayName": "Upper Two-in-Three Colour",
+                "twointhree_colour_improvement":{
+                    "displayName": "Imp. Two-in-Three Colour",
                     "type": {
                         "fill": {
                             "solid": {
@@ -278,8 +278,8 @@
                         }
                     }
                  },
-                 "twointhree_colour_lower":{
-                     "displayName": "Lower Two-in-Three Colour",
+                 "twointhree_colour_deterioration":{
+                     "displayName": "Det. Two-in-Three Colour",
                      "type": {
                          "fill": {
                              "solid": {
