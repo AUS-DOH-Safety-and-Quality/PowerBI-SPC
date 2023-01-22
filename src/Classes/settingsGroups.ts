@@ -195,7 +195,7 @@ class outliersSettings {
   };
 }
 
-let settingsInData: { [key: string] : string } = {
+let settingsInData: Record<string, string> = {
   "chart_type" : "spc",
   "multiplier" : "spc",
   "process_flag_type" : "outliers",
