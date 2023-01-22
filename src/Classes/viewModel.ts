@@ -141,7 +141,6 @@ class viewModelObject {
 
     // Structure the data and calculated limits to the format needed for plotting
     this.plotPoints = this.getPlotData(args.host);
-    console.log("finished plotpoints")
     this.groupedLines = this.getGroupedLines();
 
     this.plotProperties = new plotPropertiesClass({
