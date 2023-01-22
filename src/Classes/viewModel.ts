@@ -11,6 +11,7 @@ import plotData from "./plotData"
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotProperties"
+import getAesthetic from "../Functions/getAesthetic"
 
 class viewModelObject {
   inputData: dataObject;
@@ -26,37 +27,25 @@ class viewModelObject {
   getPlotData(host: IVisualHost): plotData[] {
     let plotPoints = new Array<plotData>();
     let tickLabels = new Array<{ x: number; label: string; }>();
-    let shiftColourMap: { [key: string] : string } = {
-      "upper" : this.inputSettings.outliers.shift_colour_upper.value,
-      "lower" : this.inputSettings.outliers.shift_colour_lower.value
-    };
-    let trendColourMap: { [key: string] : string } = {
-      "upper" : this.inputSettings.outliers.trend_colour_upper.value,
-      "lower" : this.inputSettings.outliers.trend_colour_lower.value
-    };
-    let twoInThreeColourMap: { [key: string] : string } = {
-      "upper" : this.inputSettings.outliers.twointhree_colour_upper.value,
-      "lower" : this.inputSettings.outliers.twointhree_colour_lower.value
-    };
-    let astColourMap: { [key: string] : string } = {
-      "upper" : this.inputSettings.outliers.ast_colour_upper.value,
-      "lower" : this.inputSettings.outliers.ast_colour_lower.value
-    };
 
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
       let dot_colour: string = this.inputSettings.scatter.colour.value;
       if (this.calculatedLimits.shift[i] !== "none") {
-        dot_colour = shiftColourMap[this.calculatedLimits.shift[i]];
+        dot_colour = getAesthetic(this.calculatedLimits.shift[i], "outliers",
+                                  "shift_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.trend[i] !== "none") {
-        dot_colour = trendColourMap[this.calculatedLimits.trend[i]];
+        dot_colour = getAesthetic(this.calculatedLimits.trend[i], "outliers",
+                                  "trend_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.two_in_three[i] !== "none") {
-        dot_colour = twoInThreeColourMap[this.calculatedLimits.two_in_three[i]];
+        dot_colour = getAesthetic(this.calculatedLimits.two_in_three[i], "outliers",
+                                  "two_in_three_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.astpoint[i] !== "none") {
-        dot_colour = astColourMap[this.calculatedLimits.astpoint[i]];
+        dot_colour = getAesthetic(this.calculatedLimits.astpoint[i], "outliers",
+                                  "ast_colour", this.inputSettings) as string;
       }
 
       plotPoints.push({
@@ -152,6 +141,7 @@ class viewModelObject {
 
     // Structure the data and calculated limits to the format needed for plotting
     this.plotPoints = this.getPlotData(args.host);
+    console.log("finished plotpoints")
     this.groupedLines = this.getGroupedLines();
 
     this.plotProperties = new plotPropertiesClass({

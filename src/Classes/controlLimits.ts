@@ -41,24 +41,25 @@ class controlLimits {
   shift: string[];
 
   flagOutliers(inputData: dataObject, inputSettings: settingsObject) {
-    let flag_direction: string = inputData.flag_direction;
+    let process_flag_type: string = inputData.process_flag_type;
+    let improvement_direction: string = inputData.improvement_direction;
     if (inputData.chart_type !== "run") {
       if (inputSettings.outliers.astronomical.value) {
         this.astpoint = checkFlagDirection(astronomical(this.values, this.ll99, this.ul99),
-                                            flag_direction);
+                                            { process_flag_type, improvement_direction });
       }
       if (inputSettings.outliers.two_in_three.value) {
         this.two_in_three = checkFlagDirection(two_in_three(this.values, this.ll95, this.ul95),
-                                                flag_direction);
+                                                { process_flag_type, improvement_direction });
       }
     }
     if (inputSettings.outliers.trend.value) {
       this.trend = checkFlagDirection(trend(this.values, inputSettings.outliers.trend_n.value),
-                                      flag_direction);
+                                      { process_flag_type, improvement_direction });
     }
     if (inputSettings.outliers.shift.value) {
       this.shift = checkFlagDirection(shift(this.values, this.targets, inputSettings.outliers.shift_n.value),
-                                      flag_direction);
+                                      { process_flag_type, improvement_direction });
     }
   }
 

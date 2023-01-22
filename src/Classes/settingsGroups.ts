@@ -161,37 +161,37 @@ class outliersSettings {
   process_flag_type: settingsPair<string>;
   improvement_direction: settingsPair<string>;
   astronomical: settingsPair<boolean>;
-  ast_colour_upper: settingsPair<string>;
-  ast_colour_lower: settingsPair<string>;
+  ast_colour_improvement: settingsPair<string>;
+  ast_colour_deterioration: settingsPair<string>;
   shift: settingsPair<boolean>;
   shift_n: settingsPair<number>;
-  shift_colour_upper: settingsPair<string>;
-  shift_colour_lower: settingsPair<string>;
+  shift_colour_improvement: settingsPair<string>;
+  shift_colour_deterioration: settingsPair<string>;
   trend: settingsPair<boolean>;
   trend_n: settingsPair<number>;
-  trend_colour_upper: settingsPair<string>;
-  trend_colour_lower: settingsPair<string>;
+  trend_colour_improvement: settingsPair<string>;
+  trend_colour_deterioration: settingsPair<string>;
   two_in_three: settingsPair<boolean>;
-  twointhree_colour_upper: settingsPair<string>;
-  twointhree_colour_lower: settingsPair<string>;
+  twointhree_colour_improvement: settingsPair<string>;
+  twointhree_colour_deterioration: settingsPair<string>;
 
   constructor() {
     this.process_flag_type = new settingsPair("both");
     this.improvement_direction = new settingsPair("increase");
     this.astronomical = new settingsPair(false);
-    this.ast_colour_upper = new settingsPair("#E1C233");
-    this.ast_colour_lower = new settingsPair("#E1C233");
+    this.ast_colour_improvement = new settingsPair("#E1C233");
+    this.ast_colour_deterioration = new settingsPair("#E1C233");
     this.shift = new settingsPair(false);
     this.shift_n = new settingsPair(7);
-    this.shift_colour_upper = new settingsPair("#E1C233");
-    this.shift_colour_lower = new settingsPair("#E1C233");
+    this.shift_colour_improvement = new settingsPair("#E1C233");
+    this.shift_colour_deterioration = new settingsPair("#E1C233");
     this.trend = new settingsPair(false);
     this.trend_n = new settingsPair(5);
-    this.trend_colour_upper = new settingsPair("#E1C233");
-    this.trend_colour_lower = new settingsPair("#E1C233");
+    this.trend_colour_improvement = new settingsPair("#E1C233");
+    this.trend_colour_deterioration = new settingsPair("#E1C233");
     this.two_in_three = new settingsPair(false);
-    this.twointhree_colour_upper = new settingsPair("#E1C233");
-    this.twointhree_colour_lower = new settingsPair("#E1C233");
+    this.twointhree_colour_improvement = new settingsPair("#E1C233");
+    this.twointhree_colour_deterioration = new settingsPair("#E1C233");
   };
 }
 
