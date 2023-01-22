@@ -10,7 +10,6 @@ function checkFlagDirection_impl(outlierStatus: string, flagSettings: {process_f
     "lower" : "deterioration"
   }
   let decreaseDirectionMap: Record<string, string> = {
-    "none" : "none",
     "lower" : "improvement",
     "upper" : "deterioration"
   }
