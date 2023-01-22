@@ -24,9 +24,9 @@ class viewModelObject {
   plotProperties: plotPropertiesClass;
   splitIndexes?: number[];
 
-  getPlotData(host: IVisualHost): plotData[] {
-    let plotPoints = new Array<plotData>();
-    let tickLabels = new Array<{ x: number; label: string; }>();
+  initialisePlotData(host: IVisualHost): void {
+    this.plotPoints = new Array<plotData>();
+    this.tickLabels = new Array<{ x: number; label: string; }>();
 
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
@@ -48,7 +48,7 @@ class viewModelObject {
                                   "ast_colour", this.inputSettings) as string;
       }
 
-      plotPoints.push({
+      this.plotPoints.push({
         x: index,
         value: this.calculatedLimits.values[i],
         colour: dot_colour,
@@ -57,31 +57,13 @@ class viewModelObject {
                                     this.inputData.keys[i].id)
                       .createSelectionId(),
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
-        tooltip: buildTooltip({date: this.calculatedLimits.keys[i].label,
-                                value: this.calculatedLimits.values[i],
-                                numerator: this.calculatedLimits.numerators ? this.calculatedLimits.numerators[i] : null,
-                                denominator: this.calculatedLimits.denominators ? this.calculatedLimits.denominators[i] : null,
-                                target: this.calculatedLimits.targets[i],
-                                limits: {
-                                  ll99: this.calculatedLimits.ll99 ? this.calculatedLimits.ll99[i] : null,
-                                  ul99: this.calculatedLimits.ll99 ? this.calculatedLimits.ul99[i] : null
-                                },
-                                chart_type: this.inputData.chart_type,
-                                multiplier: this.inputData.multiplier,
-                                prop_labels: this.inputData.percentLabels,
-                               astpoint: this.calculatedLimits.astpoint[i],
-                               trend: this.calculatedLimits.trend[i],
-                               shift: this.calculatedLimits.shift[i],
-                               two_in_three: this.calculatedLimits.two_in_three[i]},
-                               this.inputSettings.spc.sig_figs.value)
+        tooltip: buildTooltip(i, this.calculatedLimits, this.inputData, this.inputSettings)
       })
-      tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
+      this.tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
     }
-    this.tickLabels = tickLabels;
-    return plotPoints;
   }
 
-  getGroupedLines(): [string, lineData[]][] {
+  initialiseGroupedLines(): void {
     let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values", "alt_targets"];
 
     let formattedLines: lineData[] = new Array<lineData>();
@@ -105,7 +87,7 @@ class viewModelObject {
         })
       })
     }
-    return d3.groups(formattedLines, d => d.group);
+    this.groupedLines = d3.groups(formattedLines, d => d.group);
   }
 
   update(args: { options: VisualUpdateOptions;
@@ -140,8 +122,8 @@ class viewModelObject {
     console.log("calculatedLimits: ", this.calculatedLimits)
 
     // Structure the data and calculated limits to the format needed for plotting
-    this.plotPoints = this.getPlotData(args.host);
-    this.groupedLines = this.getGroupedLines();
+    this.initialisePlotData(args.host);
+    this.initialiseGroupedLines();
 
     this.plotProperties = new plotPropertiesClass({
       options: args.options,
