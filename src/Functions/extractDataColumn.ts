@@ -5,7 +5,7 @@ import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import settingsObject from "../Classes/settingsObject";
 import dateFormat from "../Classes/dateFormat";
-import dateToStringFormat from "./dateToStringFormat";
+import dateToFormattedString from "./dateToFormattedString";
 import { settingsInData } from "../Classes/settingsGroups"
 
 type TargetT = number[] | string[] | number | string;
@@ -20,7 +20,7 @@ function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
     })[0];
     if (columnRaw.source.type.dateTime) {
       let date_format: dateFormat = JSON.parse(inputSettings.x_axis.xlimit_date_format.value);
-      return dateToStringFormat(<Date[]>columnRaw.values, date_format) as Extract<T, string[]>;
+      return dateToFormattedString(<Date[]>columnRaw.values, date_format) as Extract<T, string[]>;
     } else {
       return <string[]>columnRaw.values as Extract<T, string[]>;
     }

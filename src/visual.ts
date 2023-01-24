@@ -207,20 +207,14 @@ export class Visual implements IVisual {
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
 
-    // Large tick values might be rendered outside of the plotting space, so we need to
-    // detect when this happens and add appropriate padding
-    if (xAxisCoordinates.bottom > this.viewModel.plotProperties.height) {
-      let addPadding: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
-
-      this.svgObjects
-          .xAxisGroup
-          .attr("transform", "translate(0, " + (axisHeight - addPadding) + ")")
-
-      // Re-initialise d3 scale objects so that the y-axis is plotted correctly
-      this.viewModel.plotProperties.yAxis.end_padding += addPadding
-      this.viewModel.plotProperties.initialiseScale()
-
-      xAxisCoordinates = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
+    // Update padding and re-draw axis if large tick values rendered outside of plot
+    let tickBelowPlotAmount: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
+    let tickLeftofPlotAmount: number = xAxisCoordinates.left;
+    if (tickBelowPlotAmount > 0 || tickLeftofPlotAmount < 0) {
+      this.viewModel.plotProperties.yAxis.end_padding += tickBelowPlotAmount;
+      this.viewModel.plotProperties.xAxis.start_padding += Math.abs(tickLeftofPlotAmount);
+      this.viewModel.plotProperties.initialiseScale();
+      this.drawXAxis();
     }
 
     let bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
