@@ -1077,7 +1077,7 @@
             "conditions": [
                 {
                     "key": {
-                        "max": 1
+                        "max": 5
                     },
                     "numerators": {
                         "max": 1

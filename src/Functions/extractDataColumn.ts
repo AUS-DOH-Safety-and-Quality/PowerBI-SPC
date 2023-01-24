@@ -15,9 +15,22 @@ function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               inputSettings?: settingsObject): T {
   let columnRaw: DataViewValueColumn;
   if (name === "key") {
-    columnRaw = (inputView.categories as DataViewCategoryColumn[]).filter(viewColumn => {
+    let columnRawTmp: DataViewValueColumn[] = (inputView.categories as DataViewCategoryColumn[]).filter(viewColumn => {
       return viewColumn.source.roles ? viewColumn.source.roles[name] : false;
-    })[0];
+    });
+
+    // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
+    if (columnRawTmp.length > 1) {
+      return columnRawTmp[columnRawTmp.length - 1].values.map((lastKeyValue: string, index) => {
+        let concatKey: string = lastKeyValue;
+        for (let i = (columnRawTmp.length - 2); i >= 0; i--) {
+          concatKey += " " + columnRawTmp[i].values[index];
+        }
+        return concatKey;
+      }) as Extract<T, string[]>;
+    } else {
+      columnRaw = columnRawTmp[0];
+    }
     if (columnRaw.source.type.dateTime) {
       let date_format: dateFormat = JSON.parse(inputSettings.x_axis.xlimit_date_format.value);
       return dateToFormattedString(<Date[]>columnRaw.values, date_format) as Extract<T, string[]>;
