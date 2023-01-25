@@ -23,6 +23,7 @@ class viewModelObject {
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
   splitIndexes?: number[];
+  firstRun: boolean;
 
   initialisePlotData(host: IVisualHost): void {
     this.plotPoints = new Array<plotData>();
@@ -91,13 +92,12 @@ class viewModelObject {
   }
 
   update(args: { options: VisualUpdateOptions;
-                  inputSettings: settingsObject;
                   host: IVisualHost; }) {
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(args.options.dataViews)) {
       this.inputData = <dataObject>null;
-      this.inputSettings = args.inputSettings;
+      this.inputSettings = <settingsObject>null;
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = <plotData[]>null;
@@ -108,30 +108,43 @@ class viewModelObject {
 
     let dv: powerbi.DataView[] = args.options.dataViews;
 
-    // Extract input data, filter out invalid values, and identify any settings passed as data
-    this.inputData = new dataObject(dv[0].categorical, args.inputSettings)
-    this.inputSettings = args.inputSettings;
+    if (this.firstRun) {
+      this.inputSettings = new settingsObject();
+    }
+    // Only re-construct data and settings objects (and re-calculate limits) if they have changed
+    if (args.options.type === 2 || this.firstRun) {
+      this.inputSettings.update(args.options.dataViews[0].metadata.objects);
 
-    // Initialise a new chartObject class which can be used to calculate the control limits
-    this.chartBase = new chartObject({ inputData: this.inputData,
-                                        inputSettings: this.inputSettings,
-                                        splitIndexes: this.splitIndexes ? this.splitIndexes : new Array<number>() });
+      // Extract input data, filter out invalid values, and identify any settings passed as data
+      this.inputData = new dataObject(dv[0].categorical, this.inputSettings)
 
-    // Use initialised chartObject to calculate control limits
-    this.calculatedLimits = this.chartBase.getLimits();
-    console.log("calculatedLimits: ", this.calculatedLimits)
 
-    // Structure the data and calculated limits to the format needed for plotting
-    this.initialisePlotData(args.host);
-    this.initialiseGroupedLines();
+      // Initialise a new chartObject class which can be used to calculate the control limits
+      this.chartBase = new chartObject({ inputData: this.inputData,
+                                          inputSettings: this.inputSettings,
+                                          splitIndexes: this.splitIndexes ? this.splitIndexes : new Array<number>() });
 
-    this.plotProperties = new plotPropertiesClass({
+      // Use initialised chartObject to calculate control limits
+      this.calculatedLimits = this.chartBase.getLimits();
+      console.log("calculatedLimits: ", this.calculatedLimits)
+
+      // Structure the data and calculated limits to the format needed for plotting
+      this.initialisePlotData(args.host);
+      this.initialiseGroupedLines();
+    }
+
+    if (this.firstRun) {
+      this.plotProperties = new plotPropertiesClass();
+      this.plotProperties.firstRun = true;
+    }
+    this.plotProperties.update({
       options: args.options,
       plotPoints: this.plotPoints,
       calculatedLimits: this.calculatedLimits,
       inputData: this.inputData,
       inputSettings: this.inputSettings
     })
+    this.firstRun = false;
   }
 }
 

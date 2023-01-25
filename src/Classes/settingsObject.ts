@@ -48,23 +48,15 @@ class settingsObject {
       // use those to extract and update the relevant values
       let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
-        if (settingName.includes("colour")) {
-          this[settingGroup][settingName].value = dataViewObjects.getFillColor(
-            inputObjects, {
-              objectName: settingGroup,
-              propertyName: settingName
-            },
-            this[settingGroup][settingName].default
-          )
-        } else {
-          this[settingGroup][settingName].value = dataViewObjects.getValue(
-            inputObjects, {
-              objectName: settingGroup,
-              propertyName: settingName
-            },
-            this[settingGroup][settingName].default
-          )
-        }
+        type MethodTypes = Pick<typeof dataViewObjects, 'getFillColor' | 'getValue'>;
+        let methodName: string = settingName.includes("colour") ? "getFillColor" : "getValue";
+        this[settingGroup][settingName].value = dataViewObjects[methodName as keyof MethodTypes](
+          inputObjects, {
+            objectName: settingGroup,
+            propertyName: settingName
+          },
+          this[settingGroup][settingName].default
+        )
       })
     })
   }

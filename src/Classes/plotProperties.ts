@@ -31,6 +31,7 @@ class plotPropertiesClass {
   yAxis: axisProperties;
   xScale: d3.ScaleLinear<number, number, never>;
   yScale: d3.ScaleLinear<number, number, never>;
+  firstRun: boolean;
 
   // Separate function so that the axis can be re-calculated on changes to padding
   initialiseScale() {
@@ -45,7 +46,7 @@ class plotPropertiesClass {
                                     this.yAxis.start_padding]);
   }
 
-  constructor(args: { options: VisualUpdateOptions,
+  update(args: { options: VisualUpdateOptions,
                       plotPoints: plotData[],
                       calculatedLimits: controlLimits,
                       inputData: dataObject,
@@ -55,9 +56,11 @@ class plotPropertiesClass {
     this.width = args.options.viewport.width;
     this.height = args.options.viewport.height;
 
-    this.displayPlot = args.plotPoints
-      ? args.plotPoints.length > 1
-      : null;
+    // Only update data-/settings-dependent plot aesthetics if they have changed
+    if (args.options.type === 2 || this.firstRun) {
+      this.displayPlot = args.plotPoints
+        ? args.plotPoints.length > 1
+        : null;
 
       let limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
       let chart_type: string = args.inputData.chart_type;
@@ -147,8 +150,9 @@ class plotPropertiesClass {
         label_font: args.inputSettings.y_axis.ylimit_label_font.value,
         label_colour: args.inputSettings.y_axis.ylimit_label_colour.value
       };
-
+    }
     this.initialiseScale();
+    this.firstRun = false;
   }
 }
 
