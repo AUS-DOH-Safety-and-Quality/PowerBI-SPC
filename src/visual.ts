@@ -12,7 +12,6 @@ import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
 import VisualUpdateOptions = ex_visual.VisualUpdateOptions;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
 import IVisualHost = ex_visual.IVisualHost;
 import ISelectionManager = extensibility.ISelectionManager;
 import ISelectionId = visuals.ISelectionId;
@@ -109,14 +108,11 @@ export class Visual implements IVisual {
   public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions):
     VisualObjectInstanceEnumeration {
       let propertyGroupName: string = options.objectName;
-      // Object that holds the specified settings/options to be rendered
-      let properties: VisualObjectInstance[] = [];
-      properties.push({
+      return [{
         objectName: propertyGroupName,
         properties: this.viewModel.inputSettings.returnValues(propertyGroupName, this.viewModel.inputData),
         selector: null
-      });
-      return properties;
+      }];
   }
 
   initTooltipTracking(): void {
