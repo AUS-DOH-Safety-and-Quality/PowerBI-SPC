@@ -4,16 +4,19 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import "../style/visual.less";
 import powerbi from "powerbi-visuals-api";
-import IVisual = powerbi.extensibility.IVisual;
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import extensibility = powerbi.extensibility;
+import visuals = powerbi.visuals;
+import ex_visual = extensibility.visual;
+import IVisual = extensibility.IVisual;
+import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
+import VisualUpdateOptions = ex_visual.VisualUpdateOptions;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 import VisualObjectInstance = powerbi.VisualObjectInstance;
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import ISelectionManager = powerbi.extensibility.ISelectionManager;
-import ISelectionId = powerbi.visuals.ISelectionId;
-import settingsObject from "./Classes/settingsObject"
+import IVisualHost = ex_visual.IVisualHost;
+import ISelectionManager = extensibility.ISelectionManager;
+import ISelectionId = visuals.ISelectionId;
+import IVisualEventService = extensibility.IVisualEventService;
 import viewModelObject from "./Classes/viewModel"
 import plotData from "./Classes/plotData";
 import * as d3 from "d3";
@@ -36,10 +39,12 @@ export class Visual implements IVisual {
   private viewModel: viewModelObject;
   private plottingMerged: mergedSVGObjects;
   private selectionManager: ISelectionManager;
-  private settings: settingsObject;
+  // Service for notifying external clients (export to powerpoint/pdf) of rendering status
+  private events: IVisualEventService;
 
   constructor(options: VisualConstructorOptions) {
     console.log("Constructor start")
+    this.events = options.host.eventService;
     this.host = options.host;
     this.svg = d3.select(options.element)
                   .append("svg");
@@ -47,9 +52,9 @@ export class Visual implements IVisual {
     this.svgObjects = new svgObjectClass(this.svg);
     this.svgSelections = new svgSelectionClass();
     this.viewModel = new viewModelObject();
+    this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();
-    this.settings = new settingsObject();
 
     this.plottingMerged = { dotsMerged: null, linesMerged: null };
 
@@ -61,39 +66,43 @@ export class Visual implements IVisual {
 
   public update(options: VisualUpdateOptions) {
     console.log("Update start")
-    this.updateOptions = options;
+    try {
+      this.events.renderingStarted(options);
+      console.log(options)
+      this.updateOptions = options;
 
-    console.log("Settings start")
-    this.settings.update(options.dataViews[0].metadata.objects);
+      console.log("viewModel start")
+      this.viewModel.update({ options: options,
+                              host: this.host });
 
-    console.log("viewModel start")
-    this.viewModel.update({ options: options,
-                            inputSettings: this.settings,
-                            host: this.host });
+      console.log("svgSelections start")
+      this.svgSelections.update({ svgObjects: this.svgObjects,
+                                  viewModel: this.viewModel});
 
-    console.log("svgSelections start")
-    this.svgSelections.update({ svgObjects: this.svgObjects,
-                                viewModel: this.viewModel});
+      console.log("svg scale start")
+      this.svg.attr("width", this.viewModel.plotProperties.width)
+              .attr("height", this.viewModel.plotProperties.height);
 
-    console.log("svg scale start")
-    this.svg.attr("width", this.viewModel.plotProperties.width)
-            .attr("height", this.viewModel.plotProperties.height);
+      console.log("TooltipTracking start")
+      this.initTooltipTracking();
 
-    console.log("TooltipTracking start")
-    this.initTooltipTracking();
+      console.log("Draw axes start")
+      this.drawXAxis();
+      this.drawYAxis();
 
-    console.log("Draw axes start")
-    this.drawXAxis();
-    this.drawYAxis();
+      console.log("Draw Lines start")
+      this.drawLines();
 
-    console.log("Draw Lines start")
-    this.drawLines();
+      console.log("Draw dots start")
+      this.drawDots();
 
-    console.log("Draw dots start")
-    this.drawDots();
-
-    this.addContextMenu();
-    console.log("Update finished")
+      this.addContextMenu();
+      this.events.renderingFinished(options);
+      console.log("Update finished")
+    } catch (caught_error) {
+      console.error(caught_error)
+      this.events.renderingFailed(options);
+    }
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane
@@ -104,7 +113,7 @@ export class Visual implements IVisual {
       let properties: VisualObjectInstance[] = [];
       properties.push({
         objectName: propertyGroupName,
-        properties: this.settings.returnValues(propertyGroupName, this.viewModel.inputData),
+        properties: this.viewModel.inputSettings.returnValues(propertyGroupName, this.viewModel.inputData),
         selector: null
       });
       return properties;
@@ -233,7 +242,7 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     let yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
-    let sig_figs: number = this.settings.spc.sig_figs.value;
+    let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
 
     if (yAxisProperties.ticks) {
       yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickFormat(
@@ -291,20 +300,20 @@ export class Visual implements IVisual {
     });
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => {
-                      return getAesthetic(d[0], "lines", "colour", this.settings)
+                      return getAesthetic(d[0], "lines", "colour", this.viewModel.inputSettings)
                     })
                     .attr("stroke-width", d => {
-                      return getAesthetic(d[0], "lines", "width", this.settings)
+                      return getAesthetic(d[0], "lines", "width", this.viewModel.inputSettings)
                     })
                     .attr("stroke-dasharray", d => {
-                      return getAesthetic(d[0], "lines", "type", this.settings)
+                      return getAesthetic(d[0], "lines", "type", this.viewModel.inputSettings)
                     });
     this.svgSelections.lineSelection.exit().remove();
     this.plottingMerged.linesMerged.exit().remove();
   }
 
   drawDots(): void {
-    let dot_size: number = this.settings.scatter.size.value;
+    let dot_size: number = this.viewModel.inputSettings.scatter.size.value;
 
     // Update the datapoints if data is refreshed
     this.plottingMerged.dotsMerged = this.svgSelections
@@ -327,7 +336,7 @@ export class Visual implements IVisual {
     // Specify actions to take when clicking on dots
     this.plottingMerged.dotsMerged
         .on("click", (event, d) => {
-          if (this.settings.spc.split_on_click.value) {
+          if (this.viewModel.inputSettings.spc.split_on_click.value) {
             if (this.viewModel.splitIndexes) {
               let xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
               if (xIndex > -1) {
@@ -408,8 +417,8 @@ export class Visual implements IVisual {
     let anyHighlights: boolean = this.viewModel.inputData.anyHighlights;
     let allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
-    let opacityFull: number = this.settings.scatter.opacity.value;
-    let opacityReduced: number = this.settings.scatter.opacity_unselected.value;
+    let opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;
+    let opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected.value;
     let defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                     ? opacityReduced
                                     : opacityFull;
