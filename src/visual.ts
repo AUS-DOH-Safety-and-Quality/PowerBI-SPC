@@ -343,6 +343,7 @@ export class Visual implements IVisual {
             } else {
               this.viewModel.splitIndexes = [d.x]
             }
+            this.updateOptions.type = 2;
             this.update(this.updateOptions)
           } else {
             // Pass identities of selected data back to PowerBI
