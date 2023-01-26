@@ -118,7 +118,6 @@ class plotPropertiesClass {
 
       let yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
 
-
       this.xAxis = {
         lower: xLowerInput ? xLowerInput : 0,
         upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),

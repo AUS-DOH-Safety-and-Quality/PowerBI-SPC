@@ -40,6 +40,7 @@ export class Visual implements IVisual {
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
   private events: IVisualEventService;
+  private refreshingAxis: boolean;
 
   constructor(options: VisualConstructorOptions) {
     console.log("Constructor start")
@@ -81,6 +82,8 @@ export class Visual implements IVisual {
       console.log("svg scale start")
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height);
+
+      console.log(this.viewModel.plotProperties)
 
       console.log("TooltipTracking start")
       this.initTooltipTracking();
@@ -140,14 +143,12 @@ export class Visual implements IVisual {
     if (this.viewModel.plotPoints.length > 0) {
       tooltipMerged.on("mousemove", (event) => {
         let xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
-        let xRange: number[] = this.viewModel.plotPoints.map(d => d.x);
-        let nearestDenominator: number = d3.bisectLeft(
-          xRange,
-          xValue,
-          0,
-          xRange.length - 1
-        );
-        let scaled_x: number = this.viewModel.plotProperties.xScale(nearestDenominator)
+        let xRange: number[] = this.viewModel
+                                    .plotPoints
+                                    .map(d => d.x)
+                                    .map(d => Math.abs(d - xValue));
+        let nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
+        let scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
         let scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
         this.host.tooltipService.show({
@@ -215,12 +216,15 @@ export class Visual implements IVisual {
     // Update padding and re-draw axis if large tick values rendered outside of plot
     let tickBelowPlotAmount: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
     let tickLeftofPlotAmount: number = xAxisCoordinates.left;
-    if (tickBelowPlotAmount > 0 || tickLeftofPlotAmount < 0) {
-      this.viewModel.plotProperties.yAxis.end_padding += tickBelowPlotAmount;
-      this.viewModel.plotProperties.xAxis.start_padding += Math.abs(tickLeftofPlotAmount);
-      this.viewModel.plotProperties.initialiseScale();
-      this.drawXAxis();
+    if ((tickBelowPlotAmount > 0 || tickLeftofPlotAmount < 0)) {
+      if (!(this.refreshingAxis)) {
+        this.refreshingAxis = true
+        this.viewModel.plotProperties.yAxis.end_padding += tickBelowPlotAmount;
+        this.viewModel.plotProperties.initialiseScale();
+        this.drawXAxis();
+      }
     }
+    this.refreshingAxis = false
 
     let bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
 
