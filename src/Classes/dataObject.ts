@@ -7,6 +7,7 @@ import settingsObject from "./settingsObject"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
+import rep from "../Functions/rep"
 
 class dataObject {
   keys: plotKey[];
@@ -22,6 +23,7 @@ class dataObject {
   percentLabels: boolean;
   categories: DataViewCategoryColumn;
   limit_truncs: {lower?: number, upper?: number};
+  alt_target: number[];
 
   constructor(inputView: DataViewCategorical, inputSettings: settingsObject) {
     let numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
@@ -33,8 +35,11 @@ class dataObject {
     let multiplier: number = extractDataColumn<number>(inputView, "multiplier", inputSettings);
     let process_flag_type: string = extractDataColumn<string>(inputView, "process_flag_type", inputSettings);
     let improvement_direction: string = extractDataColumn<string>(inputView, "improvement_direction", inputSettings);
-    let alt_target_vec: number[] = extractDataColumn<number[]>(inputView, "alt_target", inputSettings);
-    console.log(alt_target_vec)
+    let alt_target_vec_tmp: number[] = extractDataColumn<number[]>(inputView, "alt_target", inputSettings);
+    let alt_target_vec: number[] = (alt_target_vec_tmp.length === 1)
+                                    ? rep(alt_target_vec_tmp[0], numerators.length)
+                                    : alt_target_vec_tmp;
+                                    console.log("b")
 
     let valid_ids: number[] = new Array<number>();
     let valid_keys: plotKey[] = new Array<plotKey>();
@@ -54,6 +59,7 @@ class dataObject {
     this.numerators = extractValues(numerators, valid_ids);
     this.denominators = extractValues(denominators, valid_ids);
     this.xbar_sds = extractValues(xbar_sds, valid_ids);
+    this.alt_target = extractValues(alt_target_vec, valid_ids);
     this.chart_type = chart_type;
     this.multiplier = multiplier;
     this.process_flag_type = process_flag_type.toLowerCase();

@@ -11,6 +11,7 @@ import {
   yAxisSettings,
   settingsInData
 } from "./settingsGroups"
+import first from "../Functions/first"
 
 /**
  * This is the core class which controls the initialisation and
@@ -81,7 +82,7 @@ class settingsObject {
         ...previousSetting,
         ...{
           [currentSetting]: this.settingsInData.includes(currentSetting)
-            ? inputData[currentSetting as keyof dataObject]
+            ? (first(inputData[currentSetting as keyof dataObject]) ? first(inputData[currentSetting as keyof dataObject]) : this[settingGroupName][currentSetting].value)
             : this[settingGroupName][currentSetting].value
         }
       }
