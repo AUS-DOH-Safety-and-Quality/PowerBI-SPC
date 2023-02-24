@@ -39,7 +39,6 @@ class dataObject {
     let alt_target_vec: number[] = (alt_target_vec_tmp.length === 1)
                                     ? rep(alt_target_vec_tmp[0], numerators.length)
                                     : alt_target_vec_tmp;
-                                    console.log("b")
 
     let valid_ids: number[] = new Array<number>();
     let valid_keys: plotKey[] = new Array<plotKey>();
