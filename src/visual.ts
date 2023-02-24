@@ -182,7 +182,11 @@ export class Visual implements IVisual {
 
     if (this.viewModel.plotPoints.length > 0) {
       if (xAxisProperties.ticks) {
-        xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale).tickFormat(d => {
+        xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale);
+        if (xAxisProperties.tick_count) {
+          xAxis.ticks(xAxisProperties.tick_count)
+        }
+        xAxis.tickFormat(d => {
           return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
             ? this.viewModel.tickLabels[<number>d].label
             : "";
@@ -248,7 +252,11 @@ export class Visual implements IVisual {
     let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
 
     if (yAxisProperties.ticks) {
-      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickFormat(
+      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale);
+      if (yAxisProperties.tick_count) {
+        yAxis.ticks(yAxisProperties.tick_count)
+      }
+      yAxis.tickFormat(
         d => {
           return this.viewModel.inputData.percentLabels
             ? (<number>d * 100).toFixed(sig_figs) + "%"
