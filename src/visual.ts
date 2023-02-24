@@ -265,7 +265,12 @@ export class Visual implements IVisual {
         .call(yAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? yAxisProperties.colour : "#FFFFFF")
         .attr("transform", "translate(" + this.viewModel.plotProperties.xAxis.start_padding + ",0)")
-        .selectAll("text")
+        .selectAll(".tick text")
+        // Right-align
+        .style("text-anchor", "middle")
+        // Rotate tick labels
+        .attr("dx", "-1em")
+        .attr("transform","rotate(" + yAxisProperties.tick_rotation + ")")
         // Scale font
         .style("font-size", yAxisProperties.tick_size)
         .style("font-family", yAxisProperties.tick_font)
