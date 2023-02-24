@@ -199,7 +199,8 @@ let settingsInData: Record<string, string> = {
   "chart_type" : "spc",
   "multiplier" : "spc",
   "process_flag_type" : "outliers",
-  "improvement_direction" : "outliers"
+  "improvement_direction" : "outliers",
+  "alt_target" : "spc"
 }
 
 export {

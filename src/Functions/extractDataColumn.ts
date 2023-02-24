@@ -42,7 +42,11 @@ function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
       return viewColumn.source.roles ? viewColumn.source.roles[name] : false;
     })[0];
     if (Object.keys(settingsInData).includes(name)) {
-      return (columnRaw ? columnRaw.values[0] : inputSettings[settingsInData[name]][name].value) as T
+      if (name === "alt_target") {
+        return (columnRaw ? columnRaw.values : [inputSettings[settingsInData[name]][name].value]) as T
+      } else {
+        return (columnRaw ? columnRaw.values[0] : inputSettings[settingsInData[name]][name].value) as T
+      }
     } else {
       return (columnRaw ? columnRaw.values : null) as T;
     }
