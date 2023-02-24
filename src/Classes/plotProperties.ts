@@ -17,6 +17,8 @@ type axisProperties = {
   tick_size: string,
   tick_font: string,
   tick_colour: string,
+  tick_rotation: number,
+  tick_count: number,
   label: string,
   label_size: string,
   label_font: string,
@@ -44,7 +46,6 @@ class plotPropertiesClass {
                             .domain([this.yAxis.lower, this.yAxis.upper])
                             .range([this.height - this.yAxis.end_padding,
                                     this.yAxis.start_padding]);
-                                    console.log(this.yAxis)
   }
 
   update(args: { options: VisualUpdateOptions,
@@ -129,14 +130,14 @@ class plotPropertiesClass {
         tick_size: xTickSize,
         tick_font: args.inputSettings.x_axis.xlimit_tick_font.value,
         tick_colour: args.inputSettings.x_axis.xlimit_tick_colour.value,
+        tick_rotation: args.inputSettings.x_axis.xlimit_tick_rotation.value,
+        tick_count: args.inputSettings.x_axis.xlimit_tick_count.value,
         label: args.inputSettings.x_axis.xlimit_label.value,
         label_size: args.inputSettings.x_axis.xlimit_label_size.value,
         label_font: args.inputSettings.x_axis.xlimit_label_font.value,
         label_colour: args.inputSettings.x_axis.xlimit_label_colour.value
       };
 
-      console.log("yLowerInput: ", yLowerInput)
-      console.log("lowerLimit: ", lowerLimit)
       this.yAxis = {
         lower: yLowerInput !== null ? yLowerInput : lowerLimit,
         upper: yUpperInput !== null ? yUpperInput : upperLimit,
@@ -147,6 +148,8 @@ class plotPropertiesClass {
         tick_size: yTickSize,
         tick_font: args.inputSettings.y_axis.ylimit_tick_font.value,
         tick_colour: args.inputSettings.y_axis.ylimit_tick_colour.value,
+        tick_rotation: args.inputSettings.y_axis.ylimit_tick_rotation.value,
+        tick_count: args.inputSettings.y_axis.ylimit_tick_count.value,
         label: args.inputSettings.y_axis.ylimit_label.value,
         label_size: args.inputSettings.y_axis.ylimit_label_size.value,
         label_font: args.inputSettings.y_axis.ylimit_label_font.value,

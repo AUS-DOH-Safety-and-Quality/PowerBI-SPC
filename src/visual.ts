@@ -182,7 +182,11 @@ export class Visual implements IVisual {
 
     if (this.viewModel.plotPoints.length > 0) {
       if (xAxisProperties.ticks) {
-        xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale).tickFormat(d => {
+        xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale);
+        if (xAxisProperties.tick_count) {
+          xAxis.ticks(xAxisProperties.tick_count)
+        }
+        xAxis.tickFormat(d => {
           return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
             ? this.viewModel.tickLabels[<number>d].label
             : "";
@@ -202,11 +206,13 @@ export class Visual implements IVisual {
         .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + axisHeight + ")")
-        .selectAll("text")
-        // Rotate tick labels
-        .attr("transform","rotate(-35)")
+        .selectAll(".tick text")
         // Right-align
-        .style("text-anchor", "end")
+        .style("text-anchor", xAxisProperties.tick_rotation < 0.0 ? "end" : "start")
+        // Rotate tick labels
+        .attr("dx", xAxisProperties.tick_rotation < 0.0 ? "-.8em" : ".8em")
+        .attr("dy", xAxisProperties.tick_rotation < 0.0 ? "-.15em" : ".15em")
+        .attr("transform","rotate(" + xAxisProperties.tick_rotation + ")")
         // Scale font
         .style("font-size", xAxisProperties.tick_size)
         .style("font-family", xAxisProperties.tick_font)
@@ -246,7 +252,11 @@ export class Visual implements IVisual {
     let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
 
     if (yAxisProperties.ticks) {
-      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickFormat(
+      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale);
+      if (yAxisProperties.tick_count) {
+        yAxis.ticks(yAxisProperties.tick_count)
+      }
+      yAxis.tickFormat(
         d => {
           return this.viewModel.inputData.percentLabels
             ? (<number>d * 100).toFixed(sig_figs) + "%"
@@ -263,7 +273,12 @@ export class Visual implements IVisual {
         .call(yAxis)
         .attr("color", this.viewModel.plotPoints.length > 0 ? yAxisProperties.colour : "#FFFFFF")
         .attr("transform", "translate(" + this.viewModel.plotProperties.xAxis.start_padding + ",0)")
-        .selectAll("text")
+        .selectAll(".tick text")
+        // Right-align
+        .style("text-anchor", "middle")
+        // Rotate tick labels
+        .attr("dx", "-1em")
+        .attr("transform","rotate(" + yAxisProperties.tick_rotation + ")")
         // Scale font
         .style("font-size", yAxisProperties.tick_size)
         .style("font-family", yAxisProperties.tick_font)
