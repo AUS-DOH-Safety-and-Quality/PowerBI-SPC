@@ -202,11 +202,13 @@ export class Visual implements IVisual {
         .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + axisHeight + ")")
-        .selectAll("text")
-        // Rotate tick labels
-        .attr("transform","rotate(-35)")
+        .selectAll(".tick text")
         // Right-align
-        .style("text-anchor", "end")
+        .style("text-anchor", xAxisProperties.tick_rotation < 0.0 ? "end" : "start")
+        // Rotate tick labels
+        .attr("dx", xAxisProperties.tick_rotation < 0.0 ? "-.8em" : ".8em")
+        .attr("dy", xAxisProperties.tick_rotation < 0.0 ? "-.15em" : ".15em")
+        .attr("transform","rotate(" + xAxisProperties.tick_rotation + ")")
         // Scale font
         .style("font-size", xAxisProperties.tick_size)
         .style("font-family", xAxisProperties.tick_font)

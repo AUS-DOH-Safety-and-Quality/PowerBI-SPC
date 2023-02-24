@@ -749,6 +749,12 @@
                         }
                     }
                 },
+                "xlimit_tick_rotation": {
+                    "displayName": "Tick Rotation (Degrees)",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "xlimit_label": {
                     "displayName": "Label",
                     "type": {
@@ -960,6 +966,12 @@
                                 "color": true
                             }
                         }
+                    }
+                },
+                "ylimit_tick_rotation": {
+                    "displayName": "Tick Rotation (Degrees)",
+                    "type": {
+                        "numeric": true
                     }
                 },
                 "ylimit_label": {

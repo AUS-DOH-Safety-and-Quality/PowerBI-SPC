@@ -104,6 +104,7 @@ class xAxisSettings {
   xlimit_tick_font: settingsPair<string>;
   xlimit_tick_size: settingsPair<string>;
   xlimit_tick_colour: settingsPair<string>;
+  xlimit_tick_rotation: settingsPair<number>;
   xlimit_label: settingsPair<string>;
   xlimit_label_font: settingsPair<string>;
   xlimit_label_size: settingsPair<string>;
@@ -118,6 +119,7 @@ class xAxisSettings {
     this.xlimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.xlimit_tick_size = new settingsPair("x-small");
     this.xlimit_tick_colour = new settingsPair("#000000");
+    this.xlimit_tick_rotation = new settingsPair(-35);
     this.xlimit_label = new settingsPair<string>(null);
     this.xlimit_label_font = new settingsPair("'Arial', sans-serif");
     this.xlimit_label_size = new settingsPair("x-small");
@@ -133,6 +135,7 @@ class yAxisSettings {
   ylimit_tick_font: settingsPair<string>;
   ylimit_tick_size: settingsPair<string>;
   ylimit_tick_colour: settingsPair<string>;
+  ylimit_tick_rotation: settingsPair<number>;
   ylimit_label: settingsPair<string>;
   ylimit_label_font: settingsPair<string>;
   ylimit_label_size: settingsPair<string>;
@@ -147,6 +150,7 @@ class yAxisSettings {
     this.ylimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.ylimit_tick_size = new settingsPair("x-small");
     this.ylimit_tick_colour = new settingsPair("#000000");
+    this.ylimit_tick_rotation = new settingsPair(0);
     this.ylimit_label = new settingsPair<string>(null);
     this.ylimit_label_font = new settingsPair("'Arial', sans-serif");
     this.ylimit_label_size = new settingsPair("x-small");
