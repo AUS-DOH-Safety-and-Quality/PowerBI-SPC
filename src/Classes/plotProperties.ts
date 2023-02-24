@@ -44,6 +44,7 @@ class plotPropertiesClass {
                             .domain([this.yAxis.lower, this.yAxis.upper])
                             .range([this.height - this.yAxis.end_padding,
                                     this.yAxis.start_padding]);
+                                    console.log(this.yAxis)
   }
 
   update(args: { options: VisualUpdateOptions,
@@ -119,8 +120,8 @@ class plotPropertiesClass {
       let yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
 
       this.xAxis = {
-        lower: xLowerInput ? xLowerInput : 0,
-        upper: xUpperInput ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
+        lower: xLowerInput !== null ? xLowerInput : 0,
+        upper: xUpperInput !== null ? xUpperInput : d3.max(args.calculatedLimits.keys.map(d => d.x)),
         start_padding: args.inputSettings.canvas.left_padding.value + fontSizeMap[xTickSize] + xLabelPadding,
         end_padding: args.inputSettings.canvas.right_padding.value,
         colour: args.inputSettings.x_axis.xlimit_colour.value,
@@ -134,9 +135,11 @@ class plotPropertiesClass {
         label_colour: args.inputSettings.x_axis.xlimit_label_colour.value
       };
 
+      console.log("yLowerInput: ", yLowerInput)
+      console.log("lowerLimit: ", lowerLimit)
       this.yAxis = {
-        lower: yLowerInput ? yLowerInput : lowerLimit,
-        upper: yUpperInput ? yUpperInput : upperLimit,
+        lower: yLowerInput !== null ? yLowerInput : lowerLimit,
+        upper: yUpperInput !== null ? yUpperInput : upperLimit,
         start_padding: args.inputSettings.canvas.upper_padding.value,
         end_padding: args.inputSettings.canvas.lower_padding.value + fontSizeMap[yTickSize] + yLabelPadding,
         colour: args.inputSettings.y_axis.ylimit_colour.value,

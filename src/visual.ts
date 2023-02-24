@@ -24,6 +24,7 @@ import svgObjectClass from "./Classes/svgObjectClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotProperties"
 import getAesthetic from "./Functions/getAesthetic"
+import between from "./Functions/between";
 
 type SelectionAny = d3.Selection<any, any, any, any>;
 type mergedSVGObjects = { dotsMerged: SelectionAny,
@@ -295,7 +296,7 @@ export class Visual implements IVisual {
       return d3.line<lineData>()
                 .x(d => this.viewModel.plotProperties.xScale(d.x))
                 .y(d => this.viewModel.plotProperties.yScale(d.line_value))
-                .defined(function(d) {return d.line_value !== null})
+                .defined(d => d.line_value !== null && between(d.line_value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper))
                 (d[1])
     });
     this.plottingMerged.linesMerged.attr("fill", "none")
@@ -326,11 +327,11 @@ export class Visual implements IVisual {
 
     this.plottingMerged
         .dotsMerged
-        .filter(d => (d.value != null))
+        .filter(d =>  d.value !== null)
         .attr("cy", d => this.viewModel.plotProperties.yScale(d.value))
         .attr("cx", d => this.viewModel.plotProperties.xScale(d.x))
         .attr("r", dot_size)
-        .style("fill", d => d.colour);
+        .style("fill", d => between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.colour : "#FFFFFF");
 
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots

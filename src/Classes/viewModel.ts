@@ -42,7 +42,7 @@ class viewModelObject {
       }
       if (this.calculatedLimits.two_in_three[i] !== "none") {
         dot_colour = getAesthetic(this.calculatedLimits.two_in_three[i], "outliers",
-                                  "twointhree_colour", this.inputSettings) as string;
+                                  "two_in_three_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.astpoint[i] !== "none") {
         dot_colour = getAesthetic(this.calculatedLimits.astpoint[i], "outliers",
