@@ -33,6 +33,8 @@ class dataObject {
     let multiplier: number = extractDataColumn<number>(inputView, "multiplier", inputSettings);
     let process_flag_type: string = extractDataColumn<string>(inputView, "process_flag_type", inputSettings);
     let improvement_direction: string = extractDataColumn<string>(inputView, "improvement_direction", inputSettings);
+    let alt_target_vec: number[] = extractDataColumn<number[]>(inputView, "alt_target", inputSettings);
+    console.log(alt_target_vec)
 
     let valid_ids: number[] = new Array<number>();
     let valid_keys: plotKey[] = new Array<plotKey>();

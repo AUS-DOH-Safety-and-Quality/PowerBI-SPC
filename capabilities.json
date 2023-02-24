@@ -50,6 +50,11 @@
             "displayName": "Optional: Improvement Direction",
             "name": "improvement_direction",
             "kind": "Measure"
+        },
+        {
+            "displayName": "Optional: Additional Target",
+            "name": "alt_target",
+            "kind": "Measure"
         }
     ],
     "objects": {
