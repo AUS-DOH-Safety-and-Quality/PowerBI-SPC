@@ -38,7 +38,7 @@
         },
         {
             "displayName": "Optional: Multiplier",
-            "name": "chart_multiplier",
+            "name": "multiplier",
             "kind": "Measure"
         },
         {
@@ -1167,7 +1167,7 @@
                         },
                         {
                             "for": {
-                                "in": "chart_multiplier"
+                                "in": "multiplier"
                             }
                         },
                         {
