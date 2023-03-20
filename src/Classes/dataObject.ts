@@ -60,13 +60,13 @@ class dataObject {
     this.xbar_sds = extractValues(xbar_sds, valid_ids);
     this.alt_target = extractValues(alt_target_vec, valid_ids);
     this.chart_type = chart_type;
-    this.multiplier = multiplier;
     this.process_flag_type = process_flag_type.toLowerCase();
     this.improvement_direction = improvement_direction.toLowerCase();
     this.highlights = inputView.values[0].highlights ? extractValues(inputView.values[0].highlights, valid_ids) : inputView.values[0].highlights;
     this.anyHighlights = this.highlights ? true : false
     this.categories = inputView.categories[0];
     this.percentLabels = ["p", "pp"].includes(chart_type) && (multiplier === 1 || multiplier === 100);
+    this.multiplier = this.percentLabels ? 1 : multiplier;
     this.limit_truncs = {
       lower: inputSettings.spc.ll_truncate.value,
       upper: inputSettings.spc.ul_truncate.value
