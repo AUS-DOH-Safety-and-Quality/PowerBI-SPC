@@ -75,6 +75,7 @@ export class Visual implements IVisual {
       console.log("viewModel start")
       this.viewModel.update({ options: options,
                               host: this.host });
+      console.log(this.viewModel)
 
       console.log("svgSelections start")
       this.svgSelections.update({ svgObjects: this.svgObjects,
@@ -141,8 +142,9 @@ export class Visual implements IVisual {
     tooltipMerged.style("fill","transparent")
                  .attr("width", this.viewModel.plotProperties.width)
                  .attr("height", this.viewModel.plotProperties.height);
-    if (this.viewModel.plotPoints.length > 0) {
-      tooltipMerged.on("mousemove", (event) => {
+
+    tooltipMerged.on("mousemove", (event) => {
+      if (this.viewModel.plotProperties.displayPlot) {
         let xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
         let xRange: number[] = this.viewModel
                                     .plotPoints
@@ -159,19 +161,18 @@ export class Visual implements IVisual {
           isTouchEvent: false
         });
         xAxisLine.style("fill-opacity", 1).attr("transform", "translate(" + scaled_x + ",0)");
+      }
     });
 
     tooltipMerged.on("mouseleave", () => {
-      this.host.tooltipService.hide({
-          immediately: true,
-          isTouchEvent: false
-      });
-      xAxisLine.style("fill-opacity", 0);
+      if (this.viewModel.plotProperties.displayPlot) {
+        this.host.tooltipService.hide({
+            immediately: true,
+            isTouchEvent: false
+        });
+        xAxisLine.style("fill-opacity", 0);
+      }
     });
-    } else {
-      tooltipMerged.on("mousemove", () => {});
-      tooltipMerged.on("mouseleave", () => {});
-    }
     xAxisLine.exit().remove()
     tooltipMerged.exit().remove()
   }
@@ -180,22 +181,20 @@ export class Visual implements IVisual {
     let xAxisProperties: axisProperties = this.viewModel.plotProperties.xAxis;
     let xAxis: d3.Axis<d3.NumberValue>;
 
-    if (this.viewModel.plotPoints.length > 0) {
-      if (xAxisProperties.ticks) {
-        xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale);
-        if (xAxisProperties.tick_count) {
-          xAxis.ticks(xAxisProperties.tick_count)
-        }
+    if (xAxisProperties.ticks) {
+      xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale);
+      if (xAxisProperties.tick_count) {
+        xAxis.ticks(xAxisProperties.tick_count)
+      }
+      if (this.viewModel.tickLabels) {
         xAxis.tickFormat(d => {
           return this.viewModel.tickLabels.map(d => d.x).includes(<number>d)
             ? this.viewModel.tickLabels[<number>d].label
             : "";
         })
-      } else {
-        xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale).tickValues([]);
       }
     } else {
-      xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale);
+      xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale).tickValues([]);
     }
 
     let axisHeight: number = this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.end_padding;
@@ -203,7 +202,7 @@ export class Visual implements IVisual {
     this.svgObjects
         .xAxisGroup
         .call(xAxis)
-        .attr("color", this.viewModel.plotPoints.length > 0 ? xAxisProperties.colour : "#FFFFFF")
+        .attr("color", this.viewModel.plotProperties.displayPlot ? xAxisProperties.colour : "#FFFFFF")
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + axisHeight + ")")
         .selectAll(".tick text")
@@ -216,7 +215,7 @@ export class Visual implements IVisual {
         // Scale font
         .style("font-size", xAxisProperties.tick_size)
         .style("font-family", xAxisProperties.tick_font)
-        .style("fill", xAxisProperties.tick_colour);
+        .style("fill", this.viewModel.plotProperties.displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
     let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
 
@@ -224,7 +223,7 @@ export class Visual implements IVisual {
     let tickBelowPlotAmount: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
     let tickLeftofPlotAmount: number = xAxisCoordinates.left;
     if ((tickBelowPlotAmount > 0 || tickLeftofPlotAmount < 0)) {
-      if (!(this.refreshingAxis)) {
+      if (!this.refreshingAxis) {
         this.refreshingAxis = true
         this.viewModel.plotProperties.yAxis.end_padding += tickBelowPlotAmount;
         this.viewModel.plotProperties.initialiseScale();
@@ -243,7 +242,7 @@ export class Visual implements IVisual {
         .text(xAxisProperties.label)
         .style("font-size", xAxisProperties.label_size)
         .style("font-family", xAxisProperties.label_font)
-        .style("fill", xAxisProperties.label_colour);
+        .style("fill", this.viewModel.plotProperties.displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
   }
 
   drawYAxis(): void {
@@ -251,27 +250,31 @@ export class Visual implements IVisual {
     let yAxis: d3.Axis<d3.NumberValue>;
     let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
 
-    if (yAxisProperties.ticks) {
-      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale);
-      if (yAxisProperties.tick_count) {
-        yAxis.ticks(yAxisProperties.tick_count)
-      }
-      yAxis.tickFormat(
-        d => {
-          return this.viewModel.inputData.percentLabels
-            ? (<number>d * (this.viewModel.inputData.multiplier === 100 ? 1 : (this.viewModel.inputData.multiplier === 1 ? 100 : this.viewModel.inputData.multiplier))).toFixed(sig_figs) + "%"
-            : (<number>d).toFixed(sig_figs);
+    if (this.viewModel.plotProperties.displayPlot) {
+      if (yAxisProperties.ticks) {
+        yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale);
+        if (yAxisProperties.tick_count) {
+          yAxis.ticks(yAxisProperties.tick_count)
         }
-      );
+        yAxis.tickFormat(
+          d => {
+            return this.viewModel.inputData.percentLabels
+              ? (<number>d * (this.viewModel.inputData.multiplier === 100 ? 1 : (this.viewModel.inputData.multiplier === 1 ? 100 : this.viewModel.inputData.multiplier))).toFixed(sig_figs) + "%"
+              : (<number>d).toFixed(sig_figs);
+          }
+        );
+      } else {
+        yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickValues([]);
+      }
     } else {
-      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale).tickValues([]);
+      yAxis = d3.axisLeft(this.viewModel.plotProperties.yScale)
     }
 
     // Draw axes on plot
     this.svgObjects
         .yAxisGroup
         .call(yAxis)
-        .attr("color", this.viewModel.plotPoints.length > 0 ? yAxisProperties.colour : "#FFFFFF")
+        .attr("color", this.viewModel.plotProperties.displayPlot ? yAxisProperties.colour : "#FFFFFF")
         .attr("transform", "translate(" + this.viewModel.plotProperties.xAxis.start_padding + ",0)")
         .selectAll(".tick text")
         // Right-align
@@ -282,7 +285,7 @@ export class Visual implements IVisual {
         // Scale font
         .style("font-size", yAxisProperties.tick_size)
         .style("font-family", yAxisProperties.tick_font)
-        .style("fill", yAxisProperties.tick_colour);
+        .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
     let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect() as DOMRect;
     let leftMidpoint: number = yAxisCoordinates.x * 0.7;
@@ -296,7 +299,7 @@ export class Visual implements IVisual {
         .style("text-anchor", "middle")
         .style("font-size", yAxisProperties.label_size)
         .style("font-family", yAxisProperties.label_font)
-        .style("fill", yAxisProperties.label_colour);
+        .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
   }
 
   drawLines(): void {
@@ -316,7 +319,9 @@ export class Visual implements IVisual {
     });
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => {
-                      return getAesthetic(d[0], "lines", "colour", this.viewModel.inputSettings)
+                      return this.viewModel.plotProperties.displayPlot
+                              ? getAesthetic(d[0], "lines", "colour", this.viewModel.inputSettings)
+                              : "#FFFFFF"
                     })
                     .attr("stroke-width", d => {
                       return getAesthetic(d[0], "lines", "width", this.viewModel.inputSettings)
@@ -346,7 +351,13 @@ export class Visual implements IVisual {
         .attr("cy", d => this.viewModel.plotProperties.yScale(d.value))
         .attr("cx", d => this.viewModel.plotProperties.xScale(d.x))
         .attr("r", dot_size)
-        .style("fill", d => between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.colour : "#FFFFFF");
+        .style("fill", d => {
+          if (this.viewModel.plotProperties.displayPlot) {
+            return between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.colour : "#FFFFFF";
+          } else {
+            return "#FFFFFF";
+          }
+        });
 
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
@@ -377,7 +388,7 @@ export class Visual implements IVisual {
           }
           });
 
-    if (this.viewModel.plotPoints.length > 0) {
+    if (this.viewModel.plotProperties.displayPlot) {
           // Display tooltip content on mouseover
       this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
         // Get screen coordinates of mouse pointer, tooltip will
@@ -431,7 +442,7 @@ export class Visual implements IVisual {
     if (!this.plottingMerged.dotsMerged || !this.plottingMerged.linesMerged) {
       return;
     }
-    let anyHighlights: boolean = this.viewModel.inputData.anyHighlights;
+    let anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
     let allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
     let opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;

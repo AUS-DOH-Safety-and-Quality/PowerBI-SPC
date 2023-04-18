@@ -91,48 +91,43 @@ class viewModelObject {
     this.groupedLines = d3.groups(formattedLines, d => d.group);
   }
 
-  update(args: { options: VisualUpdateOptions;
-                  host: IVisualHost; }) {
+  update(args: { options: VisualUpdateOptions; host: IVisualHost; }) {
+    if (this.firstRun) {
+      this.inputSettings = new settingsObject();
+    }
+    this.inputSettings.update(args.options.dataViews[0].metadata.objects);
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(args.options.dataViews)) {
       this.inputData = <dataObject>null;
-      this.inputSettings = <settingsObject>null;
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
-      this.plotProperties = <plotPropertiesClass>null;
-      return;
+    } else {
+      let dv: powerbi.DataView[] = args.options.dataViews;
+
+      // Only re-construct data and re-calculate limits if they have changed
+      if (args.options.type === 2 || this.firstRun) {
+
+        // Extract input data, filter out invalid values, and identify any settings passed as data
+        this.inputData = new dataObject(dv[0].categorical, this.inputSettings)
+
+
+        // Initialise a new chartObject class which can be used to calculate the control limits
+        this.chartBase = new chartObject({ inputData: this.inputData,
+                                            inputSettings: this.inputSettings,
+                                            splitIndexes: this.splitIndexes ? this.splitIndexes : new Array<number>() });
+
+        // Use initialised chartObject to calculate control limits
+        this.calculatedLimits = this.chartBase.getLimits();
+        console.log("calculatedLimits: ", this.calculatedLimits)
+
+        // Structure the data and calculated limits to the format needed for plotting
+        this.initialisePlotData(args.host);
+        this.initialiseGroupedLines();
+      }
     }
-
-    let dv: powerbi.DataView[] = args.options.dataViews;
-
-    if (this.firstRun) {
-      this.inputSettings = new settingsObject();
-    }
-    // Only re-construct data and settings objects (and re-calculate limits) if they have changed
-    if (args.options.type === 2 || this.firstRun) {
-      this.inputSettings.update(args.options.dataViews[0].metadata.objects);
-
-      // Extract input data, filter out invalid values, and identify any settings passed as data
-      this.inputData = new dataObject(dv[0].categorical, this.inputSettings)
-
-
-      // Initialise a new chartObject class which can be used to calculate the control limits
-      this.chartBase = new chartObject({ inputData: this.inputData,
-                                          inputSettings: this.inputSettings,
-                                          splitIndexes: this.splitIndexes ? this.splitIndexes : new Array<number>() });
-
-      // Use initialised chartObject to calculate control limits
-      this.calculatedLimits = this.chartBase.getLimits();
-      console.log("calculatedLimits: ", this.calculatedLimits)
-
-      // Structure the data and calculated limits to the format needed for plotting
-      this.initialisePlotData(args.host);
-      this.initialiseGroupedLines();
-    }
-
     if (this.firstRun) {
       this.plotProperties = new plotPropertiesClass();
       this.plotProperties.firstRun = true;
@@ -145,6 +140,17 @@ class viewModelObject {
       inputSettings: this.inputSettings
     })
     this.firstRun = false;
+  }
+
+  constructor() {
+    this.inputData = <dataObject>null;
+    this.inputSettings = <settingsObject>null;
+    this.chartBase = null;
+    this.calculatedLimits = null;
+    this.plotPoints = <plotData[]>null;
+    this.groupedLines = <[string, lineData[]][]>null;
+    this.plotProperties = <plotPropertiesClass>null;
+    this.firstRun = true
   }
 }
 
