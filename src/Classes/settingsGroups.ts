@@ -13,6 +13,10 @@
   }
 }
 
+type SettingsBaseTypedT<T extends object> = {
+  [K in keyof T]: T[K] extends settingsPair<any> ? T[K]['default'] : T[K];
+}
+
 class canvasSettings {
   lower_padding: settingsPair<number>;
   upper_padding: settingsPair<number>;
@@ -203,13 +207,10 @@ class outliersSettings {
   };
 }
 
-let settingsInData: Record<string, string> = {
-  "chart_type" : "spc",
-  "multiplier" : "spc",
-  "process_flag_type" : "outliers",
-  "improvement_direction" : "outliers",
-  "alt_target" : "spc"
-}
+type AllSettingsTypes = SettingsBaseTypedT<canvasSettings> | SettingsBaseTypedT<spcSettings> |
+                        SettingsBaseTypedT<outliersSettings> | SettingsBaseTypedT<scatterSettings> |
+                        SettingsBaseTypedT<lineSettings> | SettingsBaseTypedT<xAxisSettings> |
+                        SettingsBaseTypedT<yAxisSettings>;
 
 export {
   canvasSettings,
@@ -219,5 +220,6 @@ export {
   xAxisSettings,
   yAxisSettings,
   outliersSettings,
-  settingsInData
+  SettingsBaseTypedT,
+  AllSettingsTypes
 }

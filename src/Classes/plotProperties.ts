@@ -72,7 +72,7 @@ class plotPropertiesClass {
       xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.calculatedLimits.keys.map(d => d.x))
 
       let limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
-      let chart_type: string = args.inputData.chart_type;
+      let chart_type: string = args.inputSettings.spc.chart_type.value;
       let values: number[] = args.calculatedLimits.values;
       let ul99: number[] = args.calculatedLimits.ul99;
       let ll99: number[] = args.calculatedLimits.ll99;
@@ -83,7 +83,7 @@ class plotPropertiesClass {
 
       let upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       let lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
-      let multiplier: number = args.inputData.multiplier;
+      let multiplier: number = args.inputSettings.spc.multiplier.value;
 
       yUpperLimit = yUpperLimit !== null ? yUpperLimit :
         ["p", "pp"].includes(chart_type) && multiplier == 1

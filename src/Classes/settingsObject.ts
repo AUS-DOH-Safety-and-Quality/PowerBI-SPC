@@ -1,6 +1,10 @@
-import powerbi from "powerbi-visuals-api"
-import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
-import dataObject from "./dataObject";
+import powerbi from "powerbi-visuals-api";
+import DataViewPropertyValue = powerbi.DataViewPropertyValue
+import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
+import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
+import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
+import extractSetting from "../Functions/extractSetting";
+import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import {
   canvasSettings,
   spcSettings,
@@ -9,9 +13,8 @@ import {
   lineSettings,
   xAxisSettings,
   yAxisSettings,
-  settingsInData
+  AllSettingsTypes
 } from "./settingsGroups"
-import first from "../Functions/first"
 
 /**
  * This is the core class which controls the initialisation and
@@ -29,9 +32,6 @@ class settingsObject {
   lines: lineSettings;
   x_axis: xAxisSettings;
   y_axis: yAxisSettings;
-  // Specify the names of settings which can be provided as data
-  // so that the correct value can be rendered to the settings pane
-  settingsInData: string[];
 
   /**
    * Function to read the values from the settings pane and update the
@@ -39,25 +39,23 @@ class settingsObject {
    *
    * @param inputObjects
    */
-  update(inputObjects: powerbi.DataViewObjects): void {
+  update(inputView: powerbi.DataView): void {
+    let inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
     // Get the names of all classes in settingsObject which have values to be updated
-    let allSettingGroups: string[] = Object.getOwnPropertyNames(this)
-                                           .filter(groupName => !(["settingsInData"].includes(groupName)));
+    let allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
+      let condFormatting: AllSettingsTypes = inputView.categorical.categories
+                            ? extractConditionalFormatting(inputView.categorical, settingGroup, this)[0]
+                            : null;
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
       let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
-        type MethodTypes = Pick<typeof dataViewObjects, 'getFillColor' | 'getValue'>;
-        let methodName: string = settingName.includes("colour") ? "getFillColor" : "getValue";
-        this[settingGroup][settingName].value = dataViewObjects[methodName as keyof MethodTypes](
-          inputObjects, {
-            objectName: settingGroup,
-            propertyName: settingName
-          },
-          this[settingGroup][settingName].default
-        )
+        this[settingGroup][settingName].value
+          = condFormatting ? condFormatting[settingName as keyof AllSettingsTypes]
+                            : extractSetting(inputObjects, settingGroup, settingName,
+                                            this[settingGroup][settingName].default)
       })
     })
   }
@@ -70,23 +68,21 @@ class settingsObject {
    * @param inputData
    * @returns An object where each element is the value for a given setting in the named group
    */
-  returnValues(settingGroupName: string, inputData: dataObject) {
+  createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumeration {
     let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
-    let firstSettingObject = {
-      [settingNames[0]]: this.settingsInData.includes(settingNames[0])
-        ? inputData[settingNames[0] as keyof dataObject]
-        : this[settingGroupName][settingNames[0]].value
-    };
-    return settingNames.reduce((previousSetting, currentSetting) => {
-      return {
-        ...previousSetting,
-        ...{
-          [currentSetting]: this.settingsInData.includes(currentSetting)
-            ? (first(inputData[currentSetting as keyof dataObject]) ? first(inputData[currentSetting as keyof dataObject]) : this[settingGroupName][currentSetting].value)
-            : this[settingGroupName][currentSetting].value
-        }
-      }
-    }, firstSettingObject);
+
+    let properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
+      settingNames.map(settingName => {
+        let settingValue: DataViewPropertyValue = this[settingGroupName][settingName].value
+        return [settingName, settingValue]
+      })
+    )
+    return [{
+      objectName: settingGroupName,
+      properties: properties,
+      propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+      selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
+    }];
   }
 
   constructor() {
@@ -97,7 +93,6 @@ class settingsObject {
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();
     this.y_axis = new yAxisSettings();
-    this.settingsInData = Object.keys(settingsInData);
   }
 }
 

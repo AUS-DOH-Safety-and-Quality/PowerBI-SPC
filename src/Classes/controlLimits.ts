@@ -5,7 +5,6 @@ import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
 import settingsObject from "./settingsObject";
-import dataObject from "./dataObject";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 
 type controlLimitsArgs = {
@@ -40,10 +39,10 @@ class controlLimits {
   two_in_three: string[];
   shift: string[];
 
-  flagOutliers(inputData: dataObject, inputSettings: settingsObject) {
-    let process_flag_type: string = inputData.process_flag_type;
-    let improvement_direction: string = inputData.improvement_direction;
-    if (inputData.chart_type !== "run") {
+  flagOutliers(inputSettings: settingsObject) {
+    let process_flag_type: string = inputSettings.outliers.process_flag_type.value;
+    let improvement_direction: string = inputSettings.outliers.improvement_direction.value;
+    if (inputSettings.spc.chart_type.value !== "run") {
       if (inputSettings.outliers.astronomical.value) {
         this.astpoint = checkFlagDirection(astronomical(this.values, this.ll99, this.ul99),
                                             { process_flag_type, improvement_direction });

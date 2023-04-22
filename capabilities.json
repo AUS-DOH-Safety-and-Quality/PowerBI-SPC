@@ -30,31 +30,6 @@
             "displayName": "SD (for xbar)",
             "name": "xbar_sds",
             "kind": "Measure"
-        },
-        {
-            "displayName": "Optional: Chart Type",
-            "name": "chart_type",
-            "kind": "Measure"
-        },
-        {
-            "displayName": "Optional: Multiplier",
-            "name": "multiplier",
-            "kind": "Measure"
-        },
-        {
-            "displayName": "Optional: Change to Flag",
-            "name": "process_flag_type",
-            "kind": "Measure"
-        },
-        {
-            "displayName": "Optional: Improvement Direction",
-            "name": "improvement_direction",
-            "kind": "Measure"
-        },
-        {
-            "displayName": "Optional: Additional Target",
-            "name": "alt_target",
-            "kind": "Measure"
         }
     ],
     "objects": {
@@ -1105,38 +1080,15 @@
         {
             "conditions": [
                 {
-                    "key": {
-                        "max": 5
-                    },
-                    "numerators": {
-                        "max": 1
-                    },
-                    "denominators": {
-                        "max": 1
-                    },
-                    "groups": {
-                        "max": 1
-                    },
-                    "chart_type": {
-                        "max": 1
-                    },
-                    "multiplier": {
-                        "max": 1
-                    },
-                    "outlier_direction": {
-                        "max": 1
-                    }
+                    "key": { "max": 5 },
+                    "numerators": { "max": 1 },
+                    "denominators": { "max": 1 },
+                    "xbar_sds": { "max": 1 }
                 }
             ],
             "categorical": {
                 "categories": {
-                    "select": [
-                        {
-                            "for": {
-                                "in": "key"
-                            }
-                        }
-                    ],
+                    "for": { "in": "key" },
                     "dataReductionAlgorithm": {
                       "window": {
                           "count": 30000
@@ -1145,36 +1097,9 @@
                 },
                 "values": {
                     "select": [
-                        {
-                            "for": {
-                                "in": "numerators"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "denominators"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "xbar_sds"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "chart_type"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "multiplier"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "outlier_direction"
-                            }
-                        }
+                        { "bind": { "to": "numerators" } },
+                        { "bind": { "to": "denominators" } },
+                        { "bind": { "to": "xbar_sds" } }
                     ]
                 }
             }

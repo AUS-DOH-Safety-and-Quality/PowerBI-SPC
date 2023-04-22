@@ -110,14 +110,8 @@ export class Visual implements IVisual {
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane
-  public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions):
-    VisualObjectInstanceEnumeration {
-      let propertyGroupName: string = options.objectName;
-      return [{
-        objectName: propertyGroupName,
-        properties: this.viewModel.inputSettings.returnValues(propertyGroupName, this.viewModel.inputData),
-        selector: null
-      }];
+  public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
+    return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
   }
 
   initTooltipTracking(): void {
@@ -249,6 +243,7 @@ export class Visual implements IVisual {
     let yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
     let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
+    let multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
 
     if (this.viewModel.plotProperties.displayPlot) {
       if (yAxisProperties.ticks) {
@@ -259,7 +254,7 @@ export class Visual implements IVisual {
         yAxis.tickFormat(
           d => {
             return this.viewModel.inputData.percentLabels
-              ? (<number>d * (this.viewModel.inputData.multiplier === 100 ? 1 : (this.viewModel.inputData.multiplier === 1 ? 100 : this.viewModel.inputData.multiplier))).toFixed(sig_figs) + "%"
+              ? (<number>d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
               : (<number>d).toFixed(sig_figs);
           }
         );
@@ -334,8 +329,6 @@ export class Visual implements IVisual {
   }
 
   drawDots(): void {
-    let dot_size: number = this.viewModel.inputSettings.scatter.size.value;
-
     // Update the datapoints if data is refreshed
     this.plottingMerged.dotsMerged = this.svgSelections
                                           .dotSelection
@@ -347,13 +340,13 @@ export class Visual implements IVisual {
 
     this.plottingMerged
         .dotsMerged
-        .filter(d =>  d.value !== null)
-        .attr("cy", d => this.viewModel.plotProperties.yScale(d.value))
-        .attr("cx", d => this.viewModel.plotProperties.xScale(d.x))
-        .attr("r", dot_size)
-        .style("fill", d => {
+        .filter((d: plotData) => d.value !== null)
+        .attr("cy", (d: plotData) => this.viewModel.plotProperties.yScale(d.value))
+        .attr("cx", (d: plotData) => this.viewModel.plotProperties.xScale(d.x))
+        .attr("r", (d: plotData) => d.aesthetics.size)
+        .style("fill", (d: plotData) => {
           if (this.viewModel.plotProperties.displayPlot) {
-            return between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.colour : "#FFFFFF";
+            return between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.aesthetics.colour : "#FFFFFF";
           } else {
             return "#FFFFFF";
           }
@@ -388,9 +381,10 @@ export class Visual implements IVisual {
           }
           });
 
-    if (this.viewModel.plotProperties.displayPlot) {
-          // Display tooltip content on mouseover
-      this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
+
+    // Display tooltip content on mouseover
+    this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
+      if (this.viewModel.plotProperties.displayPlot) {
         // Get screen coordinates of mouse pointer, tooltip will
         //   be displayed at these coordinates
         let x = event.pageX;
@@ -402,19 +396,17 @@ export class Visual implements IVisual {
             coordinates: [x, y],
             isTouchEvent: false
         });
-      })
-      // Hide tooltip when mouse moves out of dot
-      .on("mouseout", () => {
+      }
+    })
+    // Hide tooltip when mouse moves out of dot
+    .on("mouseout", () => {
+      if (this.viewModel.plotProperties.displayPlot) {
         this.host.tooltipService.hide({
             immediately: true,
             isTouchEvent: false
         })
-      });
-    } else {
-      this.plottingMerged.dotsMerged.on("mousemove", () => {})
-                                    .on("mouseleave", () => {});
-    }
-
+      }
+    });
     this.updateHighlighting();
 
     this.svgSelections.dotSelection.exit().remove();
@@ -459,7 +451,7 @@ export class Visual implements IVisual {
           return currentSelectionId.includes(dot.identity);
         });
         let currentPointHighlighted: boolean = dot.highlighted;
-        return (currentPointSelected || currentPointHighlighted) ? opacityFull : opacityReduced;
+        return (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
       })
     }
   }
