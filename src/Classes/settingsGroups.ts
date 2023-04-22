@@ -13,6 +13,10 @@
   }
 }
 
+type SettingsBaseTypedT<T extends object> = {
+  [K in keyof T]: T[K] extends settingsPair<any> ? T[K]['default'] : T[K];
+}
+
 class canvasSettings {
   lower_padding: settingsPair<number>;
   upper_padding: settingsPair<number>;
@@ -211,6 +215,11 @@ let settingsInData: Record<string, string> = {
   "alt_target" : "spc"
 }
 
+type AllSettingsTypes = SettingsBaseTypedT<canvasSettings> | SettingsBaseTypedT<spcSettings> |
+                        SettingsBaseTypedT<outliersSettings> | SettingsBaseTypedT<scatterSettings> |
+                        SettingsBaseTypedT<lineSettings> | SettingsBaseTypedT<xAxisSettings> |
+                        SettingsBaseTypedT<yAxisSettings>;
+
 export {
   canvasSettings,
   spcSettings,
@@ -219,5 +228,7 @@ export {
   xAxisSettings,
   yAxisSettings,
   outliersSettings,
-  settingsInData
+  settingsInData,
+  SettingsBaseTypedT,
+  AllSettingsTypes
 }

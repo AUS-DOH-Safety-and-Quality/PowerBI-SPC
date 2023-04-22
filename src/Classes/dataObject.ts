@@ -8,6 +8,8 @@ import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
 import rep from "../Functions/rep"
+import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
+import { SettingsBaseTypedT, scatterSettings } from "../Classes/settingsGroups";
 
 class dataObject {
   keys: plotKey[];
@@ -24,12 +26,14 @@ class dataObject {
   categories: DataViewCategoryColumn;
   limit_truncs: {lower?: number, upper?: number};
   alt_target: number[];
+  scatter_formatting: SettingsBaseTypedT<scatterSettings>[];
 
   constructor(inputView: DataViewCategorical, inputSettings: settingsObject) {
     let numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
     let denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
     let xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
     let keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
+    let scatter_cond = extractConditionalFormatting<SettingsBaseTypedT<scatterSettings>>(inputView, "scatter", inputSettings)
 
     let chart_type: string = extractDataColumn<string>(inputView, "chart_type", inputSettings);
     let multiplier: number = extractDataColumn<number>(inputView, "multiplier", inputSettings);
@@ -71,6 +75,7 @@ class dataObject {
       lower: inputSettings.spc.ll_truncate.value,
       upper: inputSettings.spc.ul_truncate.value
     }
+    this.scatter_formatting = extractValues(scatter_cond, valid_ids)
   }
 }
 

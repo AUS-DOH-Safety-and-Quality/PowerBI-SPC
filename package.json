@@ -13,7 +13,7 @@
     "core-js": "3.27.2",
     "d3": "^7.8.2",
     "minimist": "^1.2.7",
-    "powerbi-visuals-api": "~3.2.0",
+    "powerbi-visuals-api": "~3.6.0",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1",
     "regenerator-runtime": "^0.13.11"
   },

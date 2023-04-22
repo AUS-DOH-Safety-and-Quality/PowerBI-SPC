@@ -12,6 +12,7 @@ import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotProperties"
 import getAesthetic from "../Functions/getAesthetic"
+import { SettingsBaseTypedT, scatterSettings } from "../Classes/settingsGroups";
 
 class viewModelObject {
   inputData: dataObject;
@@ -31,28 +32,28 @@ class viewModelObject {
 
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       let index: number = this.calculatedLimits.keys[i].x;
-      let dot_colour: string = this.inputSettings.scatter.colour.value;
+      let aesthetics: SettingsBaseTypedT<scatterSettings> = this.inputData.scatter_formatting[i]
       if (this.calculatedLimits.shift[i] !== "none") {
-        dot_colour = getAesthetic(this.calculatedLimits.shift[i], "outliers",
+        aesthetics.colour = getAesthetic(this.calculatedLimits.shift[i], "outliers",
                                   "shift_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.trend[i] !== "none") {
-        dot_colour = getAesthetic(this.calculatedLimits.trend[i], "outliers",
+        aesthetics.colour = getAesthetic(this.calculatedLimits.trend[i], "outliers",
                                   "trend_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.two_in_three[i] !== "none") {
-        dot_colour = getAesthetic(this.calculatedLimits.two_in_three[i], "outliers",
+        aesthetics.colour = getAesthetic(this.calculatedLimits.two_in_three[i], "outliers",
                                   "two_in_three_colour", this.inputSettings) as string;
       }
       if (this.calculatedLimits.astpoint[i] !== "none") {
-        dot_colour = getAesthetic(this.calculatedLimits.astpoint[i], "outliers",
+        aesthetics.colour = getAesthetic(this.calculatedLimits.astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings) as string;
       }
 
       this.plotPoints.push({
         x: index,
         value: this.calculatedLimits.values[i],
-        colour: dot_colour,
+        aesthetics: aesthetics,
         identity: host.createSelectionIdBuilder()
                       .withCategory(this.inputData.categories,
                                     this.inputData.keys[i].id)
@@ -95,7 +96,7 @@ class viewModelObject {
     if (this.firstRun) {
       this.inputSettings = new settingsObject();
     }
-    this.inputSettings.update(args.options.dataViews[0].metadata.objects);
+    this.inputSettings.update(args.options.dataViews[0]);
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(args.options.dataViews)) {

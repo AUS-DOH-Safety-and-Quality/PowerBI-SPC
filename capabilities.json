@@ -1130,13 +1130,7 @@
             ],
             "categorical": {
                 "categories": {
-                    "select": [
-                        {
-                            "for": {
-                                "in": "key"
-                            }
-                        }
-                    ],
+                    "for": { "in": "key" },
                     "dataReductionAlgorithm": {
                       "window": {
                           "count": 30000
@@ -1145,36 +1139,12 @@
                 },
                 "values": {
                     "select": [
-                        {
-                            "for": {
-                                "in": "numerators"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "denominators"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "xbar_sds"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "chart_type"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "multiplier"
-                            }
-                        },
-                        {
-                            "for": {
-                                "in": "outlier_direction"
-                            }
-                        }
+                        { "bind": { "to": "numerators" } },
+                        { "bind": { "to": "denominators" } },
+                        { "bind": { "to": "xbar_sds" } },
+                        { "bind": { "to": "chart_type" } },
+                        { "bind": { "to": "multiplier" } },
+                        { "bind": { "to": "outlier_direction" } }
                     ]
                 }
             }
