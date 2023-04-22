@@ -44,7 +44,7 @@ class chartObject {
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
         let allInner: controlLimits = all;
         Object.entries(all).forEach((entry, idx) => {
-          if (this.inputData.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
+          if (this.inputSettings.spc.chart_type.value !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
             allInner[entry[0] as keyof controlLimits] = entry[1].concat(Object.entries(curr)[idx][1]);
           }
         })
@@ -55,24 +55,24 @@ class chartObject {
       calcLimits = this.limitFunction(this.inputData);
     }
 
-    calcLimits.flagOutliers(this.inputData, this.inputSettings);
+    calcLimits.flagOutliers(this.inputSettings);
 
     // Scale limits using provided multiplier
-    let multiplier: number = this.inputData.multiplier;
+    let multiplier: number = this.inputSettings.spc.multiplier.value;
 
     calcLimits.values = multiply(calcLimits.values, multiplier);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
     calcLimits.alt_targets = rep(this.inputSettings.spc.alt_target.value, calcLimits.values.length)
 
-    if (this.inputData.chart_type !== "run") {
-      calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier),
-                                  this.inputData.limit_truncs);
-      calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier),
-                                  this.inputData.limit_truncs);
-      calcLimits.ul95 = truncate(multiply(calcLimits.ul95, multiplier),
-                                  this.inputData.limit_truncs);
-      calcLimits.ul99 = truncate(multiply(calcLimits.ul99, multiplier),
-                                  this.inputData.limit_truncs);
+    if (this.inputSettings.spc.chart_type.value !== "run") {
+      let limits: Record<string, number> = {
+        lower: this.inputSettings.y_axis.ylimit_l.value,
+        upper: this.inputSettings.y_axis.ylimit_u.value
+      }
+      calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier), limits);
+      calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier), limits);
+      calcLimits.ul95 = truncate(multiply(calcLimits.ul95, multiplier), limits);
+      calcLimits.ul99 = truncate(multiply(calcLimits.ul99, multiplier), limits);
     }
     return calcLimits;
   }
@@ -82,7 +82,7 @@ class chartObject {
     this.inputSettings = args.inputSettings;
     this.splitIndexes = args.splitIndexes;
 
-    this.limitFunction = limitFunctions[args.inputData.chart_type as keyof typeof limitFunctions]
+    this.limitFunction = limitFunctions[args.inputSettings.spc.chart_type.value as keyof typeof limitFunctions]
   }
 }
 

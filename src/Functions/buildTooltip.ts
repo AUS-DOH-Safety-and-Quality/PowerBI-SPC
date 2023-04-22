@@ -31,7 +31,7 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
       ll99: calculatedLimits.ll99 ? calculatedLimits.ll99[index] : null,
       ul99: calculatedLimits.ll99 ? calculatedLimits.ul99[index] : null
     };
-  let chart_type: string = inputData.chart_type;
+  let chart_type: string = inputSettings.spc.chart_type.value;
   let prop_labels: boolean = inputData.percentLabels;
   let astpoint: string = calculatedLimits.astpoint[index];
   let trend: string = calculatedLimits.trend[index];

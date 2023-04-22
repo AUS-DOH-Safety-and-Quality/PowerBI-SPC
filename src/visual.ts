@@ -243,6 +243,7 @@ export class Visual implements IVisual {
     let yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
     let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
+    let multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
 
     if (this.viewModel.plotProperties.displayPlot) {
       if (yAxisProperties.ticks) {
@@ -253,7 +254,7 @@ export class Visual implements IVisual {
         yAxis.tickFormat(
           d => {
             return this.viewModel.inputData.percentLabels
-              ? (<number>d * (this.viewModel.inputData.multiplier === 100 ? 1 : (this.viewModel.inputData.multiplier === 1 ? 100 : this.viewModel.inputData.multiplier))).toFixed(sig_figs) + "%"
+              ? (<number>d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
               : (<number>d).toFixed(sig_figs);
           }
         );

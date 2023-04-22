@@ -207,14 +207,6 @@ class outliersSettings {
   };
 }
 
-let settingsInData: Record<string, string> = {
-  "chart_type" : "spc",
-  "multiplier" : "spc",
-  "process_flag_type" : "outliers",
-  "improvement_direction" : "outliers",
-  "alt_target" : "spc"
-}
-
 type AllSettingsTypes = SettingsBaseTypedT<canvasSettings> | SettingsBaseTypedT<spcSettings> |
                         SettingsBaseTypedT<outliersSettings> | SettingsBaseTypedT<scatterSettings> |
                         SettingsBaseTypedT<lineSettings> | SettingsBaseTypedT<xAxisSettings> |
@@ -228,7 +220,6 @@ export {
   xAxisSettings,
   yAxisSettings,
   outliersSettings,
-  settingsInData,
   SettingsBaseTypedT,
   AllSettingsTypes
 }

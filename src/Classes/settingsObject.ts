@@ -13,7 +13,6 @@ import {
   lineSettings,
   xAxisSettings,
   yAxisSettings,
-  settingsInData,
   AllSettingsTypes
 } from "./settingsGroups"
 
@@ -33,9 +32,6 @@ class settingsObject {
   lines: lineSettings;
   x_axis: xAxisSettings;
   y_axis: yAxisSettings;
-  // Specify the names of settings which can be provided as data
-  // so that the correct value can be rendered to the settings pane
-  settingsInData: string[];
 
   /**
    * Function to read the values from the settings pane and update the
@@ -46,8 +42,7 @@ class settingsObject {
   update(inputView: powerbi.DataView): void {
     let inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
     // Get the names of all classes in settingsObject which have values to be updated
-    let allSettingGroups: string[] = Object.getOwnPropertyNames(this)
-                                           .filter(groupName => !(["settingsInData"].includes(groupName)));
+    let allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
       let condFormatting: AllSettingsTypes = inputView.categorical.categories
@@ -98,7 +93,6 @@ class settingsObject {
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();
     this.y_axis = new yAxisSettings();
-    this.settingsInData = Object.keys(settingsInData);
   }
 }
 
