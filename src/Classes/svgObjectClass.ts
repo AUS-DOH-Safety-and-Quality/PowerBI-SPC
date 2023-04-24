@@ -11,6 +11,7 @@ class svgObjectClass {
   xAxisLabels: d3.Selection<SVGTextElement, unknown, null, undefined>;
   yAxisGroup: d3.Selection<SVGGElement, any, any, any>;
   yAxisLabels: d3.Selection<SVGTextElement, unknown, null, undefined>;
+  iconGroup: SelectionBase;
 
   constructor(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) {
     this.tooltipLineGroup = svg.append("g");
@@ -19,7 +20,7 @@ class svgObjectClass {
     this.dotGroup = svg.append("g");
     this.xAxisGroup = svg.append("g");
     this.yAxisGroup = svg.append("g");
-
+    this.iconGroup = svg.append("g");
     this.xAxisLabels = svg.append("text");
     this.yAxisLabels = svg.append("text");
 
