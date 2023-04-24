@@ -5,9 +5,9 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 class svgIconClass {
   iconGroup: SelectionBase;
 
-  initialiseSVG(scaling_factor: number, offset: number, count: number): SelectionBase {
+  initialiseSVG(scaling_factor: number, count: number): SelectionBase {
     let scale: string = "scale(" + scaling_factor + ")"
-    let translate: string = "translate(" + count * (offset / scaling_factor) + ", 0)"
+    let translate: string = "translate(" + (count * 378) + ", 0)"
     let icon_group = this.iconGroup.append('g')
                                     .classed("icongroup", true)
                                     .attr("transform", scale + " " + translate)
@@ -77,11 +77,10 @@ class svgIconClass {
   drawIcons(svg_height: number): void {
     d3.selectAll(".icongroup").remove()
     let scaling_factor: number = 0.08 * (svg_height / 378)
-    let offset: number = scaling_factor * 378
 
     let toDraw: string[] = ["commonCause", "commonCause"]
     toDraw.forEach((icon: string, idx: number) => {
-      let icon_g: SelectionBase = this.initialiseSVG(scaling_factor, offset, idx)
+      let icon_g: SelectionBase = this.initialiseSVG(scaling_factor, idx)
       icon_g.call(iconSVG[icon as keyof typeof iconSVG])
     })
   }
