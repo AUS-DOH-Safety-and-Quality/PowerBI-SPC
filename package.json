@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/d3": "^7.4.0",
     "process": "^0.11.10",
-    "ts-loader": "9.2.9",
+    "ts-loader": "9.4.2",
     "tslint": "^5.18.0",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "3.6.3"
