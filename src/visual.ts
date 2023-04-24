@@ -21,6 +21,7 @@ import plotData from "./Classes/plotData";
 import * as d3 from "d3";
 import lineData from "./Classes/lineData"
 import svgObjectClass from "./Classes/svgObjectClass"
+import svgIconClass from "./Classes/svgIconClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotProperties"
 import getAesthetic from "./Functions/getAesthetic"
@@ -35,6 +36,7 @@ export class Visual implements IVisual {
   private updateOptions: VisualUpdateOptions;
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private svgObjects: svgObjectClass;
+  private svgIcons: svgIconClass;
   private svgSelections: svgSelectionClass;
   private viewModel: viewModelObject;
   private plottingMerged: mergedSVGObjects;
@@ -51,6 +53,7 @@ export class Visual implements IVisual {
                   .append("svg");
 
     this.svgObjects = new svgObjectClass(this.svg);
+    this.svgIcons = new svgIconClass(this.svg);
     this.svgSelections = new svgSelectionClass();
     this.viewModel = new viewModelObject();
     this.viewModel.firstRun = true;
@@ -85,7 +88,7 @@ export class Visual implements IVisual {
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height);
 
-      //this.drawIcons()
+      //this.svgIcons.drawIcons(this.viewModel.plotProperties.height);
       console.log(this.viewModel.plotProperties)
 
       console.log("TooltipTracking start")
@@ -113,164 +116,6 @@ export class Visual implements IVisual {
   // Function to render the properties specified in capabilities.json to the properties pane
   public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
     return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
-  }
-
-  drawIcons(): void {
-    let icon_group = this.svgObjects.iconGroup.attr("transform","scale(0.08)")
-    let icon_defs = icon_group.append("defs")
-    let icon_defs_filter = icon_defs.append("filter")
-                                    .attr("id", "fx0")
-                                    .attr("x", "-10%")
-                                    .attr("y", "-10%")
-                                    .attr("width", "120%")
-                                    .attr("height", "120%")
-                                    .attr("filterUnits", "userSpaceOnUse")
-                                    .attr("userSpaceOnUse", "userSpaceOnUse")
-    let icon_comptrans = icon_defs_filter.append("feComponentTransfer")
-                                          .attr("color-interpolation-filters","sRGB")
-    icon_comptrans.append("feFuncR")
-                  .attr("type","discrete")
-                  .attr("tableValues","0 0")
-    icon_comptrans.append("feFuncG")
-                  .attr("type","discrete")
-                  .attr("tableValues","0 0")
-    icon_comptrans.append("feFuncB")
-                  .attr("type","discrete")
-                  .attr("tableValues","0 0")
-    icon_comptrans.append("feFuncA")
-                  .attr("type","linear")
-                  .attr("slope","0.4")
-                  .attr("intercept","0")
-
-    icon_defs_filter.append("feGaussianBlur")
-                    .attr("stdDeviation", "1.77778 1.77778")
-
-    icon_defs.append("clipPath")
-              .attr("id", "clip1")
-              .append("rect")
-              .attr("x","0")
-              .attr("y","0")
-              .attr("width","378")
-              .attr("height","378")
-
-    icon_defs.append("clipPath")
-              .attr("id", "clip2")
-              .append("path")
-              .attr("d","M189 38C105.605 38 38 105.605 38 189 38 272.395 105.605 340 189 340 272.395 340 340 272.395 340 189 340 105.605 272.395 38 189 38ZM5.63264e-06 5.63264e-06 378 5.63264e-06 378 378 5.63264e-06 378Z")
-              .attr("fill-rule","evenodd")
-              .attr("clip-rule","evenodd")
-
-    icon_defs.append("clipPath")
-              .attr("id", "clip3")
-              .append("rect")
-              .attr("x","-2")
-              .attr("y","-2")
-              .attr("width","346")
-              .attr("height","346")
-
-    let icon_g = icon_group.append("g").attr("clip-path","url(#clip1)")
-    icon_g.append("rect")
-          .attr("x","0")
-          .attr("y","0")
-          .attr("width","378")
-          .attr("height","378")
-          .attr("fill","#FFFFFF")
-    icon_g.append("g")
-          .attr("clip-path","url(#clip2)")
-          .append("g")
-          .attr("clip-path","url(#clip3)")
-          .attr("filter","url(#fx0)")
-          .attr("transform","translate(16 25)")
-          .append("g")
-          .attr("clip-path","url(#clip4)")
-          .append("path")
-          .attr("d","M17.47 172.83C17.47 86.9332 87.1031 17.3 173 17.3 258.897 17.3 328.53 86.9332 328.53 172.83 328.53 258.727 258.897 328.36 173 328.36 87.1031 328.36 17.47 258.727 17.47 172.83Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","21")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#FFFFFF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M38 189C38 105.605 105.605 38 189 38 272.395 38 340 105.605 340 189 340 272.395 272.395 340 189 340 105.605 340 38 272.395 38 189Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","20")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#FFFFFF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M106.903 196.084 144.607 228.433 138.766 235.241 101.062 202.892Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M146.159 218.909 179.921 159.846 187.708 164.298 153.946 223.361Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M198.708 154.94 239.365 214.134 231.971 219.212 191.314 160.019Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M238.825 216.117 285.383 198.784 288.512 207.19 241.954 224.523Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M76.5001 195C76.5001 183.678 85.6782 174.5 97.0001 174.5 108.322 174.5 117.5 183.678 117.5 195 117.5 206.322 108.322 215.5 97.0001 215.5 85.6782 215.5 76.5001 206.322 76.5001 195Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M123.5 233C123.5 221.678 132.678 212.5 144 212.5 155.322 212.5 164.5 221.678 164.5 233 164.5 244.322 155.322 253.5 144 253.5 132.678 253.5 123.5 244.322 123.5 233Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M170.5 153.5C170.5 141.902 179.902 132.5 191.5 132.5 203.098 132.5 212.5 141.902 212.5 153.5 212.5 165.098 203.098 174.5 191.5 174.5 179.902 174.5 170.5 165.098 170.5 153.5Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M217.5 221.5C217.5 209.902 226.902 200.5 238.5 200.5 250.098 200.5 259.5 209.902 259.5 221.5 259.5 233.098 250.098 242.5 238.5 242.5 226.902 242.5 217.5 233.098 217.5 221.5Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
-
-    icon_g.append("path")
-          .attr("d","M265.5 206.5C265.5 194.902 274.678 185.5 286 185.5 297.322 185.5 306.5 194.902 306.5 206.5 306.5 218.098 297.322 227.5 286 227.5 274.678 227.5 265.5 218.098 265.5 206.5Z")
-          .attr("stroke","#BFBFBF")
-          .attr("stroke-width","2.66667")
-          .attr("stroke-miterlimit","8")
-          .attr("fill","#BFBFBF")
-          .attr("fill-rule","evenodd")
   }
 
   initTooltipTracking(): void {
