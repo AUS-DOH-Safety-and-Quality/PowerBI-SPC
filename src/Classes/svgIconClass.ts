@@ -6,10 +6,11 @@ class svgIconClass {
   iconGroup: SelectionBase;
 
   initialiseSVG(scaling_factor: number, offset: number, count: number): SelectionBase {
+    let scale: string = "scale(" + scaling_factor + ")"
+    let translate: string = "translate(" + count * (offset / scaling_factor) + ", 0)"
     let icon_group = this.iconGroup.append('g')
                                     .classed("icongroup", true)
-                                    .attr("transform","scale(" + scaling_factor + ") " + "translate(" + count * (offset / scaling_factor) + ", 0)")
-    //.attr("transform", "translate(" + 50 * (1 / scaling_factor) + ", 0)")
+                                    .attr("transform", scale + " " + translate)
     let icon_defs = icon_group.append("defs")
     let icon_defs_filter = icon_defs.append("filter")
                                     .attr("id", "fx0")
@@ -86,7 +87,7 @@ class svgIconClass {
   }
 
   constructor(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) {
-    this.iconGroup = svg.append("g").attr("id","icongroup");
+    this.iconGroup = svg.append("g");
   }
 }
 export default svgIconClass
