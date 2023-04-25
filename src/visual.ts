@@ -88,7 +88,7 @@ export class Visual implements IVisual {
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height);
 
-      //this.svgIcons.drawIcons(this.viewModel.plotProperties.height);
+      this.svgIcons.drawIcons(this.viewModel);
       console.log(this.viewModel.plotProperties)
 
       console.log("TooltipTracking start")

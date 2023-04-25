@@ -1,6 +1,15 @@
 import * as d3 from "d3";
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
+/**
+ * Inline function to be called by D3 for rendering the Common Cause Variation icon.
+ * The code below is a translation from HTML to D3 syntax of the SVG file:
+ * https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/variation/common_cause.svg
+ *
+ * This function does not return a value, it is meant to called as part of chaining D3 syntax
+ *
+ * @param selection The D3 parent object to which the icon's SVG code will be added
+ */
 function commonCause(selection: SelectionBase): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")

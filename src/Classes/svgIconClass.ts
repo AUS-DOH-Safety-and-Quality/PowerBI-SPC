@@ -1,13 +1,15 @@
 import * as d3 from "d3";
 import * as iconSVG from "../Icons"
+import viewModelObject from "./viewModel";
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 class svgIconClass {
   iconGroup: SelectionBase;
 
-  initialiseSVG(scaling_factor: number, count: number): SelectionBase {
+  initialiseSVG(svg_width: number, svg_height: number, count: number): SelectionBase {
+    let scaling_factor: number = 0.08 * (svg_height / 378)
     let scale: string = "scale(" + scaling_factor + ")"
-    let translate: string = "translate(" + (count * 378) + ", 0)"
+    let translate: string = "translate(" + ((svg_width / scaling_factor) - (378 + (count * 378))) + ", 0)"
     let icon_group = this.iconGroup.append('g')
                                     .classed("icongroup", true)
                                     .attr("transform", scale + " " + translate)
@@ -74,13 +76,14 @@ class svgIconClass {
     return icon_svg
   }
 
-  drawIcons(svg_height: number): void {
+  drawIcons(viewModel: viewModelObject): void {
     d3.selectAll(".icongroup").remove()
-    let scaling_factor: number = 0.08 * (svg_height / 378)
+    let svg_width: number = viewModel.plotProperties.width
+    let svg_height: number = viewModel.plotProperties.height
 
-    let toDraw: string[] = ["commonCause", "commonCause"]
+    let toDraw: string[] = ["commonCause", "concernHigh"]
     toDraw.forEach((icon: string, idx: number) => {
-      let icon_g: SelectionBase = this.initialiseSVG(scaling_factor, idx)
+      let icon_g: SelectionBase = this.initialiseSVG(svg_width, svg_height, idx)
       icon_g.call(iconSVG[icon as keyof typeof iconSVG])
     })
   }
