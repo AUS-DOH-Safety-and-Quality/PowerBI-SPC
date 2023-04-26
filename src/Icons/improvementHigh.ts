@@ -2,15 +2,15 @@ import * as d3 from "d3";
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 /**
- * Inline function to be called by D3 for rendering the Variation - Concern High icon.
+ * Inline function to be called by D3 for rendering the Variation - Improvement High icon.
  * The code below is a translation from HTML to D3 syntax of the SVG file:
- * https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/variation/concern_high.svg
+ * https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/variation/improvement_high.svg
  *
  * This function does not return a value, it is meant to called as part of chaining D3 syntax
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
-function concernHigh(selection: SelectionBase): void {
+function improvementHigh(selection: SelectionBase): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")
@@ -21,7 +21,7 @@ function concernHigh(selection: SelectionBase): void {
             .attr("clip-path","url(#clip4)")
             .append("path")
             .attr("d","M0 155.53C-1.9801e-14 69.6331 69.6331-1.9801e-14 155.53-3.96021e-14 241.427-7.92042e-14 311.06 69.6331 311.06 155.53 311.06 241.427 241.427 311.06 155.53 311.06 69.6331 311.06-9.90052e-14 241.427 0 155.53Z")
-            .attr("stroke","#FF6600")
+            .attr("stroke","#0072C6")
             .attr("stroke-width","21")
             .attr("stroke-miterlimit","8")
             .attr("fill","#FFFFFF")
@@ -30,7 +30,7 @@ function concernHigh(selection: SelectionBase): void {
 
   selection.append("path")
             .attr("d","M0 151C-1.92243e-14 67.605 67.605-1.92243e-14 151-3.84486e-14 234.395-7.68973e-14 302 67.605 302 151 302 234.395 234.395 302 151 302 67.605 302-9.61216e-14 234.395 0 151Z")
-            .attr("stroke","#FF6600")
+            .attr("stroke","#0072C6")
             .attr("stroke-width","20")
             .attr("stroke-miterlimit","8")
             .attr("fill","#FFFFFF")
@@ -38,7 +38,7 @@ function concernHigh(selection: SelectionBase): void {
             .attr("transform","matrix(1 0 0 -1 38 340)")
 
   selection.append("text")
-            .attr("fill", "#FF6600")
+            .attr("fill", "#0072C6")
             .attr("font-family", "Arial,Arial_MSFontService,sans-serif")
             .attr("font-weight", "700")
             .attr("font-size", "117")
@@ -118,22 +118,21 @@ function concernHigh(selection: SelectionBase): void {
 
   selection.append("path")
             .attr("d","M0 20.5C-2.67358e-15 9.17816 9.40202-2.60992e-15 21-5.21985e-15 32.598-1.04397e-14 42 9.17816 42 20.5 42 31.8218 32.598 41 21 41 9.40202 41-1.33679e-14 31.8218 0 20.5Z")
-            .attr("stroke","#FF6600")
+            .attr("stroke","#0072C6")
             .attr("stroke-width","2.66667")
             .attr("stroke-miterlimit","8")
-            .attr("fill","#FF6600")
+            .attr("fill","#0072C6")
             .attr("fill-rule","evenodd")
             .attr("transform","matrix(1 0 0 -1 217.5 185.5)")
 
   selection.append("path")
             .attr("d","M0 20.5C-2.60992e-15 9.17816 9.17816-2.60992e-15 20.5-5.21985e-15 31.8218-1.04397e-14 41 9.17816 41 20.5 41 31.8218 31.8218 41 20.5 41 9.17816 41-1.30496e-14 31.8218 0 20.5Z")
-            .attr("stroke","#FF6600")
+            .attr("stroke","#0072C6")
             .attr("stroke-width","2.66667")
             .attr("stroke-miterlimit","8")
-            .attr("fill","#FF6600")
+            .attr("fill","#0072C6")
             .attr("fill-rule","evenodd")
             .attr("transform","matrix(1 0 0 -1 265.5 200.5)")
-
 }
 
-export default concernHigh
+export default improvementHigh

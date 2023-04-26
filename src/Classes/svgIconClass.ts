@@ -81,7 +81,8 @@ class svgIconClass {
     let svg_width: number = viewModel.plotProperties.width
     let svg_height: number = viewModel.plotProperties.height
 
-    let toDraw: string[] = ["commonCause", "concernHigh"]
+    let toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
+                            "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
     toDraw.forEach((icon: string, idx: number) => {
       let icon_g: SelectionBase = this.initialiseSVG(svg_width, svg_height, idx)
       icon_g.call(iconSVG[icon as keyof typeof iconSVG])
