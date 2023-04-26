@@ -84,8 +84,8 @@ class svgIconClass {
     let toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
                             "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
     toDraw.forEach((icon: string, idx: number) => {
-      let icon_g: SelectionBase = this.initialiseSVG(svg_width, svg_height, idx)
-      icon_g.call(iconSVG[icon as keyof typeof iconSVG])
+      this.initialiseSVG(svg_width, svg_height, idx)
+          .call(iconSVG[icon as keyof typeof iconSVG])
     })
   }
 
