@@ -6,7 +6,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
  * The code below is a translation from HTML to D3 syntax of the SVG file:
  * https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/assurance/fail.svg
  *
- * This function does not return a value, it is meant to called as part of chaining D3 syntax
+ * This function does not return a value, it is meant to be called as part of chaining D3 syntax
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
