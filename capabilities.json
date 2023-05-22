@@ -103,6 +103,25 @@
                         "numeric": true
                     }
                 },
+                "perc_labels": {
+                  "displayName": "Report as percentage",
+                  "type": {
+                    "enumeration" : [
+                      {
+                        "displayName" : "Automatic",
+                        "value" : "Automatic"
+                      },
+                      {
+                        "displayName" : "Yes",
+                        "value" : "Yes"
+                      },
+                      {
+                        "displayName" : "No",
+                        "value" : "No"
+                      }
+                    ]
+                  }
+                },
                 "split_on_click": {
                     "displayName": "Split Limits on Click",
                     "type" : { "bool" : true }

@@ -42,6 +42,13 @@ class dataObject {
 
     valid_keys.forEach((d, idx) => { d.x = idx });
 
+    let percent_labels: boolean;
+    if (inputSettings.spc.perc_labels.value === "Automatic") {
+      percent_labels = ["p", "pp"].includes(inputSettings.spc.chart_type.value) && (inputSettings.spc.multiplier.value === 1 || inputSettings.spc.multiplier.value === 100);
+    } else {
+      percent_labels = inputSettings.spc.perc_labels.value === "Yes";
+    }
+
     this.keys = valid_keys;
     this.numerators = extractValues(numerators, valid_ids);
     this.denominators = extractValues(denominators, valid_ids);
@@ -49,7 +56,7 @@ class dataObject {
     this.highlights = inputView.values[0].highlights ? extractValues(inputView.values[0].highlights, valid_ids) : inputView.values[0].highlights;
     this.anyHighlights = this.highlights ? true : false
     this.categories = inputView.categories[0];
-    this.percentLabels = ["p", "pp"].includes(inputSettings.spc.chart_type.value) && (inputSettings.spc.multiplier.value === 1 || inputSettings.spc.multiplier.value === 100);
+    this.percentLabels = percent_labels;
     this.scatter_formatting = extractValues(scatter_cond, valid_ids)
   }
 }

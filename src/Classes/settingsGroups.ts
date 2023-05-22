@@ -35,6 +35,7 @@ class spcSettings {
   chart_type: settingsPair<string>;
   multiplier: settingsPair<number>;
   sig_figs: settingsPair<number>;
+  perc_labels: settingsPair<string>;
   split_on_click: settingsPair<boolean>;
   ll_truncate: settingsPair<number>;
   ul_truncate: settingsPair<number>;
@@ -42,6 +43,7 @@ class spcSettings {
 
   constructor() {
     this.chart_type = new settingsPair("i");
+    this.perc_labels = new settingsPair("Automatic");
     this.multiplier = new settingsPair(1);
     this.sig_figs = new settingsPair(2);
     this.split_on_click = new settingsPair(false);
