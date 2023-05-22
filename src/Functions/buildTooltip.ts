@@ -47,7 +47,7 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
   tooltip.push({
     displayName: valueNames[chart_type],
     value: prop_labels
-      ? (value * 100).toFixed(sig_figs) + "%"
+      ? (value).toFixed(sig_figs) + "%"
       : value.toFixed(sig_figs)
   })
   if(numerator || !(numerator === null || numerator === undefined)) {
@@ -66,21 +66,21 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
     tooltip.push({
       displayName: "Upper 99% Limit",
       value: prop_labels
-        ? (limits.ul99 * 100).toFixed(sig_figs) + "%"
+        ? (limits.ul99).toFixed(sig_figs) + "%"
         : limits.ul99.toFixed(sig_figs)
     })
   }
   tooltip.push({
     displayName: "Centerline",
     value: prop_labels
-      ? (target * 100).toFixed(sig_figs) + "%"
+      ? (target).toFixed(sig_figs) + "%"
       : target.toFixed(sig_figs)
   })
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Lower 99% Limit",
       value: prop_labels
-        ? (limits.ll99 * 100).toFixed(sig_figs) + "%"
+        ? (limits.ll99).toFixed(sig_figs) + "%"
         : limits.ll99.toFixed(sig_figs)
     })
   }
