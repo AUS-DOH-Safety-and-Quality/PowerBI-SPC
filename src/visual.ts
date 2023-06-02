@@ -60,7 +60,8 @@ export class Visual implements IVisual {
 
     this.selectionManager = this.host.createSelectionManager();
 
-    this.plottingMerged = { dotsMerged: null, linesMerged: null };
+    this.plottingMerged = { dotsMerged: <SelectionAny><unknown>null,
+                            linesMerged: <SelectionAny><unknown>null };
 
     this.selectionManager.registerOnSelectCallback(() => {
       this.updateHighlighting();
@@ -148,7 +149,7 @@ export class Visual implements IVisual {
                                     .plotPoints
                                     .map(d => d.x)
                                     .map(d => Math.abs(d - xValue));
-        const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
+        const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b) as number;
         const scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
         const scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
@@ -215,7 +216,8 @@ export class Visual implements IVisual {
         .style("font-family", xAxisProperties.tick_font)
         .style("fill", this.viewModel.plotProperties.displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
-    const xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
+    const currNode: SVGGElement = this.svgObjects.xAxisGroup.node() as SVGGElement;
+    const xAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
 
     // Update padding and re-draw axis if large tick values rendered outside of plot
     const tickBelowPlotAmount: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
@@ -286,7 +288,8 @@ export class Visual implements IVisual {
         .style("font-family", yAxisProperties.tick_font)
         .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-    const yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect() as DOMRect;
+    const currNode: SVGGElement = this.svgObjects.yAxisGroup.node() as SVGGElement;
+    const yAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
     const leftMidpoint: number = yAxisCoordinates.x * 0.7;
 
     this.svgObjects
@@ -302,6 +305,8 @@ export class Visual implements IVisual {
   }
 
   drawLines(): void {
+    const lower: number = this.viewModel.plotProperties.yAxis.lower;
+    const upper: number = this.viewModel.plotProperties.yAxis.upper;
     this.plottingMerged.linesMerged
       = this.svgSelections.lineSelection
                           .enter()
@@ -313,8 +318,7 @@ export class Visual implements IVisual {
       return d3.line<lineData>()
                 .x(d => this.viewModel.plotProperties.xScale(d.x))
                 .y(d => this.viewModel.plotProperties.yScale(d.line_value))
-                .defined(d => d.line_value !== null && between(d.line_value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper))
-                (d[1])
+                .defined(d => d.line_value !== null && between(d.line_value, lower, upper))(d[1])
     });
     this.plottingMerged.linesMerged.attr("fill", "none")
                     .attr("stroke", d => {

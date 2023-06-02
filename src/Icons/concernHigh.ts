@@ -10,6 +10,9 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
+
+// ESLint errors due to number of lines in function, but would reduce readability to separate further
+/* eslint-disable */
 function concernHigh(selection: SelectionBase): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
@@ -133,7 +136,7 @@ function concernHigh(selection: SelectionBase): void {
             .attr("fill","#FF6600")
             .attr("fill-rule","evenodd")
             .attr("transform","matrix(1 0 0 -1 265.5 200.5)")
-
 }
+/* eslint-enable */
 
 export default concernHigh

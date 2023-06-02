@@ -1,5 +1,5 @@
 function rep<T>(x: T, n: number) : T[] {
-  return Array.apply(null, Array(n)).map(() => x)
+  return Array<T>(n).fill(x);
 }
 
 export default rep;
