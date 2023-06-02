@@ -7,18 +7,18 @@ import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
 
 function iLimits(inputData: dataObject): controlLimits {
-  let useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
-  let ratio: number[] = useRatio
+  const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
+  const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
     : inputData.numerators;
 
-  let cl: number = d3.mean(ratio);
+  const cl: number = d3.mean(ratio);
 
-  let consec_diff: number[] = abs(diff(ratio));
-  let consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
-  let consec_diff_valid: number[] = consec_diff.filter(d => d < consec_diff_ulim);
+  const consec_diff: number[] = abs(diff(ratio));
+  const consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
+  const consec_diff_valid: number[] = consec_diff.filter(d => d < consec_diff_ulim);
 
-  let sigma: number = d3.mean(consec_diff_valid) / 1.128;
+  const sigma: number = d3.mean(consec_diff_valid) / 1.128;
 
   return new controlLimits({
     keys: inputData.keys,

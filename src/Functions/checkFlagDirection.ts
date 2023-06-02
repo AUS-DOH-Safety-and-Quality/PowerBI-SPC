@@ -5,20 +5,20 @@ function checkFlagDirection_impl(outlierStatus: string, flagSettings: {process_f
     return outlierStatus;
   }
 
-  let increaseDirectionMap: Record<string, string> = {
+  const increaseDirectionMap: Record<string, string> = {
     "upper" : "improvement",
     "lower" : "deterioration"
   }
-  let decreaseDirectionMap: Record<string, string> = {
+  const decreaseDirectionMap: Record<string, string> = {
     "lower" : "improvement",
     "upper" : "deterioration"
   }
-  let flagDirectionMap: Record<string, string> = {
+  const flagDirectionMap: Record<string, string> = {
     "increase" : increaseDirectionMap[outlierStatus],
     "decrease" : decreaseDirectionMap[outlierStatus]
   }
 
-  let mappedFlag: string = flagDirectionMap[flagSettings.improvement_direction];
+  const mappedFlag: string = flagDirectionMap[flagSettings.improvement_direction];
 
   if (flagSettings.process_flag_type !== "both") {
     return mappedFlag === flagSettings.process_flag_type ? mappedFlag : "none";

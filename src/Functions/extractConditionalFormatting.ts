@@ -9,11 +9,11 @@ import extractSetting from "./extractSetting";
 
 
 function extractConditionalFormatting<SettingsT extends AllSettingsTypes>(inputView: DataViewCategorical, name: string, inputSettings: settingsObject): SettingsT[] {
-  let inputCategories: DataViewCategoryColumn = (inputView.categories as DataViewCategoryColumn[])[0];
-  let staticSettings = inputSettings[name as keyof typeof inputSettings];
-  let settingNames = Object.getOwnPropertyNames(staticSettings)
+  const inputCategories: DataViewCategoryColumn = (inputView.categories as DataViewCategoryColumn[])[0];
+  const staticSettings = inputSettings[name as keyof typeof inputSettings];
+  const settingNames = Object.getOwnPropertyNames(staticSettings)
 
-  let rtn: SettingsT[] = new Array<SettingsT>();
+  const rtn: SettingsT[] = new Array<SettingsT>();
   for (let i: number = 0; i < inputCategories.values.length; i++) {
     rtn.push(
       Object.fromEntries(

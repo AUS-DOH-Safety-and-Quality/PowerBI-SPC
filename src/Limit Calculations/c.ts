@@ -4,8 +4,8 @@ import dataObject from "../Classes/dataObject"
 import controlLimits from "../Classes/controlLimits"
 
 function cLimits(inputData: dataObject): controlLimits {
-  let cl: number = d3.mean(inputData.numerators);
-  let sigma: number = Math.sqrt(cl);
+  const cl: number = d3.mean(inputData.numerators);
+  const sigma: number = Math.sqrt(cl);
 
   return new controlLimits({
     keys: inputData.keys,

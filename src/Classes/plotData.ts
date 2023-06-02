@@ -13,6 +13,6 @@ class plotData {
   highlighted: boolean;
   // Tooltip data to print
   tooltip: VisualTooltipDataItem[];
-};
+}
 
 export default plotData;

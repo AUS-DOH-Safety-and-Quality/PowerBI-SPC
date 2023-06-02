@@ -7,14 +7,14 @@ class svgIconClass {
   iconGroup: SelectionBase;
 
   initialiseSVG(svg_width: number, svg_height: number, count: number): SelectionBase {
-    let scaling_factor: number = 0.08 * (svg_height / 378)
-    let scale: string = "scale(" + scaling_factor + ")"
-    let translate: string = "translate(" + ((svg_width / scaling_factor) - (378 + (count * 378))) + ", 0)"
-    let icon_group = this.iconGroup.append('g')
+    const scaling_factor: number = 0.08 * (svg_height / 378)
+    const scale: string = "scale(" + scaling_factor + ")"
+    const translate: string = "translate(" + ((svg_width / scaling_factor) - (378 + (count * 378))) + ", 0)"
+    const icon_group = this.iconGroup.append('g')
                                     .classed("icongroup", true)
                                     .attr("transform", scale + " " + translate)
-    let icon_defs = icon_group.append("defs")
-    let icon_defs_filter = icon_defs.append("filter")
+    const icon_defs = icon_group.append("defs")
+    const icon_defs_filter = icon_defs.append("filter")
                                     .attr("id", "fx0")
                                     .attr("x", "-10%")
                                     .attr("y", "-10%")
@@ -22,7 +22,7 @@ class svgIconClass {
                                     .attr("height", "120%")
                                     .attr("filterUnits", "userSpaceOnUse")
                                     .attr("userSpaceOnUse", "userSpaceOnUse")
-    let icon_comptrans = icon_defs_filter.append("feComponentTransfer")
+    const icon_comptrans = icon_defs_filter.append("feComponentTransfer")
                                           .attr("color-interpolation-filters","sRGB")
     icon_comptrans.append("feFuncR")
                   .attr("type","discrete")
@@ -64,7 +64,7 @@ class svgIconClass {
               .attr("width","346")
               .attr("height","346")
 
-    let icon_svg = icon_group.append("g")
+    const icon_svg = icon_group.append("g")
                               .attr("clip-path","url(#clip1)")
 
     icon_svg.append("rect")
@@ -78,10 +78,10 @@ class svgIconClass {
 
   drawIcons(viewModel: viewModelObject): void {
     d3.selectAll(".icongroup").remove()
-    let svg_width: number = viewModel.plotProperties.width
-    let svg_height: number = viewModel.plotProperties.height
+    const svg_width: number = viewModel.plotProperties.width
+    const svg_height: number = viewModel.plotProperties.height
 
-    let toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
+    const toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
                             "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
     toDraw.forEach((icon: string, idx: number) => {
       this.initialiseSVG(svg_width, svg_height, idx)

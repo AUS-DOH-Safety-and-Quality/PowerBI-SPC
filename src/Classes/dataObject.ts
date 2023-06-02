@@ -22,14 +22,14 @@ class dataObject {
   scatter_formatting: SettingsBaseTypedT<scatterSettings>[];
 
   constructor(inputView: DataViewCategorical, inputSettings: settingsObject) {
-    let numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
-    let denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
-    let xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
-    let keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
-    let scatter_cond = extractConditionalFormatting<SettingsBaseTypedT<scatterSettings>>(inputView, "scatter", inputSettings)
+    const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
+    const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
+    const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
+    const keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
+    const scatter_cond = extractConditionalFormatting<SettingsBaseTypedT<scatterSettings>>(inputView, "scatter", inputSettings)
 
-    let valid_ids: number[] = new Array<number>();
-    let valid_keys: plotKey[] = new Array<plotKey>();
+    const valid_ids: number[] = new Array<number>();
+    const valid_keys: plotKey[] = new Array<plotKey>();
 
     for (let i: number = 0; i < numerators.length; i++) {
       if (checkValidInput(numerators[i],

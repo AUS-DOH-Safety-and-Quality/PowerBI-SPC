@@ -62,7 +62,7 @@ class plotPropertiesClass {
       ? args.plotPoints.length > 1
       : null;
 
-    let xLowerLimit: number = args.inputSettings.x_axis.xlimit_l.value;
+    const xLowerLimit: number = args.inputSettings.x_axis.xlimit_l.value;
     let xUpperLimit: number = args.inputSettings.x_axis.xlimit_u.value;
     let yLowerLimit: number = args.inputSettings.y_axis.ylimit_l.value;
     let yUpperLimit: number = args.inputSettings.y_axis.ylimit_u.value;
@@ -71,19 +71,19 @@ class plotPropertiesClass {
     if (args.inputData && args.calculatedLimits) {
       xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.calculatedLimits.keys.map(d => d.x))
 
-      let limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
-      let chart_type: string = args.inputSettings.spc.chart_type.value;
-      let values: number[] = args.calculatedLimits.values;
-      let ul99: number[] = args.calculatedLimits.ul99;
-      let ll99: number[] = args.calculatedLimits.ll99;
-      let maxValueOrLimit: number = d3.max(values.concat(ul99));
-      let minValueOrLimit: number = d3.min(values.concat(ll99));
-      let maxTarget: number = d3.max(args.calculatedLimits.targets);
-      let minTarget: number = d3.min(args.calculatedLimits.targets);
+      const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
+      const chart_type: string = args.inputSettings.spc.chart_type.value;
+      const values: number[] = args.calculatedLimits.values;
+      const ul99: number[] = args.calculatedLimits.ul99;
+      const ll99: number[] = args.calculatedLimits.ll99;
+      const maxValueOrLimit: number = d3.max(values.concat(ul99));
+      const minValueOrLimit: number = d3.min(values.concat(ll99));
+      const maxTarget: number = d3.max(args.calculatedLimits.targets);
+      const minTarget: number = d3.min(args.calculatedLimits.targets);
 
-      let upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
-      let lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
-      let multiplier: number = args.inputSettings.spc.multiplier.value;
+      const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
+      const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
+      const multiplier: number = args.inputSettings.spc.multiplier.value;
 
       yUpperLimit = yUpperLimit !== null ? yUpperLimit :
         ["p", "pp"].includes(chart_type) && multiplier == 1
@@ -97,12 +97,12 @@ class plotPropertiesClass {
 
     // Axis & label padding is based on the browser default font size of 16px,
     //    so need to scale accordingly if a different font size is used
-    let browserFontSize: number = Number(window.getComputedStyle(document.body).getPropertyValue('font-size').match(/\d+/)[0]);
-    let fontScaling: number = browserFontSize / 16;
+    const browserFontSize: number = Number(window.getComputedStyle(document.body).getPropertyValue('font-size').match(/\d+/)[0]);
+    const fontScaling: number = browserFontSize / 16;
 
     // Map the default pixel sizes for each text label, based on browser default, and scale
     // https://careerkarma.com/blog/css-font-size/
-    let fontSizeMap: Record<string, number> = {
+    const fontSizeMap: Record<string, number> = {
       "xx-small" : 9 * fontScaling,
       "x-small" : 10 * fontScaling,
       "small" : 13 * fontScaling,
@@ -113,14 +113,14 @@ class plotPropertiesClass {
     };
 
     // Only scale padding for label if a label is actually present
-    let xLabelSize: string = args.inputSettings.x_axis.xlimit_label_size.value;
-    let xLabelPadding: number = args.inputSettings.x_axis.xlimit_label.value ? fontSizeMap[xLabelSize] : 0;
-    let yLabelSize: string = args.inputSettings.y_axis.ylimit_label_size.value;
-    let yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? fontSizeMap[yLabelSize] : 0;
+    const xLabelSize: string = args.inputSettings.x_axis.xlimit_label_size.value;
+    const xLabelPadding: number = args.inputSettings.x_axis.xlimit_label.value ? fontSizeMap[xLabelSize] : 0;
+    const yLabelSize: string = args.inputSettings.y_axis.ylimit_label_size.value;
+    const yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? fontSizeMap[yLabelSize] : 0;
 
-    let xTickSize: string = args.inputSettings.x_axis.xlimit_tick_size.value;
+    const xTickSize: string = args.inputSettings.x_axis.xlimit_tick_size.value;
 
-    let yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
+    const yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
 
     this.xAxis = {
       lower: xLowerLimit !== null ? xLowerLimit : 0,

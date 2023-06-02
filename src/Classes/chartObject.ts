@@ -22,12 +22,12 @@ class chartObject {
     let calcLimits: controlLimits;
 
     if (this.splitIndexes.length > 0) {
-      let indexes: number[] = this.splitIndexes
+      const indexes: number[] = this.splitIndexes
                                   .concat([this.inputData.keys.length - 1])
                                   .sort((a,b) => a - b);
-      let groupedData: dataObject[] = indexes.map((d, idx) => {
+      const groupedData: dataObject[] = indexes.map((d, idx) => {
         // Force a deep copy
-        let data = JSON.parse(JSON.stringify(this.inputData));
+        const data = JSON.parse(JSON.stringify(this.inputData));
          if(idx === 0) {
           data.denominators = data.denominators.slice(0, d + 1)
           data.numerators = data.numerators.slice(0, d + 1)
@@ -40,9 +40,9 @@ class chartObject {
         return data;
       })
 
-      let calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
+      const calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
-        let allInner: controlLimits = all;
+        const allInner: controlLimits = all;
         Object.entries(all).forEach((entry, idx) => {
           if (this.inputSettings.spc.chart_type.value !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
             allInner[entry[0] as keyof controlLimits] = entry[1].concat(Object.entries(curr)[idx][1]);
@@ -58,14 +58,14 @@ class chartObject {
     calcLimits.flagOutliers(this.inputSettings);
 
     // Scale limits using provided multiplier
-    let multiplier: number = this.inputSettings.spc.multiplier.value;
+    const multiplier: number = this.inputSettings.spc.multiplier.value;
 
     calcLimits.values = multiply(calcLimits.values, multiplier);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
     calcLimits.alt_targets = rep(this.inputSettings.spc.alt_target.value, calcLimits.values.length)
 
     if (this.inputSettings.spc.chart_type.value !== "run") {
-      let limits: Record<string, number> = {
+      const limits: Record<string, number> = {
         lower: this.inputSettings.y_axis.ylimit_l.value,
         upper: this.inputSettings.y_axis.ylimit_u.value
       }

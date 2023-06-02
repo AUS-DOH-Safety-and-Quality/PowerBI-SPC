@@ -5,12 +5,12 @@ import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 
 function runLimits(inputData: dataObject): controlLimits {
-  let useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
-  let ratio: number[] = useRatio
+  const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
+  const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
     : inputData.numerators;
 
-  let cl: number = d3.median(ratio);
+  const cl: number = d3.median(ratio);
   return new controlLimits({
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),

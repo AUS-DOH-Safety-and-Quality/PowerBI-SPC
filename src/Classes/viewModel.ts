@@ -31,8 +31,8 @@ class viewModelObject {
     this.tickLabels = new Array<{ x: number; label: string; }>();
 
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
-      let index: number = this.calculatedLimits.keys[i].x;
-      let aesthetics: SettingsBaseTypedT<scatterSettings> = this.inputData.scatter_formatting[i]
+      const index: number = this.calculatedLimits.keys[i].x;
+      const aesthetics: SettingsBaseTypedT<scatterSettings> = this.inputData.scatter_formatting[i]
       if (this.calculatedLimits.shift[i] !== "none") {
         aesthetics.colour = getAesthetic(this.calculatedLimits.shift[i], "outliers",
                                   "shift_colour", this.inputSettings) as string;
@@ -66,10 +66,10 @@ class viewModelObject {
   }
 
   initialiseGroupedLines(): void {
-    let labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values", "alt_targets"];
+    const labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values", "alt_targets"];
 
-    let formattedLines: lineData[] = new Array<lineData>();
-    let nLimits = this.calculatedLimits.keys.length;
+    const formattedLines: lineData[] = new Array<lineData>();
+    const nLimits = this.calculatedLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
@@ -106,7 +106,7 @@ class viewModelObject {
       this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
     } else {
-      let dv: powerbi.DataView[] = args.options.dataViews;
+      const dv: powerbi.DataView[] = args.options.dataViews;
 
       // Only re-construct data and re-calculate limits if they have changed
       if (args.options.type === 2 || this.firstRun) {

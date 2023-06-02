@@ -7,13 +7,13 @@ import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
 
 function mrLimits(inputData: dataObject): controlLimits {
-  let useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
-  let ratio: number[] = useRatio
+  const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
+  const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
     : inputData.numerators;
 
-  let consec_diff: number[] = abs(diff(ratio));
-  let cl: number = d3.mean(consec_diff);
+  const consec_diff: number[] = abs(diff(ratio));
+  const cl: number = d3.mean(consec_diff);
 
   return new controlLimits({
     keys: inputData.keys,
