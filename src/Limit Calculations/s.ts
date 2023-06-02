@@ -7,20 +7,20 @@ import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 
 function sLimits(inputData: dataObject): controlLimits {
-  let group_sd: number[] = inputData.numerators;
-  let count_per_group: number[] = inputData.denominators;
+  const group_sd: number[] = inputData.numerators;
+  const count_per_group: number[] = inputData.denominators;
 
   // Per-group sample size minus 1
-  let Nm1: number[] = subtract(count_per_group, 1);
+  const Nm1: number[] = subtract(count_per_group, 1);
 
   // Calculate weighted SD
-  let cl: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
+  const cl: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
 
   // Sample-size dependent constant
-  let B3: number[] = b3(count_per_group, false);
-  let B395: number[] = b3(count_per_group, true);
-  let B4: number[] = b4(count_per_group, false);
-  let B495: number[] = b4(count_per_group, true);
+  const B3: number[] = b3(count_per_group, false);
+  const B395: number[] = b3(count_per_group, true);
+  const B4: number[] = b4(count_per_group, false);
+  const B495: number[] = b4(count_per_group, true);
 
   return new controlLimits({
     keys: inputData.keys,

@@ -1,6 +1,6 @@
 import settingsObject from "../Classes/settingsObject"
 
-let lineNameMap: Record<string, string> = {
+const lineNameMap: Record<string, string> = {
   "ll99" : "99",
   "ll95" : "95",
   "ul95" : "95",
@@ -11,8 +11,8 @@ let lineNameMap: Record<string, string> = {
 }
 
 function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsObject): string | number {
-  let mapName: string = group.includes("line") ? lineNameMap[type] : type;
-  let settingName: string = aesthetic + "_" + mapName;
+  const mapName: string = group.includes("line") ? lineNameMap[type] : type;
+  const settingName: string = aesthetic + "_" + mapName;
   return inputSettings[group][settingName].value;
 }
 

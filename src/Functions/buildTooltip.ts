@@ -4,7 +4,7 @@ import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import settingsObject from "../Classes/settingsObject";
 
-let valueNames: Record<string, string> = {
+const valueNames: Record<string, string> = {
   "i": "Observation",
   "c": "Count",
   "t": "Time",
@@ -22,24 +22,24 @@ let valueNames: Record<string, string> = {
 function buildTooltip(index: number, calculatedLimits: controlLimits,
                       inputData: dataObject, inputSettings: settingsObject): VisualTooltipDataItem[] {
 
-  let date: string = calculatedLimits.keys[index].label;
-  let value: number = calculatedLimits.values[index];
-  let numerator: number = calculatedLimits.numerators ? calculatedLimits.numerators[index] : null;
-  let denominator: number = calculatedLimits.denominators ? calculatedLimits.denominators[index] : null;
-  let target: number = calculatedLimits.targets[index];
-  let limits = {
+  const date: string = calculatedLimits.keys[index].label;
+  const value: number = calculatedLimits.values[index];
+  const numerator: number = calculatedLimits.numerators ? calculatedLimits.numerators[index] : null;
+  const denominator: number = calculatedLimits.denominators ? calculatedLimits.denominators[index] : null;
+  const target: number = calculatedLimits.targets[index];
+  const limits = {
       ll99: calculatedLimits.ll99 ? calculatedLimits.ll99[index] : null,
       ul99: calculatedLimits.ll99 ? calculatedLimits.ul99[index] : null
     };
-  let chart_type: string = inputSettings.spc.chart_type.value;
-  let prop_labels: boolean = inputData.percentLabels;
-  let astpoint: string = calculatedLimits.astpoint[index];
-  let trend: string = calculatedLimits.trend[index];
-  let shift: string = calculatedLimits.shift[index];
-  let two_in_three: string = calculatedLimits.two_in_three[index];
+  const chart_type: string = inputSettings.spc.chart_type.value;
+  const prop_labels: boolean = inputData.percentLabels;
+  const astpoint: string = calculatedLimits.astpoint[index];
+  const trend: string = calculatedLimits.trend[index];
+  const shift: string = calculatedLimits.shift[index];
+  const two_in_three: string = calculatedLimits.two_in_three[index];
 
-  let sig_figs: number = inputSettings.spc.sig_figs.value;
-  let tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
+  const sig_figs: number = inputSettings.spc.sig_figs.value;
+  const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
     displayName: "Date",
     value: date
@@ -87,7 +87,7 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
 
   if (astpoint !== "none" || trend !== "none" ||
       shift !== "none" || two_in_three !== "none") {
-    let patterns: string[] = new Array<string>();
+    const patterns: string[] = new Array<string>();
     if (astpoint !== "none") {
       patterns.push("Astronomical Point")
     }

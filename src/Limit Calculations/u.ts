@@ -7,8 +7,8 @@ import dataObject from "../Classes/dataObject";
 import truncate from "../Functions/truncate";
 
 function uLimits(inputData: dataObject): controlLimits {
-  let cl: number = divide(d3.sum(inputData.numerators),d3.sum(inputData.denominators));
-  let sigma: number[] = sqrt(divide(cl,inputData.denominators));
+  const cl: number = divide(d3.sum(inputData.numerators),d3.sum(inputData.denominators));
+  const sigma: number[] = sqrt(divide(cl,inputData.denominators));
 
   return new controlLimits({
     keys: inputData.keys,

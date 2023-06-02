@@ -119,7 +119,7 @@ export class Visual implements IVisual {
   }
 
   initTooltipTracking(): void {
-    let xAxisLine = this.svgSelections
+    const xAxisLine = this.svgSelections
                         .tooltipLineSelection
                         .enter()
                         .append("rect")
@@ -130,7 +130,7 @@ export class Visual implements IVisual {
             .attr("height", this.viewModel.plotProperties.height)
             .style("fill-opacity", 0);
 
-    let tooltipMerged = this.svgSelections
+    const tooltipMerged = this.svgSelections
                             .listeningRectSelection
                             .enter()
                             .append("rect")
@@ -143,14 +143,14 @@ export class Visual implements IVisual {
 
     tooltipMerged.on("mousemove", (event) => {
       if (this.viewModel.plotProperties.displayPlot) {
-        let xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
-        let xRange: number[] = this.viewModel
+        const xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
+        const xRange: number[] = this.viewModel
                                     .plotPoints
                                     .map(d => d.x)
                                     .map(d => Math.abs(d - xValue));
-        let nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
-        let scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
-        let scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
+        const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
+        const scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
+        const scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
         this.host.tooltipService.show({
           dataItems: this.viewModel.plotPoints[nearestDenominator].tooltip,
@@ -176,7 +176,7 @@ export class Visual implements IVisual {
   }
 
   drawXAxis(): void {
-    let xAxisProperties: axisProperties = this.viewModel.plotProperties.xAxis;
+    const xAxisProperties: axisProperties = this.viewModel.plotProperties.xAxis;
     let xAxis: d3.Axis<d3.NumberValue>;
 
     if (xAxisProperties.ticks) {
@@ -195,7 +195,7 @@ export class Visual implements IVisual {
       xAxis = d3.axisBottom(this.viewModel.plotProperties.xScale).tickValues([]);
     }
 
-    let axisHeight: number = this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.end_padding;
+    const axisHeight: number = this.viewModel.plotProperties.height - this.viewModel.plotProperties.yAxis.end_padding;
 
     this.svgObjects
         .xAxisGroup
@@ -215,11 +215,11 @@ export class Visual implements IVisual {
         .style("font-family", xAxisProperties.tick_font)
         .style("fill", this.viewModel.plotProperties.displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
-    let xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
+    const xAxisCoordinates: DOMRect = this.svgObjects.xAxisGroup.node().getBoundingClientRect() as DOMRect;
 
     // Update padding and re-draw axis if large tick values rendered outside of plot
-    let tickBelowPlotAmount: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
-    let tickLeftofPlotAmount: number = xAxisCoordinates.left;
+    const tickBelowPlotAmount: number = xAxisCoordinates.bottom - this.viewModel.plotProperties.height;
+    const tickLeftofPlotAmount: number = xAxisCoordinates.left;
     if ((tickBelowPlotAmount > 0 || tickLeftofPlotAmount < 0)) {
       if (!this.refreshingAxis) {
         this.refreshingAxis = true
@@ -230,7 +230,7 @@ export class Visual implements IVisual {
     }
     this.refreshingAxis = false
 
-    let bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
+    const bottomMidpoint: number = this.viewModel.plotProperties.height - (this.viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
 
     this.svgObjects
         .xAxisLabels
@@ -244,10 +244,10 @@ export class Visual implements IVisual {
   }
 
   drawYAxis(): void {
-    let yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
+    const yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
-    let sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
-    let multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
+    const sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
+    const multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
 
     if (this.viewModel.plotProperties.displayPlot) {
       if (yAxisProperties.ticks) {
@@ -286,8 +286,8 @@ export class Visual implements IVisual {
         .style("font-family", yAxisProperties.tick_font)
         .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-    let yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect() as DOMRect;
-    let leftMidpoint: number = yAxisCoordinates.x * 0.7;
+    const yAxisCoordinates: DOMRect = this.svgObjects.yAxisGroup.node().getBoundingClientRect() as DOMRect;
+    const leftMidpoint: number = yAxisCoordinates.x * 0.7;
 
     this.svgObjects
         .yAxisLabels
@@ -362,7 +362,7 @@ export class Visual implements IVisual {
         .on("click", (event, d) => {
           if (this.viewModel.inputSettings.spc.split_on_click.value) {
             if (this.viewModel.splitIndexes) {
-              let xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
+              const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
               if (xIndex > -1) {
                 this.viewModel.splitIndexes.splice(xIndex, 1)
               } else {
@@ -391,8 +391,8 @@ export class Visual implements IVisual {
       if (this.viewModel.plotProperties.displayPlot) {
         // Get screen coordinates of mouse pointer, tooltip will
         //   be displayed at these coordinates
-        let x = event.pageX;
-        let y = event.pageY;
+        const x = event.pageX;
+        const y = event.pageY;
 
         this.host.tooltipService.show({
             dataItems: d.tooltip,
@@ -425,7 +425,7 @@ export class Visual implements IVisual {
   addContextMenu(): void {
     this.svg.on('contextmenu', (event) => {
       const eventTarget: EventTarget = event.target;
-      let dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
+      const dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
       this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
           x: event.clientX,
           y: event.clientY
@@ -438,12 +438,12 @@ export class Visual implements IVisual {
     if (!this.plottingMerged.dotsMerged || !this.plottingMerged.linesMerged) {
       return;
     }
-    let anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
-    let allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+    const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
+    const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
-    let opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;
-    let opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected.value;
-    let defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
+    const opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;
+    const opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected.value;
+    const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                     ? opacityReduced
                                     : opacityFull;
     this.plottingMerged.linesMerged.style("stroke-opacity", defaultOpacity);
@@ -451,10 +451,10 @@ export class Visual implements IVisual {
 
     if (anyHighlights || (allSelectionIDs.length > 0)) {
       this.plottingMerged.dotsMerged.style("fill-opacity", (dot: plotData) => {
-        let currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
+        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });
-        let currentPointHighlighted: boolean = dot.highlighted;
+        const currentPointHighlighted: boolean = dot.highlighted;
         return (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
       })
     }

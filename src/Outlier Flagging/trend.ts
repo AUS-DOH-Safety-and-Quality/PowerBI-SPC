@@ -2,13 +2,13 @@ import * as math from '@stdlib/math/base/special';
 import * as d3 from "d3";
 
 function trend(val: number[], n: number): string[] {
-  let lagged_sign: number[] = val.map((d, i) => {
+  const lagged_sign: number[] = val.map((d, i) => {
     return (i == 0) ? i : Math.sign(d - val[i - 1]);
   });
-  let lagged_sign_sum: number[] = lagged_sign.map((_, i) => {
+  const lagged_sign_sum: number[] = lagged_sign.map((_, i) => {
     return d3.sum(lagged_sign.slice(Math.max(0, i - (n - 2)), i + 1));
   })
-  let trend_detected: string[] = lagged_sign_sum.map(d => {
+  const trend_detected: string[] = lagged_sign_sum.map(d => {
     if (math.abs(d) >= (n - 1)) {
       return d >= (n - 1) ? "upper" : "lower";
     } else {

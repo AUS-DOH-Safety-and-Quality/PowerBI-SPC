@@ -28,8 +28,8 @@ class canvasSettings {
     this.upper_padding = new settingsPair(10);
     this.left_padding = new settingsPair(50);
     this.right_padding = new settingsPair(10);
-  };
-};
+  }
+}
 
 class spcSettings {
   chart_type: settingsPair<string>;
@@ -134,7 +134,7 @@ class xAxisSettings {
     this.xlimit_label_colour = new settingsPair("#000000");
     this.xlimit_l = new settingsPair<number>(null);
     this.xlimit_u = new settingsPair<number>(null);
-  };
+  }
 }
 
 class yAxisSettings {
@@ -168,7 +168,7 @@ class yAxisSettings {
     this.limit_multiplier = new settingsPair(1.5);
     this.ylimit_l = new settingsPair<number>(null);
     this.ylimit_u = new settingsPair<number>(null);
-  };
+  }
 }
 
 class outliersSettings {
@@ -206,7 +206,7 @@ class outliersSettings {
     this.two_in_three = new settingsPair(false);
     this.twointhree_colour_improvement = new settingsPair("#E1C233");
     this.twointhree_colour_deterioration = new settingsPair("#E1C233");
-  };
+  }
 }
 
 type AllSettingsTypes = SettingsBaseTypedT<canvasSettings> | SettingsBaseTypedT<spcSettings> |

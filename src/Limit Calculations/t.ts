@@ -5,11 +5,11 @@ import dataObject from "../Classes/dataObject";
 import truncate from "../Functions/truncate";
 
 function tLimits(inputData: dataObject): controlLimits {
-  let val: number[] = pow(inputData.numerators, 1 / 3.6);
-  let inputDataCopy = inputData;
+  const val: number[] = pow(inputData.numerators, 1 / 3.6);
+  const inputDataCopy = inputData;
   inputDataCopy.numerators = val;
   inputDataCopy.denominators = null;
-  let limits: controlLimits = iLimits(inputDataCopy);
+  const limits: controlLimits = iLimits(inputDataCopy);
   limits.targets = pow(limits.targets, 3.6);
   limits.values = pow(limits.values, 3.6);
   limits.ll99 = truncate(pow(limits.ll99, 3.6), {lower: 0});

@@ -5,8 +5,8 @@ import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
 
 function gLimits(inputData: dataObject): controlLimits {
-  let cl: number = d3.mean(inputData.numerators);
-  let sigma: number = sqrt(cl * (cl + 1));
+  const cl: number = d3.mean(inputData.numerators);
+  const sigma: number = sqrt(cl * (cl + 1));
 
   return new controlLimits({
     keys: inputData.keys,

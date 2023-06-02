@@ -40,17 +40,17 @@ class settingsObject {
    * @param inputObjects
    */
   update(inputView: powerbi.DataView): void {
-    let inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
+    const inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
     // Get the names of all classes in settingsObject which have values to be updated
-    let allSettingGroups: string[] = Object.getOwnPropertyNames(this);
+    const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
-      let condFormatting: AllSettingsTypes = inputView.categorical.categories
+      const condFormatting: AllSettingsTypes = inputView.categorical.categories
                             ? extractConditionalFormatting(inputView.categorical, settingGroup, this)[0]
                             : null;
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
-      let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
+      const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
         this[settingGroup][settingName].value
           = condFormatting ? condFormatting[settingName as keyof AllSettingsTypes]
@@ -69,11 +69,11 @@ class settingsObject {
    * @returns An object where each element is the value for a given setting in the named group
    */
   createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumeration {
-    let settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
+    const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
 
-    let properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
+    const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
       settingNames.map(settingName => {
-        let settingValue: DataViewPropertyValue = this[settingGroupName][settingName].value
+        const settingValue: DataViewPropertyValue = this[settingGroupName][settingName].value
         return [settingName, settingValue]
       })
     )

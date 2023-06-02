@@ -40,8 +40,8 @@ class controlLimits {
   shift: string[];
 
   flagOutliers(inputSettings: settingsObject) {
-    let process_flag_type: string = inputSettings.outliers.process_flag_type.value;
-    let improvement_direction: string = inputSettings.outliers.improvement_direction.value;
+    const process_flag_type: string = inputSettings.outliers.process_flag_type.value;
+    const improvement_direction: string = inputSettings.outliers.improvement_direction.value;
     if (inputSettings.spc.chart_type.value !== "run") {
       if (inputSettings.outliers.astronomical.value) {
         this.astpoint = checkFlagDirection(astronomical(this.values, this.ll99, this.ul99),

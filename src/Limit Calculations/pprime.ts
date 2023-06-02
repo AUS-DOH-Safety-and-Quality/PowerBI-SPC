@@ -8,15 +8,15 @@ import dataObject from "../Classes/dataObject";
 import truncate from "../Functions/truncate";
 
 function pprimeLimits(inputData: dataObject): controlLimits {
-  let val: number[] = divide(inputData.numerators, inputData.denominators);
-  let cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
-  let sd: number[] = sqrt(divide(cl * (1 - cl), inputData.denominators));
-  let zscore: number[] = divide(subtract(val, cl), sd);
+  const val: number[] = divide(inputData.numerators, inputData.denominators);
+  const cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
+  const sd: number[] = sqrt(divide(cl * (1 - cl), inputData.denominators));
+  const zscore: number[] = divide(subtract(val, cl), sd);
 
-  let consec_diff: number[] = abs(diff(zscore));
-  let consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
-  let consec_diff_valid: number[] = consec_diff.filter(d => d < consec_diff_ulim);
-  let sigma: number[] = multiply(sd, d3.mean(consec_diff_valid) / 1.128);
+  const consec_diff: number[] = abs(diff(zscore));
+  const consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
+  const consec_diff_valid: number[] = consec_diff.filter(d => d < consec_diff_ulim);
+  const sigma: number[] = multiply(sd, d3.mean(consec_diff_valid) / 1.128);
 
   return new controlLimits({
     keys: inputData.keys,

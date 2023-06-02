@@ -8,25 +8,25 @@ import dataObject from "../Classes/dataObject";
 
 function xbarLimits(inputData: dataObject): controlLimits {
   // Calculate number of observations in each group
-  let count_per_group: number[] = inputData.denominators;
+  const count_per_group: number[] = inputData.denominators;
 
   // Calculate the mean for each group
-  let group_means: number[] = inputData.numerators;
+  const group_means: number[] = inputData.numerators;
 
   // Calculate the SD for each group
-  let group_sd: number[] = inputData.xbar_sds;
+  const group_sd: number[] = inputData.xbar_sds;
 
   // Per-group sample size minus 1
-  let Nm1: number[] = subtract(count_per_group, 1);
+  const Nm1: number[] = subtract(count_per_group, 1);
 
   // Calculate weighted SD
-  let sd: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
+  const sd: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
 
   // Calculated weighted mean (for centreline)
-  let cl: number = d3.sum(multiply(count_per_group, group_means)) / d3.sum(count_per_group);
+  const cl: number = d3.sum(multiply(count_per_group, group_means)) / d3.sum(count_per_group);
 
   // Sample-size dependent constant
-  let A3: number[] = a3(count_per_group);
+  const A3: number[] = a3(count_per_group);
 
   return new controlLimits({
     keys: inputData.keys,
