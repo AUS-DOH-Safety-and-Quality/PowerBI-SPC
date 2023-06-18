@@ -91,6 +91,7 @@ class settingsObject {
     this.canvas = new canvasSettings();
     this.spc = new spcSettings();
     this.outliers = new outliersSettings();
+    this.nhs_icons = new nhsIconSettings();
     this.scatter = new scatterSettings();
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();

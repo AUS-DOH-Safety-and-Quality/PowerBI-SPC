@@ -105,6 +105,10 @@ export class Visual implements IVisual {
       console.log("Draw dots start")
       this.drawDots();
 
+      if (this.viewModel.inputSettings.nhs_icons.show_variation_icons.value) {
+        this.svgIcons.drawIcons(this.viewModel)
+      }
+
       this.addContextMenu();
       this.events.renderingFinished(options);
       console.log("Update finished")

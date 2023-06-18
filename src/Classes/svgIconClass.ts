@@ -80,16 +80,41 @@ class svgIconClass {
 
   drawIcons(viewModel: viewModelObject): void {
     d3.selectAll(".icongroup").remove()
+    if (!viewModel.inputSettings.nhs_icons.show_variation_icons.value) {
+      return;
+    }
     const svg_width: number = viewModel.plotProperties.width
     const svg_height: number = viewModel.plotProperties.height
 
     const currLimits: controlLimits = viewModel.calculatedLimits;
+    const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction.value;
+    const suffix_map: Record<string, string> = {
+      "increase" : "High",
+      "decrease" : "Low",
+      "neutral" : ""
+    }
+    const suffix: string = suffix_map[imp_direction];
     const allFlags: string[]
       = currLimits.astpoint.concat(currLimits.shift, currLimits.trend, currLimits.two_in_three);
 
-    const toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
-                              "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
-    toDraw.forEach((icon: string, idx: number) => {
+    const iconsPresent: string[] = new Array<string>();
+
+    if (allFlags.includes("improvement")) {
+      iconsPresent.push("improvement" + suffix)
+    }
+    if (allFlags.includes("deterioration")) {
+      iconsPresent.push("concern" + suffix)
+    }
+    if (allFlags.includes("neutral_low")) {
+      iconsPresent.push("neutralLow")
+    }
+    if (allFlags.includes("neutral_high")) {
+      iconsPresent.push("neutralHigh")
+    }
+
+    //const toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
+    //                          "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
+    iconsPresent.forEach((icon: string, idx: number) => {
       this.initialiseSVG(svg_width, svg_height, idx)
           .call(iconSVG[icon as keyof typeof iconSVG])
     })
