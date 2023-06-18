@@ -225,10 +225,20 @@ class outliersSettings {
   }
 }
 
+class nhsIconSettings {
+  show_variation_icons: settingsPair<boolean>;
+  variation_icons_locations: settingsPair<string>;
+
+  constructor() {
+    this.show_variation_icons = new settingsPair(false);
+    this.variation_icons_locations = new settingsPair("Top Right");
+  }
+}
+
 type AllSettingsTypes = SettingsBaseTypedT<canvasSettings> | SettingsBaseTypedT<spcSettings> |
                         SettingsBaseTypedT<outliersSettings> | SettingsBaseTypedT<scatterSettings> |
                         SettingsBaseTypedT<lineSettings> | SettingsBaseTypedT<xAxisSettings> |
-                        SettingsBaseTypedT<yAxisSettings>;
+                        SettingsBaseTypedT<yAxisSettings> | SettingsBaseTypedT<nhsIconSettings>;
 
 export {
   canvasSettings,
@@ -238,6 +248,7 @@ export {
   xAxisSettings,
   yAxisSettings,
   outliersSettings,
+  nhsIconSettings,
   SettingsBaseTypedT,
   AllSettingsTypes
 }

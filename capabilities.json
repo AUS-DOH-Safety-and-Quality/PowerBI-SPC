@@ -277,6 +277,39 @@
                 }
             }
         },
+        "nhs_icons" : {
+            "displayName": "NHS Icons",
+            "properties": {
+              "show_variation_icons": {
+                  "displayName": "Show Variation Icons",
+                  "type" : { "bool" : true }
+              },
+              "variation_icons_locations": {
+                "displayName": "Variation Icon Locations",
+                "type": {
+                  "enumeration" : [
+                    {
+                      "displayName" : "Top Right",
+                      "value" : "Top Right"
+                    },
+                    {
+                      "displayName" : "Bottom Right",
+                      "value" : "Bottom Right"
+                    },
+                    {
+                      "displayName" : "Top Left",
+                      "value" : "Top Left"
+                    },
+                    {
+                      "displayName" : "Bottom Left",
+                      "value" : "Bottom Left"
+                    }
+                  ]
+                }
+              }
+
+            }
+        },
         "canvas": {
             "displayName": "Canvas Settings",
             "properties": {

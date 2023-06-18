@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import * as iconSVG from "../Icons"
 import viewModelObject from "./viewModel";
+import controlLimits from "./controlLimits";
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 class svgIconClass {
@@ -76,13 +77,18 @@ class svgIconClass {
     return icon_svg
   }
 
+
   drawIcons(viewModel: viewModelObject): void {
     d3.selectAll(".icongroup").remove()
     const svg_width: number = viewModel.plotProperties.width
     const svg_height: number = viewModel.plotProperties.height
 
+    const currLimits: controlLimits = viewModel.calculatedLimits;
+    const allFlags: string[]
+      = currLimits.astpoint.concat(currLimits.shift, currLimits.trend, currLimits.two_in_three);
+
     const toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
-                            "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
+                              "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
     toDraw.forEach((icon: string, idx: number) => {
       this.initialiseSVG(svg_width, svg_height, idx)
           .call(iconSVG[icon as keyof typeof iconSVG])

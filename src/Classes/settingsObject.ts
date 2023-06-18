@@ -9,6 +9,7 @@ import {
   canvasSettings,
   spcSettings,
   outliersSettings,
+  nhsIconSettings,
   scatterSettings,
   lineSettings,
   xAxisSettings,
@@ -28,6 +29,7 @@ class settingsObject {
   canvas: canvasSettings;
   spc: spcSettings;
   outliers: outliersSettings;
+  nhs_icons: nhsIconSettings;
   scatter: scatterSettings;
   lines: lineSettings;
   x_axis: xAxisSettings;
