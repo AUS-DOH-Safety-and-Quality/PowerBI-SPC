@@ -27,7 +27,7 @@ class chartObject {
                                   .sort((a,b) => a - b);
       const groupedData: dataObject[] = indexes.map((d, idx) => {
         // Force a deep copy
-        const data = JSON.parse(JSON.stringify(this.inputData));
+        const data: dataObject = JSON.parse(JSON.stringify(this.inputData));
          if(idx === 0) {
           data.denominators = data.denominators.slice(0, d + 1)
           data.numerators = data.numerators.slice(0, d + 1)

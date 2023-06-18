@@ -177,6 +177,10 @@
                         "value" : "increase"
                       },
                       {
+                        "displayName" : "Neutral",
+                        "value" : "neutral"
+                      },
+                      {
                         "displayName" : "Decrease",
                         "value" : "decrease"
                       }
@@ -189,24 +193,20 @@
                 },
                 "ast_colour_improvement":{
                     "displayName": "Imp. Ast. Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
-                 "ast_colour_deterioration":{
-                     "displayName": "Det. Ast. Colour",
-                     "type": {
-                         "fill": {
-                             "solid": {
-                                 "color": true
-                             }
-                         }
-                     }
-                  },
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "ast_colour_deterioration":{
+                    "displayName": "Det. Ast. Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "ast_colour_neutral_low":{
+                    "displayName": "Neutral (Low) Ast. Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "ast_colour_neutral_high":{
+                  "displayName": "Neutral (High) Ast. Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
                 "shift": {
                     "displayName": "Shifts",
                     "type" : { "bool" : true }
@@ -217,24 +217,20 @@
                 },
                 "shift_colour_improvement":{
                     "displayName": "Imp. Shift Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
-                 "shift_colour_deterioration":{
-                     "displayName": "Det. Shift Colour",
-                     "type": {
-                         "fill": {
-                             "solid": {
-                                 "color": true
-                             }
-                         }
-                     }
-                  },
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "shift_colour_deterioration":{
+                    "displayName": "Det. Shift Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "shift_colour_neutral_low":{
+                    "displayName": "Neutral (Low) Shift Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "shift_colour_neutral_high":{
+                  "displayName": "Neutral (High) Shift Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
                 "trend": {
                     "displayName": "Trends",
                     "type" : { "bool" : true }
@@ -245,48 +241,40 @@
                 },
                 "trend_colour_improvement":{
                     "displayName": "Imp. Trend Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
-                 "trend_colour_deterioration":{
-                     "displayName": "Det. Trend Colour",
-                     "type": {
-                         "fill": {
-                             "solid": {
-                                 "color": true
-                             }
-                         }
-                     }
-                  },
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "trend_colour_deterioration":{
+                    "displayName": "Det. Trend Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "trend_colour_neutral_low":{
+                    "displayName": "Neutral (Low) Trend Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "trend_colour_neutral_high":{
+                  "displayName": "Neutral (High) Trend Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
                 "two_in_three": {
                     "displayName": "Two-in-Three",
                     "type" : { "bool" : true }
                 },
                 "twointhree_colour_improvement":{
                     "displayName": "Imp. Two-in-Three Colour",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                 },
-                 "twointhree_colour_deterioration":{
-                     "displayName": "Det. Two-in-Three Colour",
-                     "type": {
-                         "fill": {
-                             "solid": {
-                                 "color": true
-                             }
-                         }
-                     }
-                  }
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "twointhree_colour_deterioration":{
+                    "displayName": "Det. Two-in-Three Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "twointhree_colour_neutral_low":{
+                    "displayName": "Neutral (Low) Two-in-Three Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                },
+                "twointhree_colour_neutral_high":{
+                  "displayName": "Neutral (High) Two-in-Three Colour",
+                    "type": { "fill": {  "solid": { "color": true } } }
+                }
             }
         },
         "canvas": {
