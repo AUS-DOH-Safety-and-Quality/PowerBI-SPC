@@ -7,13 +7,32 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 class svgIconClass {
   iconGroup: SelectionBase;
 
-  initialiseSVG(svg_width: number, svg_height: number, count: number): SelectionBase {
+  /**
+   * This method initialises a plotting space for rendering a given NHS SVG icon.
+   * The method uses the current number of the icon (i.e., whether it's the first,
+   * second, etc.) to appropriately place the plotting space.
+   *
+   * This method is intended to be called inline, followed by a call to the appropriate
+   * icon rendering function from the "Icons" folder.
+   *
+   * @param svg_width
+   * @param svg_height
+   * @param count
+   * @returns
+   */
+  initialiseSVG(svg_width: number, svg_height: number, location: string, count: number): SelectionBase {
     const scaling_factor: number = 0.08 * (svg_height / 378)
     const scale: string = "scale(" + scaling_factor + ")"
-    const translate: string = "translate(" + ((svg_width / scaling_factor) - (378 + (count * 378))) + ", 0)"
+    const icon_x: number = location.includes("Right")
+                            ? (svg_width / scaling_factor) - (378 + (count * 378))
+                            : (count * 378);
+    const icon_y: number = location.includes("Bottom")
+                            ? (svg_height / scaling_factor) - 378
+                            : 0;
+
     const icon_group = this.iconGroup.append('g')
                                     .classed("icongroup", true)
-                                    .attr("transform", scale + " " + translate)
+                                    .attr("transform", `${scale} translate(${icon_x}, ${icon_y})`)
     const icon_defs = icon_group.append("defs")
     const icon_defs_filter = icon_defs.append("filter")
                                     .attr("id", "fx0")
@@ -77,14 +96,15 @@ class svgIconClass {
     return icon_svg
   }
 
-
   drawIcons(viewModel: viewModelObject): void {
     d3.selectAll(".icongroup").remove()
-    if (!viewModel.inputSettings.nhs_icons.show_variation_icons.value) {
+    const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons.value;
+    if (!draw_variation) {
       return;
     }
     const svg_width: number = viewModel.plotProperties.width
     const svg_height: number = viewModel.plotProperties.height
+    const variation_location: string = viewModel.inputSettings.nhs_icons.variation_icons_locations.value;
 
     const currLimits: controlLimits = viewModel.calculatedLimits;
     const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction.value;
@@ -112,10 +132,8 @@ class svgIconClass {
       iconsPresent.push("neutralHigh")
     }
 
-    //const toDraw: string[] = ["commonCause", "concernHigh", "concernLow", "improvementHigh",
-    //                          "improvementLow", "neutralHigh", "neutralLow", "fail", "pass"]
     iconsPresent.forEach((icon: string, idx: number) => {
-      this.initialiseSVG(svg_width, svg_height, idx)
+      this.initialiseSVG(svg_width, svg_height, variation_location, idx)
           .call(iconSVG[icon as keyof typeof iconSVG])
     })
   }

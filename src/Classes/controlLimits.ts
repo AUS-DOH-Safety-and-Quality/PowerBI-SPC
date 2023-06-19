@@ -38,7 +38,6 @@ class controlLimits {
   trend: string[];
   two_in_three: string[];
   shift: string[];
-  variation_icon: string[];
 
   flagOutliers(inputSettings: settingsObject) {
     const process_flag_type: string = inputSettings.outliers.process_flag_type.value;
