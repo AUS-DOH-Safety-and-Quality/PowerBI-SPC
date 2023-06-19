@@ -15,14 +15,10 @@ class svgIconClass {
    * This method is intended to be called inline, followed by a call to the appropriate
    * icon rendering function from the "Icons" folder.
    *
-   * @param svg_width
-   * @param svg_height
-   * @param count
-   * @returns
    */
-  initialiseSVG(svg_width: number, svg_height: number, location: string, count: number): SelectionBase {
-    const scaling_factor: number = 0.08 * (svg_height / 378)
-    const scale: string = "scale(" + scaling_factor + ")"
+  initialiseSVG(svg_width: number, svg_height: number, location: string, scaling: number, count: number): SelectionBase {
+    const scaling_factor: number = (0.08 * (svg_height / 378)) * scaling
+    const scale: string = `scale(${scaling_factor})`
     const icon_x: number = location.includes("Right")
                             ? (svg_width / scaling_factor) - (378 + (count * 378))
                             : (count * 378);
@@ -140,11 +136,12 @@ class svgIconClass {
     const svg_width: number = viewModel.plotProperties.width
     const svg_height: number = viewModel.plotProperties.height
     const variation_location: string = viewModel.inputSettings.nhs_icons.variation_icons_locations.value;
+    const variation_scaling: number = viewModel.inputSettings.nhs_icons.variation_icons_scaling.value;
 
     const variation_icons: string[] = this.variationIconsToDraw(viewModel);
 
     variation_icons.forEach((icon: string, idx: number) => {
-      this.initialiseSVG(svg_width, svg_height, variation_location, idx)
+      this.initialiseSVG(svg_width, svg_height, variation_location, variation_scaling, idx)
           .call(iconSVG[icon as keyof typeof iconSVG])
     })
   }

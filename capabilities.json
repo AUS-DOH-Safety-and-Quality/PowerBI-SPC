@@ -306,6 +306,10 @@
                     }
                   ]
                 }
+              },
+              "variation_icons_scaling":{
+                "displayName": "Scale Variation Icon Size",
+                "type": { "numeric": true }
               }
             }
         },
