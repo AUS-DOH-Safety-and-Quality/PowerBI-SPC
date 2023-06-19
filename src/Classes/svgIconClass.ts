@@ -96,16 +96,7 @@ class svgIconClass {
     return icon_svg
   }
 
-  drawIcons(viewModel: viewModelObject): void {
-    d3.selectAll(".icongroup").remove()
-    const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons.value;
-    if (!draw_variation) {
-      return;
-    }
-    const svg_width: number = viewModel.plotProperties.width
-    const svg_height: number = viewModel.plotProperties.height
-    const variation_location: string = viewModel.inputSettings.nhs_icons.variation_icons_locations.value;
-
+  variationIconsToDraw(viewModel: viewModelObject): string[] {
     const currLimits: controlLimits = viewModel.calculatedLimits;
     const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction.value;
     const suffix_map: Record<string, string> = {
@@ -132,7 +123,27 @@ class svgIconClass {
       iconsPresent.push("neutralHigh")
     }
 
-    iconsPresent.forEach((icon: string, idx: number) => {
+    // No triggers/outliers detected
+    if (iconsPresent.length === 0) {
+      iconsPresent.push("commonCause")
+    }
+
+    return iconsPresent;
+  }
+
+  drawIcons(viewModel: viewModelObject): void {
+    d3.selectAll(".icongroup").remove()
+    const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons.value;
+    if (!draw_variation) {
+      return;
+    }
+    const svg_width: number = viewModel.plotProperties.width
+    const svg_height: number = viewModel.plotProperties.height
+    const variation_location: string = viewModel.inputSettings.nhs_icons.variation_icons_locations.value;
+
+    const variation_icons: string[] = this.variationIconsToDraw(viewModel);
+
+    variation_icons.forEach((icon: string, idx: number) => {
       this.initialiseSVG(svg_width, svg_height, variation_location, idx)
           .call(iconSVG[icon as keyof typeof iconSVG])
     })
