@@ -105,6 +105,8 @@ export class Visual implements IVisual {
       console.log("Draw dots start")
       this.drawDots();
 
+      this.svgIcons.drawIcons(this.viewModel)
+
       this.addContextMenu();
       this.events.renderingFinished(options);
       console.log("Update finished")

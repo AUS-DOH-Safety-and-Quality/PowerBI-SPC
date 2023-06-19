@@ -9,6 +9,7 @@ import {
   canvasSettings,
   spcSettings,
   outliersSettings,
+  nhsIconSettings,
   scatterSettings,
   lineSettings,
   xAxisSettings,
@@ -28,6 +29,7 @@ class settingsObject {
   canvas: canvasSettings;
   spc: spcSettings;
   outliers: outliersSettings;
+  nhs_icons: nhsIconSettings;
   scatter: scatterSettings;
   lines: lineSettings;
   x_axis: xAxisSettings;
@@ -89,6 +91,7 @@ class settingsObject {
     this.canvas = new canvasSettings();
     this.spc = new spcSettings();
     this.outliers = new outliersSettings();
+    this.nhs_icons = new nhsIconSettings();
     this.scatter = new scatterSettings();
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();
