@@ -13,9 +13,14 @@ function checkFlagDirection_impl(outlierStatus: string, flagSettings: {process_f
     "lower" : "improvement",
     "upper" : "deterioration"
   }
+  const neutralDirectionMap: Record<string, string> = {
+    "lower" : "neutral_low",
+    "upper" : "neutral_high"
+  }
   const flagDirectionMap: Record<string, string> = {
     "increase" : increaseDirectionMap[outlierStatus],
-    "decrease" : decreaseDirectionMap[outlierStatus]
+    "decrease" : decreaseDirectionMap[outlierStatus],
+    "neutral"  : neutralDirectionMap[outlierStatus]
   }
 
   const mappedFlag: string = flagDirectionMap[flagSettings.improvement_direction];

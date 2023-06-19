@@ -177,17 +177,25 @@ class outliersSettings {
   astronomical: settingsPair<boolean>;
   ast_colour_improvement: settingsPair<string>;
   ast_colour_deterioration: settingsPair<string>;
+  ast_colour_neutral_low: settingsPair<string>;
+  ast_colour_neutral_high: settingsPair<string>;
   shift: settingsPair<boolean>;
   shift_n: settingsPair<number>;
   shift_colour_improvement: settingsPair<string>;
   shift_colour_deterioration: settingsPair<string>;
+  shift_colour_neutral_low: settingsPair<string>;
+  shift_colour_neutral_high: settingsPair<string>;
   trend: settingsPair<boolean>;
   trend_n: settingsPair<number>;
   trend_colour_improvement: settingsPair<string>;
   trend_colour_deterioration: settingsPair<string>;
+  trend_colour_neutral_low: settingsPair<string>;
+  trend_colour_neutral_high: settingsPair<string>;
   two_in_three: settingsPair<boolean>;
   twointhree_colour_improvement: settingsPair<string>;
   twointhree_colour_deterioration: settingsPair<string>;
+  twointhree_colour_neutral_low: settingsPair<string>;
+  twointhree_colour_neutral_high: settingsPair<string>;
 
   constructor() {
     this.process_flag_type = new settingsPair("both");
@@ -195,17 +203,25 @@ class outliersSettings {
     this.astronomical = new settingsPair(false);
     this.ast_colour_improvement = new settingsPair("#E1C233");
     this.ast_colour_deterioration = new settingsPair("#E1C233");
+    this.ast_colour_neutral_low = new settingsPair("#E1C233");
+    this.ast_colour_neutral_high = new settingsPair("#E1C233");
     this.shift = new settingsPair(false);
     this.shift_n = new settingsPair(7);
     this.shift_colour_improvement = new settingsPair("#E1C233");
     this.shift_colour_deterioration = new settingsPair("#E1C233");
+    this.shift_colour_neutral_low = new settingsPair("#E1C233");
+    this.shift_colour_neutral_high = new settingsPair("#E1C233");
     this.trend = new settingsPair(false);
     this.trend_n = new settingsPair(5);
     this.trend_colour_improvement = new settingsPair("#E1C233");
     this.trend_colour_deterioration = new settingsPair("#E1C233");
+    this.trend_colour_neutral_low = new settingsPair("#E1C233");
+    this.trend_colour_neutral_high = new settingsPair("#E1C233");
     this.two_in_three = new settingsPair(false);
     this.twointhree_colour_improvement = new settingsPair("#E1C233");
     this.twointhree_colour_deterioration = new settingsPair("#E1C233");
+    this.twointhree_colour_neutral_low = new settingsPair("#E1C233");
+    this.twointhree_colour_neutral_high = new settingsPair("#E1C233");
   }
 }
 
