@@ -19,6 +19,8 @@ const valueNames: Record<string, string> = {
   "up": "Rate"
 }
 
+const integerParams: string[] = ["c", "p", "pp"];
+
 function buildTooltip(index: number, calculatedLimits: controlLimits,
                       inputData: dataObject, inputSettings: settingsObject): VisualTooltipDataItem[] {
 
@@ -37,6 +39,12 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
   const trend: string = calculatedLimits.trend[index];
   const shift: string = calculatedLimits.shift[index];
   const two_in_three: string = calculatedLimits.two_in_three[index];
+  let multiplier: number = inputSettings.spc.multiplier.value;
+  if (prop_labels && (multiplier === 1)) {
+    multiplier = 100;
+  }
+  const suffix: string = prop_labels ? "%" : "";
+  let intNumDen: boolean = integerParams.includes(chart_type);
 
   const sig_figs: number = inputSettings.spc.sig_figs.value;
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
@@ -46,42 +54,34 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
   });
   tooltip.push({
     displayName: valueNames[chart_type],
-    value: prop_labels
-      ? (value).toFixed(sig_figs) + "%"
-      : value.toFixed(sig_figs)
+    value: (value * multiplier).toFixed(sig_figs) + suffix
   })
   if(numerator || !(numerator === null || numerator === undefined)) {
     tooltip.push({
       displayName: "Numerator",
-      value: (numerator).toFixed(sig_figs)
+      value: (numerator).toFixed(intNumDen ? 0 : sig_figs)
     })
   }
   if(denominator || !(denominator === null || denominator === undefined)) {
     tooltip.push({
       displayName: "Denominator",
-      value: (denominator).toFixed(sig_figs)
+      value: (denominator).toFixed(intNumDen ? 0 : sig_figs)
     })
   }
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Upper 99% Limit",
-      value: prop_labels
-        ? (limits.ul99).toFixed(sig_figs) + "%"
-        : limits.ul99.toFixed(sig_figs)
+      value: (limits.ul99 * multiplier).toFixed(sig_figs) + suffix
     })
   }
   tooltip.push({
     displayName: "Centerline",
-    value: prop_labels
-      ? (target).toFixed(sig_figs) + "%"
-      : target.toFixed(sig_figs)
+    value: (target * multiplier).toFixed(sig_figs) + suffix
   })
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Lower 99% Limit",
-      value: prop_labels
-        ? (limits.ll99).toFixed(sig_figs) + "%"
-        : limits.ll99.toFixed(sig_figs)
+      value: (limits.ll99 * multiplier).toFixed(sig_figs) + suffix
     })
   }
 

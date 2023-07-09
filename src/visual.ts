@@ -250,7 +250,8 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     const yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
-    const sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
+    const yaxis_sig_figs: number = this.viewModel.inputSettings.y_axis.ylimit_sig_figs.value;
+    const sig_figs: number = yaxis_sig_figs === null ? this.viewModel.inputSettings.spc.sig_figs.value : yaxis_sig_figs;
     const multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
 
     if (this.viewModel.plotProperties.displayPlot) {
@@ -281,9 +282,8 @@ export class Visual implements IVisual {
         .attr("transform", "translate(" + this.viewModel.plotProperties.xAxis.start_padding + ",0)")
         .selectAll(".tick text")
         // Right-align
-        .style("text-anchor", "middle")
+        .style("text-anchor", "right")
         // Rotate tick labels
-        .attr("dx", "-1em")
         .attr("transform","rotate(" + yAxisProperties.tick_rotation + ")")
         // Scale font
         .style("font-size", yAxisProperties.tick_size)
