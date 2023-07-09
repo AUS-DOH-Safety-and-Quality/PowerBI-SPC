@@ -19,6 +19,8 @@ const valueNames: Record<string, string> = {
   "up": "Rate"
 }
 
+const integerParams: string[] = ["c", "p", "pp"];
+
 function buildTooltip(index: number, calculatedLimits: controlLimits,
                       inputData: dataObject, inputSettings: settingsObject): VisualTooltipDataItem[] {
 
@@ -42,6 +44,7 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
     multiplier = 100;
   }
   const suffix: string = prop_labels ? "%" : "";
+  let intNumDen: boolean = integerParams.includes(chart_type);
 
   const sig_figs: number = inputSettings.spc.sig_figs.value;
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
@@ -56,13 +59,13 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
   if(numerator || !(numerator === null || numerator === undefined)) {
     tooltip.push({
       displayName: "Numerator",
-      value: (numerator).toFixed(sig_figs)
+      value: (numerator).toFixed(intNumDen ? 0 : sig_figs)
     })
   }
   if(denominator || !(denominator === null || denominator === undefined)) {
     tooltip.push({
       displayName: "Denominator",
-      value: (denominator).toFixed(sig_figs)
+      value: (denominator).toFixed(intNumDen ? 0 : sig_figs)
     })
   }
   if (chart_type !== "run") {
