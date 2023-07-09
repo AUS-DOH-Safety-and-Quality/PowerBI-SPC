@@ -281,9 +281,8 @@ export class Visual implements IVisual {
         .attr("transform", "translate(" + this.viewModel.plotProperties.xAxis.start_padding + ",0)")
         .selectAll(".tick text")
         // Right-align
-        .style("text-anchor", "middle")
+        .style("text-anchor", "right")
         // Rotate tick labels
-        .attr("dx", "-1em")
         .attr("transform","rotate(" + yAxisProperties.tick_rotation + ")")
         // Scale font
         .style("font-size", yAxisProperties.tick_size)
