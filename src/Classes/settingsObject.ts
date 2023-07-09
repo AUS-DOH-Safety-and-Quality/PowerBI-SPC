@@ -91,7 +91,6 @@ class settingsObject {
 
   constructor() {
     this.canvas = new canvasSettings();
-    this
     this.spc = new spcSettings();
     this.outliers = new outliersSettings();
     this.nhs_icons = new nhsIconSettings();
