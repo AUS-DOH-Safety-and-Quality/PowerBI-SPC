@@ -250,7 +250,8 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     const yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
-    const sig_figs: number = this.viewModel.inputSettings.spc.sig_figs.value;
+    const yaxis_sig_figs: number = this.viewModel.inputSettings.y_axis.ylimit_sig_figs.value;
+    const sig_figs: number = yaxis_sig_figs === null ? this.viewModel.inputSettings.spc.sig_figs.value : yaxis_sig_figs;
     const multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
 
     if (this.viewModel.plotProperties.displayPlot) {

@@ -166,10 +166,12 @@ class yAxisSettings {
   limit_multiplier: settingsPair<number>;
   ylimit_l: settingsPair<number>;
   ylimit_u: settingsPair<number>;
+  ylimit_sig_figs: settingsPair<number>;
 
   constructor() {
     this.ylimit_colour = new settingsPair("#000000");
     this.ylimit_ticks = new settingsPair(true);
+    this.ylimit_sig_figs = new settingsPair<number>(null);
     this.ylimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.ylimit_tick_size = new settingsPair("x-small");
     this.ylimit_tick_colour = new settingsPair("#000000");

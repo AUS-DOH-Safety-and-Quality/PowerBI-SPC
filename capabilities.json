@@ -881,6 +881,10 @@
                     "displayName": "Draw Ticks",
                     "type" : { "bool" : true }
                 },
+                "ylimit_sig_figs": {
+                    "displayName": "Tick Decimal Places",
+                    "type": { "numeric": true }
+                },
                 "ylimit_tick_font": {
                     "displayName": "Tick Font",
                     "type": {
