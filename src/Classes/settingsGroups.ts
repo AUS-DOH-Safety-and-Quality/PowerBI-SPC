@@ -31,6 +31,22 @@ class canvasSettings {
   }
 }
 
+class datesSettings {
+  date_format_day: settingsPair<string>;
+  date_format_month: settingsPair<string>;
+  date_format_year: settingsPair<string>;
+  date_format_delim: settingsPair<string>;
+  date_format_locale: settingsPair<string>;
+
+  constructor() {
+    this.date_format_day = new settingsPair("DD");
+    this.date_format_month = new settingsPair("MM");
+    this.date_format_year = new settingsPair("YYYY");
+    this.date_format_delim = new settingsPair("/");
+    this.date_format_locale = new settingsPair("en-GB");
+  }
+}
+
 class spcSettings {
   chart_type: settingsPair<string>;
   multiplier: settingsPair<number>;
@@ -105,7 +121,6 @@ class lineSettings {
 
 class xAxisSettings {
   xlimit_colour: settingsPair<string>;
-  xlimit_date_format: settingsPair<string>;
   xlimit_ticks: settingsPair<boolean>;
   xlimit_tick_font: settingsPair<string>;
   xlimit_tick_size: settingsPair<string>;
@@ -121,7 +136,6 @@ class xAxisSettings {
 
   constructor() {
     this.xlimit_colour = new settingsPair("#000000");
-    this.xlimit_date_format = new settingsPair("{ \"locale\": \"en-GB\", \"options\": { \"day\" : \"2-digit\", \"month\" : \"2-digit\", \"year\" : \"numeric\" }, \"delimiter\": \"/\" }");
     this.xlimit_ticks = new settingsPair(true);
     this.xlimit_tick_font = new settingsPair("'Arial', sans-serif");
     this.xlimit_tick_size = new settingsPair("x-small");
@@ -240,7 +254,8 @@ class nhsIconSettings {
 type AllSettingsTypes = SettingsBaseTypedT<canvasSettings> | SettingsBaseTypedT<spcSettings> |
                         SettingsBaseTypedT<outliersSettings> | SettingsBaseTypedT<scatterSettings> |
                         SettingsBaseTypedT<lineSettings> | SettingsBaseTypedT<xAxisSettings> |
-                        SettingsBaseTypedT<yAxisSettings> | SettingsBaseTypedT<nhsIconSettings>;
+                        SettingsBaseTypedT<yAxisSettings> | SettingsBaseTypedT<nhsIconSettings> |
+                        SettingsBaseTypedT<datesSettings>;
 
 export {
   canvasSettings,
@@ -252,5 +267,6 @@ export {
   outliersSettings,
   nhsIconSettings,
   SettingsBaseTypedT,
+  datesSettings,
   AllSettingsTypes
 }

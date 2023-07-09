@@ -14,6 +14,7 @@ import {
   lineSettings,
   xAxisSettings,
   yAxisSettings,
+  datesSettings,
   AllSettingsTypes
 } from "./settingsGroups"
 
@@ -34,6 +35,7 @@ class settingsObject {
   lines: lineSettings;
   x_axis: xAxisSettings;
   y_axis: yAxisSettings;
+  dates: datesSettings;
 
   /**
    * Function to read the values from the settings pane and update the
@@ -89,6 +91,7 @@ class settingsObject {
 
   constructor() {
     this.canvas = new canvasSettings();
+    this
     this.spc = new spcSettings();
     this.outliers = new outliersSettings();
     this.nhs_icons = new nhsIconSettings();
@@ -96,6 +99,7 @@ class settingsObject {
     this.lines = new lineSettings();
     this.x_axis = new xAxisSettings();
     this.y_axis = new yAxisSettings();
+    this.dates = new datesSettings();
   }
 }
 
