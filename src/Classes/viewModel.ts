@@ -97,6 +97,7 @@ class viewModelObject {
       this.inputSettings = new settingsObject();
     }
     this.inputSettings.update(args.options.dataViews[0]);
+    this.splitIndexes = JSON.parse(<string>(args.options.dataViews[0].metadata.objects.split_indexes_storage.split_indexes))
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(args.options.dataViews)) {

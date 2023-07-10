@@ -11,6 +11,7 @@ import IVisual = extensibility.IVisual;
 import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
 import VisualUpdateOptions = ex_visual.VisualUpdateOptions;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+import VisualObjectInstance = powerbi.VisualObjectInstance;
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 import IVisualHost = ex_visual.IVisualHost;
 import ISelectionManager = extensibility.ISelectionManager;
@@ -47,6 +48,7 @@ export class Visual implements IVisual {
 
   constructor(options: VisualConstructorOptions) {
     console.log("Constructor start")
+    console.log(options)
     this.events = options.host.eventService;
     this.host = options.host;
     this.svg = d3.select(options.element)
@@ -110,6 +112,7 @@ export class Visual implements IVisual {
       this.addContextMenu();
       this.events.renderingFinished(options);
       console.log("Update finished")
+      console.log(this.viewModel)
     } catch (caught_error) {
       console.error(caught_error)
       this.events.renderingFailed(options);
@@ -378,7 +381,18 @@ export class Visual implements IVisual {
               this.viewModel.splitIndexes = [d.x]
             }
             this.updateOptions.type = 2;
-            this.update(this.updateOptions)
+            const instance: VisualObjectInstance = {
+              objectName: "split_indexes_storage",
+              selector: undefined,
+              properties: {
+                split_indexes: JSON.stringify(this.viewModel.splitIndexes)
+              }
+            }
+
+            this.host.persistProperties({
+              replace: [ instance ]
+            });
+            //this.update(this.updateOptions)
           } else {
             // Pass identities of selected data back to PowerBI
             this.selectionManager

@@ -33,6 +33,15 @@
         }
     ],
     "objects": {
+        "split_indexes_storage" : {
+          "displayName" : "Hidden",
+          "properties": {
+            "split_indexes": {
+              "displayName": "Hidden",
+              "type": { "text": true }
+            }
+          }
+        },
         "spc" : {
             "displayName": "Data Settings",
             "properties": {
