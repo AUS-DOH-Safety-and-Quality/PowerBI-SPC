@@ -392,7 +392,6 @@ export class Visual implements IVisual {
             this.host.persistProperties({
               replace: [ instance ]
             });
-            //this.update(this.updateOptions)
           } else {
             // Pass identities of selected data back to PowerBI
             this.selectionManager
