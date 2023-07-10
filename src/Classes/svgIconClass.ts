@@ -100,6 +100,11 @@ class svgIconClass {
       "decrease" : "Low",
       "neutral" : ""
     }
+    const invert_suffix_map: Record<string, string> = {
+      "High" : "Low",
+      "Low" : "High",
+      "" : ""
+    }
     const suffix: string = suffix_map[imp_direction];
     const allFlags: string[]
       = currLimits.astpoint.concat(currLimits.shift, currLimits.trend, currLimits.two_in_three);
@@ -110,7 +115,7 @@ class svgIconClass {
       iconsPresent.push("improvement" + suffix)
     }
     if (allFlags.includes("deterioration")) {
-      iconsPresent.push("concern" + suffix)
+      iconsPresent.push("concern" + invert_suffix_map[suffix])
     }
     if (allFlags.includes("neutral_low")) {
       iconsPresent.push("neutralLow")
