@@ -106,8 +106,14 @@ class svgIconClass {
       "" : ""
     }
     const suffix: string = suffix_map[imp_direction];
-    const allFlags: string[]
-      = currLimits.astpoint.concat(currLimits.shift, currLimits.trend, currLimits.two_in_three);
+    const flag_last: boolean = viewModel.inputSettings.nhs_icons.flag_variation_last.value;
+    let allFlags: string[];
+    if (flag_last) {
+      const N: number = currLimits.astpoint.length - 1;
+      allFlags = [currLimits.astpoint[N], currLimits.shift[N], currLimits.trend[N], currLimits.two_in_three[N]];
+    } else {
+      allFlags = currLimits.astpoint.concat(currLimits.shift, currLimits.trend, currLimits.two_in_three);
+    }
 
     const iconsPresent: string[] = new Array<string>();
 

@@ -293,6 +293,10 @@
                   "displayName": "Show Variation Icons",
                   "type" : { "bool" : true }
               },
+              "flag_variation_last": {
+                  "displayName": "Flag Only Last Point",
+                  "type" : { "bool" : true }
+              },
               "variation_icons_locations": {
                 "displayName": "Variation Icon Locations",
                 "type": {
