@@ -3,8 +3,10 @@ import { sqrt } from "../Functions/UnaryFunctions";
 import rep from "../Functions/rep";
 import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
+import { LimitArgs } from "../Classes/chartObject";
 
-function gLimits(inputData: dataObject): controlLimits {
+function gLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = sqrt(cl * (cl + 1));
 

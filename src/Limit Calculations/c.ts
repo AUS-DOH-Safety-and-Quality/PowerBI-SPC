@@ -2,8 +2,10 @@ import * as d3 from "d3";
 import rep from "../Functions/rep";
 import dataObject from "../Classes/dataObject"
 import controlLimits from "../Classes/controlLimits"
+import { LimitArgs } from "../Classes/chartObject";
 
-function cLimits(inputData: dataObject): controlLimits {
+function cLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = Math.sqrt(cl);
 

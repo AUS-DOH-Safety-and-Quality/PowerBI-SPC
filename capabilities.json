@@ -100,6 +100,10 @@
                         ]
                     }
                 },
+                "outliers_in_limits": {
+                    "displayName": "Keep Outliers in Limit Calcs.",
+                    "type": { "bool": true }
+                },
                 "multiplier": {
                     "displayName": "Multiplier",
                     "type": {
@@ -291,6 +295,10 @@
             "properties": {
               "show_variation_icons": {
                   "displayName": "Show Variation Icons",
+                  "type" : { "bool" : true }
+              },
+              "flag_variation_last": {
+                  "displayName": "Flag Only Last Point",
                   "type" : { "bool" : true }
               },
               "variation_icons_locations": {

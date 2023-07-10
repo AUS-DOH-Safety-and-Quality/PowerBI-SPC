@@ -5,8 +5,10 @@ import { abs } from "../Functions/UnaryFunctions"
 import {  divide } from "../Functions/BinaryFunctions";
 import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
+import { LimitArgs } from "../Classes/chartObject";
 
-function mrLimits(inputData: dataObject): controlLimits {
+function mrLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)

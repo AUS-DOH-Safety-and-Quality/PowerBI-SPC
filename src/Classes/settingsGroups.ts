@@ -49,6 +49,7 @@ class datesSettings {
 
 class spcSettings {
   chart_type: settingsPair<string>;
+  outliers_in_limits: settingsPair<boolean>;
   multiplier: settingsPair<number>;
   sig_figs: settingsPair<number>;
   perc_labels: settingsPair<string>;
@@ -59,6 +60,7 @@ class spcSettings {
 
   constructor() {
     this.chart_type = new settingsPair("i");
+    this.outliers_in_limits = new settingsPair(false);
     this.perc_labels = new settingsPair("Automatic");
     this.multiplier = new settingsPair(1);
     this.sig_figs = new settingsPair(2);
@@ -243,11 +245,13 @@ class outliersSettings {
 
 class nhsIconSettings {
   show_variation_icons: settingsPair<boolean>;
+  flag_variation_last: settingsPair<boolean>;
   variation_icons_locations: settingsPair<string>;
   variation_icons_scaling: settingsPair<number>;
 
   constructor() {
     this.show_variation_icons = new settingsPair(false);
+    this.flag_variation_last = new settingsPair(true);
     this.variation_icons_locations = new settingsPair("Top Right");
     this.variation_icons_scaling = new settingsPair(1.0);
   }

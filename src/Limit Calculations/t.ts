@@ -3,13 +3,15 @@ import { pow } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import truncate from "../Functions/truncate";
+import {LimitArgs} from "../Classes/chartObject";
 
-function tLimits(inputData: dataObject): controlLimits {
+function tLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const val: number[] = pow(inputData.numerators, 1 / 3.6);
-  const inputDataCopy = inputData;
-  inputDataCopy.numerators = val;
-  inputDataCopy.denominators = null;
-  const limits: controlLimits = iLimits(inputDataCopy);
+  const argsDataCopy: LimitArgs = args;
+  argsDataCopy.inputData.numerators = val;
+  argsDataCopy.inputData.denominators = null;
+  const limits: controlLimits = iLimits(argsDataCopy);
   limits.targets = pow(limits.targets, 3.6);
   limits.values = pow(limits.values, 3.6);
   limits.ll99 = truncate(pow(limits.ll99, 3.6), {lower: 0});

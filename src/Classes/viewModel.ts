@@ -120,7 +120,6 @@ class viewModelObject {
         // Extract input data, filter out invalid values, and identify any settings passed as data
         this.inputData = new dataObject(dv[0].categorical, this.inputSettings)
 
-
         // Initialise a new chartObject class which can be used to calculate the control limits
         this.chartBase = new chartObject({ inputData: this.inputData,
                                             inputSettings: this.inputSettings,

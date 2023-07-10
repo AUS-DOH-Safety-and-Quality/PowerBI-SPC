@@ -385,7 +385,7 @@ export class Visual implements IVisual {
               objectName: "split_indexes_storage",
               selector: undefined,
               properties: {
-                split_indexes: JSON.stringify(this.viewModel.splitIndexes)
+                split_indexes: this.viewModel.splitIndexes ? JSON.stringify(this.viewModel.splitIndexes) : JSON.stringify(new Array<number>())
               }
             }
 
