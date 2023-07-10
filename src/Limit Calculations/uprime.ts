@@ -6,8 +6,10 @@ import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
 import truncate from "../Functions/truncate";
+import {LimitArgs} from "../Classes/chartObject";
 
-function uprimeLimits(inputData: dataObject): controlLimits {
+function uprimeLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const val: number[] = divide(inputData.numerators, inputData.denominators);
   const cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
   const sd: number[] = sqrt(divide(cl,inputData.denominators));
@@ -15,7 +17,8 @@ function uprimeLimits(inputData: dataObject): controlLimits {
 
   const consec_diff: number[] = abs(diff(zscore));
   const consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
-  const consec_diff_valid: number[] = consec_diff.filter(d => d < consec_diff_ulim);
+  const outliers_in_limits: boolean = args.inputSettings.spc.outliers_in_limits.value;
+  const consec_diff_valid: number[] = outliers_in_limits ? consec_diff : consec_diff.filter(d => d < consec_diff_ulim);
   const sigma: number[] = multiply(sd, d3.mean(consec_diff_valid) / 1.128);
 
   return new controlLimits({

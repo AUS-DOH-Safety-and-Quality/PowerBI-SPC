@@ -100,6 +100,10 @@
                         ]
                     }
                 },
+                "outliers_in_limits": {
+                    "displayName": "Keep Outliers in Limit Calcs.",
+                    "type": { "bool": true }
+                },
                 "multiplier": {
                     "displayName": "Multiplier",
                     "type": {

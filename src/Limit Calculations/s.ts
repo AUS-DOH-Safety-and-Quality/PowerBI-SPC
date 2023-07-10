@@ -5,8 +5,10 @@ import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, pow, multiply } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
+import {LimitArgs} from "../Classes/chartObject";
 
-function sLimits(inputData: dataObject): controlLimits {
+function sLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const group_sd: number[] = inputData.numerators;
   const count_per_group: number[] = inputData.denominators;
 

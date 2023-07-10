@@ -5,8 +5,10 @@ import { sqrt } from "../Functions/UnaryFunctions"
 import { pow, subtract, add, multiply, divide } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
 import dataObject from "../Classes/dataObject";
+import {LimitArgs} from "../Classes/chartObject";
 
-function xbarLimits(inputData: dataObject): controlLimits {
+function xbarLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   // Calculate number of observations in each group
   const count_per_group: number[] = inputData.denominators;
 

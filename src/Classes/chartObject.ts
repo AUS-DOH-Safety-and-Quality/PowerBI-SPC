@@ -12,11 +12,16 @@ type chartObjectConstructor = {
   splitIndexes: number[];
 }
 
+type LimitArgs = {
+  inputData: dataObject;
+  inputSettings: settingsObject;
+}
+
 class chartObject {
   inputData: dataObject;
   inputSettings: settingsObject;
   splitIndexes: number[];
-  limitFunction: (x: dataObject) => controlLimits;
+  limitFunction: (x: LimitArgs) => controlLimits;
 
   getLimits(): controlLimits {
     let calcLimits: controlLimits;
@@ -40,7 +45,7 @@ class chartObject {
         return data;
       })
 
-      const calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction(d));
+      const calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction({inputData: d, inputSettings: this.inputSettings}));
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
         const allInner: controlLimits = all;
         Object.entries(all).forEach((entry, idx) => {
@@ -52,7 +57,7 @@ class chartObject {
       })
     } else {
       // Calculate control limits using user-specified type
-      calcLimits = this.limitFunction(this.inputData);
+      calcLimits = this.limitFunction({inputData: this.inputData, inputSettings: this.inputSettings});
     }
 
     calcLimits.flagOutliers(this.inputSettings);
@@ -86,4 +91,5 @@ class chartObject {
   }
 }
 
+export { LimitArgs }
 export default chartObject;

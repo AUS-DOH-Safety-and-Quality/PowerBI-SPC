@@ -5,8 +5,10 @@ import { abs } from "../Functions/UnaryFunctions"
 import { divide } from "../Functions/BinaryFunctions";
 import dataObject from "../Classes/dataObject";
 import controlLimits from "../Classes/controlLimits";
+import { LimitArgs } from "../Classes/chartObject";
 
-function iLimits(inputData: dataObject): controlLimits {
+function iLimits(args: LimitArgs): controlLimits {
+  const inputData: dataObject = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
@@ -16,7 +18,8 @@ function iLimits(inputData: dataObject): controlLimits {
 
   const consec_diff: number[] = abs(diff(ratio));
   const consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
-  const consec_diff_valid: number[] = consec_diff.filter(d => d < consec_diff_ulim);
+  const outliers_in_limits: boolean = args.inputSettings.spc.outliers_in_limits.value;
+  const consec_diff_valid: number[] = outliers_in_limits ? consec_diff : consec_diff.filter(d => d < consec_diff_ulim);
 
   const sigma: number = d3.mean(consec_diff_valid) / 1.128;
 
