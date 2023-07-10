@@ -2,6 +2,8 @@ import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import DataViewPropertyValue = powerbi.DataViewPropertyValue;
+import DataViewObject = powerbi.DataViewObject;
 import chartObject from "./chartObject"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
@@ -23,7 +25,7 @@ class viewModelObject {
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
-  splitIndexes?: number[];
+  splitIndexes: number[];
   firstRun: boolean;
 
   initialisePlotData(host: IVisualHost): void {
@@ -96,18 +98,21 @@ class viewModelObject {
     if (this.firstRun) {
       this.inputSettings = new settingsObject();
     }
-    this.inputSettings.update(args.options.dataViews[0]);
-    this.splitIndexes = JSON.parse(<string>(args.options.dataViews[0].metadata.objects.split_indexes_storage.split_indexes))
+    const dv: powerbi.DataView[] = args.options.dataViews;
+    this.inputSettings.update(dv[0]);
+    let split_indexes_storage: DataViewObject = dv[0].metadata.objects.split_indexes_storage;
+    let split_indexes: DataViewPropertyValue = split_indexes_storage ? split_indexes_storage.split_indexes : null;
+    this.splitIndexes = split_indexes ? JSON.parse(<string>(split_indexes)) : new Array<number>();
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
-    if (checkInvalidDataView(args.options.dataViews)) {
+    if (checkInvalidDataView(dv)) {
       this.inputData = <dataObject>null;
       this.chartBase = null;
       this.calculatedLimits = null;
       this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
+      this.splitIndexes = new Array<number>();
     } else {
-      const dv: powerbi.DataView[] = args.options.dataViews;
 
       // Only re-construct data and re-calculate limits if they have changed
       if (args.options.type === 2 || this.firstRun) {
@@ -153,6 +158,7 @@ class viewModelObject {
     this.groupedLines = <[string, lineData[]][]>null;
     this.plotProperties = <plotPropertiesClass>null;
     this.firstRun = true
+    this.splitIndexes = new Array<number>();
   }
 }
 
