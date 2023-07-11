@@ -609,38 +609,7 @@
         },
         "xlimit_tick_size": {
           "displayName": "Tick Font Size",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Smallest",
-                "value" : "xx-small"
-              },
-              {
-                "displayName" : "Very Small",
-                "value" : "x-small"
-              },
-              {
-                "displayName" : "Small",
-                "value" : "small"
-              },
-              {
-                "displayName" : "Medium",
-                "value" : "medium"
-              },
-              {
-                "displayName" : "Large",
-                "value" : "large"
-              },
-              {
-                "displayName" : "Very Large",
-                "value" : "x-large"
-              },
-              {
-                "displayName" : "Largest",
-                "value" : "xx-large"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontSize": true } }
         },
         "xlimit_tick_colour":{
           "displayName": "Tick Font Colour",
@@ -664,38 +633,7 @@
         },
         "xlimit_label_size": {
           "displayName": "Label Font Size",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Smallest",
-                "value" : "xx-small"
-              },
-              {
-                "displayName" : "Very Small",
-                "value" : "x-small"
-              },
-              {
-                "displayName" : "Small",
-                "value" : "small"
-              },
-              {
-                "displayName" : "Medium",
-                "value" : "medium"
-              },
-              {
-                "displayName" : "Large",
-                "value" : "large"
-              },
-              {
-                "displayName" : "Very Large",
-                "value" : "x-large"
-              },
-              {
-                "displayName" : "Largest",
-                "value" : "xx-large"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontSize": true } }
         },
         "xlimit_label_colour":{
           "displayName": "Label Font Colour",
@@ -732,38 +670,7 @@
         },
         "ylimit_tick_size": {
           "displayName": "Tick Font Size",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Smallest",
-                "value" : "xx-small"
-              },
-              {
-                "displayName" : "Very Small",
-                "value" : "x-small"
-              },
-              {
-                "displayName" : "Small",
-                "value" : "small"
-              },
-              {
-                "displayName" : "Medium",
-                "value" : "medium"
-              },
-              {
-                "displayName" : "Large",
-                "value" : "large"
-              },
-              {
-                "displayName" : "Very Large",
-                "value" : "x-large"
-              },
-              {
-                "displayName" : "Largest",
-                "value" : "xx-large"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontSize": true } }
         },
         "ylimit_tick_colour":{
           "displayName": "Tick Font Colour",
@@ -787,38 +694,7 @@
         },
         "ylimit_label_size": {
           "displayName": "Label Font Size",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Smallest",
-                "value" : "xx-small"
-              },
-              {
-                "displayName" : "Very Small",
-                "value" : "x-small"
-              },
-              {
-                "displayName" : "Small",
-                "value" : "small"
-              },
-              {
-                "displayName" : "Medium",
-                "value" : "medium"
-              },
-              {
-                "displayName" : "Large",
-                "value" : "large"
-              },
-              {
-                "displayName" : "Very Large",
-                "value" : "x-large"
-              },
-              {
-                "displayName" : "Largest",
-                "value" : "xx-large"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontSize": true } }
         },
         "ylimit_label_colour":{
           "displayName": "Label Font Colour",

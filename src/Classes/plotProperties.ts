@@ -6,6 +6,7 @@ import plotData from "./plotData"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
 import controlLimits from "./controlLimits";
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 type axisProperties = {
   lower: number,
@@ -100,42 +101,30 @@ class plotPropertiesClass {
     const browserFontSize: number = Number(window.getComputedStyle(document.body).getPropertyValue('font-size').match(/\d+/)[0]);
     const fontScaling: number = browserFontSize / 16;
 
-    // Map the default pixel sizes for each text label, based on browser default, and scale
-    // https://careerkarma.com/blog/css-font-size/
-    const fontSizeMap: Record<string, number> = {
-      "xx-small" : 9 * fontScaling,
-      "x-small" : 10 * fontScaling,
-      "small" : 13 * fontScaling,
-      "medium" : 16 * fontScaling,
-      "large" : 18 * fontScaling,
-      "x-large" : 24 * fontScaling,
-      "xx-large" : 32 * fontScaling
-    };
-
     // Only scale padding for label if a label is actually present
-    const xLabelSize: string = args.inputSettings.x_axis.xlimit_label_size.value;
-    const xLabelPadding: number = args.inputSettings.x_axis.xlimit_label.value ? fontSizeMap[xLabelSize] : 0;
-    const yLabelSize: string = args.inputSettings.y_axis.ylimit_label_size.value;
-    const yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? fontSizeMap[yLabelSize] : 0;
+    const xLabelSize: number = args.inputSettings.x_axis.xlimit_label_size.value;
+    const xLabelPadding: number = args.inputSettings.x_axis.xlimit_label.value ? xLabelSize * fontScaling : 0;
+    const yLabelSize: number = args.inputSettings.y_axis.ylimit_label_size.value;
+    const yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? yLabelSize * fontScaling : 0;
 
-    const xTickSize: string = args.inputSettings.x_axis.xlimit_tick_size.value;
+    const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size.value;
 
-    const yTickSize: string = args.inputSettings.y_axis.ylimit_tick_size.value;
+    const yTickSize: number = args.inputSettings.y_axis.ylimit_tick_size.value;
 
     this.xAxis = {
       lower: xLowerLimit !== null ? xLowerLimit : 0,
       upper: xUpperLimit,
-      start_padding: args.inputSettings.canvas.left_padding.value + fontSizeMap[xTickSize] + xLabelPadding,
+      start_padding: args.inputSettings.canvas.left_padding.value + xTickSize * fontScaling + xLabelPadding,
       end_padding: args.inputSettings.canvas.right_padding.value,
       colour: args.inputSettings.x_axis.xlimit_colour.value,
       ticks: args.inputSettings.x_axis.xlimit_ticks.value,
-      tick_size: xTickSize,
+      tick_size: pixelConverter.toString(xTickSize),
       tick_font: args.inputSettings.x_axis.xlimit_tick_font.value,
       tick_colour: args.inputSettings.x_axis.xlimit_tick_colour.value,
       tick_rotation: args.inputSettings.x_axis.xlimit_tick_rotation.value,
       tick_count: args.inputSettings.x_axis.xlimit_tick_count.value,
       label: args.inputSettings.x_axis.xlimit_label.value,
-      label_size: args.inputSettings.x_axis.xlimit_label_size.value,
+      label_size: pixelConverter.toString(args.inputSettings.x_axis.xlimit_label_size.value),
       label_font: args.inputSettings.x_axis.xlimit_label_font.value,
       label_colour: args.inputSettings.x_axis.xlimit_label_colour.value
     };
@@ -144,16 +133,16 @@ class plotPropertiesClass {
       lower: yLowerLimit,
       upper: yUpperLimit,
       start_padding: args.inputSettings.canvas.upper_padding.value,
-      end_padding: args.inputSettings.canvas.lower_padding.value + fontSizeMap[yTickSize] + yLabelPadding,
+      end_padding: args.inputSettings.canvas.lower_padding.value + yTickSize * fontScaling + yLabelPadding,
       colour: args.inputSettings.y_axis.ylimit_colour.value,
       ticks: args.inputSettings.y_axis.ylimit_ticks.value,
-      tick_size: yTickSize,
+      tick_size: pixelConverter.toString(yTickSize),
       tick_font: args.inputSettings.y_axis.ylimit_tick_font.value,
       tick_colour: args.inputSettings.y_axis.ylimit_tick_colour.value,
       tick_rotation: args.inputSettings.y_axis.ylimit_tick_rotation.value,
       tick_count: args.inputSettings.y_axis.ylimit_tick_count.value,
       label: args.inputSettings.y_axis.ylimit_label.value,
-      label_size: args.inputSettings.y_axis.ylimit_label_size.value,
+      label_size: pixelConverter.toString(args.inputSettings.y_axis.ylimit_label_size.value),
       label_font: args.inputSettings.y_axis.ylimit_label_font.value,
       label_colour: args.inputSettings.y_axis.ylimit_label_colour.value
     };
