@@ -20,17 +20,15 @@ import IVisualEventService = extensibility.IVisualEventService;
 import viewModelObject from "./Classes/viewModel"
 import plotData from "./Classes/plotData";
 import * as d3 from "d3";
-import lineData from "./Classes/lineData"
 import svgObjectClass from "./Classes/svgObjectClass"
 import svgIconClass from "./Classes/svgIconClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotProperties"
-import getAesthetic from "./Functions/getAesthetic"
 import between from "./Functions/between";
+import svgLinesClass from "./Classes/svgLinesClass";
 
 type SelectionAny = d3.Selection<any, any, any, any>;
-type mergedSVGObjects = { dotsMerged: SelectionAny,
-                          linesMerged: SelectionAny }
+type mergedSVGObjects = { dotsMerged: SelectionAny }
 
 export class Visual implements IVisual {
   private host: IVisualHost;
@@ -38,6 +36,7 @@ export class Visual implements IVisual {
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private svgObjects: svgObjectClass;
   private svgIcons: svgIconClass;
+  private svgLines: svgLinesClass;
   private svgSelections: svgSelectionClass;
   private viewModel: viewModelObject;
   private plottingMerged: mergedSVGObjects;
@@ -56,14 +55,14 @@ export class Visual implements IVisual {
 
     this.svgObjects = new svgObjectClass(this.svg);
     this.svgIcons = new svgIconClass(this.svg);
+    this.svgLines = new svgLinesClass(this.svg);
     this.svgSelections = new svgSelectionClass();
     this.viewModel = new viewModelObject();
     this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();
 
-    this.plottingMerged = { dotsMerged: <SelectionAny><unknown>null,
-                            linesMerged: <SelectionAny><unknown>null };
+    this.plottingMerged = { dotsMerged: <SelectionAny><unknown>null };
 
     this.selectionManager.registerOnSelectCallback(() => {
       this.updateHighlighting();
@@ -91,9 +90,6 @@ export class Visual implements IVisual {
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height);
 
-      //this.svgIcons.drawIcons(this.viewModel);
-      console.log(this.viewModel.plotProperties)
-
       console.log("TooltipTracking start")
       this.initTooltipTracking();
 
@@ -102,11 +98,12 @@ export class Visual implements IVisual {
       this.drawYAxis();
 
       console.log("Draw Lines start")
-      this.drawLines();
+      this.svgLines.draw(this.viewModel)
 
       console.log("Draw dots start")
       this.drawDots();
 
+      console.log("Draw icons start")
       this.svgIcons.drawIcons(this.viewModel)
 
       this.addContextMenu();
@@ -309,38 +306,6 @@ export class Visual implements IVisual {
         .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
   }
 
-  drawLines(): void {
-    const lower: number = this.viewModel.plotProperties.yAxis.lower;
-    const upper: number = this.viewModel.plotProperties.yAxis.upper;
-    this.plottingMerged.linesMerged
-      = this.svgSelections.lineSelection
-                          .enter()
-                          .append("path")
-                          .merge(<any>this.svgSelections.lineSelection);
-
-    this.plottingMerged.linesMerged.classed('line', true);
-    this.plottingMerged.linesMerged.attr("d", d => {
-      return d3.line<lineData>()
-                .x(d => this.viewModel.plotProperties.xScale(d.x))
-                .y(d => this.viewModel.plotProperties.yScale(d.line_value))
-                .defined(d => d.line_value !== null && between(d.line_value, lower, upper))(d[1])
-    });
-    this.plottingMerged.linesMerged.attr("fill", "none")
-                    .attr("stroke", d => {
-                      return this.viewModel.plotProperties.displayPlot
-                              ? getAesthetic(d[0], "lines", "colour", this.viewModel.inputSettings)
-                              : "#FFFFFF"
-                    })
-                    .attr("stroke-width", d => {
-                      return getAesthetic(d[0], "lines", "width", this.viewModel.inputSettings)
-                    })
-                    .attr("stroke-dasharray", d => {
-                      return getAesthetic(d[0], "lines", "type", this.viewModel.inputSettings)
-                    });
-    this.svgSelections.lineSelection.exit().remove();
-    this.plottingMerged.linesMerged.exit().remove();
-  }
-
   drawDots(): void {
     // Update the datapoints if data is refreshed
     this.plottingMerged.dotsMerged = this.svgSelections
@@ -454,7 +419,7 @@ export class Visual implements IVisual {
   }
 
   updateHighlighting(): void {
-    if (!this.plottingMerged.dotsMerged || !this.plottingMerged.linesMerged) {
+    if (!this.viewModel.plotPoints || !this.viewModel.groupedLines) {
       return;
     }
     const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
@@ -465,7 +430,7 @@ export class Visual implements IVisual {
     const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                     ? opacityReduced
                                     : opacityFull;
-    this.plottingMerged.linesMerged.style("stroke-opacity", defaultOpacity);
+    this.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
     this.plottingMerged.dotsMerged.style("fill-opacity", defaultOpacity);
 
     if (anyHighlights || (allSelectionIDs.length > 0)) {

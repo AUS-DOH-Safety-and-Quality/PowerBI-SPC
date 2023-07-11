@@ -7,7 +7,6 @@ import DataViewObject = powerbi.DataViewObject;
 import chartObject from "./chartObject"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
-import lineData from "./lineData"
 import controlLimits from "./controlLimits";
 import plotData from "./plotData"
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
@@ -15,6 +14,12 @@ import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotProperties"
 import getAesthetic from "../Functions/getAesthetic"
 import { SettingsBaseTypedT, scatterSettings } from "../Classes/settingsGroups";
+
+class lineData {
+  x: number;
+  line_value: number;
+  group: string;
+}
 
 class viewModelObject {
   inputData: dataObject;
@@ -161,4 +166,5 @@ class viewModelObject {
   }
 }
 
+export { lineData }
 export default viewModelObject
