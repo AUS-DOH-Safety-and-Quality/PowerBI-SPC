@@ -6,7 +6,6 @@ type SelectionAny = d3.Selection<any, any, any, any>;
 
 class svgSelectionClass {
   dotSelection: SelectionAny;
-  lineSelection: SelectionAny;
   listeningRectSelection: SelectionAny;
   tooltipLineSelection: SelectionAny;
 
@@ -34,17 +33,6 @@ class svgSelectionClass {
       this.tooltipLineSelection = args.svgObjects
                                       .tooltipLineGroup
                                       .selectAll(".ttip-line");
-    }
-
-    if (args.viewModel.groupedLines) {
-      this.lineSelection = args.svgObjects
-                                .lineGroup
-                                .selectAll(".line")
-                                .data(args.viewModel.groupedLines);
-    } else {
-      this.lineSelection = args.svgObjects
-                                .lineGroup
-                                .selectAll(".line");
     }
   }
 }
