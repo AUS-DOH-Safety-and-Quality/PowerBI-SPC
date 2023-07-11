@@ -605,46 +605,7 @@
         },
         "xlimit_tick_font": {
           "displayName": "Tick Font",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Arial",
-                "value" : "'Arial', sans-serif"
-              },
-              {
-                "displayName" : "Verdana",
-                "value" : "'Verdana', sans-serif"
-              },
-              {
-                "displayName" : "Tahoma",
-                "value" : "'Tahoma', sans-serif"
-              },
-              {
-                "displayName" : "Trebuchet MS",
-                "value" : "'Trebuchet MS', sans-serif"
-              },
-              {
-                "displayName" : "Times New Roman",
-                "value" : "'Times New Roman', serif"
-              },
-              {
-                "displayName" : "Georgia",
-                "value" : "'Georgia', serif"
-              },
-              {
-                "displayName" : "Garamond",
-                "value" : "'Garamond', serif"
-              },
-              {
-                "displayName" : "Courier New",
-                "value" : "'Courier New', monospaced"
-              },
-              {
-                "displayName" : "Brush Script MT",
-                "value" : "'Brush Script MT', cursive"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "xlimit_tick_size": {
           "displayName": "Tick Font Size",
@@ -699,46 +660,7 @@
         },
         "xlimit_label_font": {
           "displayName": "Label Font",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Arial",
-                "value" : "'Arial', sans-serif"
-              },
-              {
-                "displayName" : "Verdana",
-                "value" : "'Verdana', sans-serif"
-              },
-              {
-                "displayName" : "Tahoma",
-                "value" : "'Tahoma', sans-serif"
-              },
-              {
-                "displayName" : "Trebuchet MS",
-                "value" : "'Trebuchet MS', sans-serif"
-              },
-              {
-                "displayName" : "Times New Roman",
-                "value" : "'Times New Roman', serif"
-              },
-              {
-                "displayName" : "Georgia",
-                "value" : "'Georgia', serif"
-              },
-              {
-                "displayName" : "Garamond",
-                "value" : "'Garamond', serif"
-              },
-              {
-                "displayName" : "Courier New",
-                "value" : "'Courier New', monospaced"
-              },
-              {
-                "displayName" : "Brush Script MT",
-                "value" : "'Brush Script MT', cursive"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "xlimit_label_size": {
           "displayName": "Label Font Size",
@@ -806,46 +728,7 @@
         },
         "ylimit_tick_font": {
           "displayName": "Tick Font",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Arial",
-                "value" : "'Arial', sans-serif"
-              },
-              {
-                "displayName" : "Verdana",
-                "value" : "'Verdana', sans-serif"
-              },
-              {
-                "displayName" : "Tahoma",
-                "value" : "'Tahoma', sans-serif"
-              },
-              {
-                "displayName" : "Trebuchet MS",
-                "value" : "'Trebuchet MS', sans-serif"
-              },
-              {
-                "displayName" : "Times New Roman",
-                "value" : "'Times New Roman', serif"
-              },
-              {
-                "displayName" : "Georgia",
-                "value" : "'Georgia', serif"
-              },
-              {
-                "displayName" : "Garamond",
-                "value" : "'Garamond', serif"
-              },
-              {
-                "displayName" : "Courier New",
-                "value" : "'Courier New', monospaced"
-              },
-              {
-                "displayName" : "Brush Script MT",
-                "value" : "'Brush Script MT', cursive"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "ylimit_tick_size": {
           "displayName": "Tick Font Size",
@@ -900,46 +783,7 @@
         },
         "ylimit_label_font": {
           "displayName": "Label Font",
-          "type": {
-            "enumeration" : [
-              {
-                "displayName" : "Arial",
-                "value" : "'Arial', sans-serif"
-              },
-              {
-                "displayName" : "Verdana",
-                "value" : "'Verdana', sans-serif"
-              },
-              {
-                "displayName" : "Tahoma",
-                "value" : "'Tahoma', sans-serif"
-              },
-              {
-                "displayName" : "Trebuchet MS",
-                "value" : "'Trebuchet MS', sans-serif"
-              },
-              {
-                "displayName" : "Times New Roman",
-                "value" : "'Times New Roman', serif"
-              },
-              {
-                "displayName" : "Georgia",
-                "value" : "'Georgia', serif"
-              },
-              {
-                "displayName" : "Garamond",
-                "value" : "'Garamond', serif"
-              },
-              {
-                "displayName" : "Courier New",
-                "value" : "'Courier New', monospaced"
-              },
-              {
-                "displayName" : "Brush Script MT",
-                "value" : "'Brush Script MT', cursive"
-              }
-            ]
-          }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "ylimit_label_size": {
           "displayName": "Label Font Size",
