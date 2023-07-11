@@ -15,6 +15,7 @@
     "minimist": "^1.2.7",
     "powerbi-visuals-api": "~3.6.0",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1",
+    "powerbi-visuals-utils-typeutils": "^6.0.1",
     "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {
