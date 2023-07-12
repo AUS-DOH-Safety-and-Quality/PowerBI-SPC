@@ -1,5 +1,5 @@
 # Introduction 
-This repository contains a PowerBI custom visual for SPC Charts. The visual is implemented purely within PowerBI and has no dependencies on external programs like R or Python. The visual natively supports tooltips as well as cross-plot filtering and highlighting.
+This repository contains a free PowerBI custom visual for SPC Charts. This page is a guide on how to download, and install it.  It has been developed by the Safety and Quality team at the West Australian Health Department's Healthcare Quality Intelligence Unit.  The visual is implemented purely within PowerBI and has no dependencies on external programs like R or Python. The visual supports hover-over-tooltips as well as cross-plot filtering and highlighting.
 
 The following chart types are (currently) implemented:
 
