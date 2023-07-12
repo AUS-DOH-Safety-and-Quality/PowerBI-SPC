@@ -11,24 +11,22 @@ import IVisual = extensibility.IVisual;
 import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
 import VisualUpdateOptions = ex_visual.VisualUpdateOptions;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 import IVisualHost = ex_visual.IVisualHost;
 import ISelectionManager = extensibility.ISelectionManager;
 import ISelectionId = visuals.ISelectionId;
 import IVisualEventService = extensibility.IVisualEventService;
 import viewModelObject from "./Classes/viewModel"
-import plotData from "./Classes/plotData";
+import { plotData } from "./Classes/viewModel";
 import * as d3 from "d3";
 import svgObjectClass from "./Classes/svgObjectClass"
 import svgIconClass from "./Classes/svgIconClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotProperties"
-import between from "./Functions/between";
 import svgLinesClass from "./Classes/svgLinesClass";
+import svgDotsClass from "./Classes/svgDotsClass";
 
 type SelectionAny = d3.Selection<any, any, any, any>;
-type mergedSVGObjects = { dotsMerged: SelectionAny }
 
 export class Visual implements IVisual {
   private host: IVisualHost;
@@ -37,9 +35,9 @@ export class Visual implements IVisual {
   private svgObjects: svgObjectClass;
   private svgIcons: svgIconClass;
   private svgLines: svgLinesClass;
+  private svgDots: svgDotsClass
   private svgSelections: svgSelectionClass;
   private viewModel: viewModelObject;
-  private plottingMerged: mergedSVGObjects;
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
   private events: IVisualEventService;
@@ -56,13 +54,12 @@ export class Visual implements IVisual {
     this.svgObjects = new svgObjectClass(this.svg);
     this.svgIcons = new svgIconClass(this.svg);
     this.svgLines = new svgLinesClass(this.svg);
+    this.svgDots = new svgDotsClass(this.svg);
     this.svgSelections = new svgSelectionClass();
     this.viewModel = new viewModelObject();
     this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();
-
-    this.plottingMerged = { dotsMerged: <SelectionAny><unknown>null };
 
     this.selectionManager.registerOnSelectCallback(() => {
       this.updateHighlighting();
@@ -101,12 +98,21 @@ export class Visual implements IVisual {
       this.svgLines.draw(this.viewModel)
 
       console.log("Draw dots start")
-      this.drawDots();
+      this.svgDots.draw(this.viewModel)
+      this.addDotsInteractivity();
 
       console.log("Draw icons start")
       this.svgIcons.drawIcons(this.viewModel)
 
+      this.updateHighlighting();
+
       this.addContextMenu();
+
+      this.svg.on('click', () => {
+        this.selectionManager.clear();
+        this.updateHighlighting();
+      });
+
       this.events.renderingFinished(options);
       console.log("Update finished")
       console.log(this.viewModel)
@@ -306,56 +312,34 @@ export class Visual implements IVisual {
         .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
   }
 
-  drawDots(): void {
-    // Update the datapoints if data is refreshed
-    this.plottingMerged.dotsMerged = this.svgSelections
-                                          .dotSelection
-                                          .enter()
-                                          .append("circle")
-                                          .merge(<any>this.svgSelections.dotSelection);
-
-    this.plottingMerged.dotsMerged.classed("dot", true);
-
-    this.plottingMerged
-        .dotsMerged
-        .filter((d: plotData) => d.value !== null)
-        .attr("cy", (d: plotData) => this.viewModel.plotProperties.yScale(d.value))
-        .attr("cx", (d: plotData) => this.viewModel.plotProperties.xScale(d.x))
-        .attr("r", (d: plotData) => d.aesthetics.size)
-        .style("fill", (d: plotData) => {
-          if (this.viewModel.plotProperties.displayPlot) {
-            return between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.aesthetics.colour : "#FFFFFF";
-          } else {
-            return "#FFFFFF";
-          }
-        });
-
+  addDotsInteractivity(): void {
+    if (!this.viewModel.plotProperties.displayPlot) {
+      return;
+    }
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
-    this.plottingMerged.dotsMerged
-        .on("click", (event, d) => {
+    this.svgDots
+        .dotsGroup
+        .selectAll(".dotsgroup")
+        .selectChildren()
+        .on("click", (event, d: plotData) => {
           if (this.viewModel.inputSettings.spc.split_on_click.value) {
-            if (this.viewModel.splitIndexes) {
-              const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
-              if (xIndex > -1) {
-                this.viewModel.splitIndexes.splice(xIndex, 1)
-              } else {
-                this.viewModel.splitIndexes.push(d.x)
-              }
+            // Identify whether limits are already split at datapoint, and undo if so
+            const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
+            if (xIndex > -1) {
+              this.viewModel.splitIndexes.splice(xIndex, 1)
             } else {
-              this.viewModel.splitIndexes = [d.x]
-            }
-            this.updateOptions.type = 2;
-            const instance: VisualObjectInstance = {
-              objectName: "split_indexes_storage",
-              selector: undefined,
-              properties: {
-                split_indexes: this.viewModel.splitIndexes ? JSON.stringify(this.viewModel.splitIndexes) : JSON.stringify(new Array<number>())
-              }
+              this.viewModel.splitIndexes.push(d.x)
             }
 
+            // Store the current limit-splitting indices to make them available between full refreshes
+            // This also initiates a visual update() call, causing the limits to be re-calculated
             this.host.persistProperties({
-              replace: [ instance ]
+              replace: [{
+                objectName: "split_indexes_storage",
+                selector: undefined,
+                properties: { split_indexes: JSON.stringify(this.viewModel.splitIndexes) }
+              }]
             });
           } else {
             // Pass identities of selected data back to PowerBI
@@ -365,45 +349,31 @@ export class Visual implements IVisual {
                 .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
                 .then(() => { this.updateHighlighting(); });
-                event.stopPropagation();
+
+            event.stopPropagation();
           }
-          });
-
-
-    // Display tooltip content on mouseover
-    this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
-      if (this.viewModel.plotProperties.displayPlot) {
-        // Get screen coordinates of mouse pointer, tooltip will
-        //   be displayed at these coordinates
-        const x = event.pageX;
-        const y = event.pageY;
-
-        this.host.tooltipService.show({
-            dataItems: d.tooltip,
-            identities: [d.identity],
-            coordinates: [x, y],
-            isTouchEvent: false
-        });
-      }
-    })
-    // Hide tooltip when mouse moves out of dot
-    .on("mouseout", () => {
-      if (this.viewModel.plotProperties.displayPlot) {
-        this.host.tooltipService.hide({
-            immediately: true,
-            isTouchEvent: false
         })
-      }
-    });
-    this.updateHighlighting();
+        // Display tooltip content on mouseover
+        .on("mouseover", (event, d: plotData) => {
+          // Get screen coordinates of mouse pointer, tooltip will
+          //   be displayed at these coordinates
+          const x = event.pageX;
+          const y = event.pageY;
 
-    this.svgSelections.dotSelection.exit().remove();
-    this.plottingMerged.dotsMerged.exit().remove();
-
-    this.svg.on('click', () => {
-        this.selectionManager.clear();
-        this.updateHighlighting();
-    });
+          this.host.tooltipService.show({
+              dataItems: d.tooltip,
+              identities: [d.identity],
+              coordinates: [x, y],
+              isTouchEvent: false
+          });
+        })
+        // Hide tooltip when mouse moves out of dot
+        .on("mouseout", () => {
+          this.host.tooltipService.hide({
+              immediately: true,
+              isTouchEvent: false
+          })
+        });
   }
 
   addContextMenu(): void {
@@ -427,20 +397,8 @@ export class Visual implements IVisual {
 
     const opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;
     const opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected.value;
-    const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
-                                    ? opacityReduced
-                                    : opacityFull;
-    this.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
-    this.plottingMerged.dotsMerged.style("fill-opacity", defaultOpacity);
 
-    if (anyHighlights || (allSelectionIDs.length > 0)) {
-      this.plottingMerged.dotsMerged.style("fill-opacity", (dot: plotData) => {
-        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
-          return currentSelectionId.includes(dot.identity);
-        });
-        const currentPointHighlighted: boolean = dot.highlighted;
-        return (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
-      })
-    }
+    this.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
+    this.svgDots.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
   }
 }
