@@ -26,9 +26,9 @@ import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotProperties"
 import between from "./Functions/between";
 import svgLinesClass from "./Classes/svgLinesClass";
+import svgDotsClass from "./Classes/svgDotsClass";
 
 type SelectionAny = d3.Selection<any, any, any, any>;
-type mergedSVGObjects = { dotsMerged: SelectionAny }
 
 export class Visual implements IVisual {
   private host: IVisualHost;
@@ -37,9 +37,9 @@ export class Visual implements IVisual {
   private svgObjects: svgObjectClass;
   private svgIcons: svgIconClass;
   private svgLines: svgLinesClass;
+  private svgDots: svgDotsClass
   private svgSelections: svgSelectionClass;
   private viewModel: viewModelObject;
-  private plottingMerged: mergedSVGObjects;
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
   private events: IVisualEventService;
@@ -56,15 +56,15 @@ export class Visual implements IVisual {
     this.svgObjects = new svgObjectClass(this.svg);
     this.svgIcons = new svgIconClass(this.svg);
     this.svgLines = new svgLinesClass(this.svg);
+    this.svgDots = new svgDotsClass(this.svg);
     this.svgSelections = new svgSelectionClass();
     this.viewModel = new viewModelObject();
     this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();
 
-    this.plottingMerged = { dotsMerged: <SelectionAny><unknown>null };
-
     this.selectionManager.registerOnSelectCallback(() => {
+      console.log("here")
       this.updateHighlighting();
     })
     console.log("Constructor finish")
@@ -101,12 +101,21 @@ export class Visual implements IVisual {
       this.svgLines.draw(this.viewModel)
 
       console.log("Draw dots start")
-      this.drawDots();
+      this.svgDots.draw(this.viewModel)
+      //this.drawDots();
 
       console.log("Draw icons start")
       this.svgIcons.drawIcons(this.viewModel)
 
+      this.updateHighlighting();
+
       this.addContextMenu();
+
+      this.svg.on('click', () => {
+        this.selectionManager.clear();
+        this.updateHighlighting();
+      });
+
       this.events.renderingFinished(options);
       console.log("Update finished")
       console.log(this.viewModel)
@@ -307,33 +316,10 @@ export class Visual implements IVisual {
   }
 
   drawDots(): void {
-    // Update the datapoints if data is refreshed
-    this.plottingMerged.dotsMerged = this.svgSelections
-                                          .dotSelection
-                                          .enter()
-                                          .append("circle")
-                                          .merge(<any>this.svgSelections.dotSelection);
-
-    this.plottingMerged.dotsMerged.classed("dot", true);
-
-    this.plottingMerged
-        .dotsMerged
-        .filter((d: plotData) => d.value !== null)
-        .attr("cy", (d: plotData) => this.viewModel.plotProperties.yScale(d.value))
-        .attr("cx", (d: plotData) => this.viewModel.plotProperties.xScale(d.x))
-        .attr("r", (d: plotData) => d.aesthetics.size)
-        .style("fill", (d: plotData) => {
-          if (this.viewModel.plotProperties.displayPlot) {
-            return between(d.value, this.viewModel.plotProperties.yAxis.lower, this.viewModel.plotProperties.yAxis.upper) ? d.aesthetics.colour : "#FFFFFF";
-          } else {
-            return "#FFFFFF";
-          }
-        });
-
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
-    this.plottingMerged.dotsMerged
-        .on("click", (event, d) => {
+    this.svgDots.dotsGroup
+        .on("click", (event, d: plotData) => {
           if (this.viewModel.inputSettings.spc.split_on_click.value) {
             if (this.viewModel.splitIndexes) {
               const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
@@ -371,7 +357,7 @@ export class Visual implements IVisual {
 
 
     // Display tooltip content on mouseover
-    this.plottingMerged.dotsMerged.on("mouseover", (event, d) => {
+    this.svgDots.dotsGroup.on("mouseover", (event, d: plotData) => {
       if (this.viewModel.plotProperties.displayPlot) {
         // Get screen coordinates of mouse pointer, tooltip will
         //   be displayed at these coordinates
@@ -395,15 +381,6 @@ export class Visual implements IVisual {
         })
       }
     });
-    this.updateHighlighting();
-
-    this.svgSelections.dotSelection.exit().remove();
-    this.plottingMerged.dotsMerged.exit().remove();
-
-    this.svg.on('click', () => {
-        this.selectionManager.clear();
-        this.updateHighlighting();
-    });
   }
 
   addContextMenu(): void {
@@ -419,6 +396,7 @@ export class Visual implements IVisual {
   }
 
   updateHighlighting(): void {
+    console.log("here1")
     if (!this.viewModel.plotPoints || !this.viewModel.groupedLines) {
       return;
     }
@@ -427,20 +405,8 @@ export class Visual implements IVisual {
 
     const opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;
     const opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected.value;
-    const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
-                                    ? opacityReduced
-                                    : opacityFull;
-    this.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
-    this.plottingMerged.dotsMerged.style("fill-opacity", defaultOpacity);
 
-    if (anyHighlights || (allSelectionIDs.length > 0)) {
-      this.plottingMerged.dotsMerged.style("fill-opacity", (dot: plotData) => {
-        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
-          return currentSelectionId.includes(dot.identity);
-        });
-        const currentPointHighlighted: boolean = dot.highlighted;
-        return (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
-      })
-    }
+    this.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
+    this.svgDots.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
   }
 }

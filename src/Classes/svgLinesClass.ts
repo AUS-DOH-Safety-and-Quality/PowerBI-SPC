@@ -47,6 +47,7 @@ class svgLinesClass {
 
   highlight(anyHighlights: boolean, allSelectionIDs: ISelectionId[],
             opacityFull: number, opacityReduced: number): void {
+              console.log("here2")
     const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                       ? opacityReduced
                                       : opacityFull;
