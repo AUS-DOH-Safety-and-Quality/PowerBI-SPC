@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
 import viewModelObject from "./viewModel";
-import plotData from "./plotData";
+import { plotData } from "./viewModel";
 import between from "../Functions/between";
 import ISelectionId = powerbi.visuals.ISelectionId;
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
@@ -32,27 +32,17 @@ class svgDotsClass {
           } else {
             return "#FFFFFF";
           }
-        });
+        })
   }
 
   highlight(anyHighlights: boolean, allSelectionIDs: ISelectionId[],
             opacityFull: number, opacityReduced: number): void {
-    console.log("dots here")
-    console.log(this.dotsGroup)
     const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                       ? opacityReduced
                                       : opacityFull;
-    this.dotsGroup.style("fill-opacity", defaultOpacity);
+    this.dotsGroup.selectAll(".dotsgroup").selectChildren().style("fill-opacity", defaultOpacity);
     if (anyHighlights || (allSelectionIDs.length > 0)) {
-      this.dotsGroup.each((d, i, node) => {
-        console.log("d:", d)
-        console.log("d1:", i)
-        console.log("d2:", node)
-      })
-      this.dotsGroup.style("fill-opacity", (dot: plotData, i, nodes) => {
-        console.log("dot:", dot)
-        console.log("dot1:", i)
-        console.log("dot2:", nodes[i])
+      this.dotsGroup.selectAll(".dotsgroup").selectChildren().style("fill-opacity", (dot: plotData) => {
         const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });

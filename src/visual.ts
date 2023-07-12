@@ -11,20 +11,18 @@ import IVisual = extensibility.IVisual;
 import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
 import VisualUpdateOptions = ex_visual.VisualUpdateOptions;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 import IVisualHost = ex_visual.IVisualHost;
 import ISelectionManager = extensibility.ISelectionManager;
 import ISelectionId = visuals.ISelectionId;
 import IVisualEventService = extensibility.IVisualEventService;
 import viewModelObject from "./Classes/viewModel"
-import plotData from "./Classes/plotData";
+import { plotData } from "./Classes/viewModel";
 import * as d3 from "d3";
 import svgObjectClass from "./Classes/svgObjectClass"
 import svgIconClass from "./Classes/svgIconClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotProperties"
-import between from "./Functions/between";
 import svgLinesClass from "./Classes/svgLinesClass";
 import svgDotsClass from "./Classes/svgDotsClass";
 
@@ -64,7 +62,6 @@ export class Visual implements IVisual {
     this.selectionManager = this.host.createSelectionManager();
 
     this.selectionManager.registerOnSelectCallback(() => {
-      console.log("here")
       this.updateHighlighting();
     })
     console.log("Constructor finish")
@@ -102,7 +99,7 @@ export class Visual implements IVisual {
 
       console.log("Draw dots start")
       this.svgDots.draw(this.viewModel)
-      //this.drawDots();
+      this.addDotsInteractivity();
 
       console.log("Draw icons start")
       this.svgIcons.drawIcons(this.viewModel)
@@ -315,33 +312,34 @@ export class Visual implements IVisual {
         .style("fill", this.viewModel.plotProperties.displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
   }
 
-  drawDots(): void {
+  addDotsInteractivity(): void {
+    if (!this.viewModel.plotProperties.displayPlot) {
+      return;
+    }
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
-    this.svgDots.dotsGroup
+    this.svgDots
+        .dotsGroup
+        .selectAll(".dotsgroup")
+        .selectChildren()
         .on("click", (event, d: plotData) => {
           if (this.viewModel.inputSettings.spc.split_on_click.value) {
-            if (this.viewModel.splitIndexes) {
-              const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
-              if (xIndex > -1) {
-                this.viewModel.splitIndexes.splice(xIndex, 1)
-              } else {
-                this.viewModel.splitIndexes.push(d.x)
-              }
+            // Identify whether limits are already split at datapoint, and undo if so
+            const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
+            if (xIndex > -1) {
+              this.viewModel.splitIndexes.splice(xIndex, 1)
             } else {
-              this.viewModel.splitIndexes = [d.x]
-            }
-            this.updateOptions.type = 2;
-            const instance: VisualObjectInstance = {
-              objectName: "split_indexes_storage",
-              selector: undefined,
-              properties: {
-                split_indexes: this.viewModel.splitIndexes ? JSON.stringify(this.viewModel.splitIndexes) : JSON.stringify(new Array<number>())
-              }
+              this.viewModel.splitIndexes.push(d.x)
             }
 
+            // Store the current limit-splitting indices to make them available between full refreshes
+            // This also initiates a visual update() call, causing the limits to be re-calculated
             this.host.persistProperties({
-              replace: [ instance ]
+              replace: [{
+                objectName: "split_indexes_storage",
+                selector: undefined,
+                properties: { split_indexes: JSON.stringify(this.viewModel.splitIndexes) }
+              }]
             });
           } else {
             // Pass identities of selected data back to PowerBI
@@ -351,36 +349,31 @@ export class Visual implements IVisual {
                 .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
                 .then(() => { this.updateHighlighting(); });
-                event.stopPropagation();
+
+            event.stopPropagation();
           }
-          });
-
-
-    // Display tooltip content on mouseover
-    this.svgDots.dotsGroup.on("mouseover", (event, d: plotData) => {
-      if (this.viewModel.plotProperties.displayPlot) {
-        // Get screen coordinates of mouse pointer, tooltip will
-        //   be displayed at these coordinates
-        const x = event.pageX;
-        const y = event.pageY;
-
-        this.host.tooltipService.show({
-            dataItems: d.tooltip,
-            identities: [d.identity],
-            coordinates: [x, y],
-            isTouchEvent: false
-        });
-      }
-    })
-    // Hide tooltip when mouse moves out of dot
-    .on("mouseout", () => {
-      if (this.viewModel.plotProperties.displayPlot) {
-        this.host.tooltipService.hide({
-            immediately: true,
-            isTouchEvent: false
         })
-      }
-    });
+        // Display tooltip content on mouseover
+        .on("mouseover", (event, d: plotData) => {
+          // Get screen coordinates of mouse pointer, tooltip will
+          //   be displayed at these coordinates
+          const x = event.pageX;
+          const y = event.pageY;
+
+          this.host.tooltipService.show({
+              dataItems: d.tooltip,
+              identities: [d.identity],
+              coordinates: [x, y],
+              isTouchEvent: false
+          });
+        })
+        // Hide tooltip when mouse moves out of dot
+        .on("mouseout", () => {
+          this.host.tooltipService.hide({
+              immediately: true,
+              isTouchEvent: false
+          })
+        });
   }
 
   addContextMenu(): void {
@@ -396,7 +389,6 @@ export class Visual implements IVisual {
   }
 
   updateHighlighting(): void {
-    console.log("here1")
     if (!this.viewModel.plotPoints || !this.viewModel.groupedLines) {
       return;
     }

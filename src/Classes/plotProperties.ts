@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import truncate from "../Functions/truncate";
-import plotData from "./plotData"
+import { plotData } from "./viewModel"
 import settingsObject from "./settingsObject";
 import dataObject from "./dataObject";
 import controlLimits from "./controlLimits";
