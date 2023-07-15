@@ -6,7 +6,7 @@ import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractSetting from "../Functions/extractSetting";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import defaultSettings from "./defaultSettings"
-import { defaultSettingsType } from "./defaultSettings";
+import { defaultSettingsType, defaultSettingsKey } from "./defaultSettings";
 
 class settingsPair<T> {
   default: T;
@@ -19,7 +19,7 @@ class settingsPair<T> {
 }
 
 type SettingsPromoteTypedT = {
-  [K in keyof defaultSettingsType]: {
+  [K in defaultSettingsKey]: {
     [M in keyof defaultSettingsType[K]]: settingsPair<defaultSettingsType[K][M]>
   };
 }
@@ -57,7 +57,7 @@ class settingsObject implements SettingsPromoteTypedT {
     const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
-      const condFormatting: defaultSettingsType[keyof defaultSettingsType] = inputView.categorical.categories
+      const condFormatting: defaultSettingsType[defaultSettingsKey] = inputView.categorical.categories
                             ? extractConditionalFormatting(inputView.categorical, settingGroup, this)[0]
                             : null;
       // Get the names of all settings in a given class and
@@ -65,7 +65,7 @@ class settingsObject implements SettingsPromoteTypedT {
       const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
         this[settingGroup][settingName].value
-          = condFormatting ? condFormatting[settingName as keyof defaultSettingsType[keyof defaultSettingsType]]
+          = condFormatting ? condFormatting[settingName as keyof defaultSettingsType[defaultSettingsKey]]
                             : extractSetting(inputObjects, settingGroup, settingName,
                                               this[settingGroup][settingName].default)
       })

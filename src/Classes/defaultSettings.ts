@@ -113,6 +113,7 @@ let defaultSettings = {
 }
 
 type defaultSettingsType = typeof defaultSettings;
+type defaultSettingsKey = keyof defaultSettingsType;
 
-export { defaultSettingsType }
+export { defaultSettingsType, defaultSettingsKey }
 export default defaultSettings;
