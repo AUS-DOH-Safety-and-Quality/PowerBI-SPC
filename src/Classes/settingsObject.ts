@@ -33,35 +33,17 @@ type nestedSettingsT = Record<string, settingsPair<string | number | boolean>>
  *
  * These are defined in the settingsGroups.ts file
  */
-class settingsObject {
-  settings: SettingsPromoteTypedT;
-
-  public get canvas() { return this.settings.canvas; }
-  public set canvas(canvasIn) { this.settings.canvas = canvasIn; }
-
-  public get spc() { return this.settings.spc; }
-  public set spc(spcIn) { this.settings.spc = spcIn; }
-
-  public get outliers() { return this.settings.outliers; }
-  public set outliers(outliersIn) { this.settings.outliers = outliersIn; }
-
-  public get nhs_icons() { return this.settings.nhs_icons; }
-  public set nhs_icons(nhs_iconsIn) { this.settings.nhs_icons = nhs_iconsIn; }
-
-  public get scatter() { return this.settings.scatter; }
-  public set scatter(scatterIn) { this.settings.scatter = scatterIn; }
-
-  public get lines() { return this.settings.lines; }
-  public set lines(linesIn) { this.settings.lines = linesIn; }
-
-  public get x_axis() { return this.settings.x_axis; }
-  public set x_axis(x_axisIn) { this.settings.x_axis = x_axisIn; }
-
-  public get y_axis() { return this.settings.y_axis; }
-  public set y_axis(y_axisIn) { this.settings.y_axis = y_axisIn; }
-
-  public get dates() { return this.settings.dates; }
-  public set dates(datesIn) { this.settings.dates = datesIn; }
+class settingsObject implements SettingsPromoteTypedT {
+  [k: string]: any;
+  canvas: SettingsPromoteTypedT["canvas"];
+  spc: SettingsPromoteTypedT["spc"];
+  outliers: SettingsPromoteTypedT["outliers"];
+  nhs_icons: SettingsPromoteTypedT["nhs_icons"];
+  scatter: SettingsPromoteTypedT["scatter"];
+  lines: SettingsPromoteTypedT["lines"];
+  x_axis: SettingsPromoteTypedT["x_axis"];
+  y_axis: SettingsPromoteTypedT["y_axis"];
+  dates: SettingsPromoteTypedT["dates"];
 
   /**
    * Function to read the values from the settings pane and update the
@@ -72,7 +54,7 @@ class settingsObject {
   update(inputView: powerbi.DataView): void {
     const inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
     // Get the names of all classes in settingsObject which have values to be updated
-    const allSettingGroups: settingsKeyT[] = Object.getOwnPropertyNames(this) as settingsKeyT[];
+    const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
       const condFormatting: defaultSettingsType[keyof defaultSettingsType] = inputView.categorical.categories
@@ -80,12 +62,12 @@ class settingsObject {
                             : null;
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
-      const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]) as string[];
+      const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
-        (this[settingGroup] as nestedSettingsT)[settingName].value
+        this[settingGroup][settingName].value
           = condFormatting ? condFormatting[settingName as keyof defaultSettingsType[keyof defaultSettingsType]]
                             : extractSetting(inputObjects, settingGroup, settingName,
-                                              (this[settingGroup] as nestedSettingsT)[settingName].default)
+                                              this[settingGroup][settingName].default)
       })
     })
   }
@@ -98,12 +80,11 @@ class settingsObject {
    * @param inputData
    * @returns An object where each element is the value for a given setting in the named group
    */
-  createSettingsEntry(settingGroupNameString: string): VisualObjectInstanceEnumeration {
-    const settingGroupName: settingsKeyT = settingGroupNameString as settingsKeyT;
+  createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumeration {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
     const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
       settingNames.map(settingName => {
-        const settingValue: DataViewPropertyValue = (this[settingGroupName] as nestedSettingsT)[settingName].value
+        const settingValue: DataViewPropertyValue = this[settingGroupName][settingName].value
         return [settingName, settingValue]
       })
     )
@@ -116,16 +97,13 @@ class settingsObject {
   }
 
   constructor() {
-    let allEntries = (Object.keys(defaultSettings) as (keyof typeof defaultSettings)[]).map(key => {
+    (Object.keys(defaultSettings) as (keyof typeof defaultSettings)[]).forEach(key => {
       type currGroupType = typeof this.settings[typeof key];
       let nestPromoteEntries = Object.entries(defaultSettings[key]).map((entry: [string, string | number | boolean]) => {
         return [entry[0], new settingsPair(entry[1])];
       });
-      let obj: currGroupType = Object.fromEntries(nestPromoteEntries);
-      return [key, obj];
+      this[key] = Object.fromEntries(nestPromoteEntries);
     });
-
-    this.settings = Object.fromEntries(allEntries) as SettingsPromoteTypedT;
   }
 }
 
