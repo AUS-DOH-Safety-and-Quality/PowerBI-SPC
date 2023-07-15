@@ -5,7 +5,7 @@ import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
 function extractSetting(inputObjects: DataViewObjects,
                         settingsGroup: string,
                         settingName: string,
-                        defaultValue?: string | number): string | number {
+                        defaultValue?: string | number | boolean): string | number | boolean {
   if (settingName.includes("colour")) {
     return dataViewObjects.getFillColor(
       inputObjects, {
