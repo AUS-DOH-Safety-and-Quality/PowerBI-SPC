@@ -1,4 +1,4 @@
-import { datesSettings } from "../Classes/settingsGroups"
+import { SettingsPromoteTypedT } from "../Classes/settingsObject"
 import broadcast_binary from "./BinaryFunctions"
 
 type dateFormat = {
@@ -35,7 +35,7 @@ let localeDateMap: Record<string, string>= {
   "en-US" : "\"locale\": \"en-US\""
 }
 
-function dateToFormattedString_impl(input_date: Date, date_settings: datesSettings): string {
+function dateToFormattedString_impl(input_date: Date, date_settings: SettingsPromoteTypedT["dates"]): string {
   const inpLocale: string = date_settings.date_format_locale.value;
   const inpDay: string = date_settings.date_format_day.value;
   const inpMonth: string = date_settings.date_format_month.value;

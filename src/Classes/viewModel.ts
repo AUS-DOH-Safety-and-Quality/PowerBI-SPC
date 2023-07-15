@@ -14,7 +14,7 @@ import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotProperties"
 import getAesthetic from "../Functions/getAesthetic"
-import { SettingsBaseTypedT, scatterSettings } from "../Classes/settingsGroups";
+import { defaultSettingsType } from "./defaultSettings";
 
 class lineData {
   x: number;
@@ -25,7 +25,7 @@ class lineData {
 class plotData {
   x: number;
   value: number;
-  aesthetics: SettingsBaseTypedT<scatterSettings>;
+  aesthetics: defaultSettingsType["scatter"];
   // ISelectionId allows the visual to report the selection choice to PowerBI
   identity: ISelectionId;
   // Flag for whether dot should be highlighted by selections in other charts
@@ -52,7 +52,7 @@ class viewModelObject {
 
     for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
       const index: number = this.calculatedLimits.keys[i].x;
-      const aesthetics: SettingsBaseTypedT<scatterSettings> = this.inputData.scatter_formatting[i]
+      const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i]
       if (this.calculatedLimits.shift[i] !== "none") {
         aesthetics.colour = getAesthetic(this.calculatedLimits.shift[i], "outliers",
                                   "shift_colour", this.inputSettings) as string;

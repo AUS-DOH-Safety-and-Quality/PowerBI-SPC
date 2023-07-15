@@ -8,7 +8,7 @@ import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
-import { SettingsBaseTypedT, scatterSettings } from "../Classes/settingsGroups";
+import { defaultSettingsType } from "./defaultSettings";
 
 class dataObject {
   keys: plotKey[];
@@ -19,14 +19,14 @@ class dataObject {
   anyHighlights: boolean;
   percentLabels: boolean;
   categories: DataViewCategoryColumn;
-  scatter_formatting: SettingsBaseTypedT<scatterSettings>[];
+  scatter_formatting: defaultSettingsType["scatter"][];
 
   constructor(inputView: DataViewCategorical, inputSettings: settingsObject) {
     const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
     const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
     const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
     const keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
-    const scatter_cond = extractConditionalFormatting<SettingsBaseTypedT<scatterSettings>>(inputView, "scatter", inputSettings)
+    const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings)
 
     const valid_ids: number[] = new Array<number>();
     const valid_keys: plotKey[] = new Array<plotKey>();

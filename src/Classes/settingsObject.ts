@@ -5,18 +5,26 @@ import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractSetting from "../Functions/extractSetting";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
-import {
-  canvasSettings,
-  spcSettings,
-  outliersSettings,
-  nhsIconSettings,
-  scatterSettings,
-  lineSettings,
-  xAxisSettings,
-  yAxisSettings,
-  datesSettings,
-  AllSettingsTypes
-} from "./settingsGroups"
+import defaultSettings from "./defaultSettings"
+import { defaultSettingsType, defaultSettingsKey } from "./defaultSettings";
+
+class settingsPair<T> {
+  default: T;
+  value: T;
+
+  constructor(initialValue?: T) {
+    this.default = initialValue;
+    this.value = initialValue;
+  }
+}
+
+type SettingsPromoteTypedT = {
+  [K in defaultSettingsKey]: {
+    [M in keyof defaultSettingsType[K]]: settingsPair<defaultSettingsType[K][M]>
+  };
+}
+type settingsKeyT = keyof SettingsPromoteTypedT;
+type nestedSettingsT = Record<string, settingsPair<string | number | boolean>>
 
 /**
  * This is the core class which controls the initialisation and
@@ -25,17 +33,17 @@ import {
  *
  * These are defined in the settingsGroups.ts file
  */
-class settingsObject {
-  [key: string] : any;
-  canvas: canvasSettings;
-  spc: spcSettings;
-  outliers: outliersSettings;
-  nhs_icons: nhsIconSettings;
-  scatter: scatterSettings;
-  lines: lineSettings;
-  x_axis: xAxisSettings;
-  y_axis: yAxisSettings;
-  dates: datesSettings;
+class settingsObject implements SettingsPromoteTypedT {
+  [k: string]: any;
+  canvas: SettingsPromoteTypedT["canvas"];
+  spc: SettingsPromoteTypedT["spc"];
+  outliers: SettingsPromoteTypedT["outliers"];
+  nhs_icons: SettingsPromoteTypedT["nhs_icons"];
+  scatter: SettingsPromoteTypedT["scatter"];
+  lines: SettingsPromoteTypedT["lines"];
+  x_axis: SettingsPromoteTypedT["x_axis"];
+  y_axis: SettingsPromoteTypedT["y_axis"];
+  dates: SettingsPromoteTypedT["dates"];
 
   /**
    * Function to read the values from the settings pane and update the
@@ -49,7 +57,7 @@ class settingsObject {
     const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
-      const condFormatting: AllSettingsTypes = inputView.categorical.categories
+      const condFormatting: defaultSettingsType[defaultSettingsKey] = inputView.categorical.categories
                             ? extractConditionalFormatting(inputView.categorical, settingGroup, this)[0]
                             : null;
       // Get the names of all settings in a given class and
@@ -57,9 +65,9 @@ class settingsObject {
       const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
       settingNames.forEach(settingName => {
         this[settingGroup][settingName].value
-          = condFormatting ? condFormatting[settingName as keyof AllSettingsTypes]
+          = condFormatting ? condFormatting[settingName as keyof defaultSettingsType[defaultSettingsKey]]
                             : extractSetting(inputObjects, settingGroup, settingName,
-                                            this[settingGroup][settingName].default)
+                                              this[settingGroup][settingName].default)
       })
     })
   }
@@ -74,7 +82,6 @@ class settingsObject {
    */
   createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumeration {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
-
     const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
       settingNames.map(settingName => {
         const settingValue: DataViewPropertyValue = this[settingGroupName][settingName].value
@@ -90,16 +97,15 @@ class settingsObject {
   }
 
   constructor() {
-    this.canvas = new canvasSettings();
-    this.spc = new spcSettings();
-    this.outliers = new outliersSettings();
-    this.nhs_icons = new nhsIconSettings();
-    this.scatter = new scatterSettings();
-    this.lines = new lineSettings();
-    this.x_axis = new xAxisSettings();
-    this.y_axis = new yAxisSettings();
-    this.dates = new datesSettings();
+    (Object.keys(defaultSettings) as (keyof typeof defaultSettings)[]).forEach(key => {
+      type currGroupType = typeof this.settings[typeof key];
+      let nestPromoteEntries = Object.entries(defaultSettings[key]).map((entry: [string, string | number | boolean]) => {
+        return [entry[0], new settingsPair(entry[1])];
+      });
+      this[key] = Object.fromEntries(nestPromoteEntries);
+    });
   }
 }
 
+export { SettingsPromoteTypedT, settingsKeyT, nestedSettingsT }
 export default settingsObject;
