@@ -1,4 +1,4 @@
-import { SettingsPromoteTypedT } from "../Classes/settingsObject"
+import {defaultSettingsType} from "../Classes/defaultSettings"
 import broadcast_binary from "./BinaryFunctions"
 
 type dateFormat = {
@@ -35,12 +35,12 @@ let localeDateMap: Record<string, string>= {
   "en-US" : "\"locale\": \"en-US\""
 }
 
-function dateToFormattedString_impl(input_date: Date, date_settings: SettingsPromoteTypedT["dates"]): string {
-  const inpLocale: string = date_settings.date_format_locale.value;
-  const inpDay: string = date_settings.date_format_day.value;
-  const inpMonth: string = date_settings.date_format_month.value;
-  const inpYear: string = date_settings.date_format_year.value;
-  const inpDelim: string = date_settings.date_format_delim.value;
+function dateToFormattedString_impl(input_date: Date, date_settings: defaultSettingsType["dates"]): string {
+  const inpLocale: string = date_settings.date_format_locale;
+  const inpDay: string = date_settings.date_format_day;
+  const inpMonth: string = date_settings.date_format_month;
+  const inpYear: string = date_settings.date_format_year;
+  const inpDelim: string = date_settings.date_format_delim;
 
   const formatString: string = `{ ${localeDateMap[inpLocale]}, \"options\": { \"day\" : \"2-digit\", ${monthDateMap[inpMonth]}, ${yearDateMap[inpYear]} }, ${delimDateMap[inpDelim]} }`;
   const date_format: dateFormat = JSON.parse(formatString);

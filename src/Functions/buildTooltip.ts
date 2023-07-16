@@ -33,20 +33,20 @@ function buildTooltip(index: number, calculatedLimits: controlLimits,
       ll99: calculatedLimits.ll99 ? calculatedLimits.ll99[index] : null,
       ul99: calculatedLimits.ll99 ? calculatedLimits.ul99[index] : null
     };
-  const chart_type: string = inputSettings.spc.chart_type.value;
+  const chart_type: string = inputSettings.spc.chart_type;
   const prop_labels: boolean = inputData.percentLabels;
   const astpoint: string = calculatedLimits.astpoint[index];
   const trend: string = calculatedLimits.trend[index];
   const shift: string = calculatedLimits.shift[index];
   const two_in_three: string = calculatedLimits.two_in_three[index];
-  let multiplier: number = inputSettings.spc.multiplier.value;
+  let multiplier: number = inputSettings.spc.multiplier;
   if (prop_labels && (multiplier === 1)) {
     multiplier = 100;
   }
   const suffix: string = prop_labels ? "%" : "";
   let intNumDen: boolean = integerParams.includes(chart_type);
 
-  const sig_figs: number = inputSettings.spc.sig_figs.value;
+  const sig_figs: number = inputSettings.spc.sig_figs;
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
     displayName: "Date",

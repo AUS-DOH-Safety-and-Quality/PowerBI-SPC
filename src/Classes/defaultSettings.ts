@@ -114,6 +114,7 @@ let defaultSettings = {
 
 type defaultSettingsType = typeof defaultSettings;
 type defaultSettingsKey = keyof defaultSettingsType;
+type settingsScalarTypes = number | string | boolean
 
-export { defaultSettingsType, defaultSettingsKey }
+export { defaultSettingsType, defaultSettingsKey, settingsScalarTypes }
 export default defaultSettings;

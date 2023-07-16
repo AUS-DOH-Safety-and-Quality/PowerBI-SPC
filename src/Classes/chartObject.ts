@@ -49,7 +49,7 @@ class chartObject {
       calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
         const allInner: controlLimits = all;
         Object.entries(all).forEach((entry, idx) => {
-          if (this.inputSettings.spc.chart_type.value !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
+          if (this.inputSettings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
             allInner[entry[0] as keyof controlLimits] = entry[1].concat(Object.entries(curr)[idx][1]);
           }
         })
@@ -63,16 +63,16 @@ class chartObject {
     calcLimits.flagOutliers(this.inputSettings);
 
     // Scale limits using provided multiplier
-    const multiplier: number = this.inputSettings.spc.multiplier.value;
+    const multiplier: number = this.inputSettings.spc.multiplier;
 
     calcLimits.values = multiply(calcLimits.values, multiplier);
     calcLimits.targets = multiply(calcLimits.targets, multiplier);
-    calcLimits.alt_targets = rep(this.inputSettings.spc.alt_target.value, calcLimits.values.length)
+    calcLimits.alt_targets = rep(this.inputSettings.spc.alt_target, calcLimits.values.length)
 
-    if (this.inputSettings.spc.chart_type.value !== "run") {
+    if (this.inputSettings.spc.chart_type !== "run") {
       const limits: Record<string, number> = {
-        lower: this.inputSettings.y_axis.ylimit_l.value,
-        upper: this.inputSettings.y_axis.ylimit_u.value
+        lower: this.inputSettings.y_axis.ylimit_l,
+        upper: this.inputSettings.y_axis.ylimit_u
       }
       calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier), limits);
       calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier), limits);
@@ -87,7 +87,7 @@ class chartObject {
     this.inputSettings = args.inputSettings;
     this.splitIndexes = args.splitIndexes;
 
-    this.limitFunction = limitFunctions[args.inputSettings.spc.chart_type.value as keyof typeof limitFunctions]
+    this.limitFunction = limitFunctions[args.inputSettings.spc.chart_type as keyof typeof limitFunctions]
   }
 }
 

@@ -63,17 +63,17 @@ class plotPropertiesClass {
       ? args.plotPoints.length > 1
       : null;
 
-    const xLowerLimit: number = args.inputSettings.x_axis.xlimit_l.value;
-    let xUpperLimit: number = args.inputSettings.x_axis.xlimit_u.value;
-    let yLowerLimit: number = args.inputSettings.y_axis.ylimit_l.value;
-    let yUpperLimit: number = args.inputSettings.y_axis.ylimit_u.value;
+    const xLowerLimit: number = args.inputSettings.x_axis.xlimit_l;
+    let xUpperLimit: number = args.inputSettings.x_axis.xlimit_u;
+    let yLowerLimit: number = args.inputSettings.y_axis.ylimit_l;
+    let yUpperLimit: number = args.inputSettings.y_axis.ylimit_u;
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
     if (args.inputData && args.calculatedLimits) {
       xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.calculatedLimits.keys.map(d => d.x))
 
-      const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier.value;
-      const chart_type: string = args.inputSettings.spc.chart_type.value;
+      const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
+      const chart_type: string = args.inputSettings.spc.chart_type;
       const values: number[] = args.calculatedLimits.values;
       const ul99: number[] = args.calculatedLimits.ul99;
       const ll99: number[] = args.calculatedLimits.ll99;
@@ -84,7 +84,7 @@ class plotPropertiesClass {
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
-      const multiplier: number = args.inputSettings.spc.multiplier.value;
+      const multiplier: number = args.inputSettings.spc.multiplier;
 
       yUpperLimit = yUpperLimit !== null ? yUpperLimit :
         ["p", "pp"].includes(chart_type) && multiplier == 1
@@ -102,49 +102,49 @@ class plotPropertiesClass {
     const fontScaling: number = browserFontSize / 16;
 
     // Only scale padding for label if a label is actually present
-    const xLabelSize: number = args.inputSettings.x_axis.xlimit_label_size.value;
-    const xLabelPadding: number = args.inputSettings.x_axis.xlimit_label.value ? xLabelSize * fontScaling : 0;
-    const yLabelSize: number = args.inputSettings.y_axis.ylimit_label_size.value;
-    const yLabelPadding: number = args.inputSettings.y_axis.ylimit_label.value ? yLabelSize * fontScaling : 0;
+    const xLabelSize: number = args.inputSettings.x_axis.xlimit_label_size;
+    const xLabelPadding: number = args.inputSettings.x_axis.xlimit_label ? xLabelSize * fontScaling : 0;
+    const yLabelSize: number = args.inputSettings.y_axis.ylimit_label_size;
+    const yLabelPadding: number = args.inputSettings.y_axis.ylimit_label ? yLabelSize * fontScaling : 0;
 
-    const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size.value;
+    const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size;
 
-    const yTickSize: number = args.inputSettings.y_axis.ylimit_tick_size.value;
+    const yTickSize: number = args.inputSettings.y_axis.ylimit_tick_size;
 
     this.xAxis = {
       lower: xLowerLimit !== null ? xLowerLimit : 0,
       upper: xUpperLimit,
-      start_padding: args.inputSettings.canvas.left_padding.value + xTickSize * fontScaling + xLabelPadding,
-      end_padding: args.inputSettings.canvas.right_padding.value,
-      colour: args.inputSettings.x_axis.xlimit_colour.value,
-      ticks: args.inputSettings.x_axis.xlimit_ticks.value,
+      start_padding: args.inputSettings.canvas.left_padding + xTickSize * fontScaling + xLabelPadding,
+      end_padding: args.inputSettings.canvas.right_padding,
+      colour: args.inputSettings.x_axis.xlimit_colour,
+      ticks: args.inputSettings.x_axis.xlimit_ticks,
       tick_size: pixelConverter.toString(xTickSize),
-      tick_font: args.inputSettings.x_axis.xlimit_tick_font.value,
-      tick_colour: args.inputSettings.x_axis.xlimit_tick_colour.value,
-      tick_rotation: args.inputSettings.x_axis.xlimit_tick_rotation.value,
-      tick_count: args.inputSettings.x_axis.xlimit_tick_count.value,
-      label: args.inputSettings.x_axis.xlimit_label.value,
-      label_size: pixelConverter.toString(args.inputSettings.x_axis.xlimit_label_size.value),
-      label_font: args.inputSettings.x_axis.xlimit_label_font.value,
-      label_colour: args.inputSettings.x_axis.xlimit_label_colour.value
+      tick_font: args.inputSettings.x_axis.xlimit_tick_font,
+      tick_colour: args.inputSettings.x_axis.xlimit_tick_colour,
+      tick_rotation: args.inputSettings.x_axis.xlimit_tick_rotation,
+      tick_count: args.inputSettings.x_axis.xlimit_tick_count,
+      label: args.inputSettings.x_axis.xlimit_label,
+      label_size: pixelConverter.toString(args.inputSettings.x_axis.xlimit_label_size),
+      label_font: args.inputSettings.x_axis.xlimit_label_font,
+      label_colour: args.inputSettings.x_axis.xlimit_label_colour
     };
 
     this.yAxis = {
       lower: yLowerLimit,
       upper: yUpperLimit,
-      start_padding: args.inputSettings.canvas.upper_padding.value,
-      end_padding: args.inputSettings.canvas.lower_padding.value + yTickSize * fontScaling + yLabelPadding,
-      colour: args.inputSettings.y_axis.ylimit_colour.value,
-      ticks: args.inputSettings.y_axis.ylimit_ticks.value,
+      start_padding: args.inputSettings.canvas.upper_padding,
+      end_padding: args.inputSettings.canvas.lower_padding + yTickSize * fontScaling + yLabelPadding,
+      colour: args.inputSettings.y_axis.ylimit_colour,
+      ticks: args.inputSettings.y_axis.ylimit_ticks,
       tick_size: pixelConverter.toString(yTickSize),
-      tick_font: args.inputSettings.y_axis.ylimit_tick_font.value,
-      tick_colour: args.inputSettings.y_axis.ylimit_tick_colour.value,
-      tick_rotation: args.inputSettings.y_axis.ylimit_tick_rotation.value,
-      tick_count: args.inputSettings.y_axis.ylimit_tick_count.value,
-      label: args.inputSettings.y_axis.ylimit_label.value,
-      label_size: pixelConverter.toString(args.inputSettings.y_axis.ylimit_label_size.value),
-      label_font: args.inputSettings.y_axis.ylimit_label_font.value,
-      label_colour: args.inputSettings.y_axis.ylimit_label_colour.value
+      tick_font: args.inputSettings.y_axis.ylimit_tick_font,
+      tick_colour: args.inputSettings.y_axis.ylimit_tick_colour,
+      tick_rotation: args.inputSettings.y_axis.ylimit_tick_rotation,
+      tick_count: args.inputSettings.y_axis.ylimit_tick_count,
+      label: args.inputSettings.y_axis.ylimit_label,
+      label_size: pixelConverter.toString(args.inputSettings.y_axis.ylimit_label_size),
+      label_font: args.inputSettings.y_axis.ylimit_label_font,
+      label_colour: args.inputSettings.y_axis.ylimit_label_colour
     };
   this.initialiseScale();
   this.firstRun = false;

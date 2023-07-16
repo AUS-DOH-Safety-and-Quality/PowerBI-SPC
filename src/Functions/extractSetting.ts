@@ -1,11 +1,12 @@
 import powerbi from "powerbi-visuals-api"
 import DataViewObjects = powerbi.DataViewObjects
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
+import { settingsScalarTypes } from "../Classes/defaultSettings";
 
 function extractSetting(inputObjects: DataViewObjects,
                         settingsGroup: string,
                         settingName: string,
-                        defaultValue?: string | number): string | number {
+                        defaultValue?: settingsScalarTypes): settingsScalarTypes {
   if (settingName.includes("colour")) {
     return dataViewObjects.getFillColor(
       inputObjects, {

@@ -256,9 +256,9 @@ export class Visual implements IVisual {
   drawYAxis(): void {
     const yAxisProperties: axisProperties = this.viewModel.plotProperties.yAxis;
     let yAxis: d3.Axis<d3.NumberValue>;
-    const yaxis_sig_figs: number = this.viewModel.inputSettings.y_axis.ylimit_sig_figs.value;
-    const sig_figs: number = yaxis_sig_figs === null ? this.viewModel.inputSettings.spc.sig_figs.value : yaxis_sig_figs;
-    const multiplier: number = this.viewModel.inputSettings.spc.multiplier.value;
+    const yaxis_sig_figs: number = this.viewModel.inputSettings.y_axis.ylimit_sig_figs;
+    const sig_figs: number = yaxis_sig_figs === null ? this.viewModel.inputSettings.spc.sig_figs : yaxis_sig_figs;
+    const multiplier: number = this.viewModel.inputSettings.spc.multiplier;
 
     if (this.viewModel.plotProperties.displayPlot) {
       if (yAxisProperties.ticks) {
@@ -323,7 +323,7 @@ export class Visual implements IVisual {
         .selectAll(".dotsgroup")
         .selectChildren()
         .on("click", (event, d: plotData) => {
-          if (this.viewModel.inputSettings.spc.split_on_click.value) {
+          if (this.viewModel.inputSettings.spc.split_on_click) {
             // Identify whether limits are already split at datapoint, and undo if so
             const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
             if (xIndex > -1) {
@@ -395,8 +395,8 @@ export class Visual implements IVisual {
     const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
-    const opacityFull: number = this.viewModel.inputSettings.scatter.opacity.value;
-    const opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected.value;
+    const opacityFull: number = this.viewModel.inputSettings.scatter.opacity;
+    const opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected;
 
     this.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
     this.svgDots.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)

@@ -94,7 +94,7 @@ class svgIconClass {
 
   variationIconsToDraw(viewModel: viewModelObject): string[] {
     const currLimits: controlLimits = viewModel.calculatedLimits;
-    const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction.value;
+    const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction;
     const suffix_map: Record<string, string> = {
       "increase" : "High",
       "decrease" : "Low",
@@ -106,7 +106,7 @@ class svgIconClass {
       "" : ""
     }
     const suffix: string = suffix_map[imp_direction];
-    const flag_last: boolean = viewModel.inputSettings.nhs_icons.flag_variation_last.value;
+    const flag_last: boolean = viewModel.inputSettings.nhs_icons.flag_variation_last;
     let allFlags: string[];
     if (flag_last) {
       const N: number = currLimits.astpoint.length - 1;
@@ -140,14 +140,14 @@ class svgIconClass {
 
   drawIcons(viewModel: viewModelObject): void {
     d3.selectAll(".icongroup").remove()
-    const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons.value;
+    const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons;
     if (!draw_variation) {
       return;
     }
     const svg_width: number = viewModel.plotProperties.width
     const svg_height: number = viewModel.plotProperties.height
-    const variation_location: string = viewModel.inputSettings.nhs_icons.variation_icons_locations.value;
-    const variation_scaling: number = viewModel.inputSettings.nhs_icons.variation_icons_scaling.value;
+    const variation_location: string = viewModel.inputSettings.nhs_icons.variation_icons_locations;
+    const variation_scaling: number = viewModel.inputSettings.nhs_icons.variation_icons_scaling;
 
     const variation_icons: string[] = this.variationIconsToDraw(viewModel);
 

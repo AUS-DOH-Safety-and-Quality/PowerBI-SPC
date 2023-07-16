@@ -13,7 +13,7 @@ const lineNameMap: Record<string, string> = {
 function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsObject): string | number {
   const mapName: string = group.includes("line") ? lineNameMap[type] : type;
   const settingName: string = aesthetic + "_" + mapName;
-  return inputSettings[group][settingName].value;
+  return inputSettings[group][settingName];
 }
 
 export default getAesthetic;

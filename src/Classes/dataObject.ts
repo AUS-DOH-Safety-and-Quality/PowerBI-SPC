@@ -34,7 +34,7 @@ class dataObject {
     for (let i: number = 0; i < numerators.length; i++) {
       if (checkValidInput(numerators[i],
                           denominators ? denominators[i] : null,
-                          xbar_sds ? xbar_sds[i] : null, inputSettings.spc.chart_type.value)) {
+                          xbar_sds ? xbar_sds[i] : null, inputSettings.spc.chart_type)) {
         valid_ids.push(i);
         valid_keys.push({ x: null, id: i, label: keys[i] })
       }
@@ -43,10 +43,10 @@ class dataObject {
     valid_keys.forEach((d, idx) => { d.x = idx });
 
     let percent_labels: boolean;
-    if (inputSettings.spc.perc_labels.value === "Automatic") {
-      percent_labels = ["p", "pp"].includes(inputSettings.spc.chart_type.value) && (inputSettings.spc.multiplier.value === 1 || inputSettings.spc.multiplier.value === 100);
+    if (inputSettings.spc.perc_labels === "Automatic") {
+      percent_labels = ["p", "pp"].includes(inputSettings.spc.chart_type) && (inputSettings.spc.multiplier === 1 || inputSettings.spc.multiplier === 100);
     } else {
-      percent_labels = inputSettings.spc.perc_labels.value === "Yes";
+      percent_labels = inputSettings.spc.perc_labels === "Yes";
     }
 
     this.keys = valid_keys;
