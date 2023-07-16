@@ -11,20 +11,7 @@ import svgXAxisClass from "./svgXAxisClass";
 import svgYAxisClass from "./svgYAxisClass";
 import viewModelClass from "./viewModelClass";
 
-interface svgTypes {
-  svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-  svgTooltipLine: svgTooltipLineClass,
-  svgXAxis: svgXAxisClass,
-  svgYAxis: svgYAxisClass,
-  svgDots: svgDotsClass,
-  svgLines: svgLinesClass,
-  svgIcons: svgIconClass,
-  draw: (viewModel: viewModelClass) => void
-}
-
-type svgKeys = Exclude<keyof svgTypes, "draw" | "svg">;
-
-class plottingClass implements svgTypes {
+class plottingClass {
   svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   svgTooltipLine: svgTooltipLineClass;
   svgXAxis: svgXAxisClass;
@@ -34,9 +21,9 @@ class plottingClass implements svgTypes {
   svgIcons: svgIconClass;
 
   draw(viewModel: viewModelClass): void {
-    Object.getOwnPropertyNames(this).filter(d => !(["draw", "svg"].includes(d))).forEach(key => {
-      this[key as svgKeys].draw(viewModel);
-    })
+    Object.getOwnPropertyNames(this)
+          .filter(d => !(["draw", "svg"].includes(d)))
+          .forEach(key => this[key].draw(viewModel));
   }
 
   constructor(options: VisualConstructorOptions) {
