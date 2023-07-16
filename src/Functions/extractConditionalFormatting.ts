@@ -18,7 +18,7 @@ function extractConditionalFormatting<SettingsT extends defaultSettingsType[defa
           return [
             settingName,
             extractSetting((inputCategories.objects ? inputCategories.objects[i] : null) as powerbi.DataViewObjects,
-                            name, settingName, inputSettings[name][settingName].default)
+                            name, settingName, inputSettings[name][settingName])
           ]
         })
       ) as SettingsT

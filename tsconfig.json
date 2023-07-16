@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "allowJs": false,
-        "noImplicitAny": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "alwaysStrict": true,

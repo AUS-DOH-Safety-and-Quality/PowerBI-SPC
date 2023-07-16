@@ -40,24 +40,24 @@ class controlLimits {
   shift: string[];
 
   flagOutliers(inputSettings: settingsObject) {
-    const process_flag_type: string = inputSettings.outliers.process_flag_type.value;
-    const improvement_direction: string = inputSettings.outliers.improvement_direction.value;
-    if (inputSettings.spc.chart_type.value !== "run") {
-      if (inputSettings.outliers.astronomical.value) {
+    const process_flag_type: string = inputSettings.outliers.process_flag_type;
+    const improvement_direction: string = inputSettings.outliers.improvement_direction;
+    if (inputSettings.spc.chart_type !== "run") {
+      if (inputSettings.outliers.astronomical) {
         this.astpoint = checkFlagDirection(astronomical(this.values, this.ll99, this.ul99),
                                             { process_flag_type, improvement_direction });
       }
-      if (inputSettings.outliers.two_in_three.value) {
+      if (inputSettings.outliers.two_in_three) {
         this.two_in_three = checkFlagDirection(two_in_three(this.values, this.ll95, this.ul95),
                                                 { process_flag_type, improvement_direction });
       }
     }
-    if (inputSettings.outliers.trend.value) {
-      this.trend = checkFlagDirection(trend(this.values, inputSettings.outliers.trend_n.value),
+    if (inputSettings.outliers.trend) {
+      this.trend = checkFlagDirection(trend(this.values, inputSettings.outliers.trend_n),
                                       { process_flag_type, improvement_direction });
     }
-    if (inputSettings.outliers.shift.value) {
-      this.shift = checkFlagDirection(shift(this.values, this.targets, inputSettings.outliers.shift_n.value),
+    if (inputSettings.outliers.shift) {
+      this.shift = checkFlagDirection(shift(this.values, this.targets, inputSettings.outliers.shift_n),
                                       { process_flag_type, improvement_direction });
     }
   }
