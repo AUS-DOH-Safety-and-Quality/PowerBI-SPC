@@ -3,14 +3,14 @@ import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import PrimitiveValue = powerbi.PrimitiveValue;
 import DataViewCategorical = powerbi.DataViewCategorical;
 import extractDataColumn from "../Functions/extractDataColumn"
-import settingsObject from "./settingsObject"
+import settingsClass from "./settingsClass"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import plotKey from "./plotKey"
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
 import { defaultSettingsType } from "./defaultSettings";
 
-class dataObject {
+class dataClass {
   keys: plotKey[];
   numerators: number[];
   denominators: number[];
@@ -21,7 +21,7 @@ class dataObject {
   categories: DataViewCategoryColumn;
   scatter_formatting: defaultSettingsType["scatter"][];
 
-  constructor(inputView: DataViewCategorical, inputSettings: settingsObject) {
+  constructor(inputView: DataViewCategorical, inputSettings: settingsClass) {
     const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
     const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
     const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
@@ -61,4 +61,4 @@ class dataObject {
   }
 }
 
-export default dataObject;
+export default dataClass;

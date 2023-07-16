@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
-import viewModelObject from "./viewModel";
-import { plotData } from "./viewModel";
+import viewModelClass from "./viewModelClass";
+import { plotData } from "./viewModelClass";
 import between from "../Functions/between";
 import ISelectionId = powerbi.visuals.ISelectionId;
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
@@ -9,7 +9,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 class svgDotsClass {
   dotsGroup: SelectionBase;
 
-  draw(viewModel: viewModelObject): void {
+  draw(viewModel: viewModelClass): void {
     this.dotsGroup.selectAll(".dotsgroup").remove()
     if (!(viewModel.plotPoints)) {
       return;

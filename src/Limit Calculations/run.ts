@@ -2,11 +2,11 @@ import * as d3 from "d3";
 import rep from "../Functions/rep";
 import { divide } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
-import {LimitArgs} from "../Classes/chartObject";
+import dataClass from "../Classes/dataClass";
+import { LimitArgs } from "../Classes/viewModelClass";
 
 function runLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+  const inputData: dataClass = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)

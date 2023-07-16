@@ -1,12 +1,12 @@
 import iLimits from "./i"
 import { pow } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
+import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
-import {LimitArgs} from "../Classes/chartObject";
+import { LimitArgs } from "../Classes/viewModelClass";
 
 function tLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+  const inputData: dataClass = args.inputData;
   const val: number[] = pow(inputData.numerators, 1 / 3.6);
   const argsDataCopy: LimitArgs = args;
   argsDataCopy.inputData.numerators = val;

@@ -1,12 +1,12 @@
 import * as d3 from "d3";
 import { sqrt } from "../Functions/UnaryFunctions";
 import rep from "../Functions/rep";
-import dataObject from "../Classes/dataObject";
+import dataClass from "../Classes/dataClass";
 import controlLimits from "../Classes/controlLimits";
-import { LimitArgs } from "../Classes/chartObject";
+import { LimitArgs } from "../Classes/viewModelClass";
 
 function gLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+  const inputData: dataClass = args.inputData;
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = sqrt(cl * (cl + 1));
 

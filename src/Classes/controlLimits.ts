@@ -4,7 +4,7 @@ import astronomical from "../Outlier Flagging/astronomical"
 import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
-import settingsObject from "./settingsObject";
+import settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 
 type controlLimitsArgs = {
@@ -39,7 +39,7 @@ class controlLimits {
   two_in_three: string[];
   shift: string[];
 
-  flagOutliers(inputSettings: settingsObject) {
+  flagOutliers(inputSettings: settingsClass) {
     const process_flag_type: string = inputSettings.outliers.process_flag_type;
     const improvement_direction: string = inputSettings.outliers.improvement_direction;
     if (inputSettings.spc.chart_type !== "run") {

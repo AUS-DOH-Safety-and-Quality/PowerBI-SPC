@@ -1,8 +1,8 @@
 import powerbi from "powerbi-visuals-api";
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
-import settingsObject from "../Classes/settingsObject";
+import dataClass from "../Classes/dataClass";
+import settingsClass from "../Classes/settingsClass";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -22,7 +22,7 @@ const valueNames: Record<string, string> = {
 const integerParams: string[] = ["c", "p", "pp"];
 
 function buildTooltip(index: number, calculatedLimits: controlLimits,
-                      inputData: dataObject, inputSettings: settingsObject): VisualTooltipDataItem[] {
+                      inputData: dataClass, inputSettings: settingsClass): VisualTooltipDataItem[] {
 
   const date: string = calculatedLimits.keys[index].label;
   const value: number = calculatedLimits.values[index];

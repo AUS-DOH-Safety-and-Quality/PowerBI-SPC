@@ -2,9 +2,9 @@ import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import truncate from "../Functions/truncate";
-import { plotData } from "./viewModel"
-import settingsObject from "./settingsObject";
-import dataObject from "./dataObject";
+import { plotData } from "./viewModelClass"
+import settingsClass from "./settingsClass";
+import dataClass from "./dataClass";
 import controlLimits from "./controlLimits";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
@@ -52,8 +52,8 @@ class plotPropertiesClass {
   update(args: { options: VisualUpdateOptions,
                       plotPoints: plotData[],
                       calculatedLimits: controlLimits,
-                      inputData: dataObject,
-                      inputSettings: settingsObject }) {
+                      inputData: dataClass,
+                      inputSettings: settingsClass }) {
 
     // Get the width and height of plotting space
     this.width = args.options.viewport.width;

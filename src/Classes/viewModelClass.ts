@@ -6,15 +6,18 @@ import DataViewPropertyValue = powerbi.DataViewPropertyValue;
 import DataViewObject = powerbi.DataViewObject;
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import ISelectionId = powerbi.visuals.ISelectionId;
-import chartObject from "./chartObject"
-import settingsObject from "./settingsObject";
-import dataObject from "./dataObject";
+import settingsClass from "./settingsClass";
+import dataClass from "./dataClass";
 import controlLimits from "./controlLimits";
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
-import plotPropertiesClass from "./plotProperties"
+import plotPropertiesClass from "./plotPropertiesClass"
 import getAesthetic from "../Functions/getAesthetic"
 import { defaultSettingsType } from "./defaultSettings";
+import { multiply } from "../Functions/BinaryFunctions";
+import truncate from "../Functions/truncate"
+import rep from "../Functions/rep"
+import * as limitFunctions from "../Limit Calculations"
 
 class lineData {
   x: number;
@@ -34,10 +37,11 @@ class plotData {
   tooltip: VisualTooltipDataItem[];
 }
 
-class viewModelObject {
-  inputData: dataObject;
-  inputSettings: settingsObject;
-  chartBase: chartObject;
+type LimitArgs = { inputData: dataClass; inputSettings: settingsClass; }
+
+class viewModelClass {
+  inputData: dataClass;
+  inputSettings: settingsClass;
   calculatedLimits: controlLimits;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
@@ -45,6 +49,66 @@ class viewModelObject {
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   firstRun: boolean;
+  limitFunction: (x: LimitArgs) => controlLimits;
+
+  getLimits(): controlLimits {
+    let calcLimits: controlLimits;
+
+    if (this.splitIndexes.length > 0) {
+      const indexes: number[] = this.splitIndexes
+                                  .concat([this.inputData.keys.length - 1])
+                                  .sort((a,b) => a - b);
+      const groupedData: dataClass[] = indexes.map((d, idx) => {
+        // Force a deep copy
+        const data: dataClass = JSON.parse(JSON.stringify(this.inputData));
+         if(idx === 0) {
+          data.denominators = data.denominators.slice(0, d + 1)
+          data.numerators = data.numerators.slice(0, d + 1)
+          data.keys = data.keys.slice(0, d + 1)
+         } else {
+          data.denominators = data.denominators.slice(indexes[idx - 1] + 1, d + 1)
+          data.numerators = data.numerators.slice(indexes[idx - 1] + 1, d + 1)
+          data.keys = data.keys.slice(indexes[idx - 1] + 1, d + 1)
+         }
+        return data;
+      })
+
+      const calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction({inputData: d, inputSettings: this.inputSettings}));
+      calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
+        const allInner: controlLimits = all;
+        Object.entries(all).forEach((entry, idx) => {
+          if (this.inputSettings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
+            allInner[entry[0] as keyof controlLimits] = entry[1].concat(Object.entries(curr)[idx][1]);
+          }
+        })
+        return allInner;
+      })
+    } else {
+      // Calculate control limits using user-specified type
+      calcLimits = this.limitFunction({inputData: this.inputData, inputSettings: this.inputSettings});
+    }
+
+    calcLimits.flagOutliers(this.inputSettings);
+
+    // Scale limits using provided multiplier
+    const multiplier: number = this.inputSettings.spc.multiplier;
+
+    calcLimits.values = multiply(calcLimits.values, multiplier);
+    calcLimits.targets = multiply(calcLimits.targets, multiplier);
+    calcLimits.alt_targets = rep(this.inputSettings.spc.alt_target, calcLimits.values.length)
+
+    if (this.inputSettings.spc.chart_type !== "run") {
+      const limits: Record<string, number> = {
+        lower: this.inputSettings.y_axis.ylimit_l,
+        upper: this.inputSettings.y_axis.ylimit_u
+      }
+      calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier), limits);
+      calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier), limits);
+      calcLimits.ul95 = truncate(multiply(calcLimits.ul95, multiplier), limits);
+      calcLimits.ul99 = truncate(multiply(calcLimits.ul99, multiplier), limits);
+    }
+    return calcLimits;
+  }
 
   initialisePlotData(host: IVisualHost): void {
     this.plotPoints = new Array<plotData>();
@@ -95,7 +159,7 @@ class viewModelObject {
       labels.forEach(label => {
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
-        if (this.chartBase.splitIndexes.includes(i - 1)) {
+        if (this.splitIndexes.includes(i - 1)) {
           formattedLines.push({
             x: this.calculatedLimits.keys[i].x,
             line_value: null,
@@ -114,7 +178,7 @@ class viewModelObject {
 
   update(args: { options: VisualUpdateOptions; host: IVisualHost; }) {
     if (this.firstRun) {
-      this.inputSettings = new settingsObject();
+      this.inputSettings = new settingsClass();
     }
     const dv: powerbi.DataView[] = args.options.dataViews;
     this.inputSettings.update(dv[0]);
@@ -124,8 +188,8 @@ class viewModelObject {
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(dv)) {
-      this.inputData = <dataObject>null;
-      this.chartBase = null;
+      this.inputData = <dataClass>null;
+      this.limitFunction = null;
       this.calculatedLimits = null;
       this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
@@ -136,15 +200,13 @@ class viewModelObject {
       if (args.options.type === 2 || this.firstRun) {
 
         // Extract input data, filter out invalid values, and identify any settings passed as data
-        this.inputData = new dataObject(dv[0].categorical, this.inputSettings)
+        this.inputData = new dataClass(dv[0].categorical, this.inputSettings)
 
         // Initialise a new chartObject class which can be used to calculate the control limits
-        this.chartBase = new chartObject({ inputData: this.inputData,
-                                            inputSettings: this.inputSettings,
-                                            splitIndexes: this.splitIndexes ? this.splitIndexes : new Array<number>() });
+        this.limitFunction = limitFunctions[this.inputSettings.spc.chart_type as keyof typeof limitFunctions]
 
         // Use initialised chartObject to calculate control limits
-        this.calculatedLimits = this.chartBase.getLimits();
+        this.calculatedLimits = this.getLimits();
         console.log("calculatedLimits: ", this.calculatedLimits)
 
         // Structure the data and calculated limits to the format needed for plotting
@@ -167,9 +229,9 @@ class viewModelObject {
   }
 
   constructor() {
-    this.inputData = <dataObject>null;
-    this.inputSettings = <settingsObject>null;
-    this.chartBase = null;
+    this.inputData = <dataClass>null;
+    this.inputSettings = <settingsClass>null;
+    this.limitFunction = null;
     this.calculatedLimits = null;
     this.plotPoints = <plotData[]>null;
     this.groupedLines = <[string, lineData[]][]>null;
@@ -179,5 +241,5 @@ class viewModelObject {
   }
 }
 
-export { lineData, plotData }
-export default viewModelObject
+export { lineData, plotData, LimitArgs }
+export default viewModelClass

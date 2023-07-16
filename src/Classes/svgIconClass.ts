@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import * as iconSVG from "../Icons"
-import viewModelObject from "./viewModel";
+import viewModelClass from "./viewModelClass";
 import controlLimits from "./controlLimits";
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
@@ -92,7 +92,7 @@ class svgIconClass {
     return icon_svg
   }
 
-  variationIconsToDraw(viewModel: viewModelObject): string[] {
+  variationIconsToDraw(viewModel: viewModelClass): string[] {
     const currLimits: controlLimits = viewModel.calculatedLimits;
     const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction;
     const suffix_map: Record<string, string> = {
@@ -138,7 +138,7 @@ class svgIconClass {
     return iconsPresent;
   }
 
-  drawIcons(viewModel: viewModelObject): void {
+  drawIcons(viewModel: viewModelClass): void {
     d3.selectAll(".icongroup").remove()
     const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons;
     if (!draw_variation) {

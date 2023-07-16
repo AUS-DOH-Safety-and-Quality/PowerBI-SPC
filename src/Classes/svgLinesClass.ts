@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
-import viewModelObject from "./viewModel";
-import { lineData } from "./viewModel";
+import viewModelClass from "./viewModelClass";
+import { lineData } from "./viewModelClass";
 import between from "../Functions/between";
 import getAesthetic from "../Functions/getAesthetic";
 import ISelectionId = powerbi.visuals.ISelectionId;
@@ -10,7 +10,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 class svgLinesClass {
   linesGroup: SelectionBase;
 
-  draw(viewModel: viewModelObject): void {
+  draw(viewModel: viewModelClass): void {
     this.linesGroup.selectAll(".linesgroup").remove()
     if (!(viewModel.groupedLines)) {
       return;

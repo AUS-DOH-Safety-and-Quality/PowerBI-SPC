@@ -3,12 +3,12 @@ import diff from "../Functions/diff"
 import rep from "../Functions/rep";
 import { abs } from "../Functions/UnaryFunctions"
 import { divide } from "../Functions/BinaryFunctions";
-import dataObject from "../Classes/dataObject";
+import dataClass from "../Classes/dataClass";
 import controlLimits from "../Classes/controlLimits";
-import { LimitArgs } from "../Classes/chartObject";
+import { LimitArgs } from "../Classes/viewModelClass";
 
 function iLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+  const inputData: dataClass = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)

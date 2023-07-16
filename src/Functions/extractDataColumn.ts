@@ -3,13 +3,13 @@ import DataViewValueColumn = powerbi.DataViewValueColumn;
 import DataViewValueColumns = powerbi.DataViewValueColumns;
 import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import settingsObject from "../Classes/settingsObject";
+import settingsClass from "../Classes/settingsClass";
 import dateToFormattedString from "./dateToFormattedString";
 type TargetT = number[] | string[] | number | string;
 
 function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
-                                              inputSettings?: settingsObject): T {
+                                              inputSettings?: settingsClass): T {
   let columnRaw: DataViewValueColumn;
   if (name === "key") {
     const columnRawTmp: DataViewValueColumn[] = (inputView.categories as DataViewCategoryColumn[]).filter(viewColumn => {

@@ -16,13 +16,13 @@ import IVisualHost = ex_visual.IVisualHost;
 import ISelectionManager = extensibility.ISelectionManager;
 import ISelectionId = visuals.ISelectionId;
 import IVisualEventService = extensibility.IVisualEventService;
-import viewModelObject from "./Classes/viewModel"
-import { plotData } from "./Classes/viewModel";
+import viewModelClass from "./Classes/viewModelClass"
+import { plotData } from "./Classes/viewModelClass";
 import * as d3 from "d3";
 import svgObjectClass from "./Classes/svgObjectClass"
 import svgIconClass from "./Classes/svgIconClass"
 import svgSelectionClass from "./Classes/svgSelectionClass"
-import { axisProperties } from "./Classes/plotProperties"
+import { axisProperties } from "./Classes/plotPropertiesClass"
 import svgLinesClass from "./Classes/svgLinesClass";
 import svgDotsClass from "./Classes/svgDotsClass";
 
@@ -37,7 +37,7 @@ export class Visual implements IVisual {
   private svgLines: svgLinesClass;
   private svgDots: svgDotsClass
   private svgSelections: svgSelectionClass;
-  private viewModel: viewModelObject;
+  private viewModel: viewModelClass;
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
   private events: IVisualEventService;
@@ -56,7 +56,7 @@ export class Visual implements IVisual {
     this.svgLines = new svgLinesClass(this.svg);
     this.svgDots = new svgDotsClass(this.svg);
     this.svgSelections = new svgSelectionClass();
-    this.viewModel = new viewModelObject();
+    this.viewModel = new viewModelClass();
     this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();

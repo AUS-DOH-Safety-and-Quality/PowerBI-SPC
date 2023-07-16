@@ -4,11 +4,11 @@ import rep from "../Functions/rep";
 import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, pow, multiply } from "../Functions/BinaryFunctions";
 import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
-import {LimitArgs} from "../Classes/chartObject";
+import dataClass from "../Classes/dataClass";
+import { LimitArgs } from "../Classes/viewModelClass";
 
 function sLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+  const inputData: dataClass = args.inputData;
   const group_sd: number[] = inputData.numerators;
   const count_per_group: number[] = inputData.denominators;
 

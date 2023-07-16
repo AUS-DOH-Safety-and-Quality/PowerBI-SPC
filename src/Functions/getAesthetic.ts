@@ -1,4 +1,4 @@
-import settingsObject from "../Classes/settingsObject"
+import settingsClass from "../Classes/settingsClass"
 
 const lineNameMap: Record<string, string> = {
   "ll99" : "99",
@@ -10,7 +10,7 @@ const lineNameMap: Record<string, string> = {
   "alt_targets" : "alt_target"
 }
 
-function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsObject): string | number {
+function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsClass): string | number {
   const mapName: string = group.includes("line") ? lineNameMap[type] : type;
   const settingName: string = aesthetic + "_" + mapName;
   return inputSettings[group][settingName];
