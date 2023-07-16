@@ -4,18 +4,15 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import "../style/visual.less";
 import powerbi from "powerbi-visuals-api";
-import extensibility = powerbi.extensibility;
-import visuals = powerbi.visuals;
-import ex_visual = extensibility.visual;
-import IVisual = extensibility.IVisual;
-import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
-import VisualUpdateOptions = ex_visual.VisualUpdateOptions;
+import IVisual = powerbi.extensibility.IVisual;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
-import IVisualHost = ex_visual.IVisualHost;
-import ISelectionManager = extensibility.ISelectionManager;
-import ISelectionId = visuals.ISelectionId;
-import IVisualEventService = extensibility.IVisualEventService;
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
+import ISelectionId = powerbi.visuals.ISelectionId;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import viewModelClass from "./Classes/viewModelClass"
 import { plotData } from "./Classes/viewModelClass";
 import * as d3 from "d3";
@@ -41,9 +38,7 @@ export class Visual implements IVisual {
 
     this.selectionManager = this.host.createSelectionManager();
 
-    this.selectionManager.registerOnSelectCallback(() => {
-      this.updateHighlighting();
-    })
+    this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
     console.log("Constructor finish")
   }
 
@@ -55,16 +50,11 @@ export class Visual implements IVisual {
       this.updateOptions = options;
 
       console.log("viewModel start")
-      this.viewModel.update({ options: options,
-                              host: this.host });
-      console.log(this.viewModel)
+      this.viewModel.update({ options: options, host: this.host });
 
-      console.log("svg scale start")
-      this.plotting.svg
-                    .attr("width", this.viewModel.plotProperties.width)
-                    .attr("height", this.viewModel.plotProperties.height);
+      console.log("Draw plot")
+      this.plotting.draw(this.viewModel);
 
-      this.plotting.draw(this.viewModel)
       this.addInteractivity();
       this.updateHighlighting();
       this.addContextMenu();
@@ -138,17 +128,17 @@ export class Visual implements IVisual {
           const y = event.pageY;
 
           this.host.tooltipService.show({
-              dataItems: d.tooltip,
-              identities: [d.identity],
-              coordinates: [x, y],
-              isTouchEvent: false
+            dataItems: d.tooltip,
+            identities: [d.identity],
+            coordinates: [x, y],
+            isTouchEvent: false
           });
         })
         // Hide tooltip when mouse moves out of dot
         .on("mouseout", () => {
           this.host.tooltipService.hide({
-              immediately: true,
-              isTouchEvent: false
+            immediately: true,
+            isTouchEvent: false
           })
         });
 
@@ -192,8 +182,8 @@ export class Visual implements IVisual {
       const eventTarget: EventTarget = event.target;
       const dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
       this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
-          x: event.clientX,
-          y: event.clientY
+        x: event.clientX,
+        y: event.clientY
       });
       event.preventDefault();
     });

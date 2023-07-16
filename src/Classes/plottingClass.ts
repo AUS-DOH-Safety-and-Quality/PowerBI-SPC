@@ -19,6 +19,8 @@ class plottingClass {
   svgIcons: svgIconClass;
 
   draw(viewModel: viewModelClass): void {
+    this.svg.attr("width", viewModel.plotProperties.width)
+            .attr("height", viewModel.plotProperties.height);
     Object.getOwnPropertyNames(this)
           .filter(d => !(["draw", "svg"].includes(d)))
           .forEach(key => this[key].draw(viewModel));
