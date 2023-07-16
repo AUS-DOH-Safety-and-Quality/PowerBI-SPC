@@ -1,8 +1,6 @@
 import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
-import extensibility = powerbi.extensibility;
-import ex_visual = extensibility.visual;
-import VisualConstructorOptions = ex_visual.VisualConstructorOptions;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import svgDotsClass from "./svgDotsClass";
 import svgIconClass from "./svgIconClass";
 import svgLinesClass from "./svgLinesClass";
