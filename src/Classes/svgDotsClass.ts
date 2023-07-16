@@ -11,9 +11,11 @@ class svgDotsClass {
 
   draw(viewModel: viewModelClass): void {
     this.dotsGroup.selectAll(".dotsgroup").remove()
-    if (!(viewModel.plotPoints)) {
+    if (!(viewModel.plotProperties.displayPlot)) {
       return;
     }
+    const lower: number = viewModel.plotProperties.yAxis.lower;
+    const upper: number = viewModel.plotProperties.yAxis.upper;
 
     this.dotsGroup
         .append('g')
@@ -27,11 +29,7 @@ class svgDotsClass {
         .attr("cx", (d: plotData) => viewModel.plotProperties.xScale(d.x))
         .attr("r", (d: plotData) => d.aesthetics.size)
         .style("fill", (d: plotData) => {
-          if (viewModel.plotProperties.displayPlot) {
-            return between(d.value, viewModel.plotProperties.yAxis.lower, viewModel.plotProperties.yAxis.upper) ? d.aesthetics.colour : "#FFFFFF";
-          } else {
-            return "#FFFFFF";
-          }
+          return between(d.value, lower, upper) ? d.aesthetics.colour : "#FFFFFF";
         })
   }
 

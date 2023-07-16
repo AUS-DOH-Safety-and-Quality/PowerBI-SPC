@@ -138,7 +138,7 @@ class svgIconClass {
     return iconsPresent;
   }
 
-  drawIcons(viewModel: viewModelClass): void {
+  draw(viewModel: viewModelClass): void {
     d3.selectAll(".icongroup").remove()
     const draw_variation: boolean = viewModel.inputSettings.nhs_icons.show_variation_icons;
     if (!draw_variation) {
