@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import svgObjectClass from "./svgObjectClass"
-import viewModel from "./viewModel"
+import viewModel from "./viewModelClass"
 
 type SelectionAny = d3.Selection<any, any, any, any>;
 

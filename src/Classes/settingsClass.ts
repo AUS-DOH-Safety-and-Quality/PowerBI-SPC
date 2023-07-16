@@ -15,7 +15,7 @@ import { defaultSettingsType, defaultSettingsKey } from "./defaultSettings";
  *
  * These are defined in the settingsGroups.ts file
  */
-class settingsObject implements defaultSettingsType {
+class settingsClass implements defaultSettingsType {
   canvas: defaultSettingsType["canvas"];
   spc: defaultSettingsType["spc"];
   outliers: defaultSettingsType["outliers"];
@@ -84,4 +84,4 @@ class settingsObject implements defaultSettingsType {
     });
   }
 }
-export default settingsObject;
+export default settingsClass;

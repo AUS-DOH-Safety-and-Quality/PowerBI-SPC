@@ -1,15 +1,15 @@
 import * as d3 from "d3";
 import rep from "../Functions/rep";
-import dataObject from "../Classes/dataObject"
-import controlLimits from "../Classes/controlLimits"
-import { LimitArgs } from "../Classes/chartObject";
+import dataClass from "../Classes/dataClass"
+import controlLimitsClass from "../Classes/controlLimitsClass"
+import { LimitArgs } from "../Classes/viewModelClass";
 
-function cLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+function cLimits(args: LimitArgs): controlLimitsClass {
+  const inputData: dataClass = args.inputData;
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = Math.sqrt(cl);
 
-  return new controlLimits({
+  return new controlLimitsClass({
     keys: inputData.keys,
     values: inputData.numerators,
     targets: rep(cl, inputData.keys.length),

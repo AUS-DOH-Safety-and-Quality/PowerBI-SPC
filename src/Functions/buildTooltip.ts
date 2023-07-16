@@ -1,8 +1,8 @@
 import powerbi from "powerbi-visuals-api";
 import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
-import settingsObject from "../Classes/settingsObject";
+import controlLimitsClass from "../Classes/controlLimitsClass";
+import dataClass from "../Classes/dataClass";
+import settingsClass from "../Classes/settingsClass";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -21,24 +21,24 @@ const valueNames: Record<string, string> = {
 
 const integerParams: string[] = ["c", "p", "pp"];
 
-function buildTooltip(index: number, calculatedLimits: controlLimits,
-                      inputData: dataObject, inputSettings: settingsObject): VisualTooltipDataItem[] {
+function buildTooltip(index: number, controlLimits: controlLimitsClass,
+                      inputData: dataClass, inputSettings: settingsClass): VisualTooltipDataItem[] {
 
-  const date: string = calculatedLimits.keys[index].label;
-  const value: number = calculatedLimits.values[index];
-  const numerator: number = calculatedLimits.numerators ? calculatedLimits.numerators[index] : null;
-  const denominator: number = calculatedLimits.denominators ? calculatedLimits.denominators[index] : null;
-  const target: number = calculatedLimits.targets[index];
+  const date: string = controlLimits.keys[index].label;
+  const value: number = controlLimits.values[index];
+  const numerator: number = controlLimits.numerators ? controlLimits.numerators[index] : null;
+  const denominator: number = controlLimits.denominators ? controlLimits.denominators[index] : null;
+  const target: number = controlLimits.targets[index];
   const limits = {
-      ll99: calculatedLimits.ll99 ? calculatedLimits.ll99[index] : null,
-      ul99: calculatedLimits.ll99 ? calculatedLimits.ul99[index] : null
+      ll99: controlLimits.ll99 ? controlLimits.ll99[index] : null,
+      ul99: controlLimits.ll99 ? controlLimits.ul99[index] : null
     };
   const chart_type: string = inputSettings.spc.chart_type;
   const prop_labels: boolean = inputData.percentLabels;
-  const astpoint: string = calculatedLimits.astpoint[index];
-  const trend: string = calculatedLimits.trend[index];
-  const shift: string = calculatedLimits.shift[index];
-  const two_in_three: string = calculatedLimits.two_in_three[index];
+  const astpoint: string = controlLimits.astpoint[index];
+  const trend: string = controlLimits.trend[index];
+  const shift: string = controlLimits.shift[index];
+  const two_in_three: string = controlLimits.two_in_three[index];
   let multiplier: number = inputSettings.spc.multiplier;
   if (prop_labels && (multiplier === 1)) {
     multiplier = 100;

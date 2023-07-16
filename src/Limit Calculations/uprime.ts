@@ -3,13 +3,13 @@ import rep from "../Functions/rep";
 import diff from "../Functions/diff";
 import { abs, sqrt } from "../Functions/UnaryFunctions";
 import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";
-import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
+import controlLimitsClass from "../Classes/controlLimitsClass";
+import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
-import {LimitArgs} from "../Classes/chartObject";
+import { LimitArgs } from "../Classes/viewModelClass";
 
-function uprimeLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+function uprimeLimits(args: LimitArgs): controlLimitsClass {
+  const inputData: dataClass = args.inputData;
   const val: number[] = divide(inputData.numerators, inputData.denominators);
   const cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
   const sd: number[] = sqrt(divide(cl,inputData.denominators));
@@ -21,7 +21,7 @@ function uprimeLimits(args: LimitArgs): controlLimits {
   const consec_diff_valid: number[] = outliers_in_limits ? consec_diff : consec_diff.filter(d => d < consec_diff_ulim);
   const sigma: number[] = multiply(sd, d3.mean(consec_diff_valid) / 1.128);
 
-  return new controlLimits({
+  return new controlLimitsClass({
     keys: inputData.keys,
     values: val,
     numerators: inputData.numerators,

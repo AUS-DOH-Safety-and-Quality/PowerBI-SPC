@@ -3,12 +3,12 @@ import { a3 } from "../Functions/Constants";
 import rep from "../Functions/rep";
 import { sqrt } from "../Functions/UnaryFunctions"
 import { pow, subtract, add, multiply, divide } from "../Functions/BinaryFunctions";
-import controlLimits from "../Classes/controlLimits";
-import dataObject from "../Classes/dataObject";
-import {LimitArgs} from "../Classes/chartObject";
+import controlLimitsClass from "../Classes/controlLimitsClass";
+import dataClass from "../Classes/dataClass";
+import { LimitArgs } from "../Classes/viewModelClass";
 
-function xbarLimits(args: LimitArgs): controlLimits {
-  const inputData: dataObject = args.inputData;
+function xbarLimits(args: LimitArgs): controlLimitsClass {
+  const inputData: dataClass = args.inputData;
   // Calculate number of observations in each group
   const count_per_group: number[] = inputData.denominators;
 
@@ -30,7 +30,7 @@ function xbarLimits(args: LimitArgs): controlLimits {
   // Sample-size dependent constant
   const A3: number[] = a3(count_per_group);
 
-  return new controlLimits({
+  return new controlLimitsClass({
     keys: inputData.keys,
     values: group_means,
     targets: rep(cl, inputData.keys.length),

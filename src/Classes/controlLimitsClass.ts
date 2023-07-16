@@ -1,14 +1,13 @@
 import rep from "../Functions/rep";
-import plotKey from "./plotKey"
 import astronomical from "../Outlier Flagging/astronomical"
 import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
-import settingsObject from "./settingsObject";
+import settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 
 type controlLimitsArgs = {
-  keys: plotKey[];
+  keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
   denominators?: number[];
@@ -21,9 +20,9 @@ type controlLimitsArgs = {
   count?: number[];
 }
 
-class controlLimits {
+class controlLimitsClass {
   [key: string] : any;
-  keys: plotKey[];
+  keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
   denominators?: number[];
@@ -39,7 +38,7 @@ class controlLimits {
   two_in_three: string[];
   shift: string[];
 
-  flagOutliers(inputSettings: settingsObject) {
+  flagOutliers(inputSettings: settingsClass) {
     const process_flag_type: string = inputSettings.outliers.process_flag_type;
     const improvement_direction: string = inputSettings.outliers.improvement_direction;
     if (inputSettings.spc.chart_type !== "run") {
@@ -86,4 +85,4 @@ class controlLimits {
   }
 }
 
-export default controlLimits
+export default controlLimitsClass

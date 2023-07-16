@@ -1,12 +1,12 @@
 import powerbi from "powerbi-visuals-api"
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewCategorical = powerbi.DataViewCategorical;
-import settingsObject from "../Classes/settingsObject";
+import settingsClass from "../Classes/settingsClass";
 import { defaultSettingsType, defaultSettingsKey } from "../Classes/defaultSettings";
 import extractSetting from "./extractSetting";
 
 
-function extractConditionalFormatting<SettingsT extends defaultSettingsType[defaultSettingsKey]>(inputView: DataViewCategorical, name: string, inputSettings: settingsObject): SettingsT[] {
+function extractConditionalFormatting<SettingsT extends defaultSettingsType[defaultSettingsKey]>(inputView: DataViewCategorical, name: string, inputSettings: settingsClass): SettingsT[] {
   const inputCategories: DataViewCategoryColumn = (inputView.categories as DataViewCategoryColumn[])[0];
   const settingNames = Object.getOwnPropertyNames(inputSettings[name])
 
