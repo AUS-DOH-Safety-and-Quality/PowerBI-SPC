@@ -19,24 +19,20 @@ class svgYAxisClass {
     const sig_figs: number = yaxis_sig_figs === null ? viewModel.inputSettings.spc.sig_figs : yaxis_sig_figs;
     const multiplier: number = viewModel.inputSettings.spc.multiplier;
 
-    if (viewModel.plotProperties.displayPlot) {
-      if (yAxisProperties.ticks) {
-        yAxis = d3.axisLeft(viewModel.plotProperties.yScale);
-        if (yAxisProperties.tick_count) {
-          yAxis.ticks(yAxisProperties.tick_count)
-        }
-        yAxis.tickFormat(
-          d => {
-            return viewModel.inputData.percentLabels
-              ? (<number>d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
-              : (<number>d).toFixed(sig_figs);
-          }
-        );
-      } else {
-        yAxis = d3.axisLeft(viewModel.plotProperties.yScale).tickValues([]);
+    if (yAxisProperties.ticks) {
+      yAxis = d3.axisLeft(viewModel.plotProperties.yScale);
+      if (yAxisProperties.tick_count) {
+        yAxis.ticks(yAxisProperties.tick_count)
       }
+      yAxis.tickFormat(
+        d => {
+          return viewModel.inputData.percentLabels
+            ? (<number>d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
+            : (<number>d).toFixed(sig_figs);
+        }
+      );
     } else {
-      yAxis = d3.axisLeft(viewModel.plotProperties.yScale)
+      yAxis = d3.axisLeft(viewModel.plotProperties.yScale).tickValues([]);
     }
 
     this.yAxisGroup

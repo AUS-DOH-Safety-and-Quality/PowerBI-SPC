@@ -39,7 +39,7 @@ class svgXAxisClass {
         .append('g')
         .classed("xaxisgroup", true)
         .call(xAxis)
-        .attr("color", viewModel.plotProperties.displayPlot ? xAxisProperties.colour : "#FFFFFF")
+        .attr("color", xAxisProperties.colour)
         // Plots the axis at the correct height
         .attr("transform", "translate(0, " + axisHeight + ")")
         .selectAll(".tick text")
@@ -52,7 +52,7 @@ class svgXAxisClass {
         // Scale font
         .style("font-size", xAxisProperties.tick_size)
         .style("font-family", xAxisProperties.tick_font)
-        .style("fill", viewModel.plotProperties.displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
+        .style("fill", xAxisProperties.tick_colour);
 
     const currNode: SVGGElement = this.xAxisGroup.selectAll(".xaxisgroup").selectChildren().node() as SVGGElement;
     const xAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
