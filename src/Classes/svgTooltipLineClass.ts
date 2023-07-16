@@ -7,6 +7,7 @@ class svgTooltipLineClass {
 
   draw(viewModel: viewModelClass): void {
     this.tooltipLineGroup.selectAll(".obs-sel").remove()
+    this.tooltipLineGroup.selectAll(".ttip-line").remove()
     if (!(viewModel.plotProperties.displayPlot)) {
       return;
     }
@@ -21,6 +22,18 @@ class svgTooltipLineClass {
         .style("fill","transparent")
         .attr("width", viewModel.plotProperties.width)
         .attr("height", viewModel.plotProperties.height)
+
+    this.tooltipLineGroup
+        .append('g')
+        .classed("ttip-line", true)
+        .selectAll(".ttip-line")
+        .data(viewModel.plotPoints)
+        .enter()
+        .append("rect")
+        .attr("stroke-width", "1px")
+        .attr("width", ".5px")
+        .attr("height", viewModel.plotProperties.height)
+        .style("fill-opacity", 0)
   }
 
   constructor(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>) {
