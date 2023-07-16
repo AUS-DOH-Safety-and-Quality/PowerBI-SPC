@@ -4,10 +4,10 @@ import rep from "../Functions/rep";
 import { abs } from "../Functions/UnaryFunctions"
 import { divide } from "../Functions/BinaryFunctions";
 import dataClass from "../Classes/dataClass";
-import controlLimits from "../Classes/controlLimits";
+import controlLimitsClass from "../Classes/controlLimitsClass";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function iLimits(args: LimitArgs): controlLimits {
+function iLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
@@ -23,7 +23,7 @@ function iLimits(args: LimitArgs): controlLimits {
 
   const sigma: number = d3.mean(consec_diff_valid) / 1.128;
 
-  return new controlLimits({
+  return new controlLimitsClass({
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
     numerators: useRatio ? inputData.numerators : undefined,

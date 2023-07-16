@@ -5,7 +5,7 @@ import truncate from "../Functions/truncate";
 import { plotData } from "./viewModelClass"
 import settingsClass from "./settingsClass";
 import dataClass from "./dataClass";
-import controlLimits from "./controlLimits";
+import controlLimitsClass from "./controlLimitsClass";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 type axisProperties = {
@@ -51,7 +51,7 @@ class plotPropertiesClass {
 
   update(args: { options: VisualUpdateOptions,
                       plotPoints: plotData[],
-                      calculatedLimits: controlLimits,
+                      controlLimits: controlLimitsClass,
                       inputData: dataClass,
                       inputSettings: settingsClass }) {
 
@@ -69,18 +69,18 @@ class plotPropertiesClass {
     let yUpperLimit: number = args.inputSettings.y_axis.ylimit_u;
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
-    if (args.inputData && args.calculatedLimits) {
-      xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.calculatedLimits.keys.map(d => d.x))
+    if (args.inputData && args.controlLimits) {
+      xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
       const chart_type: string = args.inputSettings.spc.chart_type;
-      const values: number[] = args.calculatedLimits.values;
-      const ul99: number[] = args.calculatedLimits.ul99;
-      const ll99: number[] = args.calculatedLimits.ll99;
+      const values: number[] = args.controlLimits.values;
+      const ul99: number[] = args.controlLimits.ul99;
+      const ll99: number[] = args.controlLimits.ll99;
       const maxValueOrLimit: number = d3.max(values.concat(ul99));
       const minValueOrLimit: number = d3.min(values.concat(ll99));
-      const maxTarget: number = d3.max(args.calculatedLimits.targets);
-      const minTarget: number = d3.min(args.calculatedLimits.targets);
+      const maxTarget: number = d3.max(args.controlLimits.targets);
+      const minTarget: number = d3.min(args.controlLimits.targets);
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;

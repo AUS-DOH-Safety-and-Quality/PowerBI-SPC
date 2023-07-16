@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import rep from "../Functions/rep";
 import { divide } from "../Functions/BinaryFunctions";
-import controlLimits from "../Classes/controlLimits";
+import controlLimits from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
 import { LimitArgs } from "../Classes/viewModelClass";
 

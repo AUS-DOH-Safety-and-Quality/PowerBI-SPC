@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import * as iconSVG from "../Icons"
 import viewModelClass from "./viewModelClass";
-import controlLimits from "./controlLimits";
+import controlLimitsClass from "./controlLimitsClass";
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 class svgIconClass {
@@ -93,7 +93,7 @@ class svgIconClass {
   }
 
   variationIconsToDraw(viewModel: viewModelClass): string[] {
-    const currLimits: controlLimits = viewModel.calculatedLimits;
+    const currLimits: controlLimitsClass = viewModel.controlLimits;
     const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction;
     const suffix_map: Record<string, string> = {
       "increase" : "High",

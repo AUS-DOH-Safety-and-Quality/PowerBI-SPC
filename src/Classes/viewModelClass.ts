@@ -8,7 +8,7 @@ import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import settingsClass from "./settingsClass";
 import dataClass from "./dataClass";
-import controlLimits from "./controlLimits";
+import controlLimitsClass from "./controlLimitsClass";
 import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotPropertiesClass"
@@ -42,17 +42,17 @@ type LimitArgs = { inputData: dataClass; inputSettings: settingsClass; }
 class viewModelClass {
   inputData: dataClass;
   inputSettings: settingsClass;
-  calculatedLimits: controlLimits;
+  controlLimits: controlLimitsClass;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   firstRun: boolean;
-  limitFunction: (x: LimitArgs) => controlLimits;
+  limitFunction: (x: LimitArgs) => controlLimitsClass;
 
-  getLimits(): controlLimits {
-    let calcLimits: controlLimits;
+  getLimits(): controlLimitsClass {
+    let calcLimits: controlLimitsClass;
 
     if (this.splitIndexes.length > 0) {
       const indexes: number[] = this.splitIndexes
@@ -73,12 +73,12 @@ class viewModelClass {
         return data;
       })
 
-      const calcLimitsGrouped: controlLimits[] = groupedData.map(d => this.limitFunction({inputData: d, inputSettings: this.inputSettings}));
-      calcLimits = calcLimitsGrouped.reduce((all: controlLimits, curr: controlLimits) => {
-        const allInner: controlLimits = all;
+      const calcLimitsGrouped: controlLimitsClass[] = groupedData.map(d => this.limitFunction({inputData: d, inputSettings: this.inputSettings}));
+      calcLimits = calcLimitsGrouped.reduce((all: controlLimitsClass, curr: controlLimitsClass) => {
+        const allInner: controlLimitsClass = all;
         Object.entries(all).forEach((entry, idx) => {
           if (this.inputSettings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
-            allInner[entry[0] as keyof controlLimits] = entry[1].concat(Object.entries(curr)[idx][1]);
+            allInner[entry[0] as keyof controlLimitsClass] = entry[1].concat(Object.entries(curr)[idx][1]);
           }
         })
         return allInner;
@@ -114,38 +114,38 @@ class viewModelClass {
     this.plotPoints = new Array<plotData>();
     this.tickLabels = new Array<{ x: number; label: string; }>();
 
-    for (let i: number = 0; i < this.calculatedLimits.keys.length; i++) {
-      const index: number = this.calculatedLimits.keys[i].x;
+    for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
+      const index: number = this.controlLimits.keys[i].x;
       const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i]
-      if (this.calculatedLimits.shift[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.calculatedLimits.shift[i], "outliers",
+      if (this.controlLimits.shift[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.controlLimits.shift[i], "outliers",
                                   "shift_colour", this.inputSettings) as string;
       }
-      if (this.calculatedLimits.trend[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.calculatedLimits.trend[i], "outliers",
+      if (this.controlLimits.trend[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.controlLimits.trend[i], "outliers",
                                   "trend_colour", this.inputSettings) as string;
       }
-      if (this.calculatedLimits.two_in_three[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.calculatedLimits.two_in_three[i], "outliers",
+      if (this.controlLimits.two_in_three[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.controlLimits.two_in_three[i], "outliers",
                                   "two_in_three_colour", this.inputSettings) as string;
       }
-      if (this.calculatedLimits.astpoint[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.calculatedLimits.astpoint[i], "outliers",
+      if (this.controlLimits.astpoint[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.controlLimits.astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings) as string;
       }
 
       this.plotPoints.push({
         x: index,
-        value: this.calculatedLimits.values[i],
+        value: this.controlLimits.values[i],
         aesthetics: aesthetics,
         identity: host.createSelectionIdBuilder()
                       .withCategory(this.inputData.categories,
                                     this.inputData.keys[i].id)
                       .createSelectionId(),
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
-        tooltip: buildTooltip(i, this.calculatedLimits, this.inputData, this.inputSettings)
+        tooltip: buildTooltip(i, this.controlLimits, this.inputData, this.inputSettings)
       })
-      this.tickLabels.push({x: index, label: this.calculatedLimits.keys[i].label});
+      this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
     }
   }
 
@@ -153,7 +153,7 @@ class viewModelClass {
     const labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values", "alt_targets"];
 
     const formattedLines: lineData[] = new Array<lineData>();
-    const nLimits = this.calculatedLimits.keys.length;
+    const nLimits = this.controlLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
@@ -161,14 +161,14 @@ class viewModelClass {
         // we avoid rendering a line joining each segment
         if (this.splitIndexes.includes(i - 1)) {
           formattedLines.push({
-            x: this.calculatedLimits.keys[i].x,
+            x: this.controlLimits.keys[i].x,
             line_value: null,
             group: label
           })
         }
         formattedLines.push({
-          x: this.calculatedLimits.keys[i].x,
-          line_value: this.calculatedLimits[label] ? this.calculatedLimits[label][i] : null,
+          x: this.controlLimits.keys[i].x,
+          line_value: this.controlLimits[label] ? this.controlLimits[label][i] : null,
           group: label
         })
       })
@@ -190,7 +190,7 @@ class viewModelClass {
     if (checkInvalidDataView(dv)) {
       this.inputData = <dataClass>null;
       this.limitFunction = null;
-      this.calculatedLimits = null;
+      this.controlLimits = null;
       this.plotPoints = <plotData[]>null;
       this.groupedLines = <[string, lineData[]][]>null;
       this.splitIndexes = new Array<number>();
@@ -206,8 +206,8 @@ class viewModelClass {
         this.limitFunction = limitFunctions[this.inputSettings.spc.chart_type as keyof typeof limitFunctions]
 
         // Use initialised chartObject to calculate control limits
-        this.calculatedLimits = this.getLimits();
-        console.log("calculatedLimits: ", this.calculatedLimits)
+        this.controlLimits = this.getLimits();
+        console.log("calculatedLimits: ", this.controlLimits)
 
         // Structure the data and calculated limits to the format needed for plotting
         this.initialisePlotData(args.host);
@@ -221,7 +221,7 @@ class viewModelClass {
     this.plotProperties.update({
       options: args.options,
       plotPoints: this.plotPoints,
-      calculatedLimits: this.calculatedLimits,
+      controlLimits: this.controlLimits,
       inputData: this.inputData,
       inputSettings: this.inputSettings
     })
@@ -232,7 +232,7 @@ class viewModelClass {
     this.inputData = <dataClass>null;
     this.inputSettings = <settingsClass>null;
     this.limitFunction = null;
-    this.calculatedLimits = null;
+    this.controlLimits = null;
     this.plotPoints = <plotData[]>null;
     this.groupedLines = <[string, lineData[]][]>null;
     this.plotProperties = <plotPropertiesClass>null;

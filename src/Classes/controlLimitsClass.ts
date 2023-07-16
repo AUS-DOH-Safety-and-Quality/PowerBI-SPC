@@ -21,7 +21,7 @@ type controlLimitsArgs = {
   count?: number[];
 }
 
-class controlLimits {
+class controlLimitsClass {
   [key: string] : any;
   keys: plotKey[];
   values: number[];
@@ -86,4 +86,4 @@ class controlLimits {
   }
 }
 
-export default controlLimits
+export default controlLimitsClass

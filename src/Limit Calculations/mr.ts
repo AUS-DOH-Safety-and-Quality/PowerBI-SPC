@@ -4,10 +4,10 @@ import rep from "../Functions/rep";
 import { abs } from "../Functions/UnaryFunctions"
 import {  divide } from "../Functions/BinaryFunctions";
 import dataClass from "../Classes/dataClass";
-import controlLimits from "../Classes/controlLimits";
+import controlLimitsClass from "../Classes/controlLimitsClass";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function mrLimits(args: LimitArgs): controlLimits {
+function mrLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
@@ -17,7 +17,7 @@ function mrLimits(args: LimitArgs): controlLimits {
   const consec_diff: number[] = abs(diff(ratio));
   const cl: number = d3.mean(consec_diff);
 
-  return new controlLimits({
+  return new controlLimitsClass({
     keys: inputData.keys,
     values: consec_diff,
     numerators: useRatio ? inputData.numerators : null,
