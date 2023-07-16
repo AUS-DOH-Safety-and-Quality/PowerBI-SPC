@@ -25,6 +25,7 @@ import svgSelectionClass from "./Classes/svgSelectionClass"
 import { axisProperties } from "./Classes/plotPropertiesClass"
 import svgLinesClass from "./Classes/svgLinesClass";
 import svgDotsClass from "./Classes/svgDotsClass";
+import svgTooltipLineClass from "./Classes/svgTooltipLineClass";
 
 type SelectionAny = d3.Selection<any, any, any, any>;
 
@@ -36,6 +37,7 @@ export class Visual implements IVisual {
   private svgIcons: svgIconClass;
   private svgLines: svgLinesClass;
   private svgDots: svgDotsClass
+  private svgTooltipLine: svgTooltipLineClass;
   private svgSelections: svgSelectionClass;
   private viewModel: viewModelClass;
   private selectionManager: ISelectionManager;
@@ -55,6 +57,7 @@ export class Visual implements IVisual {
     this.svgIcons = new svgIconClass(this.svg);
     this.svgLines = new svgLinesClass(this.svg);
     this.svgDots = new svgDotsClass(this.svg);
+    this.svgTooltipLine = new svgTooltipLineClass(this.svg);
     this.svgSelections = new svgSelectionClass();
     this.viewModel = new viewModelClass();
     this.viewModel.firstRun = true;
@@ -88,6 +91,7 @@ export class Visual implements IVisual {
               .attr("height", this.viewModel.plotProperties.height);
 
       console.log("TooltipTracking start")
+      this.svgTooltipLine.draw(this.viewModel)
       this.initTooltipTracking();
 
       console.log("Draw axes start")
@@ -139,49 +143,40 @@ export class Visual implements IVisual {
             .attr("height", this.viewModel.plotProperties.height)
             .style("fill-opacity", 0);
 
-    const tooltipMerged = this.svgSelections
-                            .listeningRectSelection
-                            .enter()
-                            .append("rect")
-                            .merge(<any>this.svgSelections.listeningRectSelection)
-    tooltipMerged.classed("obs-sel", true);
+    this.svgTooltipLine
+        .tooltipLineGroup
+        .selectAll(".obs-sel")
+        .selectChildren()
+        .on("mousemove", (event) => {
+          if (this.viewModel.plotProperties.displayPlot) {
+            const xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
+            const xRange: number[] = this.viewModel
+                                        .plotPoints
+                                        .map(d => d.x)
+                                        .map(d => Math.abs(d - xValue));
+            const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b) as number;
+            const scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
+            const scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
 
-    tooltipMerged.style("fill","transparent")
-                 .attr("width", this.viewModel.plotProperties.width)
-                 .attr("height", this.viewModel.plotProperties.height);
-
-    tooltipMerged.on("mousemove", (event) => {
-      if (this.viewModel.plotProperties.displayPlot) {
-        const xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
-        const xRange: number[] = this.viewModel
-                                    .plotPoints
-                                    .map(d => d.x)
-                                    .map(d => Math.abs(d - xValue));
-        const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b) as number;
-        const scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
-        const scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
-
-        this.host.tooltipService.show({
-          dataItems: this.viewModel.plotPoints[nearestDenominator].tooltip,
-          identities: [this.viewModel.plotPoints[nearestDenominator].identity],
-          coordinates: [scaled_x, scaled_y],
-          isTouchEvent: false
+            this.host.tooltipService.show({
+              dataItems: this.viewModel.plotPoints[nearestDenominator].tooltip,
+              identities: [this.viewModel.plotPoints[nearestDenominator].identity],
+              coordinates: [scaled_x, scaled_y],
+              isTouchEvent: false
+            });
+            xAxisLine.style("fill-opacity", 1).attr("transform", "translate(" + scaled_x + ",0)");
+          }
+        })
+        .on("mouseleave", () => {
+          if (this.viewModel.plotProperties.displayPlot) {
+            this.host.tooltipService.hide({
+                immediately: true,
+                isTouchEvent: false
+            });
+            xAxisLine.style("fill-opacity", 0);
+          }
         });
-        xAxisLine.style("fill-opacity", 1).attr("transform", "translate(" + scaled_x + ",0)");
-      }
-    });
-
-    tooltipMerged.on("mouseleave", () => {
-      if (this.viewModel.plotProperties.displayPlot) {
-        this.host.tooltipService.hide({
-            immediately: true,
-            isTouchEvent: false
-        });
-        xAxisLine.style("fill-opacity", 0);
-      }
-    });
     xAxisLine.exit().remove()
-    tooltipMerged.exit().remove()
   }
 
   drawXAxis(): void {
