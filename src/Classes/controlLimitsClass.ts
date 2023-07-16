@@ -1,5 +1,4 @@
 import rep from "../Functions/rep";
-import plotKey from "./plotKey"
 import astronomical from "../Outlier Flagging/astronomical"
 import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
@@ -8,7 +7,7 @@ import settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 
 type controlLimitsArgs = {
-  keys: plotKey[];
+  keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
   denominators?: number[];
@@ -23,7 +22,7 @@ type controlLimitsArgs = {
 
 class controlLimitsClass {
   [key: string] : any;
-  keys: plotKey[];
+  keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
   denominators?: number[];

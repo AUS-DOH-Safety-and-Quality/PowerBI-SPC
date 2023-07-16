@@ -6,12 +6,11 @@ import extractDataColumn from "../Functions/extractDataColumn"
 import settingsClass from "./settingsClass"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
-import plotKey from "./plotKey"
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
 import { defaultSettingsType } from "./defaultSettings";
 
 class dataClass {
-  keys: plotKey[];
+  keys: { x: number, id: number, label: string }[];
   numerators: number[];
   denominators: number[];
   xbar_sds: number[];
@@ -29,7 +28,7 @@ class dataClass {
     const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings)
 
     const valid_ids: number[] = new Array<number>();
-    const valid_keys: plotKey[] = new Array<plotKey>();
+    const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
 
     for (let i: number = 0; i < numerators.length; i++) {
       if (checkValidInput(numerators[i],
