@@ -35,25 +35,26 @@ class plotPropertiesClass {
   xScale: d3.ScaleLinear<number, number, never>;
   yScale: d3.ScaleLinear<number, number, never>;
   firstRun: boolean;
+  refreshingAxis?: boolean
 
   // Separate function so that the axis can be re-calculated on changes to padding
-  initialiseScale() {
+  initialiseScale(): void {
     this.xScale = d3.scaleLinear()
                     .domain([this.xAxis.lower, this.xAxis.upper])
                     .range([this.xAxis.start_padding,
                             this.width - this.xAxis.end_padding]);
 
     this.yScale = d3.scaleLinear()
-                            .domain([this.yAxis.lower, this.yAxis.upper])
-                            .range([this.height - this.yAxis.end_padding,
-                                    this.yAxis.start_padding]);
+                    .domain([this.yAxis.lower, this.yAxis.upper])
+                    .range([this.height - this.yAxis.end_padding,
+                            this.yAxis.start_padding]);
   }
 
   update(args: { options: VisualUpdateOptions,
                       plotPoints: plotData[],
                       controlLimits: controlLimitsClass,
                       inputData: dataClass,
-                      inputSettings: settingsClass }) {
+                      inputSettings: settingsClass }): void {
 
     // Get the width and height of plotting space
     this.width = args.options.viewport.width;
