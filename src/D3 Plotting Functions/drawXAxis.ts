@@ -5,7 +5,7 @@ import {abs} from "../Functions/UnaryFunctions";
 
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
-export default function drawXAxis(selection: SelectionBase, viewModel: viewModelClass) {
+export default function drawXAxis(selection: SelectionBase, viewModel: viewModelClass, refresh?: boolean) {
   selection.selectAll(".xaxisgroup").remove()
   selection.selectAll(".xaxislabel").remove()
   if (!(viewModel.plotProperties.displayPlot)) {
@@ -59,21 +59,20 @@ export default function drawXAxis(selection: SelectionBase, viewModel: viewModel
   const tickLeftofPadding: number = xAxisCoordinates.left - xAxisProperties.start_padding;
 
   if ((tickBelowPadding > 0 || tickLeftofPadding < 0)) {
-    if (!viewModel.plotProperties.refreshingAxis) {
+    const viewModelCopy: viewModelClass = new viewModelClass(viewModel);
+    if (!refresh) {
       console.log("refresh")
-      viewModel.plotProperties.refreshingAxis = true
       if (tickBelowPadding > 0) {
-        viewModel.plotProperties.yAxis.start_padding += abs(tickBelowPadding);
+        viewModelCopy.plotProperties.yAxis.start_padding += abs(tickBelowPadding);
       }
       if (tickLeftofPadding < 0) {
-        viewModel.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
+        viewModelCopy.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
       }
-      viewModel.plotProperties.initialiseScale();
-      selection.call(drawXAxis, viewModel);
+      viewModelCopy.plotProperties.initialiseScale();
+      selection.call(drawXAxis, viewModelCopy, true);
       return;
     }
   }
-  viewModel.plotProperties.refreshingAxis = false
 
   const bottomMidpoint: number = viewModel.plotProperties.height - ((viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2);
 

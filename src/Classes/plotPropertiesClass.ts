@@ -35,7 +35,6 @@ class plotPropertiesClass {
   xScale: d3.ScaleLinear<number, number, never>;
   yScale: d3.ScaleLinear<number, number, never>;
   firstRun: boolean;
-  refreshingAxis?: boolean
 
   // Separate function so that the axis can be re-calculated on changes to padding
   initialiseScale(): void {

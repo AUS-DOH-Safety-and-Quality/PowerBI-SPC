@@ -1,10 +1,12 @@
 import * as d3 from "d3";
 import viewModelClass from "../Classes/viewModelClass";
 import { axisProperties } from "../Classes/plotPropertiesClass";
+import {abs} from "../Functions/UnaryFunctions";
+import drawXAxis from "./drawXAxis";
 
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
-export default function drawYAxis(selection: SelectionBase, viewModel: viewModelClass) {
+export default function drawYAxis(selection: SelectionBase, viewModel: viewModelClass, refresh?: boolean) {
   selection.selectAll(".yaxisgroup").remove()
   selection.selectAll(".yaxislabel").remove()
   if (!(viewModel.plotProperties.displayPlot)) {
@@ -49,10 +51,30 @@ export default function drawYAxis(selection: SelectionBase, viewModel: viewModel
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", yAxisProperties.tick_colour);
 
-  const currNode: SVGGElement = selection.selectAll(".yaxisgroup").selectChildren().node() as SVGGElement;
+  const currNode: SVGGElement = selection.selectAll(".yaxisgroup").selectAll(".tick text").node() as SVGGElement;
   const yAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
+
+  const settingsPadding: number = viewModel.inputSettings.canvas.left_padding
+  const tickLeftofPadding: number = yAxisCoordinates.left - settingsPadding;
+
+  console.log("pad: ", viewModel.plotProperties.xAxis.start_padding)
+  console.log("settingspad: ", settingsPadding)
+  console.log("xcoord: ", yAxisCoordinates.left)
+  console.log("diff: ", tickLeftofPadding)
+
+  if (tickLeftofPadding < 0) {
+    if (!refresh) {
+      console.log("refresh")
+      const viewModelCopy: viewModelClass = new viewModelClass(viewModel);
+      viewModelCopy.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
+      viewModelCopy.plotProperties.initialiseScale();
+      selection.call(drawYAxis, viewModelCopy, true).call(drawXAxis, viewModelCopy, true);
+      return;
+    }
+  }
+
   const leftMidpoint: number = yAxisCoordinates.x * 0.7;
-  const y: number = viewModel.plotProperties.height/2;
+  const y: number = viewModel.plotProperties.height / 2;
 
   selection
       .append("text")
