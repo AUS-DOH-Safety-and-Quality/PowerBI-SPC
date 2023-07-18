@@ -9,18 +9,17 @@ export default function drawTooltipLine(selection: SelectionBase, viewModel: vie
     return;
   }
 
-  selection
-      .append('g')
-      .classed("ttip-line", true)
-      .selectAll(".ttip-line")
-      .data(viewModel.plotPoints)
-      .enter()
-      .append("line")
-      .attr("x1", 0)
-      .attr("x2", 0)
-      .attr("y1", viewModel.plotProperties.yAxis.end_padding)
-      .attr("y2", viewModel.plotProperties.height - viewModel.plotProperties.yAxis.start_padding)
-      .attr("stroke-width", "1px")
-      .attr("stroke", "black")
-      .style("stroke-opacity", 0)
+  selection.append('g')
+            .classed("ttip-line", true)
+            .selectAll(".ttip-line")
+            .data(viewModel.plotPoints)
+            .enter()
+            .append("line")
+            .attr("x1", 0)
+            .attr("x2", 0)
+            .attr("y1", viewModel.plotProperties.yAxis.end_padding)
+            .attr("y2", viewModel.plotProperties.height - viewModel.plotProperties.yAxis.start_padding)
+            .attr("stroke-width", "1px")
+            .attr("stroke", "black")
+            .style("stroke-opacity", 0);
 }

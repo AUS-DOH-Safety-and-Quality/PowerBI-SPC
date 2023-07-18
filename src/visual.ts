@@ -22,7 +22,7 @@ import plotPropertiesClass from "./Classes/plotPropertiesClass";
 export class Visual implements IVisual {
   private host: IVisualHost;
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-  private objects: string[] = ["xAxis", "yAxis", "tooltipLine", "lines", "dots", "icons"];
+  private objectsToPlot: string[] = ["xAxis", "yAxis", "tooltipLine", "lines", "dots", "icons"];
   private viewModel: viewModelClass;
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
@@ -57,8 +57,9 @@ export class Visual implements IVisual {
       console.log("Draw plot")
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height);
-      this.objects.forEach(plotObject => {
-        this.svg.call(plottingFunctions[plotObject as keyof typeof plottingFunctions], this.viewModel)
+      this.objectsToPlot.forEach(plotObject => {
+        this.svg.call(plottingFunctions[plotObject as keyof typeof plottingFunctions],
+                      this.viewModel)
       })
 
       if (this.viewModel.plotProperties.displayPlot) {
