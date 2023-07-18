@@ -86,8 +86,6 @@ export class Visual implements IVisual {
 
     this.plotting
         .svg
-        .selectAll(".obs-sel")
-        .selectChildren()
         .on("mousemove", (event) => {
           const xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
           const xRange: number[] = this.viewModel
@@ -146,9 +144,8 @@ export class Visual implements IVisual {
                 .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
                 .then(() => { this.plotting.updateHighlighting(this.viewModel, this.selectionManager.getSelectionIds()); });
-
-            event.stopPropagation();
           }
+          event.stopPropagation();
         })
         // Display tooltip content on mouseover
         .on("mouseover", (event, d: plotData) => {
