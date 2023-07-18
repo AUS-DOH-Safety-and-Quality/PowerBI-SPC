@@ -39,9 +39,7 @@ export class Visual implements IVisual {
 
     this.selectionManager = this.host.createSelectionManager();
 
-    this.selectionManager.registerOnSelectCallback(() => {
-      this.updateHighlighting()
-    });
+    this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
     console.log("Constructor finish")
   }
 

@@ -25,10 +25,10 @@ export default function drawYAxis(selection: SelectionBase, viewModel: viewModel
       yAxis.ticks(yAxisProperties.tick_count)
     }
     yAxis.tickFormat(
-      d => {
+      (d: number) => {
         return viewModel.inputData.percentLabels
-          ? (<number>d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
-          : (<number>d).toFixed(sig_figs);
+          ? (d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
+          : d.toFixed(sig_figs);
       }
     );
   } else {
@@ -40,12 +40,12 @@ export default function drawYAxis(selection: SelectionBase, viewModel: viewModel
       .classed("yaxisgroup", true)
       .call(yAxis)
       .attr("color", yAxisProperties.colour)
-      .attr("transform", "translate(" + viewModel.plotProperties.xAxis.start_padding + ",0)")
+      .attr("transform", `translate(${viewModel.plotProperties.xAxis.start_padding}, 0)`)
       .selectAll(".tick text")
       // Right-align
       .style("text-anchor", "right")
       // Rotate tick labels
-      .attr("transform","rotate(" + yAxisProperties.tick_rotation + ")")
+      .attr("transform", `rotate(${yAxisProperties.tick_rotation})`)
       // Scale font
       .style("font-size", yAxisProperties.tick_size)
       .style("font-family", yAxisProperties.tick_font)
@@ -56,11 +56,6 @@ export default function drawYAxis(selection: SelectionBase, viewModel: viewModel
 
   const settingsPadding: number = viewModel.inputSettings.canvas.left_padding
   const tickLeftofPadding: number = yAxisCoordinates.left - settingsPadding;
-
-  console.log("pad: ", viewModel.plotProperties.xAxis.start_padding)
-  console.log("settingspad: ", settingsPadding)
-  console.log("xcoord: ", yAxisCoordinates.left)
-  console.log("diff: ", tickLeftofPadding)
 
   if (tickLeftofPadding < 0) {
     if (!refresh) {

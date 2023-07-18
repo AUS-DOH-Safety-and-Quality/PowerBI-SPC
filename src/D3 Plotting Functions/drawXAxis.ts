@@ -31,14 +31,15 @@ export default function drawXAxis(selection: SelectionBase, viewModel: viewModel
     xAxis = d3.axisBottom(viewModel.plotProperties.xScale).tickValues([]);
   }
 
-  const axisHeight: number = viewModel.plotProperties.height - viewModel.plotProperties.yAxis.start_padding;
+  const plotHeight: number = viewModel.plotProperties.height;
+  const xAxisHeight: number = plotHeight - viewModel.plotProperties.yAxis.start_padding;
 
   selection.append('g')
       .classed("xaxisgroup", true)
       .call(xAxis)
       .attr("color", xAxisProperties.colour)
       // Plots the axis at the correct height
-      .attr("transform", "translate(0, " + axisHeight + ")")
+      .attr("transform", `translate(0, ${xAxisHeight})`)
       .selectAll(".tick text")
       // Right-align
       .style("text-anchor", xAxisProperties.tick_rotation < 0.0 ? "end" : "start")
@@ -55,13 +56,13 @@ export default function drawXAxis(selection: SelectionBase, viewModel: viewModel
   let xAxisCoordinates: DOMRect = axisNode.getBoundingClientRect() as DOMRect;
 
   // Update padding and re-draw axis if large tick values rendered outside of plot
-  const tickBelowPadding: number = xAxisCoordinates.bottom - (viewModel.plotProperties.height - viewModel.plotProperties.yAxis.start_padding);
+  const tickBelowPadding: number = xAxisCoordinates.bottom - xAxisHeight;
   const tickLeftofPadding: number = xAxisCoordinates.left - xAxisProperties.start_padding;
 
   if ((tickBelowPadding > 0 || tickLeftofPadding < 0)) {
-    const viewModelCopy: viewModelClass = new viewModelClass(viewModel);
     if (!refresh) {
-      console.log("refresh")
+      const viewModelCopy: viewModelClass = new viewModelClass(viewModel);
+
       if (tickBelowPadding > 0) {
         viewModelCopy.plotProperties.yAxis.start_padding += abs(tickBelowPadding);
       }
@@ -74,7 +75,7 @@ export default function drawXAxis(selection: SelectionBase, viewModel: viewModel
     }
   }
 
-  const bottomMidpoint: number = viewModel.plotProperties.height - ((viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2);
+  const bottomMidpoint: number = plotHeight - ((plotHeight - xAxisCoordinates.bottom) / 2);
 
   selection.append("text")
             .classed("xaxislabel", true)
