@@ -15,14 +15,13 @@ import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import viewModelClass from "./Classes/viewModelClass"
 import { plotData } from "./Classes/viewModelClass";
 import * as d3 from "d3";
-import * as plottingFunctions from "./D3 Plotting Functions"
 import highlight from "./D3 Plotting Functions/highlight";
 import plotPropertiesClass from "./Classes/plotPropertiesClass";
+import drawPlot from "./D3 Plotting Functions/drawPlot";
 
 export class Visual implements IVisual {
   private host: IVisualHost;
   private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-  private objectsToPlot: string[] = ["xAxis", "yAxis", "tooltipLine", "lines", "dots", "icons"];
   private viewModel: viewModelClass;
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
@@ -31,6 +30,7 @@ export class Visual implements IVisual {
   constructor(options: VisualConstructorOptions) {
     console.log("Constructor start")
     console.log(options)
+
     this.svg = d3.select(options.element).append("svg");
     this.events = options.host.eventService;
     this.host = options.host;
@@ -38,8 +38,8 @@ export class Visual implements IVisual {
     this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();
-
     this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
+
     console.log("Constructor finish")
   }
 
@@ -53,12 +53,7 @@ export class Visual implements IVisual {
       this.viewModel.update({ options: options, host: this.host });
 
       console.log("Draw plot")
-      this.svg.attr("width", this.viewModel.plotProperties.width)
-              .attr("height", this.viewModel.plotProperties.height);
-      this.objectsToPlot.forEach(plotObject => {
-        this.svg.call(plottingFunctions[plotObject as keyof typeof plottingFunctions],
-                      this.viewModel)
-      })
+      this.svg.call(drawPlot, this.viewModel)
 
       if (this.viewModel.plotProperties.displayPlot) {
         this.addDotsInteractivity();
