@@ -3,6 +3,7 @@ import powerbi from "powerbi-visuals-api";
 import viewModelClass from "./viewModelClass";
 import drawLines from "../D3 Plotting Functions/drawLines";
 import ISelectionId = powerbi.visuals.ISelectionId;
+import ExtensISelectionId = powerbi.extensibility.ISelectionId;
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 class svgLinesClass {
@@ -12,7 +13,7 @@ class svgLinesClass {
     this.linesGroup.call(drawLines, viewModel);
   }
 
-  highlight(anyHighlights: boolean, allSelectionIDs: ISelectionId[],
+  highlight(anyHighlights: boolean, allSelectionIDs: ExtensISelectionId[],
             opacityFull: number, opacityReduced: number): void {
     const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                       ? opacityReduced

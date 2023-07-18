@@ -4,6 +4,7 @@ import viewModelClass from "./viewModelClass";
 import { plotData } from "./viewModelClass";
 import drawDots from "../D3 Plotting Functions/drawDots";
 import ISelectionId = powerbi.visuals.ISelectionId;
+import ExtensISelectionId = powerbi.extensibility.ISelectionId;
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 class svgDotsClass {
@@ -13,7 +14,7 @@ class svgDotsClass {
     this.dotsGroup.call(drawDots, viewModel);
   }
 
-  highlight(anyHighlights: boolean, allSelectionIDs: ISelectionId[],
+  highlight(anyHighlights: boolean, allSelectionIDs: ExtensISelectionId[],
             opacityFull: number, opacityReduced: number): void {
     const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                       ? opacityReduced
@@ -21,7 +22,7 @@ class svgDotsClass {
     this.dotsGroup.selectAll(".dotsgroup").selectChildren().style("fill-opacity", defaultOpacity);
     if (anyHighlights || (allSelectionIDs.length > 0)) {
       this.dotsGroup.selectAll(".dotsgroup").selectChildren().style("fill-opacity", (dot: plotData) => {
-        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
+        const currentPointSelected: boolean = (allSelectionIDs as ISelectionId[]).some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });
         const currentPointHighlighted: boolean = dot.highlighted;

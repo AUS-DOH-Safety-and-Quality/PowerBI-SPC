@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import viewModelClass from "../Classes/viewModelClass";
 import { axisProperties } from "../Classes/plotPropertiesClass";
-import { abs } from "../Functions/UnaryFunctions";
+import {abs} from "../Functions/UnaryFunctions";
 
 type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
@@ -31,10 +31,9 @@ export default function drawXAxis(selection: SelectionBase, viewModel: viewModel
     xAxis = d3.axisBottom(viewModel.plotProperties.xScale).tickValues([]);
   }
 
-  const axisHeight: number = viewModel.plotProperties.height - viewModel.plotProperties.yAxis.end_padding;
+  const axisHeight: number = viewModel.plotProperties.height - viewModel.plotProperties.yAxis.start_padding;
 
-  selection
-      .append('g')
+  selection.append('g')
       .classed("xaxisgroup", true)
       .call(xAxis)
       .attr("color", xAxisProperties.colour)
@@ -52,39 +51,39 @@ export default function drawXAxis(selection: SelectionBase, viewModel: viewModel
       .style("font-family", xAxisProperties.tick_font)
       .style("fill", xAxisProperties.tick_colour);
 
-  const currNode: SVGGElement = selection.selectAll(".xaxisgroup").selectChildren().node() as SVGGElement;
-  const xAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
+  let axisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
+  let xAxisCoordinates: DOMRect = axisNode.getBoundingClientRect() as DOMRect;
 
   // Update padding and re-draw axis if large tick values rendered outside of plot
-  const tickBelowPlotAmount: number = xAxisCoordinates.bottom - viewModel.plotProperties.height;
-  const tickLeftofPlotAmount: number = xAxisCoordinates.left;
+  const tickBelowPadding: number = xAxisCoordinates.bottom - (viewModel.plotProperties.height - viewModel.plotProperties.yAxis.start_padding);
+  const tickLeftofPadding: number = xAxisCoordinates.left - xAxisProperties.start_padding;
 
-  if ((tickBelowPlotAmount < 0 || tickLeftofPlotAmount > 0)) {
+  if ((tickBelowPadding > 0 || tickLeftofPadding < 0)) {
     if (!viewModel.plotProperties.refreshingAxis) {
       console.log("refresh")
       viewModel.plotProperties.refreshingAxis = true
-      console.log("b")
-      if (tickBelowPlotAmount < 0) {
-        viewModel.plotProperties.yAxis.end_padding += abs(tickBelowPlotAmount);
+      if (tickBelowPadding > 0) {
+        viewModel.plotProperties.yAxis.start_padding += abs(tickBelowPadding);
       }
-      if (tickLeftofPlotAmount > 0) {
-        viewModel.plotProperties.xAxis.start_padding += tickLeftofPlotAmount
+      if (tickLeftofPadding < 0) {
+        viewModel.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
       }
       viewModel.plotProperties.initialiseScale();
-      selection.call(drawXAxis, viewModel)
+      selection.call(drawXAxis, viewModel);
+      return;
     }
   }
   viewModel.plotProperties.refreshingAxis = false
 
-  const bottomMidpoint: number = viewModel.plotProperties.height - (viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2.5;
-  selection
-      .append("text")
-      .classed("xaxislabel", true)
-      .attr("x",viewModel.plotProperties.width/2)
-      .attr("y", bottomMidpoint)
-      .style("text-anchor", "middle")
-      .text(xAxisProperties.label)
-      .style("font-size", xAxisProperties.label_size)
-      .style("font-family", xAxisProperties.label_font)
-      .style("fill", xAxisProperties.label_colour);
+  const bottomMidpoint: number = viewModel.plotProperties.height - ((viewModel.plotProperties.height - xAxisCoordinates.bottom) / 2);
+
+  selection.append("text")
+            .classed("xaxislabel", true)
+            .attr("x",viewModel.plotProperties.width / 2)
+            .attr("y", bottomMidpoint)
+            .style("text-anchor", "middle")
+            .text(xAxisProperties.label)
+            .style("font-size", xAxisProperties.label_size)
+            .style("font-family", xAxisProperties.label_font)
+            .style("fill", xAxisProperties.label_colour);
 }
