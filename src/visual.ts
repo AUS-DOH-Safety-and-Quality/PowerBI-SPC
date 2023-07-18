@@ -11,17 +11,18 @@ import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInst
 import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
-import ISelectionId = powerbi.visuals.ISelectionId;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import viewModelClass from "./Classes/viewModelClass"
 import { plotData } from "./Classes/viewModelClass";
 import * as d3 from "d3";
-import plottingClass from "./Classes/plottingClass";
+import * as plottingFunctions from "./D3 Plotting Functions"
+import highlight from "./D3 Plotting Functions/highlight";
+import plotPropertiesClass from "./Classes/plotPropertiesClass";
 
 export class Visual implements IVisual {
   private host: IVisualHost;
-  private plotting: plottingClass;
-  private updateOptions: VisualUpdateOptions;
+  private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
+  private objectsToPlot: string[] = ["xAxis", "yAxis", "tooltipLine", "lines", "dots", "icons"];
   private viewModel: viewModelClass;
   private selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
@@ -30,9 +31,9 @@ export class Visual implements IVisual {
   constructor(options: VisualConstructorOptions) {
     console.log("Constructor start")
     console.log(options)
+    this.svg = d3.select(options.element).append("svg");
     this.events = options.host.eventService;
     this.host = options.host;
-    this.plotting = new plottingClass(options);
     this.viewModel = new viewModelClass();
     this.viewModel.firstRun = true;
 
@@ -47,22 +48,24 @@ export class Visual implements IVisual {
     try {
       this.events.renderingStarted(options);
       console.log(options)
-      this.updateOptions = options;
 
       console.log("viewModel start")
       this.viewModel.update({ options: options, host: this.host });
 
       console.log("Draw plot")
-      this.plotting.draw(this.viewModel);
+      this.svg.attr("width", this.viewModel.plotProperties.width)
+              .attr("height", this.viewModel.plotProperties.height);
+      this.objectsToPlot.forEach(plotObject => {
+        this.svg.call(plottingFunctions[plotObject as keyof typeof plottingFunctions],
+                      this.viewModel)
+      })
 
-      this.addInteractivity();
-      this.updateHighlighting();
-      this.addContextMenu();
-
-      this.plotting.svg.on('click', () => {
-        this.selectionManager.clear();
-        this.updateHighlighting();
-      });
+      if (this.viewModel.plotProperties.displayPlot) {
+        this.addDotsInteractivity();
+        this.addTooltipMouseover();
+        this.addContextMenu()
+        this.updateHighlighting()
+      }
 
       this.events.renderingFinished(options);
       console.log("Update finished")
@@ -78,15 +81,41 @@ export class Visual implements IVisual {
     return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
   }
 
-  addInteractivity(): void {
-    if (!this.viewModel.plotProperties.displayPlot) {
-      return;
-    }
+  addTooltipMouseover(): void {
+    const xAxisLine = this.svg.selectAll(".ttip-line").selectChildren();
+
+    this.svg
+        .on("mousemove", (event) => {
+          const plotProperties: plotPropertiesClass = this.viewModel.plotProperties;
+          const plotPoints: plotData[] = this.viewModel.plotPoints
+
+          const xValue: number = plotProperties.xScale.invert(event.pageX);
+          const xRange: number[] = plotPoints.map(d => d.x).map(d => Math.abs(d - xValue));
+          const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
+          const x_coord: number = plotProperties.xScale(plotPoints[nearestDenominator].x)
+          const y_coord: number = plotProperties.yScale(plotPoints[nearestDenominator].value)
+
+          this.host.tooltipService.show({
+            dataItems: plotPoints[nearestDenominator].tooltip,
+            identities: [plotPoints[nearestDenominator].identity],
+            coordinates: [x_coord, y_coord],
+            isTouchEvent: false
+          });
+          const xAxisHeight: number = plotProperties.height - plotProperties.yAxis.start_padding;
+          xAxisLine.style("stroke-opacity", 1)
+                    .attr("x1", x_coord)
+                    .attr("x2", x_coord);
+        })
+        .on("mouseleave", () => {
+          this.host.tooltipService.hide({ immediately: true, isTouchEvent: false });
+          xAxisLine.style("stroke-opacity", 0);
+        });
+  }
+
+  addDotsInteractivity(): void {
     // Change opacity (highlighting) with selections in other plots
     // Specify actions to take when clicking on dots
-    this.plotting
-        .svgDots
-        .dotsGroup
+    this.svg
         .selectAll(".dotsgroup")
         .selectChildren()
         .on("click", (event, d: plotData) => {
@@ -116,9 +145,8 @@ export class Visual implements IVisual {
                 .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
                 .then(() => { this.updateHighlighting(); });
-
-            event.stopPropagation();
           }
+          event.stopPropagation();
         })
         // Display tooltip content on mouseover
         .on("mouseover", (event, d: plotData) => {
@@ -142,43 +170,14 @@ export class Visual implements IVisual {
           })
         });
 
-    const xAxisLine = this.plotting
-                          .svgTooltipLine
-                          .tooltipLineGroup
-                          .selectAll(".ttip-line")
-                          .selectChildren();
-
-    this.plotting
-        .svgTooltipLine
-        .tooltipLineGroup
-        .selectAll(".obs-sel")
-        .selectChildren()
-        .on("mousemove", (event) => {
-          const xValue: number = this.viewModel.plotProperties.xScale.invert(event.pageX);
-          const xRange: number[] = this.viewModel
-                                        .plotPoints
-                                        .map(d => d.x)
-                                        .map(d => Math.abs(d - xValue));
-          const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
-          const scaled_x: number = this.viewModel.plotProperties.xScale(this.viewModel.plotPoints[nearestDenominator].x)
-          const scaled_y: number = this.viewModel.plotProperties.yScale(this.viewModel.plotPoints[nearestDenominator].value)
-
-          this.host.tooltipService.show({
-            dataItems: this.viewModel.plotPoints[nearestDenominator].tooltip,
-            identities: [this.viewModel.plotPoints[nearestDenominator].identity],
-            coordinates: [scaled_x, scaled_y],
-            isTouchEvent: false
-          });
-          xAxisLine.style("fill-opacity", 1).attr("transform", `translate(${scaled_x},0)`);
-        })
-        .on("mouseleave", () => {
-          this.host.tooltipService.hide({ immediately: true, isTouchEvent: false });
-          xAxisLine.style("fill-opacity", 0);
-        });
+    this.svg.on('click', () => {
+      this.selectionManager.clear();
+      this.updateHighlighting()
+    });
   }
 
   addContextMenu(): void {
-    this.plotting.svg.on('contextmenu', (event) => {
+    this.svg.on('contextmenu', (event) => {
       const eventTarget: EventTarget = event.target;
       const dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
       this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
@@ -189,17 +188,7 @@ export class Visual implements IVisual {
     });
   }
 
-  updateHighlighting(): void {
-    if (!this.viewModel.plotPoints || !this.viewModel.groupedLines) {
-      return;
-    }
-    const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
-    const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
-
-    const opacityFull: number = this.viewModel.inputSettings.scatter.opacity;
-    const opacityReduced: number = this.viewModel.inputSettings.scatter.opacity_unselected;
-
-    this.plotting.svgLines.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
-    this.plotting.svgDots.highlight(anyHighlights, allSelectionIDs, opacityFull, opacityReduced)
+  updateHighlighting() {
+    this.svg.call(highlight, this.viewModel, this.selectionManager.getSelectionIds())
   }
 }

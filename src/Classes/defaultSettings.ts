@@ -1,8 +1,8 @@
 let defaultSettings = {
   canvas: {
-    lower_padding: 50,
+    lower_padding: 10,
     upper_padding: 10,
-    left_padding: 50,
+    left_padding: 10,
     right_padding: 10
   },
   spc: {

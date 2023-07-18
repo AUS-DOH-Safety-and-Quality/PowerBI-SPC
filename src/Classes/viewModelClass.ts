@@ -228,16 +228,29 @@ class viewModelClass {
     this.firstRun = false;
   }
 
-  constructor() {
-    this.inputData = <dataClass>null;
-    this.inputSettings = <settingsClass>null;
-    this.limitFunction = null;
-    this.controlLimits = null;
-    this.plotPoints = <plotData[]>null;
-    this.groupedLines = <[string, lineData[]][]>null;
-    this.plotProperties = <plotPropertiesClass>null;
-    this.firstRun = true
-    this.splitIndexes = new Array<number>();
+  constructor(from?: viewModelClass) {
+    if (from) {
+      this.inputData = from.inputData;
+      this.inputSettings = from.inputSettings;
+      this.controlLimits = from.controlLimits;
+      this.plotPoints = from.plotPoints;
+      this.groupedLines = from.groupedLines;
+      this.tickLabels = from.tickLabels;
+      this.plotProperties = from.plotProperties;
+      this.splitIndexes = from.splitIndexes;
+      this.firstRun = from.firstRun;
+      this.limitFunction = from.limitFunction;
+    } else {
+      this.inputData = <dataClass>null;
+      this.inputSettings = <settingsClass>null;
+      this.limitFunction = null;
+      this.controlLimits = null;
+      this.plotPoints = <plotData[]>null;
+      this.groupedLines = <[string, lineData[]][]>null;
+      this.plotProperties = <plotPropertiesClass>null;
+      this.firstRun = true
+      this.splitIndexes = new Array<number>();
+    }
   }
 }
 
