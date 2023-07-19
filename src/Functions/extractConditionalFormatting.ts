@@ -7,7 +7,7 @@ import extractSetting from "./extractSetting";
 
 
 function extractConditionalFormatting<SettingsT extends defaultSettingsType[defaultSettingsKey]>(categoricalView: DataViewCategorical, name: string, inputSettings: settingsClass): SettingsT[] {
-  if ((categoricalView === null) || (categoricalView === undefined)) {
+  if ((categoricalView.categories  === null) || (categoricalView.categories  === undefined)) {
     return [null];
   }
   const inputCategories: DataViewCategoryColumn = (categoricalView.categories as DataViewCategoryColumn[])[0];
