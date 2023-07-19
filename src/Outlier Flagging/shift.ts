@@ -1,7 +1,7 @@
 import * as math from '@stdlib/math/base/special';
 import * as d3 from "d3";
 
-function shift(val: number[], targets: number[], n: number): string[] {
+export default function shift(val: number[], targets: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {
     return Math.sign(d - targets[i]);
   });
@@ -25,5 +25,3 @@ function shift(val: number[], targets: number[], n: number): string[] {
 
   return shift_detected;
 }
-
-export default shift

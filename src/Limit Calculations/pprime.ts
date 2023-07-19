@@ -8,7 +8,7 @@ import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function pprimeLimits(args: LimitArgs): controlLimitsClass {
+export default function pprimeLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const val: number[] = divide(inputData.numerators, inputData.denominators);
   const cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
@@ -33,5 +33,3 @@ function pprimeLimits(args: LimitArgs): controlLimitsClass {
     ul99: truncate(add(cl, multiply(3, sigma)), {upper: 1})
   });
 }
-
-export default pprimeLimits;

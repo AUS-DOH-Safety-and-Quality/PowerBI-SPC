@@ -1,7 +1,7 @@
 import * as math from '@stdlib/math/base/special';
 import * as d3 from "d3";
 
-function trend(val: number[], n: number): string[] {
+export default function trend(val: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {
     return (i == 0) ? i : Math.sign(d - val[i - 1]);
   });
@@ -27,4 +27,3 @@ function trend(val: number[], n: number): string[] {
   return trend_detected;
 }
 
-export default trend

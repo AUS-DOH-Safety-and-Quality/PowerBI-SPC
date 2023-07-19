@@ -10,10 +10,8 @@ const lineNameMap: Record<string, string> = {
   "alt_targets" : "alt_target"
 }
 
-function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsClass): string | number {
+export default function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsClass): string | number {
   const mapName: string = group.includes("line") ? lineNameMap[type] : type;
   const settingName: string = aesthetic + "_" + mapName;
   return inputSettings[group][settingName];
 }
-
-export default getAesthetic;

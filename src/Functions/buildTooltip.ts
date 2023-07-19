@@ -21,8 +21,8 @@ const valueNames: Record<string, string> = {
 
 const integerParams: string[] = ["c", "p", "pp"];
 
-function buildTooltip(index: number, controlLimits: controlLimitsClass,
-                      inputData: dataClass, inputSettings: settingsClass): VisualTooltipDataItem[] {
+export default function buildTooltip(index: number, controlLimits: controlLimitsClass,
+                                      inputData: dataClass, inputSettings: settingsClass): VisualTooltipDataItem[] {
 
   const date: string = controlLimits.keys[index].label;
   const value: number = controlLimits.values[index];
@@ -108,5 +108,3 @@ function buildTooltip(index: number, controlLimits: controlLimitsClass,
 
   return tooltip;
 }
-
-export default buildTooltip;

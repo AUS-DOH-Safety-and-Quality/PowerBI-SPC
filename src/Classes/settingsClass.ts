@@ -5,8 +5,8 @@ import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractSetting from "../Functions/extractSetting";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
-import defaultSettings from "./defaultSettings"
-import { defaultSettingsType, defaultSettingsKey } from "./defaultSettings";
+import defaultSettings from "../defaultSettings"
+import { defaultSettingsType, defaultSettingsKey } from "../defaultSettings";
 
 /**
  * This is the core class which controls the initialisation and
@@ -15,7 +15,7 @@ import { defaultSettingsType, defaultSettingsKey } from "./defaultSettings";
  *
  * These are defined in the settingsGroups.ts file
  */
-class settingsClass implements defaultSettingsType {
+export default class settingsClass implements defaultSettingsType {
   canvas: defaultSettingsType["canvas"];
   spc: defaultSettingsType["spc"];
   outliers: defaultSettingsType["outliers"];
@@ -83,4 +83,3 @@ class settingsClass implements defaultSettingsType {
     });
   }
 }
-export default settingsClass;

@@ -5,7 +5,7 @@ import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function tLimits(args: LimitArgs): controlLimitsClass {
+export default function tLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const val: number[] = pow(inputData.numerators, 1 / 3.6);
   const argsDataCopy: LimitArgs = args;
@@ -22,4 +22,3 @@ function tLimits(args: LimitArgs): controlLimitsClass {
   return limits;
 }
 
-export default tLimits;

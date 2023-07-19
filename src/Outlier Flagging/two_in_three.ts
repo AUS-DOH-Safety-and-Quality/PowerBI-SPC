@@ -1,7 +1,7 @@
 import * as math from '@stdlib/math/base/special';
 import * as d3 from "d3";
 
-function two_in_three(val: number[], ll95: number[], ul95: number[]): string[] {
+export default function two_in_three(val: number[], ll95: number[], ul95: number[]): string[] {
   const outside95: number[] = val.map((d, i) => {
     return d > ul95[i] ? 1 : (d < ll95[i] ? -1 : 0);
   });
@@ -26,5 +26,3 @@ function two_in_three(val: number[], ll95: number[], ul95: number[]): string[] {
 
   return two_in_three_detected;
 }
-
-export default two_in_three

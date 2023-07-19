@@ -2,7 +2,7 @@ import powerbi from "powerbi-visuals-api"
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewCategorical = powerbi.DataViewCategorical;
 import settingsClass from "../Classes/settingsClass";
-import defaultSettings, { defaultSettingsType, defaultSettingsKey } from "../Classes/defaultSettings";
+import defaultSettings, { defaultSettingsType, defaultSettingsKey } from "../defaultSettings";
 import extractSetting from "./extractSetting";
 
 

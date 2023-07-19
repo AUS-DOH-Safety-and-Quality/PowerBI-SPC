@@ -23,7 +23,7 @@ type controlLimitsArgs = {
   count?: number[];
 }
 
-class controlLimitsClass {
+export default class controlLimitsClass {
   [key: string] : any;
   keys: { x: number, id: number, label: string }[];
   values: number[];
@@ -112,5 +112,3 @@ class controlLimitsClass {
     }
   }
 }
-
-export default controlLimitsClass

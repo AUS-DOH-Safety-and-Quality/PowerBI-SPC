@@ -1,7 +1,7 @@
 import powerbi from "powerbi-visuals-api"
 import DataViewObjects = powerbi.DataViewObjects
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
-import { settingsScalarTypes } from "../Classes/defaultSettings";
+import { settingsScalarTypes } from "../defaultSettings";
 
 function extractSetting(inputObjects: DataViewObjects,
                         settingsGroup: string,

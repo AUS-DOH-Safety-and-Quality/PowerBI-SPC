@@ -1,7 +1,7 @@
 import viewModelClass from "../Classes/viewModelClass";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 
-export default function   variationIconsToDraw(viewModel: viewModelClass): string[] {
+export default function variationIconsToDraw(viewModel: viewModelClass): string[] {
   const currLimits: controlLimitsClass = viewModel.controlLimits;
   const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction;
   const suffix_map: Record<string, string> = {

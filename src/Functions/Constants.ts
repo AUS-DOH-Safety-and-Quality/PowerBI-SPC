@@ -1,7 +1,7 @@
 import { sqrt, exp, lgamma, square } from "./UnaryFunctions";
 import { subtract, add, multiply, divide } from "./BinaryFunctions";
 
-function c4(sampleSizes: number[]): number[] {
+export function c4(sampleSizes: number[]): number[] {
   const filt_samp: number[] = sampleSizes.map(d => d <= 1 ? null : d);
   const Nminus1: number[] = subtract(filt_samp, 1);
   const lg_n2: number[] = lgamma(divide(filt_samp, 2));
@@ -12,30 +12,24 @@ function c4(sampleSizes: number[]): number[] {
   return multiply(term1, term2);
 }
 
-function c5(sampleSizes: number[]): number[] {
+export function c5(sampleSizes: number[]): number[] {
   return sqrt(subtract(1, square(c4(sampleSizes))));
 }
 
-function a3(sampleSizes: number[]): number[] {
+export function a3(sampleSizes: number[]): number[] {
   const filt_samp: number[] = sampleSizes.map(d => d <= 1 ? null : d);
   return divide(3, multiply(c4(filt_samp), sqrt(filt_samp)));
 }
 
-function b_helper(sampleSizes: number[], use95: boolean): number[] {
+export function b_helper(sampleSizes: number[], use95: boolean): number[] {
   const sigma: number = use95 ? 2 : 3;
   return divide(multiply(sigma, c5(sampleSizes)), c4(sampleSizes));
 }
 
-function b3(sampleSizes: number[], use95: boolean): number[] {
+export function b3(sampleSizes: number[], use95: boolean): number[] {
   return subtract(1, b_helper(sampleSizes, use95));
 }
 
-function b4(sampleSizes: number[], use95: boolean): number[] {
+export function b4(sampleSizes: number[], use95: boolean): number[] {
   return add(1, b_helper(sampleSizes, use95));
 }
-
-export {
-  a3,
-  b3,
-  b4
-};

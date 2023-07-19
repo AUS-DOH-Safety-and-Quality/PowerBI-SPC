@@ -1,6 +1,6 @@
 import powerbi from "powerbi-visuals-api";
 
-function checkInvalidDataView(inputDV: powerbi.DataView[]): boolean {
+export default function checkInvalidDataView(inputDV: powerbi.DataView[]): boolean {
   const flag1: boolean = !inputDV
     || !inputDV[0]
     || !inputDV[0].categorical
@@ -30,5 +30,3 @@ function checkInvalidDataView(inputDV: powerbi.DataView[]): boolean {
     || inputDV[0].categorical.categories.some(d => d.values.length < 1);
   return flag4;
 }
-
-export default checkInvalidDataView;

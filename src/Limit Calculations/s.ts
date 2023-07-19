@@ -7,7 +7,7 @@ import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function sLimits(args: LimitArgs): controlLimitsClass {
+export default function sLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const group_sd: number[] = inputData.numerators;
   const count_per_group: number[] = inputData.denominators;
@@ -35,4 +35,3 @@ function sLimits(args: LimitArgs): controlLimitsClass {
   });
 }
 
-export default sLimits;

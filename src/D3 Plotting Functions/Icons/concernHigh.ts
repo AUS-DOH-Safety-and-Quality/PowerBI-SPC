@@ -1,5 +1,4 @@
-import * as d3 from "d3";
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
+import { svgBaseType } from "../../visual";
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Concern High icon.
@@ -13,7 +12,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 /* eslint-disable */
-function concernHigh(selection: SelectionBase): void {
+export default function concernHigh(selection: svgBaseType): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")
@@ -138,5 +137,3 @@ function concernHigh(selection: SelectionBase): void {
             .attr("transform","matrix(1 0 0 -1 265.5 200.5)")
 }
 /* eslint-enable */
-
-export default concernHigh

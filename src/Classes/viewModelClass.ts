@@ -13,16 +13,16 @@ import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotPropertiesClass"
 import getAesthetic from "../Functions/getAesthetic"
-import { defaultSettingsType } from "./defaultSettings";
+import { defaultSettingsType } from "../defaultSettings";
 import * as limitFunctions from "../Limit Calculations"
 
-class lineData {
+export class lineData {
   x: number;
   line_value: number;
   group: string;
 }
 
-class plotData {
+export class plotData {
   x: number;
   value: number;
   aesthetics: defaultSettingsType["scatter"];
@@ -34,9 +34,9 @@ class plotData {
   tooltip: VisualTooltipDataItem[];
 }
 
-type LimitArgs = { inputData: dataClass; inputSettings: settingsClass; }
+export type LimitArgs = { inputData: dataClass; inputSettings: settingsClass; }
 
-class viewModelClass {
+export default class viewModelClass {
   inputData: dataClass;
   inputSettings: settingsClass;
   controlLimits: controlLimitsClass;
@@ -83,6 +83,7 @@ class viewModelClass {
         this.calculateLimits();
         this.controlLimits.scaleLimits(this.inputSettings);
         this.controlLimits.truncateLimits(this.inputSettings);
+        this.controlLimits.flagOutliers(this.inputSettings)
         console.log("calculatedLimits: ", this.controlLimits)
 
         // Structure the data and calculated limits to the format needed for plotting
@@ -231,6 +232,3 @@ class viewModelClass {
     }
   }
 }
-
-export { lineData, plotData, LimitArgs }
-export default viewModelClass

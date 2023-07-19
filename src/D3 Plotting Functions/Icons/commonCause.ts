@@ -1,5 +1,4 @@
-import * as d3 from "d3";
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
+import { svgBaseType } from "../../visual";
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Common Cause icon.
@@ -10,7 +9,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
-function commonCause(selection: SelectionBase): void {
+export default function commonCause(selection: svgBaseType): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")
@@ -107,5 +106,3 @@ function commonCause(selection: SelectionBase): void {
             .attr("fill","#BFBFBF")
             .attr("fill-rule","evenodd")
 }
-
-export default commonCause
