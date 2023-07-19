@@ -16,16 +16,22 @@ import viewModelClass from "./Classes/viewModelClass"
 import { plotData } from "./Classes/viewModelClass";
 import * as d3 from "d3";
 import highlight from "./D3 Plotting Functions/highlight";
-import plotPropertiesClass from "./Classes/plotPropertiesClass";
-import drawPlot from "./D3 Plotting Functions/drawPlot";
+import drawXAxis from "./D3 Plotting Functions/drawXAxis";
+import drawYAxis from "./D3 Plotting Functions/drawYAxis";
+import drawTooltipLine from "./D3 Plotting Functions/drawTooltipLine";
+import drawLines from "./D3 Plotting Functions/drawLines";
+import drawDots from "./D3 Plotting Functions/drawDots";
+import drawIcons from "./D3 Plotting Functions/drawIcons";
+
+export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 
 export class Visual implements IVisual {
-  private host: IVisualHost;
-  private svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-  private viewModel: viewModelClass;
-  private selectionManager: ISelectionManager;
+  host: IVisualHost;
+  svg: svgBaseType;
+  viewModel: viewModelClass;
+  selectionManager: ISelectionManager;
   // Service for notifying external clients (export to powerpoint/pdf) of rendering status
-  private events: IVisualEventService;
+  events: IVisualEventService;
 
   constructor(options: VisualConstructorOptions) {
     console.log("Constructor start")
@@ -35,7 +41,6 @@ export class Visual implements IVisual {
     this.events = options.host.eventService;
     this.host = options.host;
     this.viewModel = new viewModelClass();
-    this.viewModel.firstRun = true;
 
     this.selectionManager = this.host.createSelectionManager();
     this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
@@ -53,11 +58,16 @@ export class Visual implements IVisual {
       this.viewModel.update({ options: options, host: this.host });
 
       console.log("Draw plot")
-      this.svg.call(drawPlot, this.viewModel)
+      this.svg.attr("width", this.viewModel.plotProperties.width)
+              .attr("height", this.viewModel.plotProperties.height)
+              .call(drawXAxis, this.viewModel)
+              .call(drawYAxis, this.viewModel)
+              .call(drawTooltipLine, this.viewModel, this.host.tooltipService)
+              .call(drawLines, this.viewModel)
+              .call(drawDots, this)
+              .call(drawIcons, this.viewModel)
 
       if (this.viewModel.plotProperties.displayPlot) {
-        this.addDotsInteractivity();
-        this.addTooltipMouseover();
         this.addContextMenu()
         this.updateHighlighting()
       }
@@ -74,101 +84,6 @@ export class Visual implements IVisual {
   // Function to render the properties specified in capabilities.json to the properties pane
   public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
     return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
-  }
-
-  addTooltipMouseover(): void {
-    const xAxisLine = this.svg.selectAll(".ttip-line").selectChildren();
-
-    this.svg
-        .on("mousemove", (event) => {
-          const plotProperties: plotPropertiesClass = this.viewModel.plotProperties;
-          const plotPoints: plotData[] = this.viewModel.plotPoints
-
-          const xValue: number = plotProperties.xScale.invert(event.pageX);
-          const xRange: number[] = plotPoints.map(d => d.x).map(d => Math.abs(d - xValue));
-          const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
-          const x_coord: number = plotProperties.xScale(plotPoints[nearestDenominator].x)
-          const y_coord: number = plotProperties.yScale(plotPoints[nearestDenominator].value)
-
-          this.host.tooltipService.show({
-            dataItems: plotPoints[nearestDenominator].tooltip,
-            identities: [plotPoints[nearestDenominator].identity],
-            coordinates: [x_coord, y_coord],
-            isTouchEvent: false
-          });
-          const xAxisHeight: number = plotProperties.height - plotProperties.yAxis.start_padding;
-          xAxisLine.style("stroke-opacity", 1)
-                    .attr("x1", x_coord)
-                    .attr("x2", x_coord);
-        })
-        .on("mouseleave", () => {
-          this.host.tooltipService.hide({ immediately: true, isTouchEvent: false });
-          xAxisLine.style("stroke-opacity", 0);
-        });
-  }
-
-  addDotsInteractivity(): void {
-    // Change opacity (highlighting) with selections in other plots
-    // Specify actions to take when clicking on dots
-    this.svg
-        .selectAll(".dotsgroup")
-        .selectChildren()
-        .on("click", (event, d: plotData) => {
-          if (this.viewModel.inputSettings.spc.split_on_click) {
-            // Identify whether limits are already split at datapoint, and undo if so
-            const xIndex: number = this.viewModel.splitIndexes.indexOf(d.x)
-            if (xIndex > -1) {
-              this.viewModel.splitIndexes.splice(xIndex, 1)
-            } else {
-              this.viewModel.splitIndexes.push(d.x)
-            }
-
-            // Store the current limit-splitting indices to make them available between full refreshes
-            // This also initiates a visual update() call, causing the limits to be re-calculated
-            this.host.persistProperties({
-              replace: [{
-                objectName: "split_indexes_storage",
-                selector: undefined,
-                properties: { split_indexes: JSON.stringify(this.viewModel.splitIndexes) }
-              }]
-            });
-          } else {
-            // Pass identities of selected data back to PowerBI
-            this.selectionManager
-                // Propagate identities of selected data back to
-                //   PowerBI based on all selected dots
-                .select(d.identity, (event.ctrlKey || event.metaKey))
-                // Change opacity of non-selected dots
-                .then(() => { this.updateHighlighting(); });
-          }
-          event.stopPropagation();
-        })
-        // Display tooltip content on mouseover
-        .on("mouseover", (event, d: plotData) => {
-          // Get screen coordinates of mouse pointer, tooltip will
-          //   be displayed at these coordinates
-          const x = event.pageX;
-          const y = event.pageY;
-
-          this.host.tooltipService.show({
-            dataItems: d.tooltip,
-            identities: [d.identity],
-            coordinates: [x, y],
-            isTouchEvent: false
-          });
-        })
-        // Hide tooltip when mouse moves out of dot
-        .on("mouseout", () => {
-          this.host.tooltipService.hide({
-            immediately: true,
-            isTouchEvent: false
-          })
-        });
-
-    this.svg.on('click', () => {
-      this.selectionManager.clear();
-      this.updateHighlighting()
-    });
   }
 
   addContextMenu(): void {

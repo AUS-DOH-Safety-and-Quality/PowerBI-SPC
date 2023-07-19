@@ -2,10 +2,9 @@ import * as d3 from "d3";
 import viewModelClass from "../Classes/viewModelClass";
 import { axisProperties } from "../Classes/plotPropertiesClass";
 import {abs} from "../Functions/UnaryFunctions";
+import { svgBaseType } from "../visual";
 
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
-
-export default function drawXAxis(selection: SelectionBase, viewModel: viewModelClass, refresh?: boolean) {
+export default function drawXAxis(selection: svgBaseType, viewModel: viewModelClass, refresh?: boolean) {
   selection.selectAll(".xaxisgroup").remove()
   selection.selectAll(".xaxislabel").remove()
   if (!(viewModel.plotProperties.displayPlot)) {

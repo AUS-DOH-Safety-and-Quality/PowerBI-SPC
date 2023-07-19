@@ -38,9 +38,8 @@ class settingsClass implements defaultSettingsType {
     const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
-      const condFormatting: defaultSettingsType[defaultSettingsKey] = inputView.categorical.categories
-                            ? extractConditionalFormatting(inputView.categorical, settingGroup, this)[0]
-                            : null;
+      const categoricalView: powerbi.DataViewCategorical = inputView.categorical ? inputView.categorical : null;
+      const condFormatting: defaultSettingsType[defaultSettingsKey] = extractConditionalFormatting(categoricalView, settingGroup, this)[0];
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
       const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);

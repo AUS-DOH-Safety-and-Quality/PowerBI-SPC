@@ -1,13 +1,11 @@
-import * as d3 from "d3";
 import powerbi from "powerbi-visuals-api";
 import viewModelClass from "../Classes/viewModelClass";
 import { plotData } from "../Classes/viewModelClass";
 import ISelectionId = powerbi.visuals.ISelectionId;
 import ExtensISelectionId = powerbi.extensibility.ISelectionId;
+import { svgBaseType } from "../visual";
 
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
-
-export default function highlight(selection: SelectionBase, viewModel: viewModelClass, allSelectionIDs: ExtensISelectionId[]) {
+export default function highlight(selection: svgBaseType, viewModel: viewModelClass, allSelectionIDs: ExtensISelectionId[]) {
   const anyHighlights: boolean = viewModel.inputData ? viewModel.inputData.anyHighlights : false;
 
   const opacityFull: number = viewModel.inputSettings.scatter.opacity;

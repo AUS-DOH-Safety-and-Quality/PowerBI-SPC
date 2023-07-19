@@ -3,10 +3,9 @@ import viewModelClass from "../Classes/viewModelClass";
 import { lineData } from "../Classes/viewModelClass";
 import between from "../Functions/between";
 import getAesthetic from "../Functions/getAesthetic";
+import { svgBaseType } from "../visual";
 
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
-
-export default function drawLines(selection: SelectionBase, viewModel: viewModelClass) {
+export default function drawLines(selection: svgBaseType, viewModel: viewModelClass) {
   selection.selectAll(".linesgroup").remove()
   if (!(viewModel.groupedLines)) {
     return;
