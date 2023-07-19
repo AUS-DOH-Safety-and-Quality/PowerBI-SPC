@@ -99,8 +99,8 @@ class viewModelClass {
 
     if (this.inputSettings.spc.chart_type !== "run") {
       const limits: Record<string, number> = {
-        lower: this.inputSettings.y_axis.ylimit_l,
-        upper: this.inputSettings.y_axis.ylimit_u
+        lower: this.inputSettings.spc.ll_truncate,
+        upper: this.inputSettings.spc.ul_truncate
       }
       calcLimits.ll99 = truncate(multiply(calcLimits.ll99, multiplier), limits);
       calcLimits.ll95 = truncate(multiply(calcLimits.ll95, multiplier), limits);
