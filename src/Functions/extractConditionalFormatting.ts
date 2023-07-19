@@ -6,7 +6,7 @@ import defaultSettings, { defaultSettingsType, defaultSettingsKey } from "../def
 import extractSetting from "./extractSetting";
 
 
-function extractConditionalFormatting<SettingsT extends defaultSettingsType[defaultSettingsKey]>(categoricalView: DataViewCategorical, name: string, inputSettings: settingsClass): SettingsT[] {
+export default function extractConditionalFormatting<SettingsT extends defaultSettingsType[defaultSettingsKey]>(categoricalView: DataViewCategorical, name: string, inputSettings: settingsClass): SettingsT[] {
   if ((categoricalView.categories  === null) || (categoricalView.categories  === undefined)) {
     return [null];
   }
@@ -29,5 +29,3 @@ function extractConditionalFormatting<SettingsT extends defaultSettingsType[defa
   }
   return rtn
 }
-
-export default extractConditionalFormatting

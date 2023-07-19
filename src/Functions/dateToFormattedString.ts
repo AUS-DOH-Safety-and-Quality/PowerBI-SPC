@@ -35,25 +35,23 @@ let localeDateMap: Record<string, string>= {
   "en-US" : "\"locale\": \"en-US\""
 }
 
-function dateToFormattedString_impl(input_date: Date, date_settings: defaultSettingsType["dates"]): string {
-  const inpLocale: string = date_settings.date_format_locale;
-  const inpDay: string = date_settings.date_format_day;
-  const inpMonth: string = date_settings.date_format_month;
-  const inpYear: string = date_settings.date_format_year;
-  const inpDelim: string = date_settings.date_format_delim;
+export default broadcast_binary(
+  (input_date: Date, date_settings: defaultSettingsType["dates"]): string => {
+    const inpLocale: string = date_settings.date_format_locale;
+    const inpDay: string = date_settings.date_format_day;
+    const inpMonth: string = date_settings.date_format_month;
+    const inpYear: string = date_settings.date_format_year;
+    const inpDelim: string = date_settings.date_format_delim;
 
-  const formatString: string = `{ ${localeDateMap[inpLocale]}, \"options\": { \"day\" : \"2-digit\", ${monthDateMap[inpMonth]}, ${yearDateMap[inpYear]} }, ${delimDateMap[inpDelim]} }`;
-  const date_format: dateFormat = JSON.parse(formatString);
-  const formattedString: string = input_date.toLocaleDateString(date_format.locale, date_format.options)
-                                            .replace(/(\/|(\s|,\s))/gi, date_format.delimiter);
-  if (inpDay !== "DD") {
-    const weekday: string = input_date.toLocaleDateString(date_format.locale, {weekday : weekdayDateMap[inpDay]})
-    return weekday + " " + formattedString;
-  } else {
-    return formattedString;
+    const formatString: string = `{ ${localeDateMap[inpLocale]}, \"options\": { \"day\" : \"2-digit\", ${monthDateMap[inpMonth]}, ${yearDateMap[inpYear]} }, ${delimDateMap[inpDelim]} }`;
+    const date_format: dateFormat = JSON.parse(formatString);
+    const formattedString: string = input_date.toLocaleDateString(date_format.locale, date_format.options)
+                                              .replace(/(\/|(\s|,\s))/gi, date_format.delimiter);
+    if (inpDay !== "DD") {
+      const weekday: string = input_date.toLocaleDateString(date_format.locale, {weekday : weekdayDateMap[inpDay]})
+      return weekday + " " + formattedString;
+    } else {
+      return formattedString;
+    }
   }
-}
-
-const dateToFormattedString = broadcast_binary(dateToFormattedString_impl)
-
-export default dateToFormattedString;
+);

@@ -3,7 +3,7 @@ import DataViewObjects = powerbi.DataViewObjects
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils";
 import { settingsScalarTypes } from "../defaultSettings";
 
-function extractSetting(inputObjects: DataViewObjects,
+export default function extractSetting(inputObjects: DataViewObjects,
                         settingsGroup: string,
                         settingName: string,
                         defaultValue?: settingsScalarTypes): settingsScalarTypes {
@@ -26,4 +26,3 @@ function extractSetting(inputObjects: DataViewObjects,
   }
 }
 
-export default extractSetting
