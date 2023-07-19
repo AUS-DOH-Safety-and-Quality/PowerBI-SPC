@@ -46,7 +46,7 @@ export default class controlLimitsClass {
     const multiplier: number = inputSettings.spc.multiplier;
     this.alt_targets = rep(inputSettings.spc.alt_target, this.values.length);
 
-    ["values", "targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+    ["values", "targets", "alt_targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
       this[limit] = multiply(this[limit], multiplier)
     })
   }

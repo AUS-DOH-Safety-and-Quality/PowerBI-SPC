@@ -19,7 +19,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       .append("circle")
       .filter((d: plotData) => d.value !== null)
       .attr("cy", (d: plotData) => visualObj.viewModel.plotProperties.yScale(d.value))
-      .attr("cx", (d: plotData) =>visualObj.viewModel.plotProperties.xScale(d.x))
+      .attr("cx", (d: plotData) => visualObj.viewModel.plotProperties.xScale(d.x))
       .attr("r", (d: plotData) => d.aesthetics.size)
       .style("fill", (d: plotData) => {
         return between(d.value, lower, upper) ? d.aesthetics.colour : "#FFFFFF";
