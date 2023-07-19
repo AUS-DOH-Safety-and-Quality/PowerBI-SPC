@@ -1,6 +1,7 @@
 import broadcast_binary from "./BinaryFunctions"
+export type truncateInputs = { lower?: number, upper?: number };
 
-function truncate_impl(val: number, limits: {lower?: number, upper?: number}): number {
+function truncate_impl(val: number, limits: truncateInputs): number {
   let rtn: number = val;
   if (limits.lower || limits.lower == 0) {
     rtn = (rtn < limits.lower ? limits.lower : rtn)
