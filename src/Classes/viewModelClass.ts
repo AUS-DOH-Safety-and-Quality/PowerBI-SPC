@@ -55,8 +55,8 @@ export default class viewModelClass {
     const dv: powerbi.DataView[] = args.options.dataViews;
     this.inputSettings.update(dv[0]);
 
-    let split_indexes_storage: DataViewObject = dv[0].metadata.objects ? dv[0].metadata.objects.split_indexes_storage : null;
-    let split_indexes: DataViewPropertyValue = split_indexes_storage ? split_indexes_storage.split_indexes : null;
+    const split_indexes_storage: DataViewObject = dv[0].metadata.objects ? dv[0].metadata.objects.split_indexes_storage : null;
+    const split_indexes: DataViewPropertyValue = split_indexes_storage ? split_indexes_storage.split_indexes : null;
     this.splitIndexes = split_indexes ? JSON.parse(<string>(split_indexes)) : new Array<number>();
 
     // Make sure that the construction returns early with null members so

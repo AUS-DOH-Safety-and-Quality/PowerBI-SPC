@@ -9,8 +9,8 @@ import { plotData } from "../Classes/viewModelClass";
 export default function drawTooltipLine(selection: svgBaseType, viewModel: viewModelClass, tooltipService: ITooltipService) {
   selection.selectAll(".ttip-line").remove()
   if (!(viewModel.plotProperties.displayPlot)) {
-    selection.on("mousemove", (event) => { return; })
-              .on("mouseleave", (event) => { return; })
+    selection.on("mousemove", () => { return; })
+              .on("mouseleave", () => { return; })
     return;
   }
 
@@ -44,7 +44,6 @@ export default function drawTooltipLine(selection: svgBaseType, viewModel: viewM
                 coordinates: [x_coord, y_coord],
                 isTouchEvent: false
               });
-              const xAxisHeight: number = plotProperties.height - plotProperties.yAxis.start_padding;
               xAxisLine.style("stroke-opacity", 1)
                         .attr("x1", x_coord)
                         .attr("x2", x_coord);

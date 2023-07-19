@@ -51,8 +51,8 @@ export default function drawXAxis(selection: svgBaseType, viewModel: viewModelCl
       .style("font-family", xAxisProperties.tick_font)
       .style("fill", xAxisProperties.tick_colour);
 
-  let axisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
-  let xAxisCoordinates: DOMRect = axisNode.getBoundingClientRect() as DOMRect;
+  const axisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
+  const xAxisCoordinates: DOMRect = axisNode.getBoundingClientRect() as DOMRect;
 
   // Update padding and re-draw axis if large tick values rendered outside of plot
   const tickBelowPadding: number = xAxisCoordinates.bottom - xAxisHeight;

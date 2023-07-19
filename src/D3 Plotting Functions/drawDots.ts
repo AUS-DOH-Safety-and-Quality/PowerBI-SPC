@@ -1,4 +1,3 @@
-import viewModelClass from "../Classes/viewModelClass";
 import { plotData } from "../Classes/viewModelClass";
 import between from "../Functions/between";
 import { svgBaseType, Visual } from "../visual";

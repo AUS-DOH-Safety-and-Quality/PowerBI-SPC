@@ -44,7 +44,7 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
     multiplier = 100;
   }
   const suffix: string = prop_labels ? "%" : "";
-  let intNumDen: boolean = integerParams.includes(chart_type);
+  const intNumDen: boolean = integerParams.includes(chart_type);
 
   const sig_figs: number = inputSettings.spc.sig_figs;
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
