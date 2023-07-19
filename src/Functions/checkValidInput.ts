@@ -1,4 +1,4 @@
-function checkValidInput(numerator: number, denominator: number, xbar_sd: number, data_type: string): boolean {
+export default function checkValidInput(numerator: number, denominator: number, xbar_sd: number, data_type: string): boolean {
   const denominatorConstraintRequired: string[] = ["p", "pprime", "u", "uprime"];
   const denominatorRequired: string[] = ["p", "pprime", "u", "uprime", "xbar", "s"];
   const denominatorConstraintForRunIChart: string[] = ["i", "run"];
@@ -17,4 +17,3 @@ function checkValidInput(numerator: number, denominator: number, xbar_sd: number
   return numeratorValid && denominatorValid && proportionDenominatorValid && runIChartDenominatorValid && xbarSDValid;
 }
 
-export default checkValidInput;

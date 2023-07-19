@@ -7,7 +7,7 @@ import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function xbarLimits(args: LimitArgs): controlLimitsClass {
+export default function xbarLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   // Calculate number of observations in each group
   const count_per_group: number[] = inputData.denominators;
@@ -41,5 +41,3 @@ function xbarLimits(args: LimitArgs): controlLimitsClass {
     count: count_per_group
   })
 }
-
-export default xbarLimits;

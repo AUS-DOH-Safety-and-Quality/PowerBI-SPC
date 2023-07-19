@@ -1,4 +1,4 @@
-let defaultSettings = {
+const defaultSettings = {
   canvas: {
     lower_padding: 10,
     upper_padding: 10,

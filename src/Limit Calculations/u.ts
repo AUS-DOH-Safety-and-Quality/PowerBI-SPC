@@ -7,7 +7,7 @@ import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function uLimits(args: LimitArgs): controlLimitsClass {
+export default function uLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const cl: number = divide(d3.sum(inputData.numerators),d3.sum(inputData.denominators));
   const sigma: number[] = sqrt(divide(cl,inputData.denominators));
@@ -24,5 +24,3 @@ function uLimits(args: LimitArgs): controlLimitsClass {
     ul99: add(cl, multiply(3, sigma))
   })
 }
-
-export default uLimits;

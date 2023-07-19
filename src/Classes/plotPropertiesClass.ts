@@ -8,7 +8,7 @@ import dataClass from "./dataClass";
 import controlLimitsClass from "./controlLimitsClass";
 import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
-type axisProperties = {
+export type axisProperties = {
   lower: number,
   upper: number,
   start_padding: number,
@@ -26,7 +26,7 @@ type axisProperties = {
   label_colour: string
 };
 
-class plotPropertiesClass {
+export default class plotPropertiesClass {
   width: number;
   height: number;
   displayPlot: boolean;
@@ -134,10 +134,8 @@ class plotPropertiesClass {
       label_font: args.inputSettings.y_axis.ylimit_label_font,
       label_colour: args.inputSettings.y_axis.ylimit_label_colour
     };
-  this.initialiseScale();
-  this.firstRun = false;
+
+    this.initialiseScale();
+    this.firstRun = false;
   }
 }
-
-export default plotPropertiesClass
-export { axisProperties }

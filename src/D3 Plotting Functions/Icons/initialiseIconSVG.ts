@@ -1,6 +1,4 @@
-import * as d3 from "d3";
-
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
+import { svgBaseType } from "../../visual";
 
 /**
  * This method initialises a plotting space for rendering a given NHS SVG icon.
@@ -11,7 +9,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
  * icon rendering function from the "Icons" folder.
  *
  */
-export default function initialiseIconSVG(selection: SelectionBase, icon_name: string, svg_width: number, svg_height: number, location: string, scaling: number, count: number): void {
+export default function initialiseIconSVG(selection: svgBaseType, icon_name: string, svg_width: number, svg_height: number, location: string, scaling: number, count: number): void {
   const scaling_factor: number = (0.08 * (svg_height / 378)) * scaling
   const scale: string = `scale(${scaling_factor})`
   const icon_x: number = location.includes("Right")

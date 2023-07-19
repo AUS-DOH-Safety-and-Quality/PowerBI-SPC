@@ -7,9 +7,9 @@ import settingsClass from "./settingsClass"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
-import { defaultSettingsType } from "./defaultSettings";
+import { defaultSettingsType } from "../defaultSettings";
 
-class dataClass {
+export default class dataClass {
   keys: { x: number, id: number, label: string }[];
   numerators: number[];
   denominators: number[];
@@ -59,5 +59,3 @@ class dataClass {
     this.scatter_formatting = extractValues(scatter_cond, valid_ids)
   }
 }
-
-export default dataClass;

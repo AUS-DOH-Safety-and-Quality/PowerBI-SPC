@@ -4,7 +4,7 @@ import dataClass from "../Classes/dataClass"
 import controlLimitsClass from "../Classes/controlLimitsClass"
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function cLimits(args: LimitArgs): controlLimitsClass {
+export default function cLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = Math.sqrt(cl);
@@ -19,5 +19,3 @@ function cLimits(args: LimitArgs): controlLimitsClass {
     ul99: rep(cl + 3*sigma, inputData.keys.length),
   });
 }
-
-export default cLimits;

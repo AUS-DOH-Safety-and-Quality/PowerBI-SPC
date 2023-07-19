@@ -7,7 +7,7 @@ import settingsClass from "../Classes/settingsClass";
 import dateToFormattedString from "./dateToFormattedString";
 type TargetT = number[] | string[] | number | string;
 
-function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
+export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
                                               inputSettings?: settingsClass): T {
   let columnRaw: DataViewValueColumn;
@@ -41,5 +41,3 @@ function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
     return (columnRaw ? columnRaw.values : null) as T;
   }
 }
-
-export default extractDataColumn;

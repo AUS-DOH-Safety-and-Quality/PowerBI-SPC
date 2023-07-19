@@ -5,6 +5,9 @@ import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
 import settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
+import truncate from "../Functions/truncate";
+import { truncateInputs } from "../Functions/truncate";
+import { multiply } from "../Functions/BinaryFunctions";
 
 type controlLimitsArgs = {
   keys: { x: number, id: number, label: string }[];
@@ -20,7 +23,7 @@ type controlLimitsArgs = {
   count?: number[];
 }
 
-class controlLimitsClass {
+export default class controlLimitsClass {
   [key: string] : any;
   keys: { x: number, id: number, label: string }[];
   values: number[];
@@ -37,6 +40,31 @@ class controlLimitsClass {
   trend: string[];
   two_in_three: string[];
   shift: string[];
+
+  scaleLimits(inputSettings: settingsClass): void {
+    // Scale limits using provided multiplier
+    const multiplier: number = inputSettings.spc.multiplier;
+    this.alt_targets = rep(inputSettings.spc.alt_target, this.values.length);
+
+    ["values", "targets", "alt_targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+      this[limit] = multiply(this[limit], multiplier)
+    })
+  }
+
+  truncateLimits(inputSettings: settingsClass): void {
+    if (inputSettings.spc.chart_type === "run") {
+      return;
+    }
+
+    const limits: truncateInputs = {
+      lower: inputSettings.spc.ll_truncate,
+      upper: inputSettings.spc.ul_truncate
+    };
+
+    ["ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+      this[limit] = truncate(this[limit], limits);
+    });
+  }
 
   flagOutliers(inputSettings: settingsClass) {
     const process_flag_type: string = inputSettings.outliers.process_flag_type;
@@ -84,5 +112,3 @@ class controlLimitsClass {
     }
   }
 }
-
-export default controlLimitsClass

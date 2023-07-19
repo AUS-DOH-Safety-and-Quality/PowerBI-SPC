@@ -3,10 +3,9 @@ import viewModelClass from "../Classes/viewModelClass";
 import { axisProperties } from "../Classes/plotPropertiesClass";
 import {abs} from "../Functions/UnaryFunctions";
 import drawXAxis from "./drawXAxis";
+import { svgBaseType } from "../visual";
 
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
-
-export default function drawYAxis(selection: SelectionBase, viewModel: viewModelClass, refresh?: boolean) {
+export default function drawYAxis(selection: svgBaseType, viewModel: viewModelClass, refresh?: boolean) {
   selection.selectAll(".yaxisgroup").remove()
   selection.selectAll(".yaxislabel").remove()
   if (!(viewModel.plotProperties.displayPlot)) {

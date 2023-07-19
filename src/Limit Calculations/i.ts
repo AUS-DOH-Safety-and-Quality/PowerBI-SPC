@@ -7,7 +7,7 @@ import dataClass from "../Classes/dataClass";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import { LimitArgs } from "../Classes/viewModelClass";
 
-function iLimits(args: LimitArgs): controlLimitsClass {
+export default function iLimits(args: LimitArgs): controlLimitsClass {
   const inputData: dataClass = args.inputData;
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
@@ -35,5 +35,3 @@ function iLimits(args: LimitArgs): controlLimitsClass {
     ul99: rep(cl + 3 * sigma, inputData.keys.length)
   });
 }
-
-export default iLimits;

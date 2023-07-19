@@ -21,8 +21,8 @@ const valueNames: Record<string, string> = {
 
 const integerParams: string[] = ["c", "p", "pp"];
 
-function buildTooltip(index: number, controlLimits: controlLimitsClass,
-                      inputData: dataClass, inputSettings: settingsClass): VisualTooltipDataItem[] {
+export default function buildTooltip(index: number, controlLimits: controlLimitsClass,
+                                      inputData: dataClass, inputSettings: settingsClass): VisualTooltipDataItem[] {
 
   const date: string = controlLimits.keys[index].label;
   const value: number = controlLimits.values[index];
@@ -44,7 +44,7 @@ function buildTooltip(index: number, controlLimits: controlLimitsClass,
     multiplier = 100;
   }
   const suffix: string = prop_labels ? "%" : "";
-  let intNumDen: boolean = integerParams.includes(chart_type);
+  const intNumDen: boolean = integerParams.includes(chart_type);
 
   const sig_figs: number = inputSettings.spc.sig_figs;
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
@@ -108,5 +108,3 @@ function buildTooltip(index: number, controlLimits: controlLimitsClass,
 
   return tooltip;
 }
-
-export default buildTooltip;

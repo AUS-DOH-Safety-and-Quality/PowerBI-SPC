@@ -1,5 +1,4 @@
-import * as d3 from "d3";
-type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
+import { svgBaseType } from "../../visual"
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Concern Low icon.
@@ -10,7 +9,7 @@ type SelectionBase = d3.Selection<SVGGElement, unknown, null, undefined>;
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
-function concernLow(selection: SelectionBase): void {
+export default function concernLow(selection: svgBaseType): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")
@@ -115,5 +114,3 @@ function concernLow(selection: SelectionBase): void {
             .attr("fill","#FF6600")
             .attr("fill-rule","evenodd")
 }
-
-export default concernLow
