@@ -1,6 +1,4 @@
 import * as d3 from "d3";
-import powerbi from "powerbi-visuals-api";
-import ITooltipService = powerbi.extensibility.ITooltipService
 import { svgBaseType, Visual } from "../visual";
 import plotPropertiesClass from "../Classes/plotPropertiesClass";
 import { plotData } from "../Classes/viewModelClass";

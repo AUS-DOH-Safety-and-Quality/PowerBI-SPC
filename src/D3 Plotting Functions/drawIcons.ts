@@ -5,6 +5,9 @@ import { svgBaseType, Visual } from "../visual";
 
 export default function drawIcons(selection: svgBaseType, visualObj: Visual) {
   selection.selectAll(".icongroup").remove()
+  if (!(visualObj.viewModel.plotProperties.displayPlot)) {
+    return;
+  }
   const draw_variation: boolean = visualObj.viewModel.inputSettings.nhs_icons.show_variation_icons;
   if (!draw_variation) {
     return;
