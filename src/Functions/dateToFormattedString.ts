@@ -35,7 +35,7 @@ const localeDateMap: Record<string, string>= {
   "en-US" : "\"locale\": \"en-US\""
 }
 
-export default broadcast_binary(
+const dateToFormattedString = broadcast_binary(
   (input_date: Date, date_settings: defaultSettingsType["dates"]): string => {
     const inpLocale: string = date_settings.date_format_locale;
     const inpDay: string = date_settings.date_format_day;
@@ -55,3 +55,5 @@ export default broadcast_binary(
     }
   }
 );
+
+export default dateToFormattedString;

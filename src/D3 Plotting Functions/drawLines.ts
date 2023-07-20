@@ -1,33 +1,32 @@
 import * as d3 from "d3";
-import viewModelClass from "../Classes/viewModelClass";
 import { lineData } from "../Classes/viewModelClass";
 import between from "../Functions/between";
 import getAesthetic from "../Functions/getAesthetic";
-import { svgBaseType } from "../visual";
+import { svgBaseType, Visual } from "../visual";
 
-export default function drawLines(selection: svgBaseType, viewModel: viewModelClass) {
+export default function drawLines(selection: svgBaseType, visualObj: Visual) {
   selection.selectAll(".linesgroup").remove()
-  if (!(viewModel.groupedLines)) {
+  if (!(visualObj.viewModel.groupedLines)) {
     return;
   }
-  const lower: number = viewModel.plotProperties.yAxis.lower;
-  const upper: number = viewModel.plotProperties.yAxis.upper;
+  const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+  const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
 
   selection
       .append('g')
       .classed("linesgroup", true)
       .selectAll(".linesgroup")
-      .data(viewModel.groupedLines)
+      .data(visualObj.viewModel.groupedLines)
       .enter()
       .append("path")
       .attr("d", d => {
         return d3.line<lineData>()
-                  .x(d => viewModel.plotProperties.xScale(d.x))
-                  .y(d => viewModel.plotProperties.yScale(d.line_value))
+                  .x(d => visualObj.viewModel.plotProperties.xScale(d.x))
+                  .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value))
                   .defined(d => d.line_value !== null && between(d.line_value, lower, upper))(d[1])
       })
       .attr("fill", "none")
-      .attr("stroke", d => getAesthetic(d[0], "lines", "colour", viewModel.inputSettings))
-      .attr("stroke-width", d => getAesthetic(d[0], "lines", "width", viewModel.inputSettings))
-      .attr("stroke-dasharray", d => getAesthetic(d[0], "lines", "type", viewModel.inputSettings));
+      .attr("stroke", d => getAesthetic(d[0], "lines", "colour", visualObj.viewModel.inputSettings))
+      .attr("stroke-width", d => getAesthetic(d[0], "lines", "width", visualObj.viewModel.inputSettings))
+      .attr("stroke-dasharray", d => getAesthetic(d[0], "lines", "type", visualObj.viewModel.inputSettings));
 }
