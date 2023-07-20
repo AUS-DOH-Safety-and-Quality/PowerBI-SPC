@@ -1,7 +1,7 @@
 import broadcast_binary from "./BinaryFunctions"
 export type truncateInputs = { lower?: number, upper?: number };
 
-export default broadcast_binary(
+const truncate = broadcast_binary(
   (val: number, limits: truncateInputs): number => {
     let rtn: number = val;
     if (limits.lower || limits.lower == 0) {
@@ -12,4 +12,6 @@ export default broadcast_binary(
     }
     return rtn;
   }
-);
+)
+
+export default truncate;

@@ -1,37 +1,36 @@
 import * as d3 from "d3";
-import viewModelClass from "../Classes/viewModelClass";
 import { axisProperties } from "../Classes/plotPropertiesClass";
-import {abs} from "../Functions/UnaryFunctions";
-import { svgBaseType } from "../visual";
+import { abs } from "../Functions/UnaryFunctions";
+import { svgBaseType, Visual } from "../visual";
 
-export default function drawXAxis(selection: svgBaseType, viewModel: viewModelClass, refresh?: boolean) {
+export default function drawXAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
   selection.selectAll(".xaxisgroup").remove()
   selection.selectAll(".xaxislabel").remove()
-  if (!(viewModel.plotProperties.displayPlot)) {
+  if (!(visualObj.viewModel.plotProperties.displayPlot)) {
     return;
   }
 
-  const xAxisProperties: axisProperties = viewModel.plotProperties.xAxis;
+  const xAxisProperties: axisProperties = visualObj.viewModel.plotProperties.xAxis;
   let xAxis: d3.Axis<d3.NumberValue>;
 
   if (xAxisProperties.ticks) {
-    xAxis = d3.axisBottom(viewModel.plotProperties.xScale);
+    xAxis = d3.axisBottom(visualObj.viewModel.plotProperties.xScale);
     if (xAxisProperties.tick_count) {
       xAxis.ticks(xAxisProperties.tick_count)
     }
-    if (viewModel.tickLabels) {
+    if (visualObj.viewModel.tickLabels) {
       xAxis.tickFormat(d => {
-        return viewModel.tickLabels.map(d => d.x).includes(<number>d)
-          ? viewModel.tickLabels[<number>d].label
+        return visualObj.viewModel.tickLabels.map(d => d.x).includes(<number>d)
+          ? visualObj.viewModel.tickLabels[<number>d].label
           : "";
       })
     }
   } else {
-    xAxis = d3.axisBottom(viewModel.plotProperties.xScale).tickValues([]);
+    xAxis = d3.axisBottom(visualObj.viewModel.plotProperties.xScale).tickValues([]);
   }
 
-  const plotHeight: number = viewModel.plotProperties.height;
-  const xAxisHeight: number = plotHeight - viewModel.plotProperties.yAxis.start_padding;
+  const plotHeight: number = visualObj.viewModel.plotProperties.height;
+  const xAxisHeight: number = plotHeight - visualObj.viewModel.plotProperties.yAxis.start_padding;
 
   selection.append('g')
       .classed("xaxisgroup", true)
@@ -60,16 +59,14 @@ export default function drawXAxis(selection: svgBaseType, viewModel: viewModelCl
 
   if ((tickBelowPadding > 0 || tickLeftofPadding < 0)) {
     if (!refresh) {
-      const viewModelCopy: viewModelClass = new viewModelClass(viewModel);
-
       if (tickBelowPadding > 0) {
-        viewModelCopy.plotProperties.yAxis.start_padding += abs(tickBelowPadding);
+        visualObj.viewModel.plotProperties.yAxis.start_padding += abs(tickBelowPadding);
       }
       if (tickLeftofPadding < 0) {
-        viewModelCopy.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
+        visualObj.viewModel.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
       }
-      viewModelCopy.plotProperties.initialiseScale();
-      selection.call(drawXAxis, viewModelCopy, true);
+      visualObj.viewModel.plotProperties.initialiseScale();
+      selection.call(drawXAxis, visualObj, true);
       return;
     }
   }
@@ -78,7 +75,7 @@ export default function drawXAxis(selection: svgBaseType, viewModel: viewModelCl
 
   selection.append("text")
             .classed("xaxislabel", true)
-            .attr("x",viewModel.plotProperties.width / 2)
+            .attr("x",visualObj.viewModel.plotProperties.width / 2)
             .attr("y", bottomMidpoint)
             .style("text-anchor", "middle")
             .text(xAxisProperties.label)

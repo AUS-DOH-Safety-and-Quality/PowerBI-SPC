@@ -13,15 +13,15 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import viewModelClass from "./Classes/viewModelClass"
-import { plotData } from "./Classes/viewModelClass";
 import * as d3 from "d3";
-import highlight from "./D3 Plotting Functions/highlight";
+import updateHighlighting from "./D3 Plotting Functions/updateHighlighting";
 import drawXAxis from "./D3 Plotting Functions/drawXAxis";
 import drawYAxis from "./D3 Plotting Functions/drawYAxis";
 import drawTooltipLine from "./D3 Plotting Functions/drawTooltipLine";
 import drawLines from "./D3 Plotting Functions/drawLines";
 import drawDots from "./D3 Plotting Functions/drawDots";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
+import addContextMenu from "./D3 Plotting Functions/addContextMenu";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 
@@ -43,7 +43,9 @@ export class Visual implements IVisual {
     this.viewModel = new viewModelClass();
 
     this.selectionManager = this.host.createSelectionManager();
-    this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
+    this.selectionManager.registerOnSelectCallback(() => {
+      this.svg.call(updateHighlighting, this);
+    });
 
     console.log("Constructor finish")
   }
@@ -60,21 +62,19 @@ export class Visual implements IVisual {
       console.log("Draw plot")
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height)
-              .call(drawXAxis, this.viewModel)
-              .call(drawYAxis, this.viewModel)
-              .call(drawTooltipLine, this.viewModel, this.host.tooltipService)
-              .call(drawLines, this.viewModel)
+              .call(drawXAxis, this)
+              .call(drawYAxis, this)
+              .call(drawTooltipLine, this)
+              .call(drawLines, this)
               .call(drawDots, this)
-              .call(drawIcons, this.viewModel)
+              .call(drawIcons, this)
+              .call(updateHighlighting, this)
+              .call(addContextMenu, this)
 
-      if (this.viewModel.plotProperties.displayPlot) {
-        this.addContextMenu()
-        this.updateHighlighting()
-      }
-
-      this.events.renderingFinished(options);
       console.log("Update finished")
       console.log(this.viewModel)
+
+      this.events.renderingFinished(options);
     } catch (caught_error) {
       console.error(caught_error)
       this.events.renderingFailed(options);
@@ -84,21 +84,5 @@ export class Visual implements IVisual {
   // Function to render the properties specified in capabilities.json to the properties pane
   public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
     return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
-  }
-
-  addContextMenu(): void {
-    this.svg.on('contextmenu', (event) => {
-      const eventTarget: EventTarget = event.target;
-      const dataPoint: plotData = <plotData>(d3.select(<d3.BaseType>eventTarget).datum());
-      this.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
-        x: event.clientX,
-        y: event.clientY
-      });
-      event.preventDefault();
-    });
-  }
-
-  updateHighlighting() {
-    this.svg.call(highlight, this.viewModel, this.selectionManager.getSelectionIds())
   }
 }

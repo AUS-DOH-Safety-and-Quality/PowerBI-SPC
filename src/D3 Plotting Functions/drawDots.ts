@@ -1,6 +1,7 @@
 import { plotData } from "../Classes/viewModelClass";
 import between from "../Functions/between";
 import { svgBaseType, Visual } from "../visual";
+import updateHighlighting from "./updateHighlighting";
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
   selection.selectAll(".dotsgroup").remove()
@@ -50,7 +51,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
                 //   PowerBI based on all selected dots
                 .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
-                .then(() => { visualObj.updateHighlighting(); });
+                .then(() => { selection.call(updateHighlighting, visualObj); });
           }
           event.stopPropagation();
         })
@@ -78,6 +79,6 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
 
     selection.on('click', () => {
       visualObj.selectionManager.clear();
-      visualObj.updateHighlighting()
+      selection.call(updateHighlighting, visualObj);
     });
 }

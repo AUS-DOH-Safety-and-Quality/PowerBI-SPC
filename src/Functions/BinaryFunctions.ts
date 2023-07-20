@@ -28,4 +28,7 @@ export const pow = broadcast_binary((x: number, y: number): number => (x >= 0.0)
 export const add = broadcast_binary((x: number, y: number): number => x + y);
 export const subtract = broadcast_binary((x: number, y: number): number => x - y);
 export const divide = broadcast_binary((x: number, y: number): number => x / y);
-export const multiply = broadcast_binary((x: number, y: number): number => x * y);
+export const multiply = broadcast_binary(
+  (x: number, y: number): number => {
+    return (x === null || y === null) ? null : (x * y);
+});
