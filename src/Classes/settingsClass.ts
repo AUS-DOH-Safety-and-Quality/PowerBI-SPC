@@ -1,12 +1,12 @@
 import powerbi from "powerbi-visuals-api";
 import DataViewPropertyValue = powerbi.DataViewPropertyValue
-import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
+import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractSetting from "../Functions/extractSetting";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import defaultSettings from "../defaultSettings"
-import { defaultSettingsType, defaultSettingsKey } from "../defaultSettings";
+import { defaultSettingsType, defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
 
 /**
  * This is the core class which controls the initialisation and
@@ -60,20 +60,49 @@ export default class settingsClass implements defaultSettingsType {
    * @param inputData
    * @returns An object where each element is the value for a given setting in the named group
    */
-  createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumeration {
+  createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumerationObject {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
-    const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
-      settingNames.map(settingName => {
-        const settingValue: DataViewPropertyValue = this[settingGroupName][settingName]
-        return [settingName, settingValue]
+    if (Object.keys(settingsPaneGroupings).includes(settingGroupName)) {
+      let rtnInstances = new Array<powerbi.VisualObjectInstance>;
+      let rtnContainers = new Array<powerbi.VisualObjectInstanceContainer>;
+      let paneGroupNames: string[] = Object.keys(settingsPaneGroupings[settingGroupName]);
+      paneGroupNames.forEach((paneGroup, idx) => {
+        let props = Object.fromEntries(
+          (settingsPaneGroupings[settingGroupName][paneGroup]).map(currSetting => {
+          const settingValue: DataViewPropertyValue = this[settingGroupName][currSetting]
+          return [currSetting, settingValue]
+        }));
+        rtnInstances.push({
+          objectName: settingGroupName,
+          containerIdx: idx,
+          properties: props,
+          propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+          selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
+        })
+        rtnContainers.push({
+          displayName: paneGroupNames[idx]
+        })
       })
-    )
-    return [{
-      objectName: settingGroupName,
-      properties: properties,
-      propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
-      selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
-    }];
+      return {
+        instances: rtnInstances,
+        containers: rtnContainers
+      };
+    } else {
+      const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
+        settingNames.map(settingName => {
+          const settingValue: DataViewPropertyValue = this[settingGroupName][settingName]
+          return [settingName, settingValue]
+        })
+      )
+      return {
+        instances: [{
+                      objectName: settingGroupName,
+                      properties: properties,
+                      propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+                      selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
+                    }]
+      };
+    }
   }
 
   constructor() {
