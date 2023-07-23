@@ -62,47 +62,32 @@ export default class settingsClass implements defaultSettingsType {
    */
   createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumerationObject {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
-    if (Object.keys(settingsPaneGroupings).includes(settingGroupName)) {
-      let rtnInstances = new Array<powerbi.VisualObjectInstance>;
-      let rtnContainers = new Array<powerbi.VisualObjectInstanceContainer>;
-      let paneGroupNames: string[] = Object.keys(settingsPaneGroupings[settingGroupName]);
-      paneGroupNames.forEach((paneGroup, idx) => {
-        let props = Object.fromEntries(
-          (settingsPaneGroupings[settingGroupName][paneGroup]).map(currSetting => {
-          const settingValue: DataViewPropertyValue = this[settingGroupName][currSetting]
-          return [currSetting, settingValue]
-        }));
-        rtnInstances.push({
-          objectName: settingGroupName,
-          containerIdx: idx,
-          properties: props,
-          propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
-          selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
-        })
-        rtnContainers.push({
-          displayName: paneGroupNames[idx]
-        })
+    const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
+    const paneGroupings: Record<string, string[]> = settingsGrouped ? settingsPaneGroupings[settingGroupName] : { "all": settingNames };
+    let rtnInstances = new Array<powerbi.VisualObjectInstance>;
+    let rtnContainers = new Array<powerbi.VisualObjectInstanceContainer>;
+
+    Object.keys(paneGroupings).forEach((currKey, idx) => {
+      let props = Object.fromEntries(
+        (paneGroupings[currKey]).map(currSetting => {
+        const settingValue: DataViewPropertyValue = this[settingGroupName][currSetting]
+        return [currSetting, settingValue]
+      }));
+
+      rtnInstances.push({
+        objectName: settingGroupName,
+        properties: props,
+        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+        selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
       })
-      return {
-        instances: rtnInstances,
-        containers: rtnContainers
-      };
-    } else {
-      const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
-        settingNames.map(settingName => {
-          const settingValue: DataViewPropertyValue = this[settingGroupName][settingName]
-          return [settingName, settingValue]
-        })
-      )
-      return {
-        instances: [{
-                      objectName: settingGroupName,
-                      properties: properties,
-                      propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
-                      selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
-                    }]
-      };
-    }
+
+      if (currKey !== "all") {
+        rtnInstances[idx].containerIdx = idx
+        rtnContainers.push({ displayName: currKey })
+      }
+    });
+
+    return { instances: rtnInstances, containers: rtnContainers };
   }
 
   constructor() {
