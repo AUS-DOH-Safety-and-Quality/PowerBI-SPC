@@ -1,7 +1,12 @@
 import powerbi from "powerbi-visuals-api";
+import DataView = powerbi.DataView;
+import DataViewObjects = powerbi.DataViewObjects;
+import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewPropertyValue = powerbi.DataViewPropertyValue
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
+import VisualObjectInstance = powerbi.VisualObjectInstance;
+import VisualObjectInstanceContainer = powerbi.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractSetting from "../Functions/extractSetting";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
@@ -32,13 +37,13 @@ export default class settingsClass implements defaultSettingsType {
    *
    * @param inputObjects
    */
-  update(inputView: powerbi.DataView): void {
-    const inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
+  update(inputView: DataView): void {
+    const inputObjects: DataViewObjects = inputView.metadata.objects;
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
-      const categoricalView: powerbi.DataViewCategorical = inputView.categorical ? inputView.categorical : null;
+      const categoricalView: DataViewCategorical = inputView.categorical ? inputView.categorical : null;
       const condFormatting: defaultSettingsType[defaultSettingsKey] = extractConditionalFormatting(categoricalView, settingGroup, this)[0];
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
@@ -64,8 +69,8 @@ export default class settingsClass implements defaultSettingsType {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
     const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
     const paneGroupings: Record<string, string[]> = settingsGrouped ? settingsPaneGroupings[settingGroupName] : { "all": settingNames };
-    let rtnInstances = new Array<powerbi.VisualObjectInstance>;
-    let rtnContainers = new Array<powerbi.VisualObjectInstanceContainer>;
+    let rtnInstances = new Array<VisualObjectInstance>;
+    let rtnContainers = new Array<VisualObjectInstanceContainer>;
 
     Object.keys(paneGroupings).forEach((currKey, idx) => {
       let props = Object.fromEntries(
