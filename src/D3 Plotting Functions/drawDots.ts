@@ -4,25 +4,18 @@ import { svgBaseType, Visual } from "../visual";
 import updateHighlighting from "./updateHighlighting";
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
-  selection.selectAll(".dotsgroup").remove()
-  if (!(visualObj.viewModel.plotProperties.displayPlot)) {
-    return;
-  }
-  const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-  const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-
   selection
-      .append('g')
-      .classed("dotsgroup", true)
-      .selectAll(".dotsgroup")
+      .select(".dotsgroup")
+      .selectAll("circle")
       .data(visualObj.viewModel.plotPoints)
-      .enter()
-      .append("circle")
+      .join("circle")
       .filter((d: plotData) => d.value !== null)
       .attr("cy", (d: plotData) => visualObj.viewModel.plotProperties.yScale(d.value))
       .attr("cx", (d: plotData) => visualObj.viewModel.plotProperties.xScale(d.x))
       .attr("r", (d: plotData) => d.aesthetics.size)
       .style("fill", (d: plotData) => {
+        const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+        const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
         return between(d.value, lower, upper) ? d.aesthetics.colour : "#FFFFFF";
       })
       .on("click", (event, d: plotData) => {

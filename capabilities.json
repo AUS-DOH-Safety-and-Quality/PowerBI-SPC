@@ -20,7 +20,7 @@
       "kind": "Measure"
     },
     {
-      "displayName": "ID Key (Date or ID for xbar/s)",
+      "displayName": "ID Key (Date)",
       "name": "key",
       "kind": "Grouping"
     },
@@ -735,5 +735,12 @@
         ]
       }
     }
-  }]
+  }],
+  "tooltips": {
+    "supportedTypes": {
+      "default": true,
+      "canvas": true
+    },
+    "roles": [ "tooltips" ]
+  }
 }

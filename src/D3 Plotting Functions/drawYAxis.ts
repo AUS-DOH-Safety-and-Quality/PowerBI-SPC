@@ -5,39 +5,35 @@ import drawXAxis from "./drawXAxis";
 import { svgBaseType, Visual } from "../visual";
 
 export default function drawYAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
-  selection.selectAll(".yaxisgroup").remove()
-  selection.selectAll(".yaxislabel").remove()
-  if (!(visualObj.viewModel.plotProperties.displayPlot)) {
-    return;
-  }
-
   const yAxisProperties: axisProperties = visualObj.viewModel.plotProperties.yAxis;
   let yAxis: d3.Axis<d3.NumberValue>;
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.y_axis.ylimit_sig_figs;
   const sig_figs: number = yaxis_sig_figs === null ? visualObj.viewModel.inputSettings.spc.sig_figs : yaxis_sig_figs;
   const multiplier: number = visualObj.viewModel.inputSettings.spc.multiplier;
+  let displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
 
   if (yAxisProperties.ticks) {
     yAxis = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
     if (yAxisProperties.tick_count) {
       yAxis.ticks(yAxisProperties.tick_count)
     }
-    yAxis.tickFormat(
-      (d: number) => {
-        return visualObj.viewModel.inputData.percentLabels
-          ? (d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
-          : d.toFixed(sig_figs);
-      }
-    );
+    if (visualObj.viewModel.inputData) {
+      yAxis.tickFormat(
+        (d: number) => {
+          return visualObj.viewModel.inputData.percentLabels
+            ? (d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
+            : d.toFixed(sig_figs);
+        }
+      );
+    }
   } else {
     yAxis = d3.axisLeft(visualObj.viewModel.plotProperties.yScale).tickValues([]);
   }
+  const yAxisGroup = selection.select(".yaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
 
-  selection
-      .append('g')
-      .classed("yaxisgroup", true)
+  yAxisGroup
       .call(yAxis)
-      .attr("color", yAxisProperties.colour)
+      .attr("color", displayPlot ? yAxisProperties.colour : "#FFFFFF")
       .attr("transform", `translate(${visualObj.viewModel.plotProperties.xAxis.start_padding}, 0)`)
       .selectAll(".tick text")
       // Right-align
@@ -47,7 +43,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
       // Scale font
       .style("font-size", yAxisProperties.tick_size)
       .style("font-family", yAxisProperties.tick_font)
-      .style("fill", yAxisProperties.tick_colour);
+      .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
   const currNode: SVGGElement = selection.selectAll(".yaxisgroup").selectAll(".tick text").node() as SVGGElement;
   const yAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
@@ -67,9 +63,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
   const leftMidpoint: number = yAxisCoordinates.x * 0.7;
   const y: number = visualObj.viewModel.plotProperties.height / 2;
 
-  selection
-      .append("text")
-      .classed("yaxislabel", true)
+  selection.select(".yaxislabel")
       .attr("x",leftMidpoint)
       .attr("y", y)
       .attr("transform",`rotate(-90, ${leftMidpoint}, ${y})`)
@@ -77,5 +71,5 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
       .style("text-anchor", "middle")
       .style("font-size", yAxisProperties.label_size)
       .style("font-family", yAxisProperties.label_font)
-      .style("fill", yAxisProperties.label_colour);
+      .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
 }

@@ -5,21 +5,14 @@ import getAesthetic from "../Functions/getAesthetic";
 import { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {
-  selection.selectAll(".linesgroup").remove()
-  if (!(visualObj.viewModel.groupedLines)) {
-    return;
-  }
-  const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-  const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-
   selection
-      .append('g')
-      .classed("linesgroup", true)
-      .selectAll(".linesgroup")
+      .select(".linesgroup")
+      .selectAll("path")
       .data(visualObj.viewModel.groupedLines)
-      .enter()
-      .append("path")
+      .join("path")
       .attr("d", d => {
+        const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+        const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
         return d3.line<lineData>()
                   .x(d => visualObj.viewModel.plotProperties.xScale(d.x))
                   .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value))

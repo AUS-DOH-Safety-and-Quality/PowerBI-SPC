@@ -47,6 +47,14 @@ export class Visual implements IVisual {
       this.svg.call(updateHighlighting, this);
     });
 
+    this.svg.append('g').classed("dotsgroup", true)
+    this.svg.append('g').classed("linesgroup", true)
+    this.svg.append('g').classed("ttip-line", true)
+    this.svg.append('g').classed("xaxisgroup", true)
+    this.svg.append('text').classed("xaxislabel", true)
+    this.svg.append('g').classed("yaxisgroup", true)
+    this.svg.append('text').classed("yaxislabel", true)
+
     console.log("Constructor finish")
   }
 
@@ -74,6 +82,7 @@ export class Visual implements IVisual {
       console.log("Update finished")
       console.log(this.viewModel)
 
+      console.log(this.svg)
       this.events.renderingFinished(options);
     } catch (caught_error) {
       console.error(caught_error)
