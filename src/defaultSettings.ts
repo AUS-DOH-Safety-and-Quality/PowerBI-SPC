@@ -110,11 +110,35 @@ const defaultSettings = {
     date_format_delim: "/",
     date_format_locale: "en-GB"
   }
+};
+
+export type defaultSettingsType = typeof defaultSettings;
+export type defaultSettingsKey = keyof defaultSettingsType;
+export type settingsScalarTypes = number | string | boolean;
+
+export const settingsPaneGroupings = {
+  outliers: {
+    "Astronomical Points": ["process_flag_type", "improvement_direction", "astronomical", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
+    "Shifts": ["process_flag_type", "improvement_direction", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
+    "Trends": ["process_flag_type", "improvement_direction", "trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
+    "Two-In-Three": ["process_flag_type", "improvement_direction", "two_in_three", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
+  },
+  lines: {
+    "Main": ["width_main", "type_main", "colour_main"],
+    "Target(s)": ["width_target", "type_target", "colour_target", "width_alt_target", "type_alt_target", "colour_alt_target"],
+    "95% Limits": ["width_95", "type_95", "colour_95"],
+    "99% Limits": ["width_99", "type_99", "colour_99"]
+  },
+  x_axis: {
+    "Axis": ["xlimit_colour", "xlimit_l", "xlimit_u"],
+    "Ticks": ["xlimit_ticks", "xlimit_tick_count", "xlimit_tick_font", "xlimit_tick_size", "xlimit_tick_colour", "xlimit_tick_rotation"],
+    "Label": ["xlimit_label", "xlimit_label_font", "xlimit_label_size", "xlimit_label_colour"]
+  },
+  y_axis: {
+    "Axis": ["ylimit_colour", "limit_multiplier", "ylimit_sig_figs", "ylimit_l", "ylimit_u"],
+    "Ticks": ["ylimit_ticks", "ylimit_tick_count", "ylimit_tick_font", "ylimit_tick_size", "ylimit_tick_colour", "ylimit_tick_rotation"],
+    "Label": ["ylimit_label", "ylimit_label_font", "ylimit_label_size", "ylimit_label_colour"]
+  }
 }
 
-type defaultSettingsType = typeof defaultSettings;
-type defaultSettingsKey = keyof defaultSettingsType;
-type settingsScalarTypes = number | string | boolean
-
-export { defaultSettingsType, defaultSettingsKey, settingsScalarTypes }
 export default defaultSettings;

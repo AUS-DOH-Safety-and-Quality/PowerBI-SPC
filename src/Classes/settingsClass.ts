@@ -1,12 +1,17 @@
 import powerbi from "powerbi-visuals-api";
+import DataView = powerbi.DataView;
+import DataViewObjects = powerbi.DataViewObjects;
+import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewPropertyValue = powerbi.DataViewPropertyValue
-import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
+import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
+import VisualObjectInstance = powerbi.VisualObjectInstance;
+import VisualObjectInstanceContainer = powerbi.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractSetting from "../Functions/extractSetting";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import defaultSettings from "../defaultSettings"
-import { defaultSettingsType, defaultSettingsKey } from "../defaultSettings";
+import { defaultSettingsType, defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
 
 /**
  * This is the core class which controls the initialisation and
@@ -32,13 +37,13 @@ export default class settingsClass implements defaultSettingsType {
    *
    * @param inputObjects
    */
-  update(inputView: powerbi.DataView): void {
-    const inputObjects: powerbi.DataViewObjects = inputView.metadata.objects;
+  update(inputView: DataView): void {
+    const inputObjects: DataViewObjects = inputView.metadata.objects;
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
 
     allSettingGroups.forEach(settingGroup => {
-      const categoricalView: powerbi.DataViewCategorical = inputView.categorical ? inputView.categorical : null;
+      const categoricalView: DataViewCategorical = inputView.categorical ? inputView.categorical : null;
       const condFormatting: defaultSettingsType[defaultSettingsKey] = extractConditionalFormatting(categoricalView, settingGroup, this)[0];
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
@@ -60,20 +65,34 @@ export default class settingsClass implements defaultSettingsType {
    * @param inputData
    * @returns An object where each element is the value for a given setting in the named group
    */
-  createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumeration {
+  createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumerationObject {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
-    const properties: Record<string, DataViewPropertyValue> = Object.fromEntries(
-      settingNames.map(settingName => {
-        const settingValue: DataViewPropertyValue = this[settingGroupName][settingName]
-        return [settingName, settingValue]
+    const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
+    const paneGroupings: Record<string, string[]> = settingsGrouped ? settingsPaneGroupings[settingGroupName] : { "all": settingNames };
+    let rtnInstances = new Array<VisualObjectInstance>;
+    let rtnContainers = new Array<VisualObjectInstanceContainer>;
+
+    Object.keys(paneGroupings).forEach((currKey, idx) => {
+      let props = Object.fromEntries(
+        (paneGroupings[currKey]).map(currSetting => {
+        const settingValue: DataViewPropertyValue = this[settingGroupName][currSetting]
+        return [currSetting, settingValue]
+      }));
+
+      rtnInstances.push({
+        objectName: settingGroupName,
+        properties: props,
+        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+        selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
       })
-    )
-    return [{
-      objectName: settingGroupName,
-      properties: properties,
-      propertyInstanceKind: Object.fromEntries(settingNames.map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
-      selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
-    }];
+
+      if (currKey !== "all") {
+        rtnInstances[idx].containerIdx = idx
+        rtnContainers.push({ displayName: currKey })
+      }
+    });
+
+    return { instances: rtnInstances, containers: rtnContainers };
   }
 
   constructor() {
