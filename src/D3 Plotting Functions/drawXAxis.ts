@@ -4,12 +4,6 @@ import { abs } from "../Functions/UnaryFunctions";
 import { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
-  selection.selectAll(".xaxisgroup").remove()
-  selection.selectAll(".xaxislabel").remove()
-  if (!(visualObj.viewModel.plotProperties.displayPlot)) {
-    return;
-  }
-
   const xAxisProperties: axisProperties = visualObj.viewModel.plotProperties.xAxis;
   let xAxis: d3.Axis<d3.NumberValue>;
 
@@ -31,11 +25,12 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
 
   const plotHeight: number = visualObj.viewModel.plotProperties.height;
   const xAxisHeight: number = plotHeight - visualObj.viewModel.plotProperties.yAxis.start_padding;
+  let displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
+  const xAxisGroup = selection.select(".xaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
 
-  selection.append('g')
-      .classed("xaxisgroup", true)
+  xAxisGroup
       .call(xAxis)
-      .attr("color", xAxisProperties.colour)
+      .attr("color", displayPlot ? xAxisProperties.colour : "#FFFFFF")
       // Plots the axis at the correct height
       .attr("transform", `translate(0, ${xAxisHeight})`)
       .selectAll(".tick text")
@@ -48,7 +43,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
       // Scale font
       .style("font-size", xAxisProperties.tick_size)
       .style("font-family", xAxisProperties.tick_font)
-      .style("fill", xAxisProperties.tick_colour);
+      .style("fill", displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
   const axisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
   const xAxisCoordinates: DOMRect = axisNode.getBoundingClientRect() as DOMRect;
@@ -73,13 +68,12 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
 
   const bottomMidpoint: number = plotHeight - ((plotHeight - xAxisCoordinates.bottom) / 2);
 
-  selection.append("text")
-            .classed("xaxislabel", true)
+  selection.select(".xaxislabel")
             .attr("x",visualObj.viewModel.plotProperties.width / 2)
             .attr("y", bottomMidpoint)
             .style("text-anchor", "middle")
             .text(xAxisProperties.label)
             .style("font-size", xAxisProperties.label_size)
             .style("font-family", xAxisProperties.label_font)
-            .style("fill", xAxisProperties.label_colour);
+            .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
 }
