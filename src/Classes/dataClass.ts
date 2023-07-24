@@ -23,12 +23,12 @@ export default class dataClass {
   tooltips: VisualTooltipDataItem[][];
 
   constructor(inputView: DataViewCategorical, inputSettings: settingsClass) {
-    const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
-    const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
-    const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
+    const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings);
+    const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings);
+    const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings);
     const keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
     const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings);
-    const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips");
+    const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
 
     const valid_ids: number[] = new Array<number>();
     const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();

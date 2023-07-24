@@ -10,7 +10,7 @@ type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][]
 
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
-                                              inputSettings?: settingsClass): T {
+                                              inputSettings: settingsClass): T {
   let columnRaw: DataViewValueColumn;
   if (name === "key") {
     const columnRawTmp: DataViewValueColumn[] = (inputView.categories as DataViewCategoryColumn[]).filter(viewColumn => {
@@ -42,7 +42,11 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
         return tooltipColumns.map(viewColumn => {
           return <VisualTooltipDataItem>{
             displayName: viewColumn.source.displayName,
-            value: viewColumn.source.type.numeric ? (<number>(viewColumn.values[idx])).toString() : <string>(viewColumn.values[idx])
+            value: viewColumn.source.type.numeric
+                    ? (<number>(viewColumn.values[idx])).toString()
+                    : viewColumn.source.type.dateTime
+                      ? dateToFormattedString(<Date>(viewColumn.values[idx]), inputSettings.dates)
+                      : <string>(viewColumn.values[idx])
           }
         })
       })
