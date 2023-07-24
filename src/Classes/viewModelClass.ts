@@ -65,8 +65,8 @@ export default class viewModelClass {
       this.inputData = <dataClass>null;
       this.limitFunction = null;
       this.controlLimits = null;
-      this.plotPoints = new Array<plotData>;
-      this.groupedLines = new Array<[string, lineData[]]>;
+      this.plotPoints = new Array<plotData>();
+      this.groupedLines = new Array<[string, lineData[]]>();
       this.splitIndexes = new Array<number>();
     } else {
 
@@ -81,10 +81,6 @@ export default class viewModelClass {
 
         // Use initialised chartObject to calculate control limits
         this.calculateLimits();
-        this.controlLimits.scaleLimits(this.inputSettings);
-        this.controlLimits.truncateLimits(this.inputSettings);
-        this.controlLimits.flagOutliers(this.inputSettings)
-        console.log("calculatedLimits: ", this.controlLimits)
 
         // Structure the data and calculated limits to the format needed for plotting
         this.initialisePlotData(args.host);
@@ -212,8 +208,8 @@ export default class viewModelClass {
     this.inputSettings = <settingsClass>null;
     this.limitFunction = null;
     this.controlLimits = null;
-    this.plotPoints = new Array<plotData>;
-    this.groupedLines = <[string, lineData[]][]>null;
+    this.plotPoints = new Array<plotData>();
+    this.groupedLines = new Array<[string, lineData[]]>();
     this.plotProperties = <plotPropertiesClass>null;
     this.firstRun = true
     this.splitIndexes = new Array<number>();

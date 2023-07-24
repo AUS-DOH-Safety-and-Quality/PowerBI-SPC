@@ -18,6 +18,7 @@ export default function mrLimits(args: LimitArgs): controlLimitsClass {
   const cl: number = d3.mean(consec_diff);
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: consec_diff,
     numerators: useRatio ? inputData.numerators : null,

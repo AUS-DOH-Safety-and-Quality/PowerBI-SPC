@@ -11,6 +11,7 @@ export default function gLimits(args: LimitArgs): controlLimitsClass {
   const sigma: number = sqrt(cl * (cl + 1));
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: inputData.numerators,
     targets: rep(d3.median(inputData.numerators), inputData.keys.length),

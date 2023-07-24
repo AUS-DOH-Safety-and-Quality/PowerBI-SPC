@@ -25,6 +25,7 @@ export default function sLimits(args: LimitArgs): controlLimitsClass {
   const B495: number[] = b4(count_per_group, true);
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: group_sd,
     targets: rep(cl, inputData.keys.length),

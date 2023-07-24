@@ -3,13 +3,14 @@ import DataViewValueColumn = powerbi.DataViewValueColumn;
 import DataViewValueColumns = powerbi.DataViewValueColumns;
 import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
+import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import settingsClass from "../Classes/settingsClass";
 import dateToFormattedString from "./dateToFormattedString";
-type TargetT = number[] | string[] | number | string;
+type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
-                                              inputSettings?: settingsClass): T {
+                                              inputSettings: settingsClass): T {
   let columnRaw: DataViewValueColumn;
   if (name === "key") {
     const columnRawTmp: DataViewValueColumn[] = (inputView.categories as DataViewCategoryColumn[]).filter(viewColumn => {
@@ -33,6 +34,24 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     } else {
       return <string[]>columnRaw.values as Extract<T, string[]>;
     }
+  } else if (name === "tooltips") {
+    let rtn = new Array<VisualTooltipDataItem[]>();
+    const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
+    if (tooltipColumns.length > 0) {
+      rtn = tooltipColumns[0].values.map((tooltipVal, idx) => {
+        return tooltipColumns.map(viewColumn => {
+          return <VisualTooltipDataItem>{
+            displayName: viewColumn.source.displayName,
+            value: viewColumn.source.type.numeric
+                    ? (<number>(viewColumn.values[idx])).toString()
+                    : viewColumn.source.type.dateTime
+                      ? dateToFormattedString(<Date>(viewColumn.values[idx]), inputSettings.dates)
+                      : <string>(viewColumn.values[idx])
+          }
+        })
+      })
+    }
+    return rtn as Extract<T, VisualTooltipDataItem[][]>;
   } else {
     columnRaw = (inputView.values as DataViewValueColumns).filter(viewColumn => {
       return viewColumn.source.roles ? viewColumn.source.roles[name] : false;

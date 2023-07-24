@@ -31,6 +31,7 @@ export default function xbarLimits(args: LimitArgs): controlLimitsClass {
   const A3: number[] = a3(count_per_group);
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: group_means,
     targets: rep(cl, inputData.keys.length),

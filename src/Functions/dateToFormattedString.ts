@@ -37,6 +37,9 @@ const localeDateMap: Record<string, string>= {
 
 const dateToFormattedString = broadcast_binary(
   (input_date: Date, date_settings: defaultSettingsType["dates"]): string => {
+    if (typeof input_date === "string") {
+      input_date = new Date(input_date)
+    }
     const inpLocale: string = date_settings.date_format_locale;
     const inpDay: string = date_settings.date_format_day;
     const inpMonth: string = date_settings.date_format_month;

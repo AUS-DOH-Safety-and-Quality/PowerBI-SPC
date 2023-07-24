@@ -34,9 +34,6 @@ export class Visual implements IVisual {
   events: IVisualEventService;
 
   constructor(options: VisualConstructorOptions) {
-    console.log("Constructor start")
-    console.log(options)
-
     this.svg = d3.select(options.element).append("svg");
     this.events = options.host.eventService;
     this.host = options.host;
@@ -54,20 +51,13 @@ export class Visual implements IVisual {
     this.svg.append('text').classed("xaxislabel", true)
     this.svg.append('g').classed("yaxisgroup", true)
     this.svg.append('text').classed("yaxislabel", true)
-
-    console.log("Constructor finish")
   }
 
   public update(options: VisualUpdateOptions) {
-    console.log("Update start")
     try {
       this.events.renderingStarted(options);
-      console.log(options)
 
-      console.log("viewModel start")
       this.viewModel.update({ options: options, host: this.host });
-
-      console.log("Draw plot")
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height)
               .call(drawXAxis, this)
@@ -79,10 +69,6 @@ export class Visual implements IVisual {
               .call(updateHighlighting, this)
               .call(addContextMenu, this)
 
-      console.log("Update finished")
-      console.log(this.viewModel)
-
-      console.log(this.svg)
       this.events.renderingFinished(options);
     } catch (caught_error) {
       console.error(caught_error)

@@ -69,11 +69,11 @@ export default class settingsClass implements defaultSettingsType {
     const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
     const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
     const paneGroupings: Record<string, string[]> = settingsGrouped ? settingsPaneGroupings[settingGroupName] : { "all": settingNames };
-    let rtnInstances = new Array<VisualObjectInstance>;
-    let rtnContainers = new Array<VisualObjectInstanceContainer>;
+    const rtnInstances = new Array<VisualObjectInstance>();
+    const rtnContainers = new Array<VisualObjectInstanceContainer>();
 
     Object.keys(paneGroupings).forEach((currKey, idx) => {
-      let props = Object.fromEntries(
+      const props = Object.fromEntries(
         (paneGroupings[currKey]).map(currSetting => {
         const settingValue: DataViewPropertyValue = this[settingGroupName][currSetting]
         return [currSetting, settingValue]
