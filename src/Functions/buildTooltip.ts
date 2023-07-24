@@ -106,5 +106,9 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
     })
   }
 
+  if (inputData.tooltips.length > 0) {
+    inputData.tooltips[index].forEach(customTooltip => tooltip.push(customTooltip))
+  }
+
   return tooltip;
 }

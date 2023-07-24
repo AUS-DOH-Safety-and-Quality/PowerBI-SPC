@@ -28,6 +28,11 @@
       "displayName": "SD (for xbar)",
       "name": "xbar_sds",
       "kind": "Measure"
+    },
+    {
+      "displayName": "Tooltips",
+      "name": "tooltips",
+      "kind": "Measure"
     }
   ],
   "objects": {
@@ -731,7 +736,8 @@
         "select": [
           { "bind": { "to": "numerators" } },
           { "bind": { "to": "denominators" } },
-          { "bind": { "to": "xbar_sds" } }
+          { "bind": { "to": "xbar_sds" } },
+          { "bind": { "to": "tooltips" } }
         ]
       }
     }

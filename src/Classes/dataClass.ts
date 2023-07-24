@@ -2,6 +2,7 @@ import powerbi from "powerbi-visuals-api"
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import PrimitiveValue = powerbi.PrimitiveValue;
 import DataViewCategorical = powerbi.DataViewCategorical;
+import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import extractDataColumn from "../Functions/extractDataColumn"
 import settingsClass from "./settingsClass"
 import checkValidInput from "../Functions/checkValidInput"
@@ -19,13 +20,15 @@ export default class dataClass {
   percentLabels: boolean;
   categories: DataViewCategoryColumn;
   scatter_formatting: defaultSettingsType["scatter"][];
+  tooltips: VisualTooltipDataItem[][];
 
   constructor(inputView: DataViewCategorical, inputSettings: settingsClass) {
     const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators");
     const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators");
     const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds");
     const keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
-    const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings)
+    const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings);
+    const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips");
 
     const valid_ids: number[] = new Array<number>();
     const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
@@ -52,6 +55,7 @@ export default class dataClass {
     this.numerators = extractValues(numerators, valid_ids);
     this.denominators = extractValues(denominators, valid_ids);
     this.xbar_sds = extractValues(xbar_sds, valid_ids);
+    this.tooltips = extractValues(tooltips, valid_ids);
     this.highlights = inputView.values[0].highlights ? extractValues(inputView.values[0].highlights, valid_ids) : inputView.values[0].highlights;
     this.anyHighlights = this.highlights ? true : false
     this.categories = inputView.categories[0];

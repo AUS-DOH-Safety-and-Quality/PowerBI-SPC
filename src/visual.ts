@@ -57,7 +57,9 @@ export class Visual implements IVisual {
     try {
       this.events.renderingStarted(options);
 
+      console.log(options)
       this.viewModel.update({ options: options, host: this.host });
+      console.log(this.viewModel)
 
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height)
