@@ -5,14 +5,20 @@ import { plotData } from "../Classes/viewModelClass";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
   const xAxisLine = selection
-            .select(".ttip-line")
-            .selectAll("line")
-            .data([visualObj.viewModel.plotProperties.displayPlot])
-            .join("line")
+            .select(".ttip-line-x")
             .attr("x1", 0)
             .attr("x2", 0)
             .attr("y1", visualObj.viewModel.plotProperties.yAxis.end_padding)
             .attr("y2", visualObj.viewModel.plotProperties.height - visualObj.viewModel.plotProperties.yAxis.start_padding)
+            .attr("stroke-width", "1px")
+            .attr("stroke", "black")
+            .style("stroke-opacity", 0);
+  const yAxisLine = selection
+            .select(".ttip-line-y")
+            .attr("x1", visualObj.viewModel.plotProperties.xAxis.start_padding)
+            .attr("x2", visualObj.viewModel.plotProperties.width - visualObj.viewModel.plotProperties.xAxis.end_padding)
+            .attr("y1", 0)
+            .attr("y2", 0)
             .attr("stroke-width", "1px")
             .attr("stroke", "black")
             .style("stroke-opacity", 0);
@@ -36,9 +42,12 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
       coordinates: [x_coord, y_coord],
       isTouchEvent: false
     });
-    xAxisLine.style("stroke-opacity", 1)
+    xAxisLine.style("stroke-opacity", 0.4)
               .attr("x1", x_coord)
               .attr("x2", x_coord);
+    yAxisLine.style("stroke-opacity", 0.4)
+              .attr("y1", y_coord)
+              .attr("y2", y_coord);
   })
   .on("mouseleave", () => {
     if (!visualObj.viewModel.plotProperties.displayPlot) {
@@ -46,5 +55,6 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
     }
     visualObj.host.tooltipService.hide({ immediately: true, isTouchEvent: false });
     xAxisLine.style("stroke-opacity", 0);
+    yAxisLine.style("stroke-opacity", 0);
   });
 }
