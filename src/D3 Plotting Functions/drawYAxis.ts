@@ -10,7 +10,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.y_axis.ylimit_sig_figs;
   const sig_figs: number = yaxis_sig_figs === null ? visualObj.viewModel.inputSettings.spc.sig_figs : yaxis_sig_figs;
   const multiplier: number = visualObj.viewModel.inputSettings.spc.multiplier;
-  let displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
+  const displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
 
   if (yAxisProperties.ticks) {
     yAxis = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);

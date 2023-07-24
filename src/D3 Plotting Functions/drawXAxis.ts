@@ -25,7 +25,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
 
   const plotHeight: number = visualObj.viewModel.plotProperties.height;
   const xAxisHeight: number = plotHeight - visualObj.viewModel.plotProperties.yAxis.start_padding;
-  let displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
+  const displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
   const xAxisGroup = selection.select(".xaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
 
   xAxisGroup

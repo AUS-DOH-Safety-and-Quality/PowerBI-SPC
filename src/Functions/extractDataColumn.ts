@@ -35,8 +35,8 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
       return <string[]>columnRaw.values as Extract<T, string[]>;
     }
   } else if (name === "tooltips") {
-    let rtn = new Array<VisualTooltipDataItem[]>;
-    let tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
+    let rtn = new Array<VisualTooltipDataItem[]>();
+    const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
     if (tooltipColumns.length > 0) {
       rtn = tooltipColumns[0].values.map((tooltipVal, idx) => {
         return tooltipColumns.map(viewColumn => {
