@@ -10,6 +10,7 @@ export default function cLimits(args: LimitArgs): controlLimitsClass {
   const sigma: number = Math.sqrt(cl);
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: inputData.numerators,
     targets: rep(cl, inputData.keys.length),

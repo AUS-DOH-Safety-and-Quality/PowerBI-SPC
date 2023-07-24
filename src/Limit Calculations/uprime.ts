@@ -22,6 +22,7 @@ export default function uprimeLimits(args: LimitArgs): controlLimitsClass {
   const sigma: number[] = multiply(sd, d3.mean(consec_diff_valid) / 1.128);
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: val,
     numerators: inputData.numerators,

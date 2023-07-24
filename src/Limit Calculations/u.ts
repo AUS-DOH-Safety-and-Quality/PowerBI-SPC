@@ -13,6 +13,7 @@ export default function uLimits(args: LimitArgs): controlLimitsClass {
   const sigma: number[] = sqrt(divide(cl,inputData.denominators));
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: divide(inputData.numerators, inputData.denominators),
     numerators: inputData.numerators,

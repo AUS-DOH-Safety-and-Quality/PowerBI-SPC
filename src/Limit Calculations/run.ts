@@ -14,6 +14,7 @@ export default function runLimits(args: LimitArgs): controlLimits {
 
   const cl: number = d3.median(ratio);
   return new controlLimits({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
     numerators: useRatio ? inputData.numerators : <number[]>null,

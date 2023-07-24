@@ -10,6 +10,7 @@ import { truncateInputs } from "../Functions/truncate";
 import { multiply } from "../Functions/BinaryFunctions";
 
 type controlLimitsArgs = {
+  inputSettings: settingsClass,
   keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
@@ -41,17 +42,14 @@ export default class controlLimitsClass {
   two_in_three: string[];
   shift: string[];
 
-  scaleLimits(inputSettings: settingsClass): void {
+  scaleAndTruncateLimits(inputSettings: settingsClass): void {
     // Scale limits using provided multiplier
     const multiplier: number = inputSettings.spc.multiplier;
-    this.alt_targets = rep(inputSettings.spc.alt_target, this.values.length);
 
     ["values", "targets", "alt_targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
       this[limit] = multiply(this[limit], multiplier)
     })
-  }
 
-  truncateLimits(inputSettings: settingsClass): void {
     if (inputSettings.spc.chart_type === "run") {
       return;
     }
@@ -110,5 +108,8 @@ export default class controlLimitsClass {
     if (args.count || !(args.count === null || args.count === undefined)) {
       this.count = args.count;
     }
+
+    this.scaleAndTruncateLimits(args.inputSettings)
+    this.flagOutliers(args.inputSettings)
   }
 }

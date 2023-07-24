@@ -24,6 +24,7 @@ export default function iLimits(args: LimitArgs): controlLimitsClass {
   const sigma: number = d3.mean(consec_diff_valid) / 1.128;
 
   return new controlLimitsClass({
+    inputSettings: args.inputSettings,
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
     numerators: useRatio ? inputData.numerators : undefined,
