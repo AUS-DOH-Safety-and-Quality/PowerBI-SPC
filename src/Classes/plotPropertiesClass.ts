@@ -99,10 +99,18 @@ export default class plotPropertiesClass {
     const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size;
     const yTickSize: number = args.inputSettings.y_axis.ylimit_tick_size;
 
+    const leftLabelPadding: number = args.inputSettings.y_axis.ylimit_label
+                                      ? args.inputSettings.y_axis.ylimit_label_size
+                                      : 0;
+
+    const lowerLabelPadding: number = args.inputSettings.x_axis.xlimit_label
+                                      ? args.inputSettings.x_axis.xlimit_label_size
+                                      : 0;
+
     this.xAxis = {
       lower: xLowerLimit !== null ? xLowerLimit : 0,
       upper: xUpperLimit,
-      start_padding: args.inputSettings.canvas.left_padding,
+      start_padding: args.inputSettings.canvas.left_padding + leftLabelPadding,
       end_padding: args.inputSettings.canvas.right_padding,
       colour: args.inputSettings.x_axis.xlimit_colour,
       ticks: args.inputSettings.x_axis.xlimit_ticks,
@@ -120,7 +128,7 @@ export default class plotPropertiesClass {
     this.yAxis = {
       lower: yLowerLimit,
       upper: yUpperLimit,
-      start_padding: args.inputSettings.canvas.lower_padding,
+      start_padding: args.inputSettings.canvas.lower_padding + lowerLabelPadding,
       end_padding: args.inputSettings.canvas.upper_padding,
       colour: args.inputSettings.y_axis.ylimit_colour,
       ticks: args.inputSettings.y_axis.ylimit_ticks,
