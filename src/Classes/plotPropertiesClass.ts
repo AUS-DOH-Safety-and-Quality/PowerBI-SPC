@@ -6,7 +6,6 @@ import { plotData } from "./viewModelClass"
 import settingsClass from "./settingsClass";
 import dataClass from "./dataClass";
 import controlLimitsClass from "./controlLimitsClass";
-import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 export type axisProperties = {
   lower: number,
@@ -114,13 +113,13 @@ export default class plotPropertiesClass {
       end_padding: args.inputSettings.canvas.right_padding,
       colour: args.inputSettings.x_axis.xlimit_colour,
       ticks: args.inputSettings.x_axis.xlimit_ticks,
-      tick_size: pixelConverter.toString(xTickSize),
+      tick_size: `${xTickSize}px`,
       tick_font: args.inputSettings.x_axis.xlimit_tick_font,
       tick_colour: args.inputSettings.x_axis.xlimit_tick_colour,
       tick_rotation: args.inputSettings.x_axis.xlimit_tick_rotation,
       tick_count: args.inputSettings.x_axis.xlimit_tick_count,
       label: args.inputSettings.x_axis.xlimit_label,
-      label_size: pixelConverter.toString(args.inputSettings.x_axis.xlimit_label_size),
+      label_size: `${args.inputSettings.x_axis.xlimit_label_size}px`,
       label_font: args.inputSettings.x_axis.xlimit_label_font,
       label_colour: args.inputSettings.x_axis.xlimit_label_colour
     };
@@ -132,13 +131,13 @@ export default class plotPropertiesClass {
       end_padding: args.inputSettings.canvas.upper_padding,
       colour: args.inputSettings.y_axis.ylimit_colour,
       ticks: args.inputSettings.y_axis.ylimit_ticks,
-      tick_size: pixelConverter.toString(yTickSize),
+      tick_size: `${yTickSize}px`,
       tick_font: args.inputSettings.y_axis.ylimit_tick_font,
       tick_colour: args.inputSettings.y_axis.ylimit_tick_colour,
       tick_rotation: args.inputSettings.y_axis.ylimit_tick_rotation,
       tick_count: args.inputSettings.y_axis.ylimit_tick_count,
       label: args.inputSettings.y_axis.ylimit_label,
-      label_size: pixelConverter.toString(args.inputSettings.y_axis.ylimit_label_size),
+      label_size: `${args.inputSettings.y_axis.ylimit_label_size}px`,
       label_font: args.inputSettings.y_axis.ylimit_label_font,
       label_colour: args.inputSettings.y_axis.ylimit_label_colour
     };
