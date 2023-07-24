@@ -7,16 +7,10 @@
     "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@babel/runtime": "7.20.7",
-    "@babel/runtime-corejs3": "7.20.7",
     "@stdlib/math": "^0.0.11",
-    "core-js": "3.27.2",
     "d3": "^7.8.2",
-    "minimist": "^1.2.7",
     "powerbi-visuals-api": "~3.6.0",
-    "powerbi-visuals-utils-dataviewutils": "^2.2.1",
-    "powerbi-visuals-utils-typeutils": "^6.0.1",
-    "regenerator-runtime": "^0.13.11"
+    "powerbi-visuals-utils-dataviewutils": "^2.2.1"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
