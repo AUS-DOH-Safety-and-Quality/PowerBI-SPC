@@ -26,8 +26,8 @@ export default class dataClass {
     const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings);
     const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings);
     const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings);
-    const keys: string[] =  extractDataColumn<string[]>(inputView, "key", inputSettings);
-    const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings);
+    const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings);
+    const scatter_cond = extractConditionalFormatting(inputView, "scatter", inputSettings) as defaultSettingsType["scatter"][];
     const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
 
     const valid_ids: number[] = new Array<number>();
@@ -60,6 +60,6 @@ export default class dataClass {
     this.anyHighlights = this.highlights ? true : false
     this.categories = inputView.categories[0];
     this.percentLabels = percent_labels;
-    this.scatter_formatting = extractValues(scatter_cond, valid_ids)
+    this.scatter_formatting = extractValues(scatter_cond, valid_ids);
   }
 }
