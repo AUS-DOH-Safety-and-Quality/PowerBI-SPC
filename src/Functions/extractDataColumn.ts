@@ -19,8 +19,8 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
 
     // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
     if (columnRawTmp.length > 1) {
-      return columnRawTmp[columnRawTmp.length - 1].values.map((lastKeyValue: string, index) => {
-        let concatKey: string = lastKeyValue;
+      return columnRawTmp[columnRawTmp.length - 1].values.map((lastKeyValue: powerbi.PrimitiveValue, index) => {
+        let concatKey: string = <string>lastKeyValue;
         for (let i = (columnRawTmp.length - 2); i >= 0; i--) {
           concatKey += " " + columnRawTmp[i].values[index];
         }
@@ -38,7 +38,7 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     let rtn = new Array<VisualTooltipDataItem[]>();
     const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
     if (tooltipColumns.length > 0) {
-      rtn = tooltipColumns[0].values.map((tooltipVal, idx) => {
+      rtn = tooltipColumns[0].values.map((_, idx) => {
         return tooltipColumns.map(viewColumn => {
           return <VisualTooltipDataItem>{
             displayName: viewColumn.source.displayName,
