@@ -1,5 +1,5 @@
 import * as math from '@stdlib/math/base/special';
-import * as d3 from "d3";
+import * as d3 from "../D3 Plotting Functions/D3 Modules";
 
 export default function shift(val: number[], targets: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {

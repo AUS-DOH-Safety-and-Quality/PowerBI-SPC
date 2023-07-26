@@ -1,14 +1,13 @@
-import * as d3 from "d3";
+import * as d3 from "./D3 Modules";
 import { axisProperties } from "../Classes/plotPropertiesClass";
 import { abs } from "../Functions/UnaryFunctions";
 import { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
   const xAxisProperties: axisProperties = visualObj.viewModel.plotProperties.xAxis;
-  let xAxis: d3.Axis<d3.NumberValue>;
+  let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(visualObj.viewModel.plotProperties.xScale);
 
   if (xAxisProperties.ticks) {
-    xAxis = d3.axisBottom(visualObj.viewModel.plotProperties.xScale);
     if (xAxisProperties.tick_count) {
       xAxis.ticks(xAxisProperties.tick_count)
     }
@@ -20,7 +19,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
       })
     }
   } else {
-    xAxis = d3.axisBottom(visualObj.viewModel.plotProperties.xScale).tickValues([]);
+    xAxis.tickValues([]);
   }
 
   const plotHeight: number = visualObj.viewModel.plotProperties.height;

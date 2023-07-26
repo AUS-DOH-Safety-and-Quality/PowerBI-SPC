@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "./D3 Modules";
 import { lineData } from "../Classes/viewModelClass";
 import between from "../Functions/between";
 import getAesthetic from "../Functions/getAesthetic";

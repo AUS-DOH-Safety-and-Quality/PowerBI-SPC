@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import rep from "../Functions/rep";
 import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";

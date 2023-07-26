@@ -1,5 +1,5 @@
 import * as math from '@stdlib/math/base/special';
-import * as d3 from "d3";
+import * as d3 from "../D3 Plotting Functions/D3 Modules";
 
 export default function two_in_three(val: number[], ll95: number[], ul95: number[]): string[] {
   const outside95: number[] = val.map((d, i) => {

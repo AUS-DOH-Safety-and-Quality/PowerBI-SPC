@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import powerbi from "powerbi-visuals-api";
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import truncate from "../Functions/truncate";
