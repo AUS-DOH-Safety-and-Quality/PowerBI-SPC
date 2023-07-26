@@ -320,6 +320,37 @@
         "variation_icons_scaling":{
           "displayName": "Scale Variation Icon Size",
           "type": { "numeric": true }
+        },
+        "show_assurance_icons": {
+          "displayName": "Show Assurance Icons",
+          "type" : { "bool" : true }
+        },
+        "assurance_icons_locations": {
+          "displayName": "Assurance Icon Locations",
+          "type": {
+            "enumeration" : [
+              {
+                "displayName" : "Top Right",
+                "value" : "Top Right"
+              },
+              {
+                "displayName" : "Bottom Right",
+                "value" : "Bottom Right"
+              },
+              {
+                "displayName" : "Top Left",
+                "value" : "Top Left"
+              },
+              {
+                "displayName" : "Bottom Left",
+                "value" : "Bottom Left"
+              }
+            ]
+          }
+        },
+        "assurance_icons_scaling":{
+          "displayName": "Scale Assurance Icon Size",
+          "type": { "numeric": true }
         }
       }
     },

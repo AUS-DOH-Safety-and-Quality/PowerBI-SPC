@@ -76,8 +76,9 @@ export default class plotPropertiesClass {
       const values: number[] = args.controlLimits.values;
       const ul99: number[] = args.controlLimits.ul99;
       const ll99: number[] = args.controlLimits.ll99;
-      const maxValueOrLimit: number = d3.max(values.concat(ul99));
-      const minValueOrLimit: number = d3.min(values.concat(ll99));
+      const alt_targets: number[] = args.controlLimits.alt_targets;
+      const maxValueOrLimit: number = d3.max(values.concat(ul99).concat(alt_targets));
+      const minValueOrLimit: number = d3.min(values.concat(ll99).concat(alt_targets));
       const maxTarget: number = d3.max(args.controlLimits.targets);
       const minTarget: number = d3.min(args.controlLimits.targets);
 
