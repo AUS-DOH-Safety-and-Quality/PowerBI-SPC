@@ -5,10 +5,9 @@ import { sqrt } from "../Functions/UnaryFunctions"
 import { pow, subtract, add, multiply, divide } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function xbarLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function xbarLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   // Calculate number of observations in each group
   const count_per_group: number[] = inputData.denominators;
 
@@ -31,7 +30,7 @@ export default function xbarLimits(args: LimitArgs): controlLimitsClass {
   const A3: number[] = a3(count_per_group);
 
   return new controlLimitsClass({
-    inputSettings: args.inputSettings,
+    inputSettings: inputSettings,
     keys: inputData.keys,
     values: group_means,
     targets: rep(cl, inputData.keys.length),

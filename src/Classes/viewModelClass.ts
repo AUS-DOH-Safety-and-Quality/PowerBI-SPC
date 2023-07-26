@@ -34,8 +34,6 @@ export class plotData {
   tooltip: VisualTooltipDataItem[];
 }
 
-export type LimitArgs = { inputData: dataClass; inputSettings: settingsClass; }
-
 export default class viewModelClass {
   inputData: dataClass;
   inputSettings: settingsClass;
@@ -46,13 +44,13 @@ export default class viewModelClass {
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   firstRun: boolean;
-  limitFunction: (x: LimitArgs) => controlLimitsClass;
+  limitFunction: (inputData: dataClass, inputSettings: settingsClass) => controlLimitsClass;
 
-  update(args: { options: VisualUpdateOptions; host: IVisualHost; }) {
+  update(options: VisualUpdateOptions, host: IVisualHost) {
     if (this.firstRun) {
       this.inputSettings = new settingsClass();
     }
-    const dv: powerbi.DataView[] = args.options.dataViews;
+    const dv: powerbi.DataView[] = options.dataViews;
     this.inputSettings.update(dv[0]);
 
     const split_indexes_storage: DataViewObject = dv[0].metadata.objects ? dv[0].metadata.objects.split_indexes_storage : null;
@@ -71,7 +69,7 @@ export default class viewModelClass {
     } else {
 
       // Only re-construct data and re-calculate limits if they have changed
-      if (args.options.type === 2 || this.firstRun) {
+      if (options.type === 2 || this.firstRun) {
 
         // Extract input data, filter out invalid values, and identify any settings passed as data
         this.inputData = new dataClass(dv[0].categorical, this.inputSettings)
@@ -83,7 +81,7 @@ export default class viewModelClass {
         this.calculateLimits();
 
         // Structure the data and calculated limits to the format needed for plotting
-        this.initialisePlotData(args.host);
+        this.initialisePlotData(host);
         this.initialiseGroupedLines();
       }
     }
@@ -92,7 +90,7 @@ export default class viewModelClass {
       this.plotProperties.firstRun = true;
     }
     this.plotProperties.update({
-      options: args.options,
+      options: options,
       plotPoints: this.plotPoints,
       controlLimits: this.controlLimits,
       inputData: this.inputData,
@@ -121,7 +119,7 @@ export default class viewModelClass {
         return data;
       })
 
-      const calcLimitsGrouped: controlLimitsClass[] = groupedData.map(d => this.limitFunction({inputData: d, inputSettings: this.inputSettings}));
+      const calcLimitsGrouped: controlLimitsClass[] = groupedData.map(d => this.limitFunction(d, this.inputSettings));
       this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsClass, curr: controlLimitsClass) => {
         const allInner: controlLimitsClass = all;
         Object.entries(all).forEach((entry, idx) => {
@@ -133,7 +131,7 @@ export default class viewModelClass {
       })
     } else {
       // Calculate control limits using user-specified type
-      this.controlLimits = this.limitFunction({inputData: this.inputData, inputSettings: this.inputSettings});
+      this.controlLimits = this.limitFunction(this.inputData, this.inputSettings);
     }
   }
 

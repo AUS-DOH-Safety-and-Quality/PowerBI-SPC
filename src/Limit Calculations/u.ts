@@ -5,15 +5,14 @@ import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function uLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function uLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = divide(d3.sum(inputData.numerators),d3.sum(inputData.denominators));
   const sigma: number[] = sqrt(divide(cl,inputData.denominators));
 
   return new controlLimitsClass({
-    inputSettings: args.inputSettings,
+    inputSettings: inputSettings,
     keys: inputData.keys,
     values: divide(inputData.numerators, inputData.denominators),
     numerators: inputData.numerators,

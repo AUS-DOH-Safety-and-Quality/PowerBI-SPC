@@ -5,10 +5,9 @@ import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, pow, multiply } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function sLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function sLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const group_sd: number[] = inputData.numerators;
   const count_per_group: number[] = inputData.denominators;
 
@@ -25,7 +24,7 @@ export default function sLimits(args: LimitArgs): controlLimitsClass {
   const B495: number[] = b4(count_per_group, true);
 
   return new controlLimitsClass({
-    inputSettings: args.inputSettings,
+    inputSettings: inputSettings,
     keys: inputData.keys,
     values: group_sd,
     targets: rep(cl, inputData.keys.length),

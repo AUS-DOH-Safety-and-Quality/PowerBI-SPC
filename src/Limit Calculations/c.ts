@@ -2,15 +2,14 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import rep from "../Functions/rep";
 import dataClass from "../Classes/dataClass"
 import controlLimitsClass from "../Classes/controlLimitsClass"
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function cLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function cLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = Math.sqrt(cl);
 
   return new controlLimitsClass({
-    inputSettings: args.inputSettings,
+    inputSettings: inputSettings,
     keys: inputData.keys,
     values: inputData.numerators,
     targets: rep(cl, inputData.keys.length),

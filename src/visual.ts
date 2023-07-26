@@ -14,12 +14,9 @@ export class Visual implements powerbi.extensibility.IVisual {
   svg: svgBaseType;
   viewModel: viewModelClass;
   selectionManager: powerbi.extensibility.ISelectionManager;
-  // Service for notifying external clients (export to powerpoint/pdf) of rendering status
-  events: powerbi.extensibility.IVisualEventService;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.svg = d3.select(options.element).append("svg");
-    this.events = options.host.eventService;
     this.host = options.host;
     this.viewModel = new viewModelClass();
 
@@ -40,9 +37,9 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   public update(options: powerbi.extensibility.visual.VisualUpdateOptions) {
     try {
-      this.events.renderingStarted(options);
+      this.host.eventService.renderingStarted(options);
 
-      this.viewModel.update({ options: options, host: this.host });
+      this.viewModel.update(options, this.host);
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height)
               .call(spc.drawXAxis, this)
@@ -54,10 +51,10 @@ export class Visual implements powerbi.extensibility.IVisual {
               .call(spc.updateHighlighting, this)
               .call(spc.addContextMenu, this)
 
-      this.events.renderingFinished(options);
+      this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
       console.error(caught_error)
-      this.events.renderingFailed(options);
+      this.host.eventService.renderingFailed(options);
     }
   }
 
