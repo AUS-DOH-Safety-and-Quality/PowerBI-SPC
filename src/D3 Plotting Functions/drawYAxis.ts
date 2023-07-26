@@ -6,7 +6,7 @@ import { svgBaseType, Visual } from "../visual";
 
 export default function drawYAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
   const yAxisProperties: axisProperties = visualObj.viewModel.plotProperties.yAxis;
-  let yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
+  const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.y_axis.ylimit_sig_figs;
   const sig_figs: number = yaxis_sig_figs === null ? visualObj.viewModel.inputSettings.spc.sig_figs : yaxis_sig_figs;
   const multiplier: number = visualObj.viewModel.inputSettings.spc.multiplier;

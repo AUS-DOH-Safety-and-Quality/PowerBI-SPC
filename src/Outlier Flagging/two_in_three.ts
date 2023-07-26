@@ -1,5 +1,5 @@
-import * as math from '@stdlib/math/base/special';
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
+import { abs } from "../Functions/UnaryFunctions";
 
 export default function two_in_three(val: number[], ll95: number[], ul95: number[]): string[] {
   const outside95: number[] = val.map((d, i) => {
@@ -9,7 +9,7 @@ export default function two_in_three(val: number[], ll95: number[], ul95: number
     return d3.sum(outside95.slice(Math.max(0, i - 2), i + 1));
   })
   const two_in_three_detected: string[] = lagged_sign_sum.map(d => {
-    if (math.abs(d) >= 2) {
+    if (abs(d) >= 2) {
       return d >= 2 ? "upper" : "lower";
     } else {
       return "none";

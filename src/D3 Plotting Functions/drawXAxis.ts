@@ -5,7 +5,7 @@ import { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
   const xAxisProperties: axisProperties = visualObj.viewModel.plotProperties.xAxis;
-  let xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(visualObj.viewModel.plotProperties.xScale);
+  const xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(visualObj.viewModel.plotProperties.xScale);
 
   if (xAxisProperties.ticks) {
     if (xAxisProperties.tick_count) {

@@ -12,6 +12,7 @@
         "strictBindCallApply": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
         "target": "es6",
         "sourceMap": true,
         "outDir": "./.tmp/build/",
