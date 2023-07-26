@@ -3,15 +3,14 @@ import { sqrt } from "../Functions/UnaryFunctions";
 import rep from "../Functions/rep";
 import dataClass from "../Classes/dataClass";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function gLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function gLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = d3.mean(inputData.numerators);
   const sigma: number = sqrt(cl * (cl + 1));
 
   return new controlLimitsClass({
-    inputSettings: args.inputSettings,
+    inputSettings: inputSettings,
     keys: inputData.keys,
     values: inputData.numerators,
     targets: rep(d3.median(inputData.numerators), inputData.keys.length),

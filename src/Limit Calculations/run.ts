@@ -3,10 +3,9 @@ import rep from "../Functions/rep";
 import { divide } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function runLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function runLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)
@@ -14,7 +13,7 @@ export default function runLimits(args: LimitArgs): controlLimitsClass {
 
   const cl: number = d3.median(ratio);
   return new controlLimitsClass({
-    inputSettings: args.inputSettings,
+    inputSettings: inputSettings,
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
     numerators: useRatio ? inputData.numerators : <number[]>null,

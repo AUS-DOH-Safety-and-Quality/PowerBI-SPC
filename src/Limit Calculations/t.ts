@@ -3,15 +3,14 @@ import { pow } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
-import { LimitArgs } from "../Classes/viewModelClass";
+import settingsClass from "../Classes/settingsClass";
 
-export default function tLimits(args: LimitArgs): controlLimitsClass {
-  const inputData: dataClass = args.inputData;
+export default function tLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const val: number[] = pow(inputData.numerators, 1 / 3.6);
-  const argsDataCopy: LimitArgs = args;
-  argsDataCopy.inputData.numerators = val;
-  argsDataCopy.inputData.denominators = null;
-  const limits: controlLimitsClass = iLimits(argsDataCopy);
+  const inputDataCopy: dataClass = JSON.parse(JSON.stringify(inputData));
+  inputDataCopy.numerators = val;
+  inputDataCopy.denominators = null;
+  const limits: controlLimitsClass = iLimits(inputDataCopy, inputSettings);
   limits.targets = pow(limits.targets, 3.6);
   limits.values = pow(limits.values, 3.6);
   limits.ll99 = truncate(pow(limits.ll99, 3.6), {lower: 0});

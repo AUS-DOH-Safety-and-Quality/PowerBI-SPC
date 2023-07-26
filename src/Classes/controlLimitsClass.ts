@@ -16,7 +16,6 @@ type controlLimitsArgs = {
   numerators?: number[];
   denominators?: number[];
   targets: number[];
-  alt_targets?: number[];
   ll99: number[];
   ll95: number[];
   ul95: number[];
@@ -97,6 +96,7 @@ export default class controlLimitsClass {
       this.denominators = args.denominators;
     }
     this.targets = args.targets;
+    this.alt_targets = rep(args.inputSettings.spc.alt_target, args.values.length)
     this.ll99 = args.ll99;
     this.ll95 = args.ll95;
     this.ul95 = args.ul95;
