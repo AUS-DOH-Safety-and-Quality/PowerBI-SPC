@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "./D3 Modules";
 import { svgBaseType, Visual } from "../visual";
 import plotPropertiesClass from "../Classes/plotPropertiesClass";
 import { plotData } from "../Classes/viewModelClass";

@@ -1,4 +1,4 @@
-import * as math from '@stdlib/math/base/special';
+import gammaln from "@stdlib/math-base-special-gammaln";
 
 type ReturnT<InputT, BaseT> = InputT extends Array<any> ? BaseT[] : BaseT;
 
@@ -12,8 +12,8 @@ export default function broadcast_unary<ScalarInputT, ScalarReturnT>(fun: (x: Sc
   };
 }
 
-export const sqrt = broadcast_unary(math.sqrt);
-export const abs = broadcast_unary((x: number): number => (x ? math.abs(x) : x));
-export const exp = broadcast_unary(math.exp);
-export const lgamma = broadcast_unary(math.gammaln);
-export const square = broadcast_unary((x: number): number => math.pow(x, 2));
+export const sqrt = broadcast_unary(Math.sqrt);
+export const abs = broadcast_unary((x: number): number => (x ? Math.abs(x) : x));
+export const exp = broadcast_unary(Math.exp);
+export const lgamma = broadcast_unary(gammaln);
+export const square = broadcast_unary((x: number): number => Math.pow(x, 2));

@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "./D3 Modules";
 import { axisProperties } from "../Classes/plotPropertiesClass";
 import { abs } from "../Functions/UnaryFunctions";
 import drawXAxis from "./drawXAxis";
@@ -6,14 +6,13 @@ import { svgBaseType, Visual } from "../visual";
 
 export default function drawYAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
   const yAxisProperties: axisProperties = visualObj.viewModel.plotProperties.yAxis;
-  let yAxis: d3.Axis<d3.NumberValue>;
+  const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.y_axis.ylimit_sig_figs;
   const sig_figs: number = yaxis_sig_figs === null ? visualObj.viewModel.inputSettings.spc.sig_figs : yaxis_sig_figs;
   const multiplier: number = visualObj.viewModel.inputSettings.spc.multiplier;
   const displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
 
   if (yAxisProperties.ticks) {
-    yAxis = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
     if (yAxisProperties.tick_count) {
       yAxis.ticks(yAxisProperties.tick_count)
     }
@@ -27,7 +26,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
       );
     }
   } else {
-    yAxis = d3.axisLeft(visualObj.viewModel.plotProperties.yScale).tickValues([]);
+    yAxis.tickValues([]);
   }
   const yAxisGroup = selection.select(".yaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
 

@@ -1,5 +1,5 @@
-import * as math from '@stdlib/math/base/special';
-import * as d3 from "d3";
+import * as d3 from "../D3 Plotting Functions/D3 Modules";
+import { abs } from "../Functions/UnaryFunctions";
 
 export default function shift(val: number[], targets: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {
@@ -9,7 +9,7 @@ export default function shift(val: number[], targets: number[], n: number): stri
     return d3.sum(lagged_sign.slice(Math.max(0, i - (n - 1)), i + 1));
   })
   const shift_detected: string[] = lagged_sign_sum.map(d => {
-    if (math.abs(d) >= n) {
+    if (abs(d) >= n) {
       return d >= n ? "upper" : "lower";
     } else {
       return "none";
