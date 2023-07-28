@@ -1,8 +1,8 @@
 import * as d3 from "./D3 Modules";
-import { type lineData } from "../Classes/viewModelClass";
+import type { lineData } from "../Classes/viewModelClass";
 import between from "../Functions/between";
 import getAesthetic from "../Functions/getAesthetic";
-import { type svgBaseType, type Visual } from "../visual";
+import type { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {
   selection

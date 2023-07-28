@@ -1,4 +1,4 @@
-import { type defaultSettingsType } from "../defaultSettings"
+import type { defaultSettingsType } from "../defaultSettings"
 import broadcast_binary from "./BinaryFunctions"
 
 type dateFormat = {

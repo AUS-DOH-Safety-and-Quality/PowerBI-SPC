@@ -1,8 +1,8 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import powerbi from "powerbi-visuals-api";
+import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import truncate from "../Functions/truncate";
-import { type plotData } from "./viewModelClass"
+import type { plotData } from "./viewModelClass"
 import type settingsClass from "./settingsClass";
 import type dataClass from "./dataClass";
 import type controlLimitsClass from "./controlLimitsClass";

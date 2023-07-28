@@ -1,7 +1,7 @@
-import powerbi from "powerbi-visuals-api";
-import { type plotData } from "../Classes/viewModelClass";
+import type powerbi from "powerbi-visuals-api";
+import type { plotData } from "../Classes/viewModelClass";
 type ISelectionId = powerbi.visuals.ISelectionId;
-import { type svgBaseType, type Visual } from "../visual";
+import type { svgBaseType, Visual } from "../visual";
 
 export default function updateHighlighting(selection: svgBaseType, visualObj: Visual) {
   const anyHighlights: boolean = visualObj.viewModel.inputData ? visualObj.viewModel.inputData.anyHighlights : false;

@@ -1,4 +1,4 @@
-import powerbi from "powerbi-visuals-api"
+import type powerbi from "powerbi-visuals-api"
 type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 import type settingsClass from "../Classes/settingsClass";

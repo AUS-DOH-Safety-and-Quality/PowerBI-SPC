@@ -1,10 +1,10 @@
-import powerbi from "powerbi-visuals-api";
-type DataView = powerbi.DataView;
-type DataViewCategorical = powerbi.DataViewCategorical;
-type DataViewPropertyValue = powerbi.DataViewPropertyValue
-type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-type VisualObjectInstance = powerbi.VisualObjectInstance;
-type VisualObjectInstanceContainer = powerbi.VisualObjectInstanceContainer;
+import * as powerbi from "powerbi-visuals-api"
+type DataView = powerbi.default.DataView;
+type DataViewCategorical = powerbi.default.DataViewCategorical;
+type DataViewPropertyValue = powerbi.default.DataViewPropertyValue
+type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanceEnumerationObject;
+type VisualObjectInstance = powerbi.default.VisualObjectInstance;
+type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import defaultSettings from "../defaultSettings"
@@ -76,7 +76,7 @@ export default class settingsClass implements defaultSettingsType {
       rtnInstances.push({
         objectName: settingGroupName,
         properties: props,
-        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, powerbi.VisualEnumerationInstanceKinds.ConstantOrRule])),
+        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule])),
         selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
       })
 

@@ -1,4 +1,4 @@
-import { type svgBaseType } from "../visual";
+import type { svgBaseType } from "../visual";
 
 /**
  * This method initialises a plotting space for rendering a given NHS SVG icon.

@@ -1,7 +1,7 @@
 import * as d3 from "./D3 Modules";
-import { type axisProperties } from "../Classes/plotPropertiesClass";
+import type { axisProperties } from "../Classes/plotPropertiesClass";
 import { abs } from "../Functions/UnaryFunctions";
-import { type svgBaseType, type Visual } from "../visual";
+import type { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
   const xAxisProperties: axisProperties = visualObj.viewModel.plotProperties.xAxis;

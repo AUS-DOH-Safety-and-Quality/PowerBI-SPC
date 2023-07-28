@@ -1,4 +1,4 @@
-import powerbi from "powerbi-visuals-api"
+import type powerbi from "powerbi-visuals-api"
 type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
@@ -8,7 +8,7 @@ import type settingsClass from "./settingsClass"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
-import { type defaultSettingsType } from "../defaultSettings";
+import type { defaultSettingsType } from "../defaultSettings";
 
 export default class dataClass {
   keys: { x: number, id: number, label: string }[];

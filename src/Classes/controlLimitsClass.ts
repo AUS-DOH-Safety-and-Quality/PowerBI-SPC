@@ -6,7 +6,7 @@ import shift from "../Outlier Flagging/shift"
 import type settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 import truncate from "../Functions/truncate";
-import { type truncateInputs } from "../Functions/truncate";
+import type { truncateInputs } from "../Functions/truncate";
 import { multiply } from "../Functions/BinaryFunctions";
 
 type controlLimitsArgs = {
