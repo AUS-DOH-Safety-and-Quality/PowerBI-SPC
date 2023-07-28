@@ -18,7 +18,7 @@ import * as limitFunctions from "../Limit Calculations"
 
 export class lineData {
   x: number;
-  line_value: number;
+  line_value: number | null;
   group: string;
 }
 
@@ -46,23 +46,33 @@ export default class viewModelClass {
   firstRun: boolean;
   limitFunction: (inputData: dataClass, inputSettings: settingsClass) => controlLimitsClass;
 
+  constructor() {
+    this.inputData = new dataClass();
+    this.inputSettings = new settingsClass();
+    this.limitFunction = null;
+    this.controlLimits = null;
+    this.plotPoints = new Array<plotData>();
+    this.groupedLines = new Array<[string, lineData[]]>();
+    this.plotProperties = new plotPropertiesClass();
+    this.plotProperties.firstRun = true;
+    this.firstRun = true
+    this.splitIndexes = new Array<number>();
+  }
+
   update(options: VisualUpdateOptions, host: IVisualHost) {
-    if (this.firstRun) {
-      this.inputSettings = new settingsClass();
-    }
     const dv: powerbi.DataView[] = options.dataViews;
     this.inputSettings.update(dv[0]);
 
-    const split_indexes_storage: DataViewObject = dv[0].metadata.objects ? dv[0].metadata.objects.split_indexes_storage : null;
-    const split_indexes: DataViewPropertyValue = split_indexes_storage ? split_indexes_storage.split_indexes : null;
+    const split_indexes_storage: DataViewObject | null = dv[0].metadata.objects ? dv[0].metadata.objects.split_indexes_storage : null;
+    const split_indexes: DataViewPropertyValue | null = split_indexes_storage ? split_indexes_storage.split_indexes : null;
     this.splitIndexes = split_indexes ? JSON.parse(<string>(split_indexes)) : new Array<number>();
 
+    let invalidDataView: boolean = checkInvalidDataView(dv);
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
-    if (checkInvalidDataView(dv)) {
-      this.inputData = <dataClass>null;
-      this.limitFunction = null;
-      this.controlLimits = null;
+    if (invalidDataView) {
+      this.inputData = new dataClass();
+      this.controlLimits = new controlLimitsClass();
       this.plotPoints = new Array<plotData>();
       this.groupedLines = new Array<[string, lineData[]]>();
       this.splitIndexes = new Array<number>();
@@ -85,16 +95,13 @@ export default class viewModelClass {
         this.initialiseGroupedLines();
       }
     }
-    if (this.firstRun) {
-      this.plotProperties = new plotPropertiesClass();
-      this.plotProperties.firstRun = true;
-    }
     this.plotProperties.update({
       options: options,
       plotPoints: this.plotPoints,
       controlLimits: this.controlLimits,
       inputData: this.inputData,
-      inputSettings: this.inputSettings
+      inputSettings: this.inputSettings,
+      invalidDataView: invalidDataView
     })
     this.firstRun = false;
   }
@@ -199,17 +206,5 @@ export default class viewModelClass {
       })
     }
     this.groupedLines = d3.groups(formattedLines, d => d.group);
-  }
-
-  constructor() {
-    this.inputData = <dataClass>null;
-    this.inputSettings = <settingsClass>null;
-    this.limitFunction = null;
-    this.controlLimits = null;
-    this.plotPoints = new Array<plotData>();
-    this.groupedLines = new Array<[string, lineData[]]>();
-    this.plotProperties = <plotPropertiesClass>null;
-    this.firstRun = true
-    this.splitIndexes = new Array<number>();
   }
 }

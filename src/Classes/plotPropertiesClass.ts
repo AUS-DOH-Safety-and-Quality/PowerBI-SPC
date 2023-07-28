@@ -52,7 +52,8 @@ export default class plotPropertiesClass {
                       plotPoints: plotData[],
                       controlLimits: controlLimitsClass,
                       inputData: dataClass,
-                      inputSettings: settingsClass }): void {
+                      inputSettings: settingsClass,
+                    invalidDataView: boolean }): void {
 
     // Get the width and height of plotting space
     this.width = args.options.viewport.width;
@@ -68,7 +69,7 @@ export default class plotPropertiesClass {
     let yUpperLimit: number = args.inputSettings.y_axis.ylimit_u;
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
-    if (args.inputData && args.controlLimits) {
+    if (!args.invalidDataView) {
       xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;

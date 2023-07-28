@@ -86,30 +86,32 @@ export default class controlLimitsClass {
     }
   }
 
-  constructor(args: controlLimitsArgs) {
-    this.keys = args.keys;
-    this.values = args.values;
-    if (args.numerators || !(args.numerators === null || args.numerators === undefined)) {
-      this.numerators = args.numerators;
-    }
-    if (args.denominators || !(args.denominators === null || args.denominators === undefined)) {
-      this.denominators = args.denominators;
-    }
-    this.targets = args.targets;
-    this.alt_targets = rep(args.inputSettings.spc.alt_target, args.values.length)
-    this.ll99 = args.ll99;
-    this.ll95 = args.ll95;
-    this.ul95 = args.ul95;
-    this.ul99 = args.ul99;
-    this.astpoint = rep("none", args.values.length);
-    this.trend = rep("none", args.values.length);
-    this.two_in_three = rep("none", args.values.length);
-    this.shift = rep("none", args.values.length);
-    if (args.count || !(args.count === null || args.count === undefined)) {
-      this.count = args.count;
-    }
+  constructor(args?: controlLimitsArgs) {
+    if (args) {
+      this.keys = args.keys;
+      this.values = args.values;
+      if (args.numerators || !(args.numerators === null || args.numerators === undefined)) {
+        this.numerators = args.numerators;
+      }
+      if (args.denominators || !(args.denominators === null || args.denominators === undefined)) {
+        this.denominators = args.denominators;
+      }
+      this.targets = args.targets;
+      this.alt_targets = rep(args.inputSettings.spc.alt_target, args.values.length)
+      this.ll99 = args.ll99;
+      this.ll95 = args.ll95;
+      this.ul95 = args.ul95;
+      this.ul99 = args.ul99;
+      this.astpoint = rep("none", args.values.length);
+      this.trend = rep("none", args.values.length);
+      this.two_in_three = rep("none", args.values.length);
+      this.shift = rep("none", args.values.length);
+      if (args.count || !(args.count === null || args.count === undefined)) {
+        this.count = args.count;
+      }
 
-    this.scaleAndTruncateLimits(args.inputSettings)
-    this.flagOutliers(args.inputSettings)
+      this.scaleAndTruncateLimits(args.inputSettings)
+      this.flagOutliers(args.inputSettings)
+    }
   }
 }
