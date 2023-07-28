@@ -12,21 +12,17 @@ export default function checkInvalidDataView(inputDV: powerbi.DataView[]): boole
     return flag1;
   }
 
-  const flag2: boolean =
-    !inputDV[0].categorical.categories[0].source
+  const inputView: powerbi.DataViewCategorical = inputDV[0].categorical as powerbi.DataViewCategorical;
+  const inputCategories: powerbi.DataViewCategoryColumn[] = inputView.categories as powerbi.DataViewCategoryColumn[];
+  const inputValues: powerbi.DataViewValueColumns = inputView.values as powerbi.DataViewValueColumns;
 
-  if (flag2) {
-    return flag2;
-  }
-  const flag3: boolean =
-    !inputDV[0].categorical.values[0].source.roles.numerators
-
-  if (flag3) {
-    return flag3;
+  if (!inputCategories[0].source) {
+    return true;
   }
 
-  const flag4: boolean =
-    inputDV[0].categorical.values.some(d => d.values.length < 1)
-    || inputDV[0].categorical.categories.some(d => d.values.length < 1);
-  return flag4;
+  if (!(inputValues[0].source.roles as Record<string, boolean>).numerators) {
+    return true;
+  }
+
+  return inputValues.some(d => d.values.length < 1) || inputCategories.some(d => d.values.length < 1);
 }

@@ -26,8 +26,8 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
 
   const date: string = controlLimits.keys[index].label;
   const value: number = controlLimits.values[index];
-  const numerator: number = controlLimits.numerators ? controlLimits.numerators[index] : null;
-  const denominator: number = controlLimits.denominators ? controlLimits.denominators[index] : null;
+  const numerator: number | null = controlLimits.numerators ? controlLimits.numerators[index] : null;
+  const denominator: number | null = controlLimits.denominators ? controlLimits.denominators[index] : null;
   const target: number = controlLimits.targets[index];
   const limits = {
       ll99: controlLimits.ll99 ? controlLimits.ll99[index] : null,
@@ -71,7 +71,7 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Upper 99% Limit",
-      value: (limits.ul99 * multiplier).toFixed(sig_figs) + suffix
+      value: (limits.ul99 !== null) ? (limits.ul99 * multiplier).toFixed(sig_figs) + suffix : ""
     })
   }
   tooltip.push({
@@ -81,7 +81,7 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Lower 99% Limit",
-      value: (limits.ll99 * multiplier).toFixed(sig_figs) + suffix
+      value: (limits.ll99 !== null) ? (limits.ll99 * multiplier).toFixed(sig_figs) + suffix : ""
     })
   }
 

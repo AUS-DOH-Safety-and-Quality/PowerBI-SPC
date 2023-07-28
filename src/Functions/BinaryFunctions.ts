@@ -27,6 +27,6 @@ export const add = broadcast_binary((x: number, y: number): number => x + y);
 export const subtract = broadcast_binary((x: number, y: number): number => x - y);
 export const divide = broadcast_binary((x: number, y: number): number => x / y);
 export const multiply = broadcast_binary(
-  (x: number, y: number): number => {
+  (x: number, y: number): number | null => {
     return (x === null || y === null) ? null : (x * y);
 });
