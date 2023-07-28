@@ -14,8 +14,8 @@ type controlLimitsArgs = {
   inputSettings: settingsClass,
   keys: { x: number, id: number, label: string }[];
   values: number[];
-  numerators?: number[];
-  denominators?: number[];
+  numerators?: number[] | undefined;
+  denominators?: number[] | undefined;
   targets: number[];
   ll99: number[];
   ll95: number[];

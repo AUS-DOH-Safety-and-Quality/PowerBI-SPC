@@ -18,10 +18,10 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
     }
     if (visualObj.viewModel.inputData) {
       yAxis.tickFormat(
-        (d: number) => {
+        (d: d3.NumberValue) => {
           return visualObj.viewModel.inputData.percentLabels
-            ? (d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
-            : d.toFixed(sig_figs);
+            ? (<number>d * (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier))).toFixed(sig_figs) + "%"
+            : (<number>d).toFixed(sig_figs);
         }
       );
     }
