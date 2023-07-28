@@ -1,39 +1,14 @@
 {
   "supportsHighlight": true,
   "sorting": {
-    "implicit": {
-      "clauses": [{
-        "role": "key",
-        "direction": 1
-      }]
-    }
+    "implicit": { "clauses": [{ "role": "key", "direction": 1 }] }
   },
   "dataRoles": [
-    {
-      "displayName": "Outcome/Numerator",
-      "name": "numerators",
-      "kind": "Measure"
-    },
-    {
-      "displayName": "Denominator",
-      "name": "denominators",
-      "kind": "Measure"
-    },
-    {
-      "displayName": "ID Key (Date)",
-      "name": "key",
-      "kind": "Grouping"
-    },
-    {
-      "displayName": "SD (for xbar)",
-      "name": "xbar_sds",
-      "kind": "Measure"
-    },
-    {
-      "displayName": "Tooltips",
-      "name": "tooltips",
-      "kind": "Measure"
-    }
+    { "displayName": "Outcome/Numerator", "name": "numerators",   "kind": "Measure" },
+    { "displayName": "Denominator",       "name": "denominators", "kind": "Measure" },
+    { "displayName": "ID Key (Date)",     "name": "key",          "kind": "Grouping" },
+    { "displayName": "SD (for xbar)",     "name": "xbar_sds",     "kind": "Measure" },
+    { "displayName": "Tooltips",          "name": "tooltips",     "kind": "Measure" }
   ],
   "objects": {
     "split_indexes_storage" : {
@@ -52,54 +27,18 @@
           "displayName": "Chart Type",
           "type" : {
             "enumeration" : [
-              {
-                "displayName" : "run - Run Chart",
-                "value" : "run"
-              },
-              {
-                "displayName" : "i - Individual Measurements",
-                "value" : "i"
-              },
-              {
-                "displayName" : "mr - Moving Range of Individual Measurements",
-                "value" : "mr"
-              },
-              {
-                "displayName" : "p - Proportions",
-                "value" : "p"
-              },
-              {
-                "displayName" : "p prime - Proportions Chart with Large Sample Correction",
-                "value" : "pp"
-              },
-              {
-                "displayName" : "u - Rates",
-                "value" : "u"
-              },
-              {
-                "displayName" : "u prime - Rates Chart with Large Sample Correction",
-                "value" : "up"
-              },
-              {
-                "displayName" : "c - Counts",
-                "value" : "c"
-              },
-              {
-                "displayName" : "xbar - Sample Means",
-                "value" : "xbar"
-              },
-              {
-                "displayName" : "s - Sample SDs",
-                "value" : "s"
-              },
-              {
-                "displayName" : "g - Number of Non-Events Between Events",
-                "value" : "g"
-              },
-              {
-                "displayName" : "t - Time Between Events",
-                "value" : "t"
-              }
+              { "displayName" : "run - Run Chart",                               "value" : "run" },
+              { "displayName" : "i - Individual Measurements",                   "value" : "i" },
+              { "displayName" : "mr - Moving Range of Individual Measurements",  "value" : "mr" },
+              { "displayName" : "p - Proportions",                               "value" : "p" },
+              { "displayName" : "p prime - Proportions: Large-Sample Corrected", "value" : "pp" },
+              { "displayName" : "u - Rates",                                     "value" : "u" },
+              { "displayName" : "u prime - Rates: Large-Sample Correction",      "value" : "up" },
+              { "displayName" : "c - Counts",                                    "value" : "c" },
+              { "displayName" : "xbar - Sample Means",                           "value" : "xbar" },
+              { "displayName" : "s - Sample SDs",                                "value" : "s" },
+              { "displayName" : "g - Number of Non-Events Between Events",       "value" : "g" },
+              { "displayName" : "t - Time Between Events",                       "value" : "t" }
             ]
           }
         },
@@ -119,18 +58,9 @@
           "displayName": "Report as percentage",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Automatic",
-                "value" : "Automatic"
-              },
-              {
-                "displayName" : "Yes",
-                "value" : "Yes"
-              },
-              {
-                "displayName" : "No",
-                "value" : "No"
-              }
+              { "displayName" : "Automatic",  "value" : "Automatic" },
+              { "displayName" : "Yes",        "value" : "Yes" },
+              { "displayName" : "No",         "value" : "No" }
             ]
           }
         },
@@ -159,18 +89,9 @@
           "displayName": "Type of Change to Flag",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Both",
-                "value" : "both"
-              },
-              {
-                "displayName" : "Improvement (Imp.)",
-                "value" : "improvement"
-              },
-              {
-                "displayName" : "Deterioration (Det.)",
-                "value" : "deterioration"
-              }
+              { "displayName" : "Both",                 "value" : "both" },
+              { "displayName" : "Improvement (Imp.)",   "value" : "improvement" },
+              { "displayName" : "Deterioration (Det.)", "value" : "deterioration" }
             ]
           }
         },
@@ -178,18 +99,9 @@
           "displayName": "Improvement Direction",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Increase",
-                "value" : "increase"
-              },
-              {
-                "displayName" : "Neutral",
-                "value" : "neutral"
-              },
-              {
-                "displayName" : "Decrease",
-                "value" : "decrease"
-              }
+              { "displayName" : "Increase", "value" : "increase" },
+              { "displayName" : "Neutral",  "value" : "neutral" },
+              { "displayName" : "Decrease", "value" : "decrease" }
             ]
           }
         },
@@ -298,22 +210,10 @@
           "displayName": "Variation Icon Locations",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Top Right",
-                "value" : "Top Right"
-              },
-              {
-                "displayName" : "Bottom Right",
-                "value" : "Bottom Right"
-              },
-              {
-                "displayName" : "Top Left",
-                "value" : "Top Left"
-              },
-              {
-                "displayName" : "Bottom Left",
-                "value" : "Bottom Left"
-              }
+              { "displayName" : "Top Right",    "value" : "Top Right" },
+              { "displayName" : "Bottom Right", "value" : "Bottom Right" },
+              { "displayName" : "Top Left",     "value" : "Top Left" },
+              { "displayName" : "Bottom Left",  "value" : "Bottom Left" }
             ]
           }
         },
@@ -329,22 +229,10 @@
           "displayName": "Assurance Icon Locations",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Top Right",
-                "value" : "Top Right"
-              },
-              {
-                "displayName" : "Bottom Right",
-                "value" : "Bottom Right"
-              },
-              {
-                "displayName" : "Top Left",
-                "value" : "Top Left"
-              },
-              {
-                "displayName" : "Bottom Left",
-                "value" : "Bottom Left"
-              }
+              { "displayName" : "Top Right",    "value" : "Top Right" },
+              { "displayName" : "Bottom Right", "value" : "Bottom Right" },
+              { "displayName" : "Top Left",     "value" : "Top Left" },
+              { "displayName" : "Bottom Left",  "value" : "Bottom Left" }
             ]
           }
         },
@@ -403,14 +291,8 @@
           "displayName": "Locale",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "en-GB",
-                "value" : "en-GB"
-              },
-              {
-                "displayName" : "en-US",
-                "value" : "en-US"
-              }
+              { "displayName" : "en-GB", "value" : "en-GB" },
+              { "displayName" : "en-US", "value" : "en-US" }
             ]
           }
         },
@@ -418,18 +300,9 @@
           "displayName": "Day Format",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "DD",
-                "value" : "DD"
-              },
-              {
-                "displayName" : "Thurs DD",
-                "value" : "Thurs DD"
-              },
-              {
-                "displayName" : "Thursday DD",
-                "value" : "Thursday DD"
-              }
+              { "displayName" : "DD",          "value" : "DD" },
+              { "displayName" : "Thurs DD",    "value" : "Thurs DD" },
+              { "displayName" : "Thursday DD", "value" : "Thursday DD"  }
             ]
           }
         },
@@ -437,18 +310,9 @@
           "displayName": "Month Format",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "MM",
-                "value" : "MM"
-              },
-              {
-                "displayName" : "Mon",
-                "value" : "Mon"
-              },
-              {
-                "displayName" : "Month",
-                "value" : "Month"
-              }
+              { "displayName" : "MM",    "value" : "MM" },
+              { "displayName" : "Mon",   "value" : "Mon" },
+              { "displayName" : "Month", "value" : "Month" }
             ]
           }
         },
@@ -456,14 +320,8 @@
           "displayName": "Year Format",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "YYYY",
-                "value" : "YYYY"
-              },
-              {
-                "displayName" : "YY",
-                "value" : "YY"
-              }
+              { "displayName" : "YYYY", "value" : "YYYY" },
+              { "displayName" : "YY",   "value" : "YY" }
             ]
           }
         },
@@ -471,18 +329,9 @@
           "displayName": "Delimiter",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "/",
-                "value" : "/"
-              },
-              {
-                "displayName" : "-",
-                "value" : "-"
-              },
-              {
-                "displayName" : " ",
-                "value" : " "
-              }
+              { "displayName" : "/", "value" : "/" },
+              { "displayName" : "-", "value" : "-" },
+              { "displayName" : " ", "value" : " " }
             ]
           }
         }
@@ -515,18 +364,9 @@
           "displayName": "99.8% Line Type",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Solid",
-                "value" : "10 0"
-              },
-              {
-                "displayName" : "Dashed",
-                "value" : "10 10"
-              },
-              {
-                "displayName" : "Dotted",
-                "value" : "2 5"
-              }
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
             ]
           }
         },
@@ -534,18 +374,9 @@
           "displayName": "95% Line Type",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Solid",
-                "value" : "10 0"
-              },
-              {
-                "displayName" : "Dashed",
-                "value" : "10 10"
-              },
-              {
-                "displayName" : "Dotted",
-                "value" : "2 5"
-              }
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
             ]
           }
         },
@@ -553,18 +384,9 @@
           "displayName": "Main Line Type",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Solid",
-                "value" : "10 0"
-              },
-              {
-                "displayName" : "Dashed",
-                "value" : "10 10"
-              },
-              {
-                "displayName" : "Dotted",
-                "value" : "2 5"
-              }
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
             ]
           }
         },
@@ -572,18 +394,9 @@
           "displayName": "Target Line Type",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Solid",
-                "value" : "10 0"
-              },
-              {
-                "displayName" : "Dashed",
-                "value" : "10 10"
-              },
-              {
-                "displayName" : "Dotted",
-                "value" : "2 5"
-              }
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
             ]
           }
         },
@@ -591,18 +404,9 @@
           "displayName": "Alt. Target Line Type",
           "type": {
             "enumeration" : [
-              {
-                "displayName" : "Solid",
-                "value" : "10 0"
-              },
-              {
-                "displayName" : "Dashed",
-                "value" : "10 10"
-              },
-              {
-                "displayName" : "Dotted",
-                "value" : "2 5"
-              }
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
             ]
           }
         },
@@ -774,10 +578,7 @@
     }
   }],
   "tooltips": {
-    "supportedTypes": {
-      "default": true,
-      "canvas": true
-    },
+    "supportedTypes": { "default": true, "canvas": true },
     "roles": [ "tooltips" ]
   }
 }
