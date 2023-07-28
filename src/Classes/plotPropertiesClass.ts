@@ -6,6 +6,7 @@ import { plotData } from "./viewModelClass"
 import settingsClass from "./settingsClass";
 import dataClass from "./dataClass";
 import controlLimitsClass from "./controlLimitsClass";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
 
 export type axisProperties = {
   lower: number,
@@ -61,7 +62,7 @@ export default class plotPropertiesClass {
 
     this.displayPlot = args.plotPoints
       ? args.plotPoints.length > 1
-      : null;
+      : false;
 
     const xLowerLimit: number = args.inputSettings.x_axis.xlimit_l;
     let xUpperLimit: number = args.inputSettings.x_axis.xlimit_u;
@@ -70,7 +71,9 @@ export default class plotPropertiesClass {
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
     if (!args.invalidDataView) {
-      xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.controlLimits.keys.map(d => d.x))
+      xUpperLimit = isNullOrUndefined(xUpperLimit)
+                      ? d3.max(args.controlLimits.keys.map(d => d.x))
+                      : xUpperLimit;
 
       const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
       const chart_type: string = args.inputSettings.spc.chart_type;
@@ -78,10 +81,14 @@ export default class plotPropertiesClass {
       const ul99: number[] = args.controlLimits.ul99;
       const ll99: number[] = args.controlLimits.ll99;
       const alt_targets: number[] = args.controlLimits.alt_targets;
-      const maxValueOrLimit: number = d3.max(values.concat(ul99).concat(alt_targets));
-      const minValueOrLimit: number = d3.min(values.concat(ll99).concat(alt_targets));
-      const maxTarget: number = d3.max(args.controlLimits.targets);
-      const minTarget: number = d3.min(args.controlLimits.targets);
+      const maxValueOrLimit: number = d3.max((values.concat(ul99).concat(alt_targets)));
+      const minValueOrLimit: number = d3.min((values.concat(ll99).concat(alt_targets)));
+      const maxTarget: number = d3.max((args.controlLimits.targets));
+      const minTarget: number = d3.min((args.controlLimits.targets));
+
+      console.log((values.concat(ll99).concat(alt_targets)))
+      console.log([minValueOrLimit, maxValueOrLimit])
+      console.log([minTarget, maxTarget])
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;

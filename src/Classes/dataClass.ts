@@ -34,16 +34,16 @@ export default class dataClass {
       const valid_ids: number[] = new Array<number>();
       const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
 
+      let validCount: number = 0
       for (let i: number = 0; i < numerators.length; i++) {
         if (checkValidInput(numerators[i],
                             denominators ? denominators[i] : null,
                             xbar_sds ? xbar_sds[i] : null, inputSettings.spc.chart_type)) {
           valid_ids.push(i);
-          valid_keys.push({ x: null, id: i, label: keys[i] })
+          valid_keys.push({ x: validCount, id: i, label: keys[i] })
+          validCount += 1;
         }
       }
-
-      valid_keys.forEach((d, idx) => { d.x = idx });
 
       let percent_labels: boolean;
       if (inputSettings.spc.perc_labels === "Automatic") {
@@ -52,14 +52,16 @@ export default class dataClass {
         percent_labels = inputSettings.spc.perc_labels === "Yes";
       }
 
+      const inputValues = (inputView.values as powerbi.DataViewValueColumns)[0];
+
       this.keys = valid_keys;
       this.numerators = extractValues(numerators, valid_ids);
       this.denominators = extractValues(denominators, valid_ids);
       this.xbar_sds = extractValues(xbar_sds, valid_ids);
       this.tooltips = extractValues(tooltips, valid_ids);
-      this.highlights = inputView.values[0].highlights ? extractValues(inputView.values[0].highlights, valid_ids) : inputView.values[0].highlights;
-      this.anyHighlights = this.highlights ? true : false
-      this.categories = inputView.categories[0];
+      this.highlights = inputValues.highlights ? extractValues(inputValues.highlights, valid_ids) : new Array<PrimitiveValue>;
+      this.anyHighlights = (this.highlights.length > 0)
+      this.categories = (inputView.categories as powerbi.DataViewCategoryColumn[])[0];
       this.percentLabels = percent_labels;
       this.scatter_formatting = extractValues(scatter_cond, valid_ids);
     }

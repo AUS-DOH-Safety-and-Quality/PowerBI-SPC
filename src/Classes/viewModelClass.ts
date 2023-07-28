@@ -49,8 +49,6 @@ export default class viewModelClass {
   constructor() {
     this.inputData = new dataClass();
     this.inputSettings = new settingsClass();
-    this.limitFunction = null;
-    this.controlLimits = null;
     this.plotPoints = new Array<plotData>();
     this.groupedLines = new Array<[string, lineData[]]>();
     this.plotProperties = new plotPropertiesClass();
@@ -174,7 +172,7 @@ export default class viewModelClass {
                       .withCategory(this.inputData.categories,
                                     this.inputData.keys[i].id)
                       .createSelectionId(),
-        highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
+        highlighted: this.inputData.anyHighlights ? (this.inputData.highlights[index] ? true : false) : false,
         tooltip: buildTooltip(i, this.controlLimits, this.inputData, this.inputSettings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
