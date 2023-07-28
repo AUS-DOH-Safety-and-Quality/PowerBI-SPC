@@ -1,15 +1,14 @@
 import powerbi from "powerbi-visuals-api";
-import DataView = powerbi.DataView;
-import DataViewCategorical = powerbi.DataViewCategorical;
-import DataViewPropertyValue = powerbi.DataViewPropertyValue
-import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
-import VisualObjectInstanceContainer = powerbi.VisualObjectInstanceContainer;
+type DataView = powerbi.DataView;
+type DataViewCategorical = powerbi.DataViewCategorical;
+type DataViewPropertyValue = powerbi.DataViewPropertyValue
+type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+type VisualObjectInstance = powerbi.VisualObjectInstance;
+type VisualObjectInstanceContainer = powerbi.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import defaultSettings from "../defaultSettings"
-import { defaultSettingsType, defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
+import { type defaultSettingsType, type defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
 
 /**
  * This is the core class which controls the initialisation and
@@ -77,7 +76,7 @@ export default class settingsClass implements defaultSettingsType {
       rtnInstances.push({
         objectName: settingGroupName,
         properties: props,
-        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, powerbi.VisualEnumerationInstanceKinds.ConstantOrRule])),
         selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
       })
 

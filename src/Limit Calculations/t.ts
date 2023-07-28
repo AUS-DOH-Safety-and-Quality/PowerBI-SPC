@@ -1,9 +1,9 @@
 import iLimits from "./i"
 import { pow } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import dataClass from "../Classes/dataClass";
+import type dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
-import settingsClass from "../Classes/settingsClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function tLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const val: number[] = pow(inputData.numerators, 1 / 3.6);

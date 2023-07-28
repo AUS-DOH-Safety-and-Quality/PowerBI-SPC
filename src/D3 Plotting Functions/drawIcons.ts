@@ -2,7 +2,7 @@ import * as variationIcon from "./Variation Icons"
 import * as assuranceIcon from "./Assurance Icons"
 import variationIconsToDraw from "../Functions/variationIconsToDraw";
 import initialiseIconSVG from "./initialiseIconSVG";
-import { svgBaseType, Visual } from "../visual";
+import { type svgBaseType, type Visual } from "../visual";
 import assuranceIconToDraw from "../Functions/assuranceIconToDraw";
 
 export default function drawIcons(selection: svgBaseType, visualObj: Visual): void {

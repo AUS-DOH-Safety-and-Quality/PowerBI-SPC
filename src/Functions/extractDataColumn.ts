@@ -1,10 +1,10 @@
 import powerbi from "powerbi-visuals-api"
-import DataViewValueColumn = powerbi.DataViewValueColumn;
-import DataViewValueColumns = powerbi.DataViewValueColumns;
-import DataViewCategorical = powerbi.DataViewCategorical;
-import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import settingsClass from "../Classes/settingsClass";
+type DataViewValueColumn = powerbi.DataViewValueColumn;
+type DataViewValueColumns = powerbi.DataViewValueColumns;
+type DataViewCategorical = powerbi.DataViewCategorical;
+type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
+type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+import type settingsClass from "../Classes/settingsClass";
 import dateToFormattedString from "./dateToFormattedString";
 type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 

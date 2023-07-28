@@ -1,9 +1,9 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import { sqrt } from "../Functions/UnaryFunctions";
 import rep from "../Functions/rep";
-import dataClass from "../Classes/dataClass";
+import type dataClass from "../Classes/dataClass";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import settingsClass from "../Classes/settingsClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function gLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = d3.mean(inputData.numerators);

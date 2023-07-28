@@ -1,9 +1,9 @@
 import powerbi from "powerbi-visuals-api"
-import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import DataViewCategorical = powerbi.DataViewCategorical;
-import settingsClass from "../Classes/settingsClass";
+type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
+type DataViewCategorical = powerbi.DataViewCategorical;
+import type settingsClass from "../Classes/settingsClass";
 import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils"
-import defaultSettings, { defaultSettingsType, defaultSettingsKey } from "../defaultSettings";
+import defaultSettings, { type defaultSettingsType, type defaultSettingsKey } from "../defaultSettings";
 
 type SettingsTypes = defaultSettingsType[defaultSettingsKey];
 

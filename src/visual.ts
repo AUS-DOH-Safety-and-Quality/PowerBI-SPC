@@ -1,8 +1,8 @@
 "use strict";
 
 import powerbi from "powerbi-visuals-api";
-import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+type EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import * as spc from "./D3 Plotting Functions"
 import viewModelClass from "./Classes/viewModelClass"

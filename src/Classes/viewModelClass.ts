@@ -1,11 +1,11 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import powerbi from "powerbi-visuals-api";
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import DataViewPropertyValue = powerbi.DataViewPropertyValue;
-import DataViewObject = powerbi.DataViewObject;
-import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import ISelectionId = powerbi.visuals.ISelectionId;
+type IVisualHost = powerbi.extensibility.visual.IVisualHost;
+type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+type DataViewPropertyValue = powerbi.DataViewPropertyValue;
+type DataViewObject = powerbi.DataViewObject;
+type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+type ISelectionId = powerbi.visuals.ISelectionId;
 import settingsClass from "./settingsClass";
 import dataClass from "./dataClass";
 import controlLimitsClass from "./controlLimitsClass";
@@ -13,7 +13,7 @@ import checkInvalidDataView from "../Functions/checkInvalidDataView"
 import buildTooltip from "../Functions/buildTooltip"
 import plotPropertiesClass from "./plotPropertiesClass"
 import getAesthetic from "../Functions/getAesthetic"
-import { defaultSettingsType } from "../defaultSettings";
+import { type defaultSettingsType } from "../defaultSettings";
 import * as limitFunctions from "../Limit Calculations"
 
 export class lineData {

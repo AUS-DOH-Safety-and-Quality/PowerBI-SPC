@@ -3,10 +3,10 @@ import astronomical from "../Outlier Flagging/astronomical"
 import trend from "../Outlier Flagging/trend"
 import two_in_three from "../Outlier Flagging/two_in_three"
 import shift from "../Outlier Flagging/shift"
-import settingsClass from "./settingsClass";
+import type settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 import truncate from "../Functions/truncate";
-import { truncateInputs } from "../Functions/truncate";
+import { type truncateInputs } from "../Functions/truncate";
 import { multiply } from "../Functions/BinaryFunctions";
 
 type controlLimitsArgs = {

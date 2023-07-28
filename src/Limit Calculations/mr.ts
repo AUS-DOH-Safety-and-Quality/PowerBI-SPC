@@ -2,10 +2,10 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import diff from "../Functions/diff"
 import rep from "../Functions/rep";
 import { abs } from "../Functions/UnaryFunctions"
-import {  divide } from "../Functions/BinaryFunctions";
-import dataClass from "../Classes/dataClass";
+import { divide } from "../Functions/BinaryFunctions";
+import type dataClass from "../Classes/dataClass";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import settingsClass from "../Classes/settingsClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function mrLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
