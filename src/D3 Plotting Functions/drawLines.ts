@@ -15,7 +15,7 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
         const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
         return d3.line<lineData>()
                   .x(d => visualObj.viewModel.plotProperties.xScale(d.x))
-                  .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value))
+                  .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value as number))
                   .defined(d => d.line_value !== null && between(d.line_value, lower, upper))(d[1])
       })
       .attr("fill", "none")

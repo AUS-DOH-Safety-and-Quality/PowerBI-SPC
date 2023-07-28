@@ -32,7 +32,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
 
     const xValue: number = plotProperties.xScale.invert(event.pageX);
     const xRange: number[] = plotPoints.map(d => d.x).map(d => Math.abs(d - xValue));
-    const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
+    const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b) as number;
     const x_coord: number = plotProperties.xScale(plotPoints[nearestDenominator].x)
     const y_coord: number = plotProperties.yScale(plotPoints[nearestDenominator].value)
 
