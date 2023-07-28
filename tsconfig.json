@@ -13,6 +13,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
+        "strictNullChecks": false,
         "target": "es6",
         "sourceMap": true,
         "outDir": "./.tmp/build/",

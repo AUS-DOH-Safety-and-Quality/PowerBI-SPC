@@ -12,9 +12,9 @@ const defaultSettings = {
     sig_figs: 2,
     perc_labels: "Automatic",
     split_on_click: false,
-    ll_truncate: <number>(null),
-    ul_truncate: <number>(null),
-    alt_target: <number>(null)
+    ll_truncate: <number><unknown>(null),
+    ul_truncate: <number><unknown>(null),
+    alt_target: <number><unknown>(null)
   },
   outliers: {
     process_flag_type: "both",
@@ -81,13 +81,13 @@ const defaultSettings = {
     xlimit_tick_size: 10,
     xlimit_tick_colour: "#000000",
     xlimit_tick_rotation: -35,
-    xlimit_tick_count: <number>(null),
-    xlimit_label:<string>(null),
+    xlimit_tick_count: <number><unknown>(null),
+    xlimit_label:"",
     xlimit_label_font: "'Arial', sans-serif",
     xlimit_label_size: 10,
     xlimit_label_colour: "#000000",
-    xlimit_l: <number>(null),
-    xlimit_u: <number>(null)
+    xlimit_l: <number><unknown>(null),
+    xlimit_u: <number><unknown>(null)
   },
   y_axis: {
     ylimit_colour: "#000000",
@@ -96,15 +96,15 @@ const defaultSettings = {
     ylimit_tick_size: 10,
     ylimit_tick_colour: "#000000",
     ylimit_tick_rotation: -35,
-    ylimit_tick_count: <number>(null),
-    ylimit_label:<string>(null),
+    ylimit_tick_count: <number><unknown>(null),
+    ylimit_label:"",
     ylimit_label_font: "'Arial', sans-serif",
     ylimit_label_size: 10,
     ylimit_label_colour: "#000000",
-    ylimit_l: <number>(null),
-    ylimit_u: <number>(null),
+    ylimit_l: <number><unknown>(null),
+    ylimit_u: <number><unknown>(null),
     limit_multiplier: 1.5,
-    ylimit_sig_figs: <number>(null)
+    ylimit_sig_figs: <number><unknown>(null)
   },
   dates: {
     date_format_day: "DD",
