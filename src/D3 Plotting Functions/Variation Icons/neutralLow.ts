@@ -1,4 +1,4 @@
-import { svgBaseType } from "../../visual"
+import type { svgBaseType } from "../../visual"
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Neutral Low icon.

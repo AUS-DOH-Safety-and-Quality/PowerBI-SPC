@@ -1,5 +1,5 @@
-import viewModelClass from "../Classes/viewModelClass";
-import controlLimitsClass from "../Classes/controlLimitsClass";
+import type viewModelClass from "../Classes/viewModelClass";
+import type controlLimitsClass from "../Classes/controlLimitsClass";
 
 export default function variationIconsToDraw(viewModel: viewModelClass): string[] {
   const currLimits: controlLimitsClass = viewModel.controlLimits;

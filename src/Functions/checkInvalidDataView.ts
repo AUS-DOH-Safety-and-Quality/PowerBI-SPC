@@ -1,4 +1,4 @@
-import powerbi from "powerbi-visuals-api";
+import type powerbi from "powerbi-visuals-api";
 
 export default function checkInvalidDataView(inputDV: powerbi.DataView[]): boolean {
   const flag1: boolean = !inputDV

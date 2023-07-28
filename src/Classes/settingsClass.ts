@@ -1,15 +1,14 @@
-import powerbi from "powerbi-visuals-api";
-import DataView = powerbi.DataView;
-import DataViewCategorical = powerbi.DataViewCategorical;
-import DataViewPropertyValue = powerbi.DataViewPropertyValue
-import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
-import VisualObjectInstanceContainer = powerbi.VisualObjectInstanceContainer;
+import * as powerbi from "powerbi-visuals-api"
+type DataView = powerbi.default.DataView;
+type DataViewCategorical = powerbi.default.DataViewCategorical;
+type DataViewPropertyValue = powerbi.default.DataViewPropertyValue
+type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanceEnumerationObject;
+type VisualObjectInstance = powerbi.default.VisualObjectInstance;
+type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import defaultSettings from "../defaultSettings"
-import { defaultSettingsType, defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
+import { type defaultSettingsType, type defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
 
 /**
  * This is the core class which controls the initialisation and
@@ -77,7 +76,7 @@ export default class settingsClass implements defaultSettingsType {
       rtnInstances.push({
         objectName: settingGroupName,
         properties: props,
-        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, VisualEnumerationInstanceKinds.ConstantOrRule])),
+        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule])),
         selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
       })
 

@@ -4,8 +4,8 @@ import rep from "../Functions/rep";
 import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, pow, multiply } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import dataClass from "../Classes/dataClass";
-import settingsClass from "../Classes/settingsClass";
+import type dataClass from "../Classes/dataClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function sLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const group_sd: number[] = inputData.numerators;

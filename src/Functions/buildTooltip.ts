@@ -1,8 +1,8 @@
-import powerbi from "powerbi-visuals-api";
-import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import dataClass from "../Classes/dataClass";
-import settingsClass from "../Classes/settingsClass";
+import type powerbi from "powerbi-visuals-api";
+type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+import type controlLimitsClass from "../Classes/controlLimitsClass";
+import type dataClass from "../Classes/dataClass";
+import type settingsClass from "../Classes/settingsClass";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",

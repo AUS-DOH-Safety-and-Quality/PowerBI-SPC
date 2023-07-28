@@ -2,8 +2,8 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import rep from "../Functions/rep";
 import { divide } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import dataClass from "../Classes/dataClass";
-import settingsClass from "../Classes/settingsClass";
+import type dataClass from "../Classes/dataClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function runLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);

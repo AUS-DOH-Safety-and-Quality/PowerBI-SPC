@@ -1,14 +1,14 @@
-import powerbi from "powerbi-visuals-api"
-import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import PrimitiveValue = powerbi.PrimitiveValue;
-import DataViewCategorical = powerbi.DataViewCategorical;
-import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+import type powerbi from "powerbi-visuals-api"
+type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
+type PrimitiveValue = powerbi.PrimitiveValue;
+type DataViewCategorical = powerbi.DataViewCategorical;
+type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import extractDataColumn from "../Functions/extractDataColumn"
-import settingsClass from "./settingsClass"
+import type settingsClass from "./settingsClass"
 import checkValidInput from "../Functions/checkValidInput"
 import extractValues from "../Functions/extractValues"
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
-import { defaultSettingsType } from "../defaultSettings";
+import type { defaultSettingsType } from "../defaultSettings";
 
 export default class dataClass {
   keys: { x: number, id: number, label: string }[];

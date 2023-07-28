@@ -3,9 +3,9 @@ import diff from "../Functions/diff"
 import rep from "../Functions/rep";
 import { abs } from "../Functions/UnaryFunctions"
 import { divide } from "../Functions/BinaryFunctions";
-import dataClass from "../Classes/dataClass";
+import type dataClass from "../Classes/dataClass";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import settingsClass from "../Classes/settingsClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function iLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);

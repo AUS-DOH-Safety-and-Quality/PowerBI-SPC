@@ -4,9 +4,9 @@ import diff from "../Functions/diff";
 import { sqrt, abs } from "../Functions/UnaryFunctions";
 import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
-import dataClass from "../Classes/dataClass";
+import type dataClass from "../Classes/dataClass";
 import truncate from "../Functions/truncate";
-import settingsClass from "../Classes/settingsClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export default function pprimeLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const val: number[] = divide(inputData.numerators, inputData.denominators);
