@@ -6,7 +6,7 @@ import { plotData } from "./viewModelClass"
 import settingsClass from "./settingsClass";
 import dataClass from "./dataClass";
 import controlLimitsClass from "./controlLimitsClass";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import isNotNullOrUndefined from "../Functions/isNotNullOrUndefined";
 
 export type axisProperties = {
   lower: number,
@@ -71,9 +71,9 @@ export default class plotPropertiesClass {
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
     if (!args.invalidDataView) {
-      xUpperLimit = isNullOrUndefined(xUpperLimit)
-                      ? d3.max(args.controlLimits.keys.map(d => d.x))
-                      : xUpperLimit;
+      xUpperLimit = isNotNullOrUndefined(xUpperLimit)
+                      ? xUpperLimit
+                      : d3.max(args.controlLimits.keys.map(d => d.x));
 
       const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
       const chart_type: string = args.inputSettings.spc.chart_type;
@@ -85,10 +85,6 @@ export default class plotPropertiesClass {
       const minValueOrLimit: number = d3.min((values.concat(ll99).concat(alt_targets)));
       const maxTarget: number = d3.max((args.controlLimits.targets));
       const minTarget: number = d3.min((args.controlLimits.targets));
-
-      console.log((values.concat(ll99).concat(alt_targets)))
-      console.log([minValueOrLimit, maxValueOrLimit])
-      console.log([minTarget, maxTarget])
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
