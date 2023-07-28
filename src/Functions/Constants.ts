@@ -7,11 +7,11 @@ function c4(sampleSize: number): number {
 
   return sqrt(2.0 / Nminus1)
           * exp(lgamma(sampleSize / 2.0) - lgamma(Nminus1 / 2.0));
-};
+}
 
 function c5(sampleSize: number): number {
   return sqrt(1 - square(c4(sampleSize) as number));
-};
+}
 
 export const a3 = broadcast_unary(
   (sampleSize: number): number | null => {

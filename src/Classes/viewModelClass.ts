@@ -65,7 +65,7 @@ export default class viewModelClass {
     const split_indexes: DataViewPropertyValue | null = split_indexes_storage ? split_indexes_storage.split_indexes : null;
     this.splitIndexes = split_indexes ? JSON.parse(<string>(split_indexes)) : new Array<number>();
 
-    let invalidDataView: boolean = checkInvalidDataView(dv);
+    const invalidDataView: boolean = checkInvalidDataView(dv);
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (invalidDataView) {
