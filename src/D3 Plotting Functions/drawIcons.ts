@@ -1,9 +1,12 @@
 import * as variationIcon from "./Variation Icons"
 import * as assuranceIcon from "./Assurance Icons"
+import * as d3 from "./D3 Modules"
 import variationIconsToDraw from "../Functions/variationIconsToDraw";
 import initialiseIconSVG from "./initialiseIconSVG";
 import { svgBaseType, Visual } from "../visual";
 import assuranceIconToDraw from "../Functions/assuranceIconToDraw";
+
+export type iconSelection = d3.Selection<d3.BaseType, unknown, SVGSVGElement, unknown>;
 
 export default function drawIcons(selection: svgBaseType, visualObj: Visual): void {
   selection.selectAll(".icongroup").remove()
@@ -33,6 +36,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
     const assurance_location: string = visualObj.viewModel.inputSettings.nhs_icons.assurance_icons_locations;
     const assurance_scaling: number = visualObj.viewModel.inputSettings.nhs_icons.assurance_icons_scaling;
     const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel);
+
     if (assuranceIconPresent === "none") {
       return;
     }

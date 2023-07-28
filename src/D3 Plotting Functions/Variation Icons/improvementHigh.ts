@@ -1,4 +1,4 @@
-import { svgBaseType } from "../../visual"
+import { iconSelection } from "../drawIcons"
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Improvement High icon.
@@ -12,7 +12,7 @@ import { svgBaseType } from "../../visual"
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 /* eslint-disable */
-export default function improvementHigh(selection: svgBaseType): void {
+export default function improvementHigh(selection: iconSelection): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")

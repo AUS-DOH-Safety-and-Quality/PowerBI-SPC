@@ -1,4 +1,4 @@
-import { svgBaseType } from "../../visual"
+import { iconSelection } from "../drawIcons"
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Neutral Low icon.
@@ -9,7 +9,7 @@ import { svgBaseType } from "../../visual"
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
-export default function neutralLow(selection: svgBaseType): void {
+export default function neutralLow(selection: iconSelection): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")

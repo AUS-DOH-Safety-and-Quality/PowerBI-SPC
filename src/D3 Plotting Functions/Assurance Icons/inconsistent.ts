@@ -1,5 +1,4 @@
-import { svgBaseType } from "../../visual"
-
+import { iconSelection } from "../drawIcons"
 /**
  * Inline function to be called by D3 for rendering the Assurance - Iconsistent icon.
  * The code below is a translation from HTML to D3 syntax of the SVG file:
@@ -9,7 +8,7 @@ import { svgBaseType } from "../../visual"
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
-export default function inconsistent(selection: svgBaseType): void {
+export default function inconsistent(selection: iconSelection): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")
