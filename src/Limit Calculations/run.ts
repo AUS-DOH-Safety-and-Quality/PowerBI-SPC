@@ -16,12 +16,12 @@ export default function runLimits(inputData: dataClass, inputSettings: settingsC
     inputSettings: inputSettings,
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
-    numerators: useRatio ? inputData.numerators : <number[]>null,
-    denominators: useRatio ? inputData.denominators : <number[]>null,
+    numerators: useRatio ? inputData.numerators : new Array<number>(),
+    denominators: useRatio ? inputData.denominators : new Array<number>(),
     targets: rep(cl, inputData.keys.length),
-    ll99: <number[]>null,
-    ll95: <number[]>null,
-    ul95: <number[]>null,
-    ul99: <number[]>null
+    ll99: new Array<number>(),
+    ll95: new Array<number>(),
+    ul95: new Array<number>(),
+    ul99: new Array<number>()
   });
 }

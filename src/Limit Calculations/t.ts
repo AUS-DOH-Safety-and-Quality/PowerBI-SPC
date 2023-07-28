@@ -9,7 +9,7 @@ export default function tLimits(inputData: dataClass, inputSettings: settingsCla
   const val: number[] = pow(inputData.numerators, 1 / 3.6);
   const inputDataCopy: dataClass = JSON.parse(JSON.stringify(inputData));
   inputDataCopy.numerators = val;
-  inputDataCopy.denominators = null;
+  inputDataCopy.denominators = new Array<number>();
   const limits: controlLimitsClass = iLimits(inputDataCopy, inputSettings);
   limits.targets = pow(limits.targets, 3.6);
   limits.values = pow(limits.values, 3.6);

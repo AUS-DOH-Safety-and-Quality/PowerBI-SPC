@@ -2,28 +2,23 @@ import { sqrt, exp, lgamma, square } from "./UnaryFunctions";
 import broadcast_unary from "./UnaryFunctions";
 import broadcast_binary from "./BinaryFunctions";
 
-export const c4 = broadcast_unary(
-  (sampleSize: number): number => {
-    if ((sampleSize <= 1) || (sampleSize === null)) {
-      return null;
-    }
-    const Nminus1: number = sampleSize - 1;
+function c4(sampleSize: number): number {
+  const Nminus1: number = sampleSize - 1;
 
-    return sqrt(2.0 / Nminus1)
-            * exp(lgamma(sampleSize / 2.0) - lgamma(Nminus1 / 2.0));
-  }
-);
+  return sqrt(2.0 / Nminus1)
+          * exp(lgamma(sampleSize / 2.0) - lgamma(Nminus1 / 2.0));
+};
 
-export const c5 = broadcast_unary(
-  (sampleSize: number): number => {
-    return sqrt(1 - square(c4(sampleSize)));
-  }
-);
+function c5(sampleSize: number): number {
+  return sqrt(1 - square(c4(sampleSize) as number));
+};
 
 export const a3 = broadcast_unary(
-  (sampleSize: number): number => {
-    const filt_samp: number = sampleSize  <= 1 ? null : sampleSize;
-    return 3.0 / (c4(filt_samp) * sqrt(filt_samp));
+  (sampleSize: number): number | null => {
+    if ((sampleSize === null) || (sampleSize <= 1)) {
+      return null;
+    }
+    return 3.0 / (c4(sampleSize) as number * sqrt(sampleSize));
   }
 );
 
@@ -35,13 +30,19 @@ const b_helper = broadcast_binary(
 )
 
 export const b3 = broadcast_binary(
-  (sampleSize: number, use95: boolean): number => {
+  (sampleSize: number, use95: boolean): number | null => {
+    if ((sampleSize === null) || (sampleSize <= 1)) {
+      return null;
+    }
     return 1 - b_helper(sampleSize, use95);
   }
 );
 
 export const b4 = broadcast_binary(
-  (sampleSize: number, use95: boolean): number => {
+  (sampleSize: number, use95: boolean): number | null => {
+    if ((sampleSize === null) || (sampleSize <= 1)) {
+      return null;
+    }
     return 1 + b_helper(sampleSize, use95);
   }
 );

@@ -8,6 +8,7 @@ import checkFlagDirection from "../Functions/checkFlagDirection"
 import truncate from "../Functions/truncate";
 import { truncateInputs } from "../Functions/truncate";
 import { multiply } from "../Functions/BinaryFunctions";
+import isNotNullOrUndefined from "../Functions/isNotNullOrUndefined";
 
 type controlLimitsArgs = {
   inputSettings: settingsClass,
@@ -90,10 +91,10 @@ export default class controlLimitsClass {
     if (args) {
       this.keys = args.keys;
       this.values = args.values;
-      if (args.numerators || !(args.numerators === null || args.numerators === undefined)) {
+      if (isNotNullOrUndefined(args.numerators)) {
         this.numerators = args.numerators;
       }
-      if (args.denominators || !(args.denominators === null || args.denominators === undefined)) {
+      if (isNotNullOrUndefined(args.denominators)) {
         this.denominators = args.denominators;
       }
       this.targets = args.targets;

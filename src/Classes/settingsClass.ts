@@ -1,6 +1,5 @@
 import powerbi from "powerbi-visuals-api";
 import DataView = powerbi.DataView;
-import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewPropertyValue = powerbi.DataViewPropertyValue
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import VisualEnumerationInstanceKinds = powerbi.VisualEnumerationInstanceKinds;
@@ -42,8 +41,10 @@ export default class settingsClass implements defaultSettingsType {
 
     allSettingGroups.forEach(settingGroup => {
       let condFormatting: defaultSettingsType[defaultSettingsKey] | undefined;
-      if (isNotNullOrUndefined(inputView.categorical) && isNotNullOrUndefined(inputView.categorical.categories)) {
-        condFormatting = extractConditionalFormatting(inputView.categorical as DataViewCategorical, settingGroup, this)[0];
+      if (isNotNullOrUndefined(inputView.categorical)) {
+        if (isNotNullOrUndefined(inputView.categorical.categories)) {
+          condFormatting = extractConditionalFormatting(inputView.categorical, settingGroup, this)[0];
+        }
       }
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values

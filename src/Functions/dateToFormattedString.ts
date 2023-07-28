@@ -49,7 +49,7 @@ const dateToFormattedString = broadcast_binary(
     const formatString: string = `{ ${localeDateMap[inpLocale]}, "options": { "day" : "2-digit", ${monthDateMap[inpMonth]}, ${yearDateMap[inpYear]} }, ${delimDateMap[inpDelim]} }`;
     const date_format: dateFormat = JSON.parse(formatString);
     const formattedString: string = input_date.toLocaleDateString(date_format.locale, date_format.options)
-                                              .replace(/(\/|(\s|,\s))/gi, date_format.delimiter);
+                                              .replace(/(\/|(\s|,\s))/gi, date_format.delimiter as string);
     if (inpDay !== "DD") {
       const weekday: string = input_date.toLocaleDateString(date_format.locale, {weekday : weekdayDateMap[inpDay]})
       return weekday + " " + formattedString;

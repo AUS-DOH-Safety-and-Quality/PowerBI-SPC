@@ -1,6 +1,6 @@
 import gammaln from "@stdlib/math-base-special-gammaln";
 
-type ReturnT<InputT, BaseT> = InputT extends Array<any> ? BaseT[] : BaseT;
+type ReturnT<InputT, BaseT> = InputT extends Array<any> ? NonNullable<BaseT>[] : NonNullable<BaseT>;
 
 export default function broadcast_unary<ScalarInputT, ScalarReturnT>(fun: (x: ScalarInputT) => ScalarReturnT) {
   return function<T extends ScalarInputT | ScalarInputT[]>(y: T): ReturnT<T, ScalarReturnT> {

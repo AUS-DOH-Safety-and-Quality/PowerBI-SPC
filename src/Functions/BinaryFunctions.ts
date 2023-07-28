@@ -1,4 +1,4 @@
-type ReturnT<Input1T, Input2T, BaseT> = Input1T extends Array<any> ? BaseT[] : Input2T extends Array<any> ? BaseT[] : BaseT;
+type ReturnT<Input1T, Input2T, BaseT> = Input1T extends Array<any> ? NonNullable<BaseT>[] : Input2T extends Array<any> ? NonNullable<BaseT>[] : NonNullable<BaseT>;
 
 export default function broadcast_binary<ScalarInput1T, ScalarInput2T, ScalarReturnT>(fun: (x: ScalarInput1T, y: ScalarInput2T) => ScalarReturnT) {
   return function<T1 extends ScalarInput1T | ScalarInput1T[],

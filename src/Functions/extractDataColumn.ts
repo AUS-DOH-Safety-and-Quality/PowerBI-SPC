@@ -29,22 +29,22 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     } else {
       columnRaw = columnRawTmp[0];
     }
-    if (columnRaw.source.type.dateTime) {
+    if (columnRaw.source.type?.dateTime) {
       return dateToFormattedString(<Date[]>columnRaw.values, inputSettings.dates) as Extract<T, string[]>;
     } else {
       return <string[]>columnRaw.values as Extract<T, string[]>;
     }
   } else if (name === "tooltips") {
     let rtn = new Array<VisualTooltipDataItem[]>();
-    const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
+    const tooltipColumns = inputView.values!.filter(viewColumn => viewColumn.source.roles?.tooltips);
     if (tooltipColumns.length > 0) {
       rtn = tooltipColumns[0].values.map((_, idx) => {
         return tooltipColumns.map(viewColumn => {
           return <VisualTooltipDataItem>{
             displayName: viewColumn.source.displayName,
-            value: viewColumn.source.type.numeric
+            value: viewColumn.source.type?.numeric
                     ? (<number>(viewColumn.values[idx])).toString()
-                    : viewColumn.source.type.dateTime
+                    : viewColumn.source.type?.dateTime
                       ? dateToFormattedString(<Date>(viewColumn.values[idx]), inputSettings.dates)
                       : <string>(viewColumn.values[idx])
           }
