@@ -1,4 +1,4 @@
-import broadcastBinary from "./broadcastBinary"
+import { broadcastBinary } from "../Functions"
 
 const checkFlagDirection = broadcastBinary(
   (outlierStatus: string, flagSettings: {process_flag_type: string, improvement_direction: string}): string => {

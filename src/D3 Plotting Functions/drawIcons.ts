@@ -9,7 +9,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   if (!(visualObj.viewModel.plotProperties.displayPlot)) {
     return;
   }
-  let nhsIconSettings: defaultSettingsType["nhs_icons"] = visualObj.viewModel.inputSettings.settings.nhs_icons;
+  const nhsIconSettings: defaultSettingsType["nhs_icons"] = visualObj.viewModel.inputSettings.settings.nhs_icons;
   const draw_variation: boolean = nhsIconSettings.show_variation_icons;
   const variation_location: string = nhsIconSettings.variation_icons_locations;
   const svg_width: number = visualObj.viewModel.plotProperties.width
