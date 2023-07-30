@@ -1,5 +1,4 @@
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import rep from "../Functions/rep";
+import { median } from "../D3 Plotting Functions/D3 Modules";
 import { divide } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import type dataClass from "../Classes/dataClass";
@@ -11,17 +10,13 @@ export default function runLimits(inputData: dataClass, inputSettings: settingsC
     ? divide(inputData.numerators, inputData.denominators)
     : inputData.numerators;
 
-  const cl: number = d3.median(ratio);
+  const cl: number = median(ratio);
   return new controlLimitsClass({
     inputSettings: inputSettings,
     keys: inputData.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),
-    numerators: useRatio ? inputData.numerators : <number[]>null,
-    denominators: useRatio ? inputData.denominators : <number[]>null,
-    targets: rep(cl, inputData.keys.length),
-    ll99: <number[]>null,
-    ll95: <number[]>null,
-    ul95: <number[]>null,
-    ul99: <number[]>null
+    numerators: useRatio ? inputData.numerators : undefined,
+    denominators: useRatio ? inputData.denominators : undefined,
+    targets: cl
   });
 }

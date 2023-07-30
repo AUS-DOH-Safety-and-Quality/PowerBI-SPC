@@ -1,8 +1,7 @@
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
+import { sum } from "../D3 Plotting Functions/D3 Modules";
 import { a3 } from "../Functions/Constants";
-import rep from "../Functions/rep";
-import { sqrt } from "../Functions/UnaryFunctions"
-import { pow, subtract, add, multiply, divide } from "../Functions/BinaryFunctions";
+import { sqrt, square } from "../Functions/UnaryFunctions"
+import { subtract, add, multiply, divide } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import type dataClass from "../Classes/dataClass";
 import type settingsClass from "../Classes/settingsClass";
@@ -17,14 +16,12 @@ export default function xbarLimits(inputData: dataClass, inputSettings: settings
   // Calculate the SD for each group
   const group_sd: number[] = inputData.xbar_sds;
 
-  // Per-group sample size minus 1
-  const Nm1: number[] = subtract(count_per_group, 1);
-
   // Calculate weighted SD
-  const sd: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
+  const Nm1: number[] = subtract(count_per_group, 1);
+  const sd: number = sqrt(sum(multiply(Nm1,square(group_sd))) / sum(Nm1));
 
   // Calculated weighted mean (for centreline)
-  const cl: number = d3.sum(multiply(count_per_group, group_means)) / d3.sum(count_per_group);
+  const cl: number = sum(multiply(count_per_group, group_means)) / sum(count_per_group);
 
   // Sample-size dependent constant
   const A3: number[] = a3(count_per_group);
@@ -33,7 +30,7 @@ export default function xbarLimits(inputData: dataClass, inputSettings: settings
     inputSettings: inputSettings,
     keys: inputData.keys,
     values: group_means,
-    targets: rep(cl, inputData.keys.length),
+    targets: cl,
     ll99: subtract(cl, multiply(A3, sd)),
     ll95: subtract(cl, multiply(multiply(divide(A3, 3), 2), sd)),
     ul95: add(cl, multiply(multiply(divide(A3, 3), 2), sd)),

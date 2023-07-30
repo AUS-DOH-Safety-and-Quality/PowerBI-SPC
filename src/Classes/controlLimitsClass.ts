@@ -8,6 +8,7 @@ import checkFlagDirection from "../Functions/checkFlagDirection"
 import truncate from "../Functions/truncate";
 import type { truncateInputs } from "../Functions/truncate";
 import { multiply } from "../Functions/BinaryFunctions";
+import repIfScalar from "../Functions/repIfScalar";
 
 type controlLimitsArgs = {
   inputSettings: settingsClass,
@@ -15,11 +16,11 @@ type controlLimitsArgs = {
   values: number[];
   numerators?: number[];
   denominators?: number[];
-  targets: number[];
-  ll99: number[];
-  ll95: number[];
-  ul95: number[];
-  ul99: number[];
+  targets: number[] | number;
+  ll99?: number[] | number;
+  ll95?: number[] | number;
+  ul95?: number[] | number;
+  ul99?: number[] | number;
   count?: number[];
 }
 
@@ -89,25 +90,21 @@ export default class controlLimitsClass {
   constructor(args: controlLimitsArgs) {
     this.keys = args.keys;
     this.values = args.values;
-    if (args.numerators || !(args.numerators === null || args.numerators === undefined)) {
-      this.numerators = args.numerators;
-    }
-    if (args.denominators || !(args.denominators === null || args.denominators === undefined)) {
-      this.denominators = args.denominators;
-    }
-    this.targets = args.targets;
+    this.numerators = args?.numerators
+    this.denominators = args?.denominators
+    this.count = args?.count
+
+    this.targets = repIfScalar(args.targets, args.values.length);
+    this.ll99 = repIfScalar(args.ll99, args.values.length);
+    this.ll95 = repIfScalar(args.ll95, args.values.length);
+    this.ul95 = repIfScalar(args.ul95, args.values.length);
+    this.ul99 = repIfScalar(args.ul99, args.values.length);
     this.alt_targets = rep(args.inputSettings.spc.alt_target, args.values.length)
-    this.ll99 = args.ll99;
-    this.ll95 = args.ll95;
-    this.ul95 = args.ul95;
-    this.ul99 = args.ul99;
+
     this.astpoint = rep("none", args.values.length);
     this.trend = rep("none", args.values.length);
     this.two_in_three = rep("none", args.values.length);
     this.shift = rep("none", args.values.length);
-    if (args.count || !(args.count === null || args.count === undefined)) {
-      this.count = args.count;
-    }
 
     this.scaleAndTruncateLimits(args.inputSettings)
     this.flagOutliers(args.inputSettings)

@@ -1,4 +1,4 @@
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
+import { sum } from "../D3 Plotting Functions/D3 Modules";
 import { abs } from "../Functions/UnaryFunctions";
 
 export default function shift(val: number[], targets: number[], n: number): string[] {
@@ -6,7 +6,7 @@ export default function shift(val: number[], targets: number[], n: number): stri
     return Math.sign(d - targets[i]);
   });
   const lagged_sign_sum: number[] = lagged_sign.map((_, i) => {
-    return d3.sum(lagged_sign.slice(Math.max(0, i - (n - 1)), i + 1));
+    return sum(lagged_sign.slice(Math.max(0, i - (n - 1)), i + 1));
   })
   const shift_detected: string[] = lagged_sign_sum.map(d => {
     if (abs(d) >= n) {

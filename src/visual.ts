@@ -4,7 +4,8 @@ import type powerbi from "powerbi-visuals-api";
 type EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
-import * as spc from "./D3 Plotting Functions"
+import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
+          drawDots, drawIcons, updateHighlighting, addContextMenu } from "./D3 Plotting Functions"
 import viewModelClass from "./Classes/viewModelClass"
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
@@ -22,7 +23,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     this.selectionManager = this.host.createSelectionManager();
     this.selectionManager.registerOnSelectCallback(() => {
-      this.svg.call(spc.updateHighlighting, this);
+      this.svg.call(updateHighlighting, this);
     });
 
     this.svg.append('g').classed("dotsgroup", true)
@@ -42,14 +43,14 @@ export class Visual implements powerbi.extensibility.IVisual {
       this.viewModel.update(options, this.host);
       this.svg.attr("width", this.viewModel.plotProperties.width)
               .attr("height", this.viewModel.plotProperties.height)
-              .call(spc.drawXAxis, this)
-              .call(spc.drawYAxis, this)
-              .call(spc.drawTooltipLine, this)
-              .call(spc.drawLines, this)
-              .call(spc.drawDots, this)
-              .call(spc.drawIcons, this)
-              .call(spc.updateHighlighting, this)
-              .call(spc.addContextMenu, this)
+              .call(drawXAxis, this)
+              .call(drawYAxis, this)
+              .call(drawTooltipLine, this)
+              .call(drawLines, this)
+              .call(drawDots, this)
+              .call(drawIcons, this)
+              .call(updateHighlighting, this)
+              .call(addContextMenu, this)
 
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {

@@ -1,6 +1,5 @@
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
+import { sum } from "../D3 Plotting Functions/D3 Modules";
 import { b3, b4 } from "../Functions/Constants";
-import rep from "../Functions/rep";
 import { sqrt } from "../Functions/UnaryFunctions";
 import { subtract, pow, multiply } from "../Functions/BinaryFunctions";
 import controlLimitsClass from "../Classes/controlLimitsClass";
@@ -15,7 +14,7 @@ export default function sLimits(inputData: dataClass, inputSettings: settingsCla
   const Nm1: number[] = subtract(count_per_group, 1);
 
   // Calculate weighted SD
-  const cl: number = sqrt(d3.sum(multiply(Nm1,pow(group_sd,2))) / d3.sum(Nm1));
+  const cl: number = sqrt(sum(multiply(Nm1,pow(group_sd,2))) / sum(Nm1));
 
   // Sample-size dependent constant
   const B3: number[] = b3(count_per_group, false);
@@ -27,7 +26,7 @@ export default function sLimits(inputData: dataClass, inputSettings: settingsCla
     inputSettings: inputSettings,
     keys: inputData.keys,
     values: group_sd,
-    targets: rep(cl, inputData.keys.length),
+    targets: cl,
     ll99: multiply(cl, B3),
     ll95: multiply(cl, B395),
     ul95: multiply(cl, B495),
