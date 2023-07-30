@@ -1,7 +1,7 @@
 import { sum } from "../D3 Plotting Functions/D3 Modules";
 import { abs } from "../Functions";
 
-export default function two_in_three(val: number[], ll95: number[], ul95: number[]): string[] {
+export default function twoInThree(val: number[], ll95: number[], ul95: number[]): string[] {
   const outside95: number[] = val.map((d, i) => {
     return d > ul95[i] ? 1 : (d < ll95[i] ? -1 : 0);
   });

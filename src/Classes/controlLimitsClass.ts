@@ -1,4 +1,4 @@
-import { astronomical, trend, two_in_three, shift } from "../Outlier Flagging"
+import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 import { rep, checkFlagDirection, truncate, type truncateInputs, multiply, repIfScalar } from "../Functions"
 import { type defaultSettingsType } from "../Classes";
 
@@ -65,7 +65,7 @@ export default class controlLimitsClass {
                                             { process_flag_type, improvement_direction });
       }
       if (inputSettings.outliers.two_in_three) {
-        this.two_in_three = checkFlagDirection(two_in_three(this.values, this.ll95, this.ul95),
+        this.two_in_three = checkFlagDirection(twoInThree(this.values, this.ll95, this.ul95),
                                                 { process_flag_type, improvement_direction });
       }
     }
