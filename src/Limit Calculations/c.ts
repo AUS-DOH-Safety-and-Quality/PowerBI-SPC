@@ -1,8 +1,6 @@
 import { mean } from "../D3 Plotting Functions/D3 Modules";
-import truncate from "../Functions/truncate";
-import controlLimitsClass from "../Classes/controlLimitsClass"
-import type dataClass from "../Classes/dataClass"
-import type settingsClass from "../Classes/settingsClass";
+import { truncate } from "../Functions";
+import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
 
 export default function cLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = mean(inputData.numerators);

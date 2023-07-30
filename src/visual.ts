@@ -6,7 +6,7 @@ type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumera
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, updateHighlighting, addContextMenu } from "./D3 Plotting Functions"
-import viewModelClass from "./Classes/viewModelClass"
+import { viewModelClass } from "./Classes"
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 

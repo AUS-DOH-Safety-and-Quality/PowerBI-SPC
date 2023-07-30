@@ -115,10 +115,6 @@ const defaultSettings = {
   }
 };
 
-export type defaultSettingsType = typeof defaultSettings;
-export type defaultSettingsKey = keyof defaultSettingsType;
-export type settingsScalarTypes = number | string | boolean;
-
 export const settingsPaneGroupings = {
   outliers: {
     "Astronomical Points": ["process_flag_type", "improvement_direction", "astronomical", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],

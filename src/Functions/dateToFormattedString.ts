@@ -1,5 +1,5 @@
-import type { defaultSettingsType } from "../defaultSettings"
-import broadcastBinary from "./broadcastBinary"
+import type { defaultSettingsType } from "../Classes"
+import { broadcastBinary } from "../Functions"
 
 type dateFormat = {
   locale: string,

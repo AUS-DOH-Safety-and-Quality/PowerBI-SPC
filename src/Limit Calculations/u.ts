@@ -1,10 +1,6 @@
 import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { sqrt } from "../Functions/broadcastUnary";
-import { subtract, add, divide, multiply } from "../Functions/broadcastBinary";
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import truncate from "../Functions/truncate";
-import type dataClass from "../Classes/dataClass";
-import type settingsClass from "../Classes/settingsClass";
+import { subtract, add, divide, multiply, truncate, sqrt } from "../Functions";
+import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
 
 export default function uLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = divide(sum(inputData.numerators),sum(inputData.denominators));

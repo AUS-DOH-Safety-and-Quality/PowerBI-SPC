@@ -1,5 +1,5 @@
 import type powerbi from "powerbi-visuals-api";
-import type { plotData } from "../Classes/viewModelClass";
+import type { plotData } from "../Classes";
 type ISelectionId = powerbi.visuals.ISelectionId;
 import type { svgBaseType, Visual } from "../visual";
 

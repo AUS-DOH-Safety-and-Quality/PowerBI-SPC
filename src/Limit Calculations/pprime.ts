@@ -1,11 +1,6 @@
 import { sum, mean } from "../D3 Plotting Functions/D3 Modules";
-import diff from "../Functions/diff";
-import { sqrt, abs } from "../Functions/broadcastUnary";
-import { subtract, add, divide, multiply } from "../Functions/broadcastBinary";
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import truncate from "../Functions/truncate";
-import type dataClass from "../Classes/dataClass";
-import type settingsClass from "../Classes/settingsClass";
+import { subtract, add, divide, multiply, truncate, sqrt, abs, diff } from "../Functions";
+import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
 
 export default function pprimeLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const val: number[] = divide(inputData.numerators, inputData.denominators);

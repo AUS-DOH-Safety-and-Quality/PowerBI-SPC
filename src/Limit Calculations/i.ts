@@ -1,10 +1,6 @@
 import { mean } from "../D3 Plotting Functions/D3 Modules";
-import diff from "../Functions/diff"
-import { abs } from "../Functions/broadcastUnary"
-import { divide } from "../Functions/broadcastBinary";
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import type dataClass from "../Classes/dataClass";
-import type settingsClass from "../Classes/settingsClass";
+import { abs, diff, divide } from "../Functions";
+import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
 
 export default function iLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);

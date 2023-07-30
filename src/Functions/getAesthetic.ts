@@ -1,4 +1,4 @@
-import type settingsClass from "../Classes/settingsClass"
+import type { settingsClass } from "../Classes"
 
 const lineNameMap: Record<string, string> = {
   "ll99" : "99",

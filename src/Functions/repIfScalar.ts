@@ -1,4 +1,4 @@
-import rep from "./rep";
+import { rep } from "../Functions";
 
 type ArrayT<T> = T extends (infer U)[] ? U[] : T[];
 

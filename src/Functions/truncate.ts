@@ -1,4 +1,5 @@
-import broadcastBinary from "./broadcastBinary"
+import { broadcastBinary } from "../Functions"
+
 export type truncateInputs = { lower?: number, upper?: number };
 
 const truncate = broadcastBinary(

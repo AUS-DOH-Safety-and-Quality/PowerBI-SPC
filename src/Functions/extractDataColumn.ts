@@ -4,8 +4,8 @@ type DataViewValueColumns = powerbi.DataViewValueColumns;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type settingsClass from "../Classes/settingsClass";
-import dateToFormattedString from "./dateToFormattedString";
+import type { settingsClass } from "../Classes/";
+import { dateToFormattedString } from "../Functions";
 type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,

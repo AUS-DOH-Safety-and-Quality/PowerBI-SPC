@@ -1,10 +1,6 @@
 import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { b3, b4 } from "../Functions/Constants";
-import { sqrt } from "../Functions/broadcastUnary";
-import { subtract, pow, multiply } from "../Functions/broadcastBinary";
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import type dataClass from "../Classes/dataClass";
-import type settingsClass from "../Classes/settingsClass";
+import { subtract, pow, multiply, b3, b4, sqrt } from "../Functions";
+import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
 
 export default function sLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const group_sd: number[] = inputData.numerators;

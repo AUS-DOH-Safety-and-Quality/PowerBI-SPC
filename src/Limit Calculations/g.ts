@@ -1,8 +1,6 @@
 import { mean, median } from "../D3 Plotting Functions/D3 Modules";
-import { sqrt } from "../Functions/broadcastUnary";
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import type dataClass from "../Classes/dataClass";
-import type settingsClass from "../Classes/settingsClass";
+import { sqrt } from "../Functions";
+import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
 
 export default function gLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
   const cl: number = mean(inputData.numerators);

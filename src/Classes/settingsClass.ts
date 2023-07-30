@@ -6,9 +6,12 @@ type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanc
 type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
-import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
-import defaultSettings from "../defaultSettings"
-import { type defaultSettingsType, type defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
+import { extractConditionalFormatting } from "../Functions";
+import { default as defaultSettings, settingsPaneGroupings } from "../defaultSettings";
+
+export type defaultSettingsType = typeof defaultSettings;
+export type defaultSettingsKey = keyof defaultSettingsType;
+export type settingsScalarTypes = number | string | boolean;
 
 /**
  * This is the core class which controls the initialisation and

@@ -1,5 +1,5 @@
-import type { plotData } from "../Classes/viewModelClass";
-import between from "../Functions/between";
+import type { plotData } from "../Classes";
+import { between } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 import updateHighlighting from "./updateHighlighting";
 

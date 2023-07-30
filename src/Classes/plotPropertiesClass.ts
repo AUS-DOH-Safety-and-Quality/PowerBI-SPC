@@ -1,11 +1,8 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
+import { truncate } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import truncate from "../Functions/truncate";
-import type { plotData } from "./viewModelClass"
-import type settingsClass from "./settingsClass";
-import type dataClass from "./dataClass";
-import type controlLimitsClass from "./controlLimitsClass";
+import { type settingsClass, type dataClass, type controlLimitsClass, type plotData } from "../Classes";
 
 export type axisProperties = {
   lower: number,

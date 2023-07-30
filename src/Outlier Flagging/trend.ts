@@ -1,5 +1,5 @@
 import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { abs } from "../Functions/broadcastUnary";
+import { abs } from "../Functions";
 
 export default function trend(val: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {

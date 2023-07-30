@@ -1,6 +1,4 @@
-import { sqrt, exp, lgamma, square } from "./broadcastUnary";
-import broadcastUnary from "./broadcastUnary";
-import broadcastBinary from "./broadcastBinary";
+import { sqrt, exp, lgamma, square, broadcastUnary, broadcastBinary } from "../Functions";
 
 export const c4 = broadcastUnary(
   (sampleSize: number): number => {

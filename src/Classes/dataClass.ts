@@ -3,12 +3,8 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import extractDataColumn from "../Functions/extractDataColumn"
-import type settingsClass from "./settingsClass"
-import checkValidInput from "../Functions/checkValidInput"
-import extractValues from "../Functions/extractValues"
-import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
-import type { defaultSettingsType } from "../defaultSettings";
+import { extractDataColumn, checkValidInput, extractValues, extractConditionalFormatting } from "../Functions"
+import { type settingsClass, type defaultSettingsType } from "../Classes";
 
 export default class dataClass {
   keys: { x: number, id: number, label: string }[];

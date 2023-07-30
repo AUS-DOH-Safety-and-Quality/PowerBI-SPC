@@ -1,14 +1,6 @@
-import rep from "../Functions/rep";
-import astronomical from "../Outlier Flagging/astronomical"
-import trend from "../Outlier Flagging/trend"
-import two_in_three from "../Outlier Flagging/two_in_three"
-import shift from "../Outlier Flagging/shift"
-import type settingsClass from "./settingsClass";
-import checkFlagDirection from "../Functions/checkFlagDirection"
-import truncate from "../Functions/truncate";
-import type { truncateInputs } from "../Functions/truncate";
-import { multiply } from "../Functions/broadcastBinary";
-import repIfScalar from "../Functions/repIfScalar";
+import { astronomical, trend, two_in_three, shift } from "../Outlier Flagging"
+import { rep, checkFlagDirection, truncate, type truncateInputs, multiply, repIfScalar } from "../Functions"
+import { type settingsClass } from "../Classes";
 
 type controlLimitsArgs = {
   inputSettings: settingsClass,
