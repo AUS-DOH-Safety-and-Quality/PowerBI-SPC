@@ -13,7 +13,7 @@
     "d3-scale": "^4.0.2",
     "d3-selection": "^3.0.0",
     "d3-shape": "^3.2.0",
-    "powerbi-visuals-api": "~3.6.0",
+    "powerbi-visuals-api": "~5.4.0",
     "powerbi-visuals-utils-dataviewutils": "^6.0.1"
   },
   "devDependencies": {
