@@ -1,7 +1,8 @@
-import broadcast_binary from "./BinaryFunctions"
+import { broadcastBinary } from "../Functions"
+
 export type truncateInputs = { lower?: number, upper?: number };
 
-const truncate = broadcast_binary(
+const truncate = broadcastBinary(
   (val: number, limits: truncateInputs): number => {
     let rtn: number = val;
     if (limits.lower || limits.lower == 0) {

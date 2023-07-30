@@ -3,12 +3,8 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import extractDataColumn from "../Functions/extractDataColumn"
-import type settingsClass from "./settingsClass"
-import checkValidInput from "../Functions/checkValidInput"
-import extractValues from "../Functions/extractValues"
-import extractConditionalFormatting from "../Functions/extractConditionalFormatting"
-import type { defaultSettingsType } from "../defaultSettings";
+import { extractDataColumn, checkValidInput, extractValues, extractConditionalFormatting } from "../Functions"
+import { type defaultSettingsType } from "../Classes";
 
 export default class dataClass {
   keys: { x: number, id: number, label: string }[];
@@ -22,7 +18,7 @@ export default class dataClass {
   scatter_formatting: defaultSettingsType["scatter"][];
   tooltips: VisualTooltipDataItem[][];
 
-  constructor(inputView: DataViewCategorical, inputSettings: settingsClass) {
+  constructor(inputView: DataViewCategorical, inputSettings: defaultSettingsType) {
     const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings);
     const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings);
     const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings);

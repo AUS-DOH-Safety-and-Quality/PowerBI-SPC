@@ -95,7 +95,7 @@ const defaultSettings = {
     ylimit_tick_font: "'Arial', sans-serif",
     ylimit_tick_size: 10,
     ylimit_tick_colour: "#000000",
-    ylimit_tick_rotation: -35,
+    ylimit_tick_rotation: 0,
     ylimit_tick_count: <number>(null),
     ylimit_label:<string>(null),
     ylimit_label_font: "'Arial', sans-serif",
@@ -114,10 +114,6 @@ const defaultSettings = {
     date_format_locale: "en-GB"
   }
 };
-
-export type defaultSettingsType = typeof defaultSettings;
-export type defaultSettingsKey = keyof defaultSettingsType;
-export type settingsScalarTypes = number | string | boolean;
 
 export const settingsPaneGroupings = {
   outliers: {

@@ -1,24 +1,18 @@
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import rep from "../Functions/rep";
-import diff from "../Functions/diff";
-import { sqrt, abs } from "../Functions/UnaryFunctions";
-import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";
-import controlLimitsClass from "../Classes/controlLimitsClass";
-import type dataClass from "../Classes/dataClass";
-import truncate from "../Functions/truncate";
-import type settingsClass from "../Classes/settingsClass";
+import { sum, mean } from "../D3 Plotting Functions/D3 Modules";
+import { subtract, add, divide, multiply, truncate, sqrt, abs, diff } from "../Functions";
+import { controlLimitsClass, type dataClass, type defaultSettingsType } from "../Classes";
 
-export default function pprimeLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
+export default function pprimeLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
   const val: number[] = divide(inputData.numerators, inputData.denominators);
-  const cl: number = d3.sum(inputData.numerators) / d3.sum(inputData.denominators);
+  const cl: number = sum(inputData.numerators) / sum(inputData.denominators);
   const sd: number[] = sqrt(divide(cl * (1 - cl), inputData.denominators));
   const zscore: number[] = divide(subtract(val, cl), sd);
 
   const consec_diff: number[] = abs(diff(zscore));
-  const consec_diff_ulim: number = d3.mean(consec_diff) * 3.267;
+  const consec_diff_ulim: number = mean(consec_diff) * 3.267;
   const outliers_in_limits: boolean = inputSettings.spc.outliers_in_limits;
   const consec_diff_valid: number[] = outliers_in_limits ? consec_diff : consec_diff.filter(d => d < consec_diff_ulim);
-  const sigma: number[] = multiply(sd, d3.mean(consec_diff_valid) / 1.128);
+  const sigma: number[] = multiply(sd, mean(consec_diff_valid) / 1.128);
 
   return new controlLimitsClass({
     inputSettings: inputSettings,
@@ -26,7 +20,7 @@ export default function pprimeLimits(inputData: dataClass, inputSettings: settin
     values: val,
     numerators: inputData.numerators,
     denominators: inputData.denominators,
-    targets: rep(cl, inputData.keys.length),
+    targets: cl,
     ll99: truncate(subtract(cl, multiply(3, sigma)), {lower: 0}),
     ll95: truncate(subtract(cl, multiply(2, sigma)), {lower: 0}),
     ul95: truncate(add(cl, multiply(2, sigma)), {upper: 1}),

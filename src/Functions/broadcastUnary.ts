@@ -2,7 +2,7 @@ import gammaln from "@stdlib/math-base-special-gammaln";
 
 type ReturnT<InputT, BaseT> = InputT extends Array<any> ? BaseT[] : BaseT;
 
-export default function broadcast_unary<ScalarInputT, ScalarReturnT>(fun: (x: ScalarInputT) => ScalarReturnT) {
+export default function broadcastUnary<ScalarInputT, ScalarReturnT>(fun: (x: ScalarInputT) => ScalarReturnT) {
   return function<T extends ScalarInputT | ScalarInputT[]>(y: T): ReturnT<T, ScalarReturnT> {
     if (Array.isArray(y)) {
       return (y as ScalarInputT[]).map((d: ScalarInputT) => fun(d)) as ReturnT<T, ScalarReturnT>;
@@ -12,8 +12,8 @@ export default function broadcast_unary<ScalarInputT, ScalarReturnT>(fun: (x: Sc
   };
 }
 
-export const sqrt = broadcast_unary(Math.sqrt);
-export const abs = broadcast_unary((x: number): number => (x ? Math.abs(x) : x));
-export const exp = broadcast_unary(Math.exp);
-export const lgamma = broadcast_unary(gammaln);
-export const square = broadcast_unary((x: number): number => Math.pow(x, 2));
+export const sqrt = broadcastUnary(Math.sqrt);
+export const abs = broadcastUnary((x: number): number => (x ? Math.abs(x) : x));
+export const exp = broadcastUnary(Math.exp);
+export const lgamma = broadcastUnary(gammaln);
+export const square = broadcastUnary((x: number): number => Math.pow(x, 2));

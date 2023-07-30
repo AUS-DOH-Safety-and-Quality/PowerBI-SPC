@@ -6,9 +6,12 @@ type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanc
 type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
-import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
-import defaultSettings from "../defaultSettings"
-import { type defaultSettingsType, type defaultSettingsKey, settingsPaneGroupings } from "../defaultSettings";
+import { extractConditionalFormatting } from "../Functions";
+import { default as defaultSettings, settingsPaneGroupings } from "../defaultSettings";
+
+export type defaultSettingsType = typeof defaultSettings;
+export type defaultSettingsKey = keyof defaultSettingsType;
+export type settingsScalarTypes = number | string | boolean;
 
 /**
  * This is the core class which controls the initialisation and
@@ -17,16 +20,8 @@ import { type defaultSettingsType, type defaultSettingsKey, settingsPaneGrouping
  *
  * These are defined in the settingsGroups.ts file
  */
-export default class settingsClass implements defaultSettingsType {
-  canvas: defaultSettingsType["canvas"];
-  spc: defaultSettingsType["spc"];
-  outliers: defaultSettingsType["outliers"];
-  nhs_icons: defaultSettingsType["nhs_icons"];
-  scatter: defaultSettingsType["scatter"];
-  lines: defaultSettingsType["lines"];
-  x_axis: defaultSettingsType["x_axis"];
-  y_axis: defaultSettingsType["y_axis"];
-  dates: defaultSettingsType["dates"];
+export default class settingsClass {
+  settings: defaultSettingsType;
 
   /**
    * Function to read the values from the settings pane and update the
@@ -36,16 +31,16 @@ export default class settingsClass implements defaultSettingsType {
    */
   update(inputView: DataView): void {
     // Get the names of all classes in settingsObject which have values to be updated
-    const allSettingGroups: string[] = Object.getOwnPropertyNames(this);
+    const allSettingGroups: string[] = Object.keys(this.settings);
 
     allSettingGroups.forEach(settingGroup => {
       const categoricalView: DataViewCategorical = inputView.categorical ? inputView.categorical : null;
-      const condFormatting: defaultSettingsType[defaultSettingsKey] = extractConditionalFormatting(categoricalView, settingGroup, this)[0];
+      const condFormatting: defaultSettingsType[defaultSettingsKey] = extractConditionalFormatting(categoricalView, settingGroup, this.settings)[0];
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
-      const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroup]);
+      const settingNames: string[] = Object.keys(this.settings[settingGroup]);
       settingNames.forEach(settingName => {
-        this[settingGroup][settingName] = condFormatting ? condFormatting[settingName] : defaultSettings[settingGroup][settingName]
+        this.settings[settingGroup][settingName] = condFormatting ? condFormatting[settingName] : defaultSettings[settingGroup][settingName]
       })
     })
   }
@@ -59,7 +54,7 @@ export default class settingsClass implements defaultSettingsType {
    * @returns An object where each element is the value for a given setting in the named group
    */
   createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumerationObject {
-    const settingNames: string[] = Object.getOwnPropertyNames(this[settingGroupName]);
+    const settingNames: string[] = Object.keys(this.settings[settingGroupName]);
     const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
     const paneGroupings: Record<string, string[]> = settingsGrouped ? settingsPaneGroupings[settingGroupName] : { "all": settingNames };
     const rtnInstances = new Array<VisualObjectInstance>();
@@ -68,7 +63,7 @@ export default class settingsClass implements defaultSettingsType {
     Object.keys(paneGroupings).forEach((currKey, idx) => {
       const props = Object.fromEntries(
         paneGroupings[currKey].map(currSetting => {
-          const settingValue: DataViewPropertyValue = this[settingGroupName][currSetting]
+          const settingValue: DataViewPropertyValue = this.settings[settingGroupName][currSetting]
           return [currSetting, settingValue]
         })
       );
@@ -90,9 +85,6 @@ export default class settingsClass implements defaultSettingsType {
   }
 
   constructor() {
-    Object.keys(defaultSettings).forEach(key => {
-      this[key] = {};
-      Object.assign(this[key], defaultSettings[key]);
-    });
+    this.settings = defaultSettings;
   }
 }

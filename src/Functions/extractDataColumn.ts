@@ -4,13 +4,13 @@ type DataViewValueColumns = powerbi.DataViewValueColumns;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type settingsClass from "../Classes/settingsClass";
-import dateToFormattedString from "./dateToFormattedString";
+import type { defaultSettingsType } from "../Classes/";
+import { dateToFormattedString } from "../Functions";
 type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
-                                              inputSettings: settingsClass): T {
+                                              inputSettings: defaultSettingsType): T {
   let columnRaw: DataViewValueColumn;
   if (name === "key") {
     const columnRawTmp: DataViewValueColumn[] = (inputView.categories as DataViewCategoryColumn[]).filter(viewColumn => {

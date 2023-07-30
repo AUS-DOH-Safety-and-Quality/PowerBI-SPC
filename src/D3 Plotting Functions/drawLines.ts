@@ -1,7 +1,6 @@
 import * as d3 from "./D3 Modules";
-import type { lineData } from "../Classes/viewModelClass";
-import between from "../Functions/between";
-import getAesthetic from "../Functions/getAesthetic";
+import type { lineData } from "../Classes";
+import { between, getAesthetic } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {
@@ -19,7 +18,7 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
                   .defined(d => d.line_value !== null && between(d.line_value, lower, upper))(d[1])
       })
       .attr("fill", "none")
-      .attr("stroke", d => getAesthetic(d[0], "lines", "colour", visualObj.viewModel.inputSettings))
-      .attr("stroke-width", d => getAesthetic(d[0], "lines", "width", visualObj.viewModel.inputSettings))
-      .attr("stroke-dasharray", d => getAesthetic(d[0], "lines", "type", visualObj.viewModel.inputSettings));
+      .attr("stroke", d => getAesthetic(d[0], "lines", "colour", visualObj.viewModel.inputSettings.settings))
+      .attr("stroke-width", d => getAesthetic(d[0], "lines", "width", visualObj.viewModel.inputSettings.settings))
+      .attr("stroke-dasharray", d => getAesthetic(d[0], "lines", "type", visualObj.viewModel.inputSettings.settings));
 }

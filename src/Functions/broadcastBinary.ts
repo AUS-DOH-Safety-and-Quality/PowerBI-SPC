@@ -1,6 +1,6 @@
 type ReturnT<Input1T, Input2T, BaseT> = Input1T extends Array<any> ? BaseT[] : Input2T extends Array<any> ? BaseT[] : BaseT;
 
-export default function broadcast_binary<ScalarInput1T, ScalarInput2T, ScalarReturnT>(fun: (x: ScalarInput1T, y: ScalarInput2T) => ScalarReturnT) {
+export default function broadcastBinary<ScalarInput1T, ScalarInput2T, ScalarReturnT>(fun: (x: ScalarInput1T, y: ScalarInput2T) => ScalarReturnT) {
   return function<T1 extends ScalarInput1T | ScalarInput1T[],
                   T2 extends ScalarInput2T | ScalarInput2T[]>(x: T1, y: T2): ReturnT<T1, T2, ScalarReturnT> {
     // Need to provide type hints that the scalar type of the input arguments
@@ -22,11 +22,11 @@ export default function broadcast_binary<ScalarInput1T, ScalarInput2T, ScalarRet
 
 // Need to have special handling for negative x, as pow will return NaN for
 // negative inputs with fractional exponents
-export const pow = broadcast_binary((x: number, y: number): number => (x >= 0.0) ? Math.pow(x, y) : -Math.pow(-x, y));
-export const add = broadcast_binary((x: number, y: number): number => x + y);
-export const subtract = broadcast_binary((x: number, y: number): number => x - y);
-export const divide = broadcast_binary((x: number, y: number): number => x / y);
-export const multiply = broadcast_binary(
+export const pow = broadcastBinary((x: number, y: number): number => (x >= 0.0) ? Math.pow(x, y) : -Math.pow(-x, y));
+export const add = broadcastBinary((x: number, y: number): number => x + y);
+export const subtract = broadcastBinary((x: number, y: number): number => x - y);
+export const divide = broadcastBinary((x: number, y: number): number => x / y);
+export const multiply = broadcastBinary(
   (x: number, y: number): number => {
     return (x === null || y === null) ? null : (x * y);
 });

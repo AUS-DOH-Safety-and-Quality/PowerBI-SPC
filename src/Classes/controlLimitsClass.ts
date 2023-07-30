@@ -1,25 +1,18 @@
-import rep from "../Functions/rep";
-import astronomical from "../Outlier Flagging/astronomical"
-import trend from "../Outlier Flagging/trend"
-import two_in_three from "../Outlier Flagging/two_in_three"
-import shift from "../Outlier Flagging/shift"
-import type settingsClass from "./settingsClass";
-import checkFlagDirection from "../Functions/checkFlagDirection"
-import truncate from "../Functions/truncate";
-import type { truncateInputs } from "../Functions/truncate";
-import { multiply } from "../Functions/BinaryFunctions";
+import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
+import { rep, checkFlagDirection, truncate, type truncateInputs, multiply, repIfScalar } from "../Functions"
+import { type defaultSettingsType } from "../Classes";
 
 type controlLimitsArgs = {
-  inputSettings: settingsClass,
+  inputSettings: defaultSettingsType,
   keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
   denominators?: number[];
-  targets: number[];
-  ll99: number[];
-  ll95: number[];
-  ul95: number[];
-  ul99: number[];
+  targets: number[] | number;
+  ll99?: number[] | number;
+  ll95?: number[] | number;
+  ul95?: number[] | number;
+  ul99?: number[] | number;
   count?: number[];
 }
 
@@ -41,7 +34,7 @@ export default class controlLimitsClass {
   two_in_three: string[];
   shift: string[];
 
-  scaleAndTruncateLimits(inputSettings: settingsClass): void {
+  scaleAndTruncateLimits(inputSettings: defaultSettingsType): void {
     // Scale limits using provided multiplier
     const multiplier: number = inputSettings.spc.multiplier;
 
@@ -63,7 +56,7 @@ export default class controlLimitsClass {
     });
   }
 
-  flagOutliers(inputSettings: settingsClass) {
+  flagOutliers(inputSettings: defaultSettingsType) {
     const process_flag_type: string = inputSettings.outliers.process_flag_type;
     const improvement_direction: string = inputSettings.outliers.improvement_direction;
     if (inputSettings.spc.chart_type !== "run") {
@@ -72,7 +65,7 @@ export default class controlLimitsClass {
                                             { process_flag_type, improvement_direction });
       }
       if (inputSettings.outliers.two_in_three) {
-        this.two_in_three = checkFlagDirection(two_in_three(this.values, this.ll95, this.ul95),
+        this.two_in_three = checkFlagDirection(twoInThree(this.values, this.ll95, this.ul95),
                                                 { process_flag_type, improvement_direction });
       }
     }
@@ -89,25 +82,21 @@ export default class controlLimitsClass {
   constructor(args: controlLimitsArgs) {
     this.keys = args.keys;
     this.values = args.values;
-    if (args.numerators || !(args.numerators === null || args.numerators === undefined)) {
-      this.numerators = args.numerators;
-    }
-    if (args.denominators || !(args.denominators === null || args.denominators === undefined)) {
-      this.denominators = args.denominators;
-    }
-    this.targets = args.targets;
+    this.numerators = args?.numerators
+    this.denominators = args?.denominators
+    this.count = args?.count
+
+    this.targets = repIfScalar(args.targets, args.values.length);
+    this.ll99 = repIfScalar(args.ll99, args.values.length);
+    this.ll95 = repIfScalar(args.ll95, args.values.length);
+    this.ul95 = repIfScalar(args.ul95, args.values.length);
+    this.ul99 = repIfScalar(args.ul99, args.values.length);
     this.alt_targets = rep(args.inputSettings.spc.alt_target, args.values.length)
-    this.ll99 = args.ll99;
-    this.ll95 = args.ll95;
-    this.ul95 = args.ul95;
-    this.ul99 = args.ul99;
+
     this.astpoint = rep("none", args.values.length);
     this.trend = rep("none", args.values.length);
     this.two_in_three = rep("none", args.values.length);
     this.shift = rep("none", args.values.length);
-    if (args.count || !(args.count === null || args.count === undefined)) {
-      this.count = args.count;
-    }
 
     this.scaleAndTruncateLimits(args.inputSettings)
     this.flagOutliers(args.inputSettings)
