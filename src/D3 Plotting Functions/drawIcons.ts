@@ -1,5 +1,4 @@
-import * as variationIcon from "./Variation Icons"
-import * as assuranceIcon from "./Assurance Icons"
+import * as nhsIcons from "./NHS Icons"
 import initialiseIconSVG from "./initialiseIconSVG";
 import { assuranceIconToDraw, variationIconsToDraw } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
@@ -22,7 +21,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
       selection
           .call(initialiseIconSVG, icon, svg_width, svg_height, variation_location, variation_scaling, idx)
           .selectAll(`.${icon}`)
-          .call(variationIcon[icon as keyof typeof variationIcon])
+          .call(nhsIcons[icon as keyof typeof nhsIcons])
     })
     numVariationIcons = variationIconsPresent.length;
   }
@@ -42,6 +41,6 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
     selection
         .call(initialiseIconSVG, assuranceIconPresent, svg_width, svg_height, assurance_location, assurance_scaling, currIconCount)
         .selectAll(`.${assuranceIconPresent}`)
-        .call(assuranceIcon[assuranceIconPresent as keyof typeof assuranceIcon])
+        .call(nhsIcons[assuranceIconPresent as keyof typeof nhsIcons])
   }
 }
