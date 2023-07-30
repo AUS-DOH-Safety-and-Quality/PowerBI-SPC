@@ -1,8 +1,8 @@
 import { mean } from "../D3 Plotting Functions/D3 Modules";
 import { abs, diff, divide } from "../Functions";
-import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
+import { controlLimitsClass, type dataClass, type defaultSettingsType } from "../Classes";
 
-export default function mrLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
+export default function mrLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
   const useRatio: boolean = (inputData.denominators && inputData.denominators.length > 0);
   const ratio: number[] = useRatio
     ? divide(inputData.numerators, inputData.denominators)

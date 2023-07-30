@@ -1,8 +1,8 @@
 import iLimits from "./i"
 import { pow, truncate } from "../Functions/";
-import type { controlLimitsClass, dataClass, settingsClass } from "../Classes";
+import type { controlLimitsClass, dataClass, defaultSettingsType } from "../Classes";
 
-export default function tLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
+export default function tLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
   const val: number[] = pow(inputData.numerators, 1 / 3.6);
   const inputDataCopy: dataClass = JSON.parse(JSON.stringify(inputData));
   inputDataCopy.numerators = val;

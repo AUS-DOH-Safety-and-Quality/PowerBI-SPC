@@ -38,7 +38,7 @@ export default class viewModelClass {
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   firstRun: boolean;
-  limitFunction: (inputData: dataClass, inputSettings: settingsClass) => controlLimitsClass;
+  limitFunction: (inputData: dataClass, inputSettings: defaultSettingsType) => controlLimitsClass;
 
   update(options: VisualUpdateOptions, host: IVisualHost) {
     if (this.firstRun) {
@@ -66,10 +66,10 @@ export default class viewModelClass {
       if (options.type === 2 || this.firstRun) {
 
         // Extract input data, filter out invalid values, and identify any settings passed as data
-        this.inputData = new dataClass(dv[0].categorical, this.inputSettings)
+        this.inputData = new dataClass(dv[0].categorical, this.inputSettings.settings)
 
         // Initialise a new chartObject class which can be used to calculate the control limits
-        this.limitFunction = limitFunctions[this.inputSettings.spc.chart_type as keyof typeof limitFunctions]
+        this.limitFunction = limitFunctions[this.inputSettings.settings.spc.chart_type as keyof typeof limitFunctions]
 
         // Use initialised chartObject to calculate control limits
         this.calculateLimits();
@@ -88,7 +88,7 @@ export default class viewModelClass {
       plotPoints: this.plotPoints,
       controlLimits: this.controlLimits,
       inputData: this.inputData,
-      inputSettings: this.inputSettings
+      inputSettings: this.inputSettings.settings
     })
     this.firstRun = false;
   }
@@ -113,11 +113,11 @@ export default class viewModelClass {
         return data;
       })
 
-      const calcLimitsGrouped: controlLimitsClass[] = groupedData.map(d => this.limitFunction(d, this.inputSettings));
+      const calcLimitsGrouped: controlLimitsClass[] = groupedData.map(d => this.limitFunction(d, this.inputSettings.settings));
       this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsClass, curr: controlLimitsClass) => {
         const allInner: controlLimitsClass = all;
         Object.entries(all).forEach((entry, idx) => {
-          if (this.inputSettings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
+          if (this.inputSettings.settings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
             allInner[entry[0] as keyof controlLimitsClass] = entry[1].concat(Object.entries(curr)[idx][1]);
           }
         })
@@ -125,7 +125,7 @@ export default class viewModelClass {
       })
     } else {
       // Calculate control limits using user-specified type
-      this.controlLimits = this.limitFunction(this.inputData, this.inputSettings);
+      this.controlLimits = this.limitFunction(this.inputData, this.inputSettings.settings);
     }
   }
 
@@ -138,19 +138,19 @@ export default class viewModelClass {
       const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i]
       if (this.controlLimits.shift[i] !== "none") {
         aesthetics.colour = getAesthetic(this.controlLimits.shift[i], "outliers",
-                                  "shift_colour", this.inputSettings) as string;
+                                  "shift_colour", this.inputSettings.settings) as string;
       }
       if (this.controlLimits.trend[i] !== "none") {
         aesthetics.colour = getAesthetic(this.controlLimits.trend[i], "outliers",
-                                  "trend_colour", this.inputSettings) as string;
+                                  "trend_colour", this.inputSettings.settings) as string;
       }
       if (this.controlLimits.two_in_three[i] !== "none") {
         aesthetics.colour = getAesthetic(this.controlLimits.two_in_three[i], "outliers",
-                                  "two_in_three_colour", this.inputSettings) as string;
+                                  "two_in_three_colour", this.inputSettings.settings) as string;
       }
       if (this.controlLimits.astpoint[i] !== "none") {
         aesthetics.colour = getAesthetic(this.controlLimits.astpoint[i], "outliers",
-                                  "ast_colour", this.inputSettings) as string;
+                                  "ast_colour", this.inputSettings.settings) as string;
       }
 
       this.plotPoints.push({
@@ -162,7 +162,7 @@ export default class viewModelClass {
                                     this.inputData.keys[i].id)
                       .createSelectionId(),
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
-        tooltip: buildTooltip(i, this.controlLimits, this.inputData, this.inputSettings)
+        tooltip: buildTooltip(i, this.controlLimits, this.inputData, this.inputSettings.settings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
     }

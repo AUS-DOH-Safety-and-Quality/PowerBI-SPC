@@ -1,8 +1,8 @@
 import { sum } from "../D3 Plotting Functions/D3 Modules";
 import { subtract, add, multiply, divide, sqrt, square, a3 } from "../Functions";
-import { controlLimitsClass, type dataClass, type settingsClass } from "../Classes";
+import { controlLimitsClass, type dataClass, type defaultSettingsType } from "../Classes";
 
-export default function xbarLimits(inputData: dataClass, inputSettings: settingsClass): controlLimitsClass {
+export default function xbarLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
   // Calculate number of observations in each group
   const count_per_group: number[] = inputData.denominators;
 

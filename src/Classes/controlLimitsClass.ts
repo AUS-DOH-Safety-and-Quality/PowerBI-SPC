@@ -1,9 +1,9 @@
 import { astronomical, trend, two_in_three, shift } from "../Outlier Flagging"
 import { rep, checkFlagDirection, truncate, type truncateInputs, multiply, repIfScalar } from "../Functions"
-import { type settingsClass } from "../Classes";
+import { type defaultSettingsType } from "../Classes";
 
 type controlLimitsArgs = {
-  inputSettings: settingsClass,
+  inputSettings: defaultSettingsType,
   keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators?: number[];
@@ -34,7 +34,7 @@ export default class controlLimitsClass {
   two_in_three: string[];
   shift: string[];
 
-  scaleAndTruncateLimits(inputSettings: settingsClass): void {
+  scaleAndTruncateLimits(inputSettings: defaultSettingsType): void {
     // Scale limits using provided multiplier
     const multiplier: number = inputSettings.spc.multiplier;
 
@@ -56,7 +56,7 @@ export default class controlLimitsClass {
     });
   }
 
-  flagOutliers(inputSettings: settingsClass) {
+  flagOutliers(inputSettings: defaultSettingsType) {
     const process_flag_type: string = inputSettings.outliers.process_flag_type;
     const improvement_direction: string = inputSettings.outliers.improvement_direction;
     if (inputSettings.spc.chart_type !== "run") {

@@ -2,7 +2,7 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import { truncate } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import { type settingsClass, type dataClass, type controlLimitsClass, type plotData } from "../Classes";
+import { type defaultSettingsType, type dataClass, type controlLimitsClass, type plotData } from "../Classes";
 
 export type axisProperties = {
   lower: number,
@@ -49,7 +49,7 @@ export default class plotPropertiesClass {
                       plotPoints: plotData[],
                       controlLimits: controlLimitsClass,
                       inputData: dataClass,
-                      inputSettings: settingsClass }): void {
+                      inputSettings: defaultSettingsType }): void {
 
     // Get the width and height of plotting space
     this.width = args.options.viewport.width;

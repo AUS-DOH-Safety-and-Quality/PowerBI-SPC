@@ -7,8 +7,8 @@ export default function updateHighlighting(selection: svgBaseType, visualObj: Vi
   const anyHighlights: boolean = visualObj.viewModel.inputData ? visualObj.viewModel.inputData.anyHighlights : false;
   const allSelectionIDs: ISelectionId[] = visualObj.selectionManager.getSelectionIds() as ISelectionId[];
 
-  const opacityFull: number = visualObj.viewModel.inputSettings.scatter.opacity;
-  const opacityReduced: number = visualObj.viewModel.inputSettings.scatter.opacity_unselected;
+  const opacityFull: number = visualObj.viewModel.inputSettings.settings.scatter.opacity;
+  const opacityReduced: number = visualObj.viewModel.inputSettings.settings.scatter.opacity_unselected;
 
   const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
                                     ? opacityReduced

@@ -2,7 +2,7 @@ import type { viewModelClass, controlLimitsClass } from "../Classes";
 
 export default function variationIconsToDraw(viewModel: viewModelClass): string[] {
   const currLimits: controlLimitsClass = viewModel.controlLimits;
-  const imp_direction: string = viewModel.inputSettings.outliers.improvement_direction;
+  const imp_direction: string = viewModel.inputSettings.settings.outliers.improvement_direction;
   const suffix_map: Record<string, string> = {
     "increase" : "High",
     "decrease" : "Low",
@@ -14,7 +14,7 @@ export default function variationIconsToDraw(viewModel: viewModelClass): string[
     "" : ""
   }
   const suffix: string = suffix_map[imp_direction];
-  const flag_last: boolean = viewModel.inputSettings.nhs_icons.flag_variation_last;
+  const flag_last: boolean = viewModel.inputSettings.settings.nhs_icons.flag_variation_last;
   let allFlags: string[];
   if (flag_last) {
     const N: number = currLimits.astpoint.length - 1;
