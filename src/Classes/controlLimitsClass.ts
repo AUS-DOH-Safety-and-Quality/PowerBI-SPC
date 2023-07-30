@@ -7,7 +7,7 @@ import type settingsClass from "./settingsClass";
 import checkFlagDirection from "../Functions/checkFlagDirection"
 import truncate from "../Functions/truncate";
 import type { truncateInputs } from "../Functions/truncate";
-import { multiply } from "../Functions/BinaryFunctions";
+import { multiply } from "../Functions/broadcastBinary";
 import repIfScalar from "../Functions/repIfScalar";
 
 type controlLimitsArgs = {

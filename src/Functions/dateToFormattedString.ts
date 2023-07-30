@@ -1,5 +1,5 @@
 import type { defaultSettingsType } from "../defaultSettings"
-import broadcast_binary from "./BinaryFunctions"
+import broadcastBinary from "./broadcastBinary"
 
 type dateFormat = {
   locale: string,
@@ -35,7 +35,7 @@ const localeDateMap: Record<string, string>= {
   "en-US" : "\"locale\": \"en-US\""
 }
 
-const dateToFormattedString = broadcast_binary(
+const dateToFormattedString = broadcastBinary(
   (input_date: Date, date_settings: defaultSettingsType["dates"]): string => {
     if (typeof input_date === "string") {
       input_date = new Date(input_date)

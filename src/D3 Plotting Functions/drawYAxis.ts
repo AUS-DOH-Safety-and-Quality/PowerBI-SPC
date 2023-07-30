@@ -1,6 +1,6 @@
 import * as d3 from "./D3 Modules";
 import type { axisProperties } from "../Classes/plotPropertiesClass";
-import { abs } from "../Functions/UnaryFunctions";
+import { abs } from "../Functions/broadcastUnary";
 import drawXAxis from "./drawXAxis";
 import type { svgBaseType, Visual } from "../visual";
 

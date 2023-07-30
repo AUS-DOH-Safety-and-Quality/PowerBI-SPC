@@ -1,5 +1,5 @@
 import { mean, median } from "../D3 Plotting Functions/D3 Modules";
-import { sqrt } from "../Functions/UnaryFunctions";
+import { sqrt } from "../Functions/broadcastUnary";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import type dataClass from "../Classes/dataClass";
 import type settingsClass from "../Classes/settingsClass";

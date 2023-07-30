@@ -1,7 +1,7 @@
 import { mean } from "../D3 Plotting Functions/D3 Modules";
 import diff from "../Functions/diff"
-import { abs } from "../Functions/UnaryFunctions"
-import { divide } from "../Functions/BinaryFunctions";
+import { abs } from "../Functions/broadcastUnary"
+import { divide } from "../Functions/broadcastBinary";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import type dataClass from "../Classes/dataClass";
 import type settingsClass from "../Classes/settingsClass";

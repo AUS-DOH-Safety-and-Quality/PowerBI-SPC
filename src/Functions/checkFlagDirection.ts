@@ -1,6 +1,6 @@
-import broadcast_binary from "./BinaryFunctions"
+import broadcastBinary from "./broadcastBinary"
 
-const checkFlagDirection = broadcast_binary(
+const checkFlagDirection = broadcastBinary(
   (outlierStatus: string, flagSettings: {process_flag_type: string, improvement_direction: string}): string => {
     if (outlierStatus === "none") {
       return outlierStatus;

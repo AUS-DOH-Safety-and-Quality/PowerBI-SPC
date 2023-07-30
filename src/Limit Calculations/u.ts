@@ -1,6 +1,6 @@
 import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { sqrt } from "../Functions/UnaryFunctions";
-import { subtract, add, divide, multiply } from "../Functions/BinaryFunctions";
+import { sqrt } from "../Functions/broadcastUnary";
+import { subtract, add, divide, multiply } from "../Functions/broadcastBinary";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import truncate from "../Functions/truncate";
 import type dataClass from "../Classes/dataClass";

@@ -1,5 +1,5 @@
 import { median } from "../D3 Plotting Functions/D3 Modules";
-import { divide } from "../Functions/BinaryFunctions";
+import { divide } from "../Functions/broadcastBinary";
 import controlLimitsClass from "../Classes/controlLimitsClass";
 import type dataClass from "../Classes/dataClass";
 import type settingsClass from "../Classes/settingsClass";
