@@ -85,6 +85,6 @@ export default class settingsClass {
   }
 
   constructor() {
-    this.settings = defaultSettings;
+    this.settings = JSON.parse(JSON.stringify(defaultSettings));
   }
 }

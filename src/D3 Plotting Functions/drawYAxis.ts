@@ -44,8 +44,13 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-  const currNode: SVGGElement = selection.selectAll(".yaxisgroup").selectAll(".tick text").node() as SVGGElement;
-  const yAxisCoordinates: DOMRect = currNode.getBoundingClientRect() as DOMRect;
+  const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").selectAll(".tick text").node() as SVGGElement;
+  if (!yAxisNode) {
+    selection.select(".yaxislabel")
+              .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
+    return;
+  }
+  const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
 
   const settingsPadding: number = visualObj.viewModel.inputSettings.settings.canvas.left_padding
   const tickLeftofPadding: number = yAxisCoordinates.left - settingsPadding;
