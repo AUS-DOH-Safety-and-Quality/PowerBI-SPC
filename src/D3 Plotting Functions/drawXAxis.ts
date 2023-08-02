@@ -44,8 +44,13 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
       .style("font-family", xAxisProperties.tick_font)
       .style("fill", displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
-  const axisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
-  const xAxisCoordinates: DOMRect = axisNode.getBoundingClientRect() as DOMRect;
+  const xAxisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
+  if (!xAxisNode) {
+    selection.select(".xaxislabel")
+              .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
+    return;
+  }
+  const xAxisCoordinates: DOMRect = xAxisNode.getBoundingClientRect() as DOMRect;
 
   // Update padding and re-draw axis if large tick values rendered outside of plot
   const tickBelowPadding: number = xAxisCoordinates.bottom - xAxisHeight;
