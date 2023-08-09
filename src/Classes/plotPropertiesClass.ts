@@ -69,7 +69,6 @@ export default class plotPropertiesClass {
       xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
-      const chart_type: string = args.inputSettings.spc.chart_type;
       const values: number[] = args.controlLimits.values;
       const ul99: number[] = args.controlLimits.ul99;
       const ll99: number[] = args.controlLimits.ll99;
@@ -84,13 +83,13 @@ export default class plotPropertiesClass {
       const multiplier: number = args.inputSettings.spc.multiplier;
 
       yUpperLimit = yUpperLimit !== null ? yUpperLimit :
-        ["p", "pp"].includes(chart_type) && multiplier == 1
-        ? truncate(upperLimitRaw, {upper: 1})
+        args.inputSettings.spc.perc_labels
+        ? truncate(upperLimitRaw, {upper: 1 * multiplier})
         : upperLimitRaw;
       yLowerLimit = yLowerLimit !== null ? yLowerLimit :
-        (["p", "pp"].includes(chart_type) && multiplier == 1
-        ? truncate(lowerLimitRaw, {lower: 0})
-        : lowerLimitRaw);
+        args.inputSettings.spc.perc_labels
+        ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
+        : lowerLimitRaw;
     }
 
     const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size;
