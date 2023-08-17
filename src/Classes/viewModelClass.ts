@@ -146,7 +146,7 @@ export default class viewModelClass {
       }
       if (this.controlLimits.two_in_three[i] !== "none") {
         aesthetics.colour = getAesthetic(this.controlLimits.two_in_three[i], "outliers",
-                                  "two_in_three_colour", this.inputSettings.settings) as string;
+                                  "twointhree_colour", this.inputSettings.settings) as string;
       }
       if (this.controlLimits.astpoint[i] !== "none") {
         aesthetics.colour = getAesthetic(this.controlLimits.astpoint[i], "outliers",

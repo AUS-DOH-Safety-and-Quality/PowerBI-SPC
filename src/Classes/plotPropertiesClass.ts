@@ -83,11 +83,12 @@ export default class plotPropertiesClass {
       const multiplier: number = args.inputSettings.spc.multiplier;
 
       yUpperLimit = yUpperLimit !== null ? yUpperLimit :
-        args.inputSettings.spc.perc_labels
+      args.inputData.percentLabels
         ? truncate(upperLimitRaw, {upper: 1 * multiplier})
         : upperLimitRaw;
+
       yLowerLimit = yLowerLimit !== null ? yLowerLimit :
-        args.inputSettings.spc.perc_labels
+        args.inputData.percentLabels
         ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
         : lowerLimitRaw;
     }
