@@ -20,6 +20,9 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
     if (columnRawTmp.length > 1) {
       return columnRawTmp[columnRawTmp.length - 1].values.map((lastKeyValue: powerbi.PrimitiveValue, index) => {
+        if (lastKeyValue === null) {
+          return null
+        }
         let concatKey: string = <string>lastKeyValue;
         for (let i = (columnRawTmp.length - 2); i >= 0; i--) {
           concatKey += " " + columnRawTmp[i].values[index];
@@ -57,6 +60,6 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
       return viewColumn.source.roles ? viewColumn.source.roles[name] : false;
     })[0];
 
-    return (columnRaw ? columnRaw.values : null) as T;
+    return (columnRaw ? columnRaw.values.map(d => d === null ? null : Number(d)) : null) as T;
   }
 }

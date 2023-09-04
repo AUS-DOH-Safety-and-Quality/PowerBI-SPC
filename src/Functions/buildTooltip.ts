@@ -21,7 +21,7 @@ const integerParams: string[] = ["c", "p", "pp"];
 
 export default function buildTooltip(index: number, controlLimits: controlLimitsClass,
                                       inputData: dataClass, inputSettings: defaultSettingsType): VisualTooltipDataItem[] {
-
+  const chart_type: string = inputSettings.spc.chart_type;
   const date: string = controlLimits.keys[index].label;
   const value: number = controlLimits.values[index];
   const numerator: number = controlLimits.numerators ? controlLimits.numerators[index] : null;
@@ -31,7 +31,6 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
       ll99: controlLimits.ll99 ? controlLimits.ll99[index] : null,
       ul99: controlLimits.ll99 ? controlLimits.ul99[index] : null
     };
-  const chart_type: string = inputSettings.spc.chart_type;
   const prop_labels: boolean = inputData.percentLabels;
   const astpoint: string = controlLimits.astpoint[index];
   const trend: string = controlLimits.trend[index];

@@ -30,9 +30,12 @@ export default class dataClass {
     const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
 
     for (let i: number = 0; i < numerators.length; i++) {
-      if (checkValidInput(numerators[i],
-                          denominators ? denominators[i] : null,
-                          xbar_sds ? xbar_sds[i] : null, inputSettings.spc.chart_type)) {
+      const dateValid: boolean = keys[i] !== null;
+      const inputValid: boolean = checkValidInput(numerators[i],
+                                                  denominators ? denominators[i] : null,
+                                                  xbar_sds ? xbar_sds[i] : null,
+                                                  inputSettings.spc.chart_type)
+      if (dateValid && inputValid) {
         valid_ids.push(i);
         valid_keys.push({ x: null, id: i, label: keys[i] })
       }
