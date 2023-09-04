@@ -13,10 +13,10 @@ export default function mrLimits(inputData: dataClass, inputSettings: defaultSet
 
   return new controlLimitsClass({
     inputSettings: inputSettings,
-    keys: inputData.keys,
-    values: consec_diff,
-    numerators: useRatio ? inputData.numerators : undefined,
-    denominators: useRatio ? inputData.denominators : undefined,
+    keys: inputData.keys.slice(1),
+    values: consec_diff.slice(1),
+    numerators: useRatio ? inputData.numerators.slice(1) : undefined,
+    denominators: useRatio ? inputData.denominators.slice(1) : undefined,
     targets: cl,
     ll99: 0,
     ll95: 0,

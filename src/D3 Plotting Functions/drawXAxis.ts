@@ -12,10 +12,11 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
       xAxis.ticks(xAxisProperties.tick_count)
     }
     if (visualObj.viewModel.tickLabels) {
-      xAxis.tickFormat(d => {
-        return visualObj.viewModel.tickLabels.map(d => d.x).includes(<number>d)
-          ? visualObj.viewModel.tickLabels[<number>d].label
-          : "";
+      console.log(visualObj.viewModel)
+      xAxis.tickFormat(axisX => {
+        const targetKey = visualObj.viewModel.tickLabels.filter(d => d.x == <number>axisX);
+        return targetKey.length > 0 ? targetKey[0].label : "";
+
       })
     }
   } else {
