@@ -1,13 +1,13 @@
 export default function checkValidInput(numerator: number, denominator: number, xbar_sd: number, data_type: string): boolean {
-  let denominatorConstraintRequired: string[] = ["p", "pprime", "u", "uprime"];
-  let denominatorRequired: string[] = ["p", "pprime", "u", "uprime", "xbar", "s"];
+  const denominatorConstraintRequired: string[] = ["p", "pp", "u", "up"];
+  const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
   const denominatorOptional: string[] = ["i", "run", "mr"];
   const checkOptionalDenominator: boolean = denominatorOptional.includes(data_type) && !(denominator === null);
   if (checkOptionalDenominator) {
     denominatorConstraintRequired.push(data_type);
     denominatorRequired.push(data_type);
   }
-  const numeratorNonNegativeRequired: string[] = denominatorRequired.concat(["c"]);
+  const numeratorNonNegativeRequired: string[] = ["p", "pp", "u", "up", "s", "c", "g", "t"];
   
   const numeratorValid: boolean = numerator !== null && numerator !== undefined;
   const denominatorValid: boolean
