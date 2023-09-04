@@ -60,6 +60,6 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
       return viewColumn.source.roles ? viewColumn.source.roles[name] : false;
     })[0];
 
-    return (columnRaw ? columnRaw.values.map(d => Number(d)) : null) as T;
+    return (columnRaw ? columnRaw.values.map(d => d === null ? null : Number(d)) : null) as T;
   }
 }

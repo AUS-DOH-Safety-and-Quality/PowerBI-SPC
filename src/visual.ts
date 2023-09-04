@@ -37,6 +37,7 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   public update(options: powerbi.extensibility.visual.VisualUpdateOptions) {
+    console.log("Started updating")
     try {
       this.host.eventService.renderingStarted(options);
 
@@ -57,6 +58,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
     }
+    console.log("Finished updating")
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane

@@ -94,7 +94,6 @@ export default class plotPropertiesClass {
 
       const keysToPlot: number[] = args.controlLimits.keys.map(d => d.x);
       
-      console.log(args.controlLimits)
       xLowerLimit = xLowerLimit !== null
         ? xLowerLimit
         : d3.min(keysToPlot);

@@ -12,7 +12,6 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
       xAxis.ticks(xAxisProperties.tick_count)
     }
     if (visualObj.viewModel.tickLabels) {
-      console.log(visualObj.viewModel)
       xAxis.tickFormat(axisX => {
         const targetKey = visualObj.viewModel.tickLabels.filter(d => d.x == <number>axisX);
         return targetKey.length > 0 ? targetKey[0].label : "";
