@@ -1,25 +1,25 @@
 {
-    "visual":{
-        "name":"PBISPC",
-        "displayName":"SPC Charts",
-        "guid":"PBISPC",
-        "visualClassName":"Visual",
-        "version":"1.3.3.16",
-        "description":"A PowerBI custom visual for SPC charts",
-        "supportUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC",
-        "gitHubUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC"
-        },
-    "apiVersion":"3.6.0",
-    "author":{
-        "name":"HQIU - WA Health",
-        "email":"safetyandquality@health.wa.gov.au"
-    },
-    "assets":{
-        "icon":"assets/icon.png"
-    },
-    "externalJS":null,
-    "style":null,
-    "capabilities":"capabilities.json",
-    "dependencies":null,
-    "stringResources":[]
+  "visual":{
+    "name":"PBISPC",
+    "displayName":"SPC Charts",
+    "guid":"PBISPC",
+    "visualClassName":"Visual",
+    "version":"1.3.4.0",
+    "description":"A PowerBI custom visual for SPC charts",
+    "supportUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC",
+    "gitHubUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC"
+  },
+  "apiVersion":"4.6.0",
+  "author":{
+    "name":"HQIU - WA Health",
+    "email":"safetyandquality@health.wa.gov.au"
+  },
+  "assets":{
+    "icon":"assets/icon.png"
+  },
+  "externalJS":null,
+  "style":null,
+  "capabilities":"capabilities.json",
+  "dependencies":null,
+  "stringResources":[]
 }
