@@ -1,10 +1,9 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { subtract, pow, multiply, b3, b4, sqrt } from "../Functions";
-import { controlLimitsClass, type dataClass, type defaultSettingsType } from "../Classes";
+import { subtract, pow, multiply, b3, b4, sqrt, rep, sum } from "../Functions";
+import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
-export default function sLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
-  const group_sd: number[] = inputData.numerators;
-  const count_per_group: number[] = inputData.denominators;
+export default function sLimits(args: controlLimitsArgs): controlLimitsObject {
+  const group_sd: number[] = args.numerators;
+  const count_per_group: number[] = args.denominators;
 
   // Per-group sample size minus 1
   const Nm1: number[] = subtract(count_per_group, 1);
@@ -18,15 +17,13 @@ export default function sLimits(inputData: dataClass, inputSettings: defaultSett
   const B4: number[] = b4(count_per_group, false);
   const B495: number[] = b4(count_per_group, true);
 
-  return new controlLimitsClass({
-    inputSettings: inputSettings,
-    keys: inputData.keys,
+  return {
+    keys: args.keys,
     values: group_sd,
-    targets: cl,
+    targets: rep(cl, args.keys.length),
     ll99: multiply(cl, B3),
     ll95: multiply(cl, B395),
     ul95: multiply(cl, B495),
     ul99: multiply(cl, B4)
-  });
+  };
 }
-

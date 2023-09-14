@@ -1,7 +1,7 @@
-import type { viewModelClass, controlLimitsClass } from "../Classes";
+import type { viewModelClass, outliersObject } from "../Classes";
 
 export default function variationIconsToDraw(viewModel: viewModelClass): string[] {
-  const currLimits: controlLimitsClass = viewModel.controlLimits;
+  const currLimits: outliersObject = viewModel.outliers;
   const imp_direction: string = viewModel.inputSettings.settings.outliers.improvement_direction;
   const suffix_map: Record<string, string> = {
     "increase" : "High",

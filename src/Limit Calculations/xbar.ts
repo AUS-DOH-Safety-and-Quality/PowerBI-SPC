@@ -1,16 +1,15 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { subtract, add, multiply, divide, sqrt, square, a3 } from "../Functions";
-import { controlLimitsClass, type dataClass, type defaultSettingsType } from "../Classes";
+import { subtract, add, multiply, divide, sqrt, square, a3, rep, sum } from "../Functions";
+import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
-export default function xbarLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
+export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject {
   // Calculate number of observations in each group
-  const count_per_group: number[] = inputData.denominators;
+  const count_per_group: number[] = args.denominators;
 
   // Calculate the mean for each group
-  const group_means: number[] = inputData.numerators;
+  const group_means: number[] = args.numerators;
 
   // Calculate the SD for each group
-  const group_sd: number[] = inputData.xbar_sds;
+  const group_sd: number[] = args.xbar_sds;
 
   // Calculate weighted SD
   const Nm1: number[] = subtract(count_per_group, 1);
@@ -22,15 +21,14 @@ export default function xbarLimits(inputData: dataClass, inputSettings: defaultS
   // Sample-size dependent constant
   const A3: number[] = a3(count_per_group);
 
-  return new controlLimitsClass({
-    inputSettings: inputSettings,
-    keys: inputData.keys,
+  return {
+    keys: args.keys,
     values: group_means,
-    targets: cl,
+    targets: rep(cl, args.keys.length),
     ll99: subtract(cl, multiply(A3, sd)),
     ll95: subtract(cl, multiply(multiply(divide(A3, 3), 2), sd)),
     ul95: add(cl, multiply(multiply(divide(A3, 3), 2), sd)),
     ul99: add(cl, multiply(A3, sd)),
     count: count_per_group
-  })
+  }
 }

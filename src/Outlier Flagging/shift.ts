@@ -1,5 +1,4 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { abs } from "../Functions";
+import { abs, sum } from "../Functions";
 
 export default function shift(val: number[], targets: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {

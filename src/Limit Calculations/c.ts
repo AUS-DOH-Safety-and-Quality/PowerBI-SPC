@@ -1,19 +1,17 @@
-import { mean } from "../D3 Plotting Functions/D3 Modules";
-import { truncate } from "../Functions";
-import { controlLimitsClass, type dataClass, type defaultSettingsType } from "../Classes";
+import { truncate, rep, mean } from "../Functions";
+import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
-export default function cLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
-  const cl: number = mean(inputData.numerators);
+export default function cLimits(args: controlLimitsArgs): controlLimitsObject {
+  const cl: number = mean(args.numerators);
   const sigma: number = Math.sqrt(cl);
 
-  return new controlLimitsClass({
-    inputSettings: inputSettings,
-    keys: inputData.keys,
-    values: inputData.numerators,
-    targets: cl,
-    ll99: truncate(cl - 3 * sigma, { lower: 0 }),
-    ll95: truncate(cl - 2 * sigma, { lower: 0 }),
-    ul95: cl + 2*sigma,
-    ul99: cl + 3*sigma,
-  });
+  return {
+    keys: args.keys,
+    values: args.numerators,
+    targets: rep(cl, args.keys.length),
+    ll99: rep(truncate(cl - 3 * sigma, { lower: 0 }), args.keys.length),
+    ll95: rep(truncate(cl - 2 * sigma, { lower: 0 }), args.keys.length),
+    ul95: rep(cl + 2*sigma, args.keys.length),
+    ul99: rep(cl + 3*sigma, args.keys.length),
+  };
 }

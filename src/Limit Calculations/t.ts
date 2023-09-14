@@ -1,13 +1,13 @@
 import iLimits from "./i"
 import { pow, truncate } from "../Functions/";
-import type { controlLimitsClass, dataClass, defaultSettingsType } from "../Classes";
+import type { controlLimitsObject, controlLimitsArgs } from "../Classes";
 
-export default function tLimits(inputData: dataClass, inputSettings: defaultSettingsType): controlLimitsClass {
-  const val: number[] = pow(inputData.numerators, 1 / 3.6);
-  const inputDataCopy: dataClass = JSON.parse(JSON.stringify(inputData));
-  inputDataCopy.numerators = val;
-  inputDataCopy.denominators = null;
-  const limits: controlLimitsClass = iLimits(inputDataCopy, inputSettings);
+export default function tLimits(args: controlLimitsArgs): controlLimitsObject {
+  const val: number[] = pow(args.numerators, 1 / 3.6);
+  const inputArgsCopy: controlLimitsArgs = JSON.parse(JSON.stringify(args));
+  inputArgsCopy.numerators = val;
+  inputArgsCopy.denominators = null;
+  const limits: controlLimitsObject = iLimits(inputArgsCopy);
   limits.targets = pow(limits.targets, 3.6);
   limits.values = pow(limits.values, 3.6);
   limits.ll99 = truncate(pow(limits.ll99, 3.6), {lower: 0});
@@ -17,4 +17,3 @@ export default function tLimits(inputData: dataClass, inputSettings: defaultSett
 
   return limits;
 }
-

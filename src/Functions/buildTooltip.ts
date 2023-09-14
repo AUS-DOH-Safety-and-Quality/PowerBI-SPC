@@ -1,6 +1,7 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { controlLimitsClass, dataClass, defaultSettingsType } from "../Classes";
+import type { controlLimitsObject, defaultSettingsType, outliersObject } from "../Classes";
+import type { dataObject } from "./extractInputData";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -19,8 +20,11 @@ const valueNames: Record<string, string> = {
 
 const integerParams: string[] = ["c", "p", "pp"];
 
-export default function buildTooltip(index: number, controlLimits: controlLimitsClass,
-                                      inputData: dataClass, inputSettings: defaultSettingsType): VisualTooltipDataItem[] {
+export default function buildTooltip(index: number,
+                                      controlLimits: controlLimitsObject,
+                                      outliers: outliersObject,
+                                      inputData: dataObject,
+                                      inputSettings: defaultSettingsType): VisualTooltipDataItem[] {
   const chart_type: string = inputSettings.spc.chart_type;
   const date: string = controlLimits.keys[index].label;
   const value: number = controlLimits.values[index];
@@ -32,10 +36,10 @@ export default function buildTooltip(index: number, controlLimits: controlLimits
       ul99: controlLimits.ll99 ? controlLimits.ul99[index] : null
     };
   const prop_labels: boolean = inputData.percentLabels;
-  const astpoint: string = controlLimits.astpoint[index];
-  const trend: string = controlLimits.trend[index];
-  const shift: string = controlLimits.shift[index];
-  const two_in_three: string = controlLimits.two_in_three[index];
+  const astpoint: string = outliers.astpoint[index];
+  const trend: string = outliers.trend[index];
+  const shift: string = outliers.shift[index];
+  const two_in_three: string = outliers.two_in_three[index];
   const suffix: string = prop_labels ? "%" : "";
   const intNumDen: boolean = integerParams.includes(chart_type);
 
