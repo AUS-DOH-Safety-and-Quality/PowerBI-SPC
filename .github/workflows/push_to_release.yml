@@ -3,7 +3,7 @@ name: "Build release"
 
 on:
   push:
-    branches: [ main ]
+    branches: [ api-builds ]
 
 jobs:
   pre-release:
@@ -12,28 +12,46 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        config:
+          - { node-version: 20.x, powerbi-api: 4.6.0, suffix: "" }
+          - { node-version: 20.x, powerbi-api: 3.8.3, suffix: "-oldapi" }
 
     steps:
-
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.config.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    - name: Update PowerBI Visuals API Version
+      run: |
+        sed -i 's/\("apiVersion":\)"\([0-9.]*\)",/\1"${{ matrix.config.powerbi-api }}",/g' pbiviz.json
+        sed -i 's/\("powerbi-visuals-api": \)"~\([0-9.]*\)",/\1"~${{ matrix.config.powerbi-api }}",/g' package.json
+      shell: bash
 
     - name: Build
       run: |
         npm install
         npm install -g powerbi-visuals-tools
         pbiviz package
-        
-    - name : "Create Release"
-      uses: "marvinpinto/action-automatic-releases@latest"
+        cd dist
+        OLDFILE=$(ls *.pbiviz)
+        NEWFILE=$(ls *.pbiviz | sed "s/\(.*\)\(.pbiviz\)/\1-${{ matrix.config.suffix }}.pbiviz/g")
+        mv $OLDFILE $NEWFILE
+      shell: bash
+
+    - name: Stash built visuals
+      uses: actions/upload-artifact@master
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: false
-        title: "Development Build"
-        files: dist/*.pbiviz
+        name: packages
+        path: dist/*.pbiviz
+
+    #- name : "Create Release"
+    #  uses: "marvinpinto/action-automatic-releases@latest"
+    #  with:
+    #    repo_token: "${{ secrets.GITHUB_TOKEN }}"
+    #    automatic_release_tag: "latest"
+    #    prerelease: false
+    #    title: "Development Build"
+    #    files: dist/*.pbiviz
