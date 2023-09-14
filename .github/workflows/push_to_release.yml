@@ -3,7 +3,7 @@ name: "Build release"
 
 on:
   push:
-    branches: [ api-builds ]
+    branches: [ main ]
 
 jobs:
   build-pbiviz-packages:
