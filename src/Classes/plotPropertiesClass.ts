@@ -2,7 +2,7 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import { truncate } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import type { defaultSettingsType, dataClass, controlLimitsClass, plotData } from "../Classes";
+import type { defaultSettingsType, dataClass, plotData, controlLimitsObject } from "../Classes";
 
 export type axisProperties = {
   lower: number,
@@ -47,7 +47,7 @@ export default class plotPropertiesClass {
 
   update(args: { options: VisualUpdateOptions,
                       plotPoints: plotData[],
-                      controlLimits: controlLimitsClass,
+                      controlLimits: controlLimitsObject,
                       inputData: dataClass,
                       inputSettings: defaultSettingsType }): void {
 
@@ -93,7 +93,7 @@ export default class plotPropertiesClass {
         : lowerLimitRaw;
 
       const keysToPlot: number[] = args.controlLimits.keys.map(d => d.x);
-      
+
       xLowerLimit = xLowerLimit !== null
         ? xLowerLimit
         : d3.min(keysToPlot);

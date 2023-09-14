@@ -4,13 +4,10 @@ type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import { extractDataColumn, checkValidInput, extractValues, extractConditionalFormatting } from "../Functions"
-import { type defaultSettingsType } from "../Classes";
+import { type defaultSettingsType, type controlLimitsArgs } from "../Classes";
 
 export default class dataClass {
-  keys: { x: number, id: number, label: string }[];
-  numerators: number[];
-  denominators: number[];
-  xbar_sds: number[];
+  limitInputArgs: controlLimitsArgs;
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
   percentLabels: boolean;
@@ -50,10 +47,13 @@ export default class dataClass {
       percent_labels = inputSettings.spc.perc_labels === "Yes";
     }
 
-    this.keys = valid_keys;
-    this.numerators = extractValues(numerators, valid_ids);
-    this.denominators = extractValues(denominators, valid_ids);
-    this.xbar_sds = extractValues(xbar_sds, valid_ids);
+    this.limitInputArgs = {
+      keys: valid_keys,
+      numerators: extractValues(numerators, valid_ids),
+      denominators: extractValues(denominators, valid_ids),
+      xbar_sds: extractValues(xbar_sds, valid_ids),
+      outliers_in_limits: false
+    }
     this.tooltips = extractValues(tooltips, valid_ids);
     this.highlights = inputView.values[0].highlights ? extractValues(inputView.values[0].highlights, valid_ids) : inputView.values[0].highlights;
     this.anyHighlights = this.highlights ? true : false

@@ -7,8 +7,9 @@ type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
-import { settingsClass, type defaultSettingsType, dataClass, type controlLimitsClass, plotPropertiesClass } from "../Classes";
-import { checkInvalidDataView, buildTooltip, getAesthetic } from "../Functions"
+import { settingsClass, type defaultSettingsType, dataClass, plotPropertiesClass } from "../Classes";
+import { checkInvalidDataView, buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep } from "../Functions"
+import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
 export type lineData = {
   x: number;
@@ -28,17 +29,47 @@ export type plotData = {
   tooltip: VisualTooltipDataItem[];
 }
 
+export type controlLimitsObject = {
+  keys: { x: number, id: number, label: string }[];
+  values: number[];
+  numerators?: number[];
+  denominators?: number[];
+  targets: number[];
+  ll99?: number[];
+  ll95?: number[];
+  ul95?: number[];
+  ul99?: number[];
+  count?: number[];
+  alt_targets?: number[];
+};
+
+export type controlLimitsArgs = {
+  keys: { x: number, id: number, label: string }[];
+  numerators: number[];
+  denominators?: number[];
+  outliers_in_limits?: boolean;
+  xbar_sds?: number[];
+}
+
+export type outliersObject = {
+  astpoint: string[];
+  trend: string[];
+  two_in_three: string[];
+  shift: string[];
+}
+
 export default class viewModelClass {
   inputData: dataClass;
   inputSettings: settingsClass;
-  controlLimits: controlLimitsClass;
+  controlLimits: controlLimitsObject;
+  outliers: outliersObject;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   firstRun: boolean;
-  limitFunction: (inputData: dataClass, inputSettings: defaultSettingsType) => controlLimitsClass;
+  limitFunction: (args: controlLimitsArgs) => controlLimitsObject;
 
   update(options: VisualUpdateOptions, host: IVisualHost) {
     if (this.firstRun) {
@@ -74,6 +105,12 @@ export default class viewModelClass {
         // Use initialised chartObject to calculate control limits
         this.calculateLimits();
 
+        this.controlLimits.alt_targets = rep(this.inputSettings.settings.spc.alt_target,
+                                              this.inputData.limitInputArgs.keys.length);
+
+        this.scaleAndTruncateLimits();
+        this.flagOutliers();
+
         // Structure the data and calculated limits to the format needed for plotting
         this.initialisePlotData(host);
         this.initialiseGroupedLines();
@@ -94,38 +131,40 @@ export default class viewModelClass {
   }
 
   calculateLimits(): void {
+    this.inputData.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
     if (this.splitIndexes.length > 0) {
       const indexes: number[] = this.splitIndexes
-                                  .concat([this.inputData.keys.length - 1])
+                                  .concat([this.inputData.limitInputArgs.keys.length - 1])
                                   .sort((a,b) => a - b);
       const groupedData: dataClass[] = indexes.map((d, idx) => {
         // Force a deep copy
         const data: dataClass = JSON.parse(JSON.stringify(this.inputData));
          if(idx === 0) {
-          data.denominators = data.denominators.slice(0, d + 1)
-          data.numerators = data.numerators.slice(0, d + 1)
-          data.keys = data.keys.slice(0, d + 1)
+          data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(0, d + 1)
+          data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(0, d + 1)
+          data.limitInputArgs.keys = data.limitInputArgs.keys.slice(0, d + 1)
          } else {
-          data.denominators = data.denominators.slice(indexes[idx - 1] + 1, d + 1)
-          data.numerators = data.numerators.slice(indexes[idx - 1] + 1, d + 1)
-          data.keys = data.keys.slice(indexes[idx - 1] + 1, d + 1)
+          data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[idx - 1] + 1, d + 1)
+          data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[idx - 1] + 1, d + 1)
+          data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[idx - 1] + 1, d + 1)
          }
         return data;
       })
 
-      const calcLimitsGrouped: controlLimitsClass[] = groupedData.map(d => this.limitFunction(d, this.inputSettings.settings));
-      this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsClass, curr: controlLimitsClass) => {
-        const allInner: controlLimitsClass = all;
+      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => this.limitFunction(d.limitInputArgs));
+      this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
+        const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
+          console.log(entry)
           if (this.inputSettings.settings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
-            allInner[entry[0] as keyof controlLimitsClass] = entry[1].concat(Object.entries(curr)[idx][1]);
+            allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
           }
         })
         return allInner;
       })
     } else {
       // Calculate control limits using user-specified type
-      this.controlLimits = this.limitFunction(this.inputData, this.inputSettings.settings);
+      this.controlLimits = this.limitFunction(this.inputData.limitInputArgs);
     }
   }
 
@@ -136,20 +175,20 @@ export default class viewModelClass {
     for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
       const index: number = this.controlLimits.keys[i].x;
       const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i]
-      if (this.controlLimits.shift[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.controlLimits.shift[i], "outliers",
+      if (this.outliers.shift[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliers.shift[i], "outliers",
                                   "shift_colour", this.inputSettings.settings) as string;
       }
-      if (this.controlLimits.trend[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.controlLimits.trend[i], "outliers",
+      if (this.outliers.trend[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliers.trend[i], "outliers",
                                   "trend_colour", this.inputSettings.settings) as string;
       }
-      if (this.controlLimits.two_in_three[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.controlLimits.two_in_three[i], "outliers",
+      if (this.outliers.two_in_three[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliers.two_in_three[i], "outliers",
                                   "twointhree_colour", this.inputSettings.settings) as string;
       }
-      if (this.controlLimits.astpoint[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.controlLimits.astpoint[i], "outliers",
+      if (this.outliers.astpoint[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliers.astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings.settings) as string;
       }
 
@@ -159,10 +198,10 @@ export default class viewModelClass {
         aesthetics: aesthetics,
         identity: host.createSelectionIdBuilder()
                       .withCategory(this.inputData.categories,
-                                    this.inputData.keys[i].id)
+                                    this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
         highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
-        tooltip: buildTooltip(i, this.controlLimits, this.inputData, this.inputSettings.settings)
+        tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
     }
@@ -193,6 +232,59 @@ export default class viewModelClass {
       })
     }
     this.groupedLines = d3.groups(formattedLines, d => d.group);
+  }
+
+  scaleAndTruncateLimits(): void {
+    // Scale limits using provided multiplier
+    const multiplier: number = this.inputSettings.settings.spc.multiplier;
+
+    ["values", "targets", "alt_targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+      this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
+    })
+
+    if (this.inputSettings.settings.spc.chart_type === "run") {
+      return;
+    }
+
+    const limits: truncateInputs = {
+      lower: this.inputSettings.settings.spc.ll_truncate,
+      upper: this.inputSettings.settings.spc.ul_truncate
+    };
+
+    ["ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+      this.controlLimits[limit] = truncate(this.controlLimits[limit], limits);
+    });
+  }
+
+  flagOutliers() {
+    const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
+    const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
+    if (!(this.outliers)) {
+      this.outliers = {
+        astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
+        two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
+        trend: rep("none", this.inputData.limitInputArgs.keys.length),
+        shift: rep("none", this.inputData.limitInputArgs.keys.length)
+      }
+    }
+    if (this.inputSettings.settings.spc.chart_type !== "run") {
+      if (this.inputSettings.settings.outliers.astronomical) {
+        this.outliers.astpoint = checkFlagDirection(astronomical(this.controlLimits.values, this.controlLimits.ll99, this.controlLimits.ul99),
+                                            { process_flag_type, improvement_direction });
+      }
+      if (this.inputSettings.settings.outliers.two_in_three) {
+        this.outliers.two_in_three = checkFlagDirection(twoInThree(this.controlLimits.values, this.controlLimits.ll95, this.controlLimits.ul95),
+                                                { process_flag_type, improvement_direction });
+      }
+    }
+    if (this.inputSettings.settings.outliers.trend) {
+      this.outliers.trend = checkFlagDirection(trend(this.controlLimits.values, this.inputSettings.settings.outliers.trend_n),
+                                      { process_flag_type, improvement_direction });
+    }
+    if (this.inputSettings.settings.outliers.shift) {
+      this.outliers.shift = checkFlagDirection(shift(this.controlLimits.values, this.controlLimits.targets, this.inputSettings.settings.outliers.shift_n),
+                                      { process_flag_type, improvement_direction });
+    }
   }
 
   constructor() {

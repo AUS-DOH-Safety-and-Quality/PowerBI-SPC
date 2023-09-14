@@ -51,6 +51,7 @@ export class Visual implements powerbi.extensibility.IVisual {
               .call(drawIcons, this)
               .call(updateHighlighting, this)
               .call(addContextMenu, this)
+      console.log(this.viewModel)
 
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
