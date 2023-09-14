@@ -6,29 +6,64 @@ on:
     branches: [ main ]
 
 jobs:
-  pre-release:
+  build-pbiviz-packages:
     name: "Pre Release"
     runs-on: "ubuntu-latest"
 
     strategy:
       matrix:
-        node-version: [16.x]
+        config:
+          - { node-version: 20.x, powerbi-api: current }
+          - { node-version: 20.x, powerbi-api: 3.8.3 }
 
     steps:
-
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.config.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
+    - name: Update PowerBI Visuals API Version
+      if: matrix.config.powerbi-api != 'current'
+      run: |
+        sed -i 's/\("apiVersion":\)"\([0-9.]*\)",/\1"${{ matrix.config.powerbi-api }}",/g' pbiviz.json
+        sed -i 's/\("powerbi-visuals-api": \)"~\([0-9.]*\)",/\1"~${{ matrix.config.powerbi-api }}",/g' package.json
+        sed -i 's/[[:space:]]*"privileges":[[:space:]]\[\],//g' capabilities.json
+      shell: bash
 
     - name: Build
       run: |
         npm install
         npm install -g powerbi-visuals-tools
         pbiviz package
-        
+
+    - name: Rename pbiviz for old API
+      if: matrix.config.powerbi-api != 'current'
+      run: |
+        cd dist
+        OLDFILE=$(ls *.pbiviz)
+        NEWFILE=$(ls *.pbiviz | sed "s/\(.*\)\(.pbiviz\)/\1-oldapi.pbiviz/g")
+        mv $OLDFILE $NEWFILE
+      shell: bash
+
+    - name: Stash built visuals
+      uses: actions/upload-artifact@master
+      with:
+        name: packages
+        path: dist/*.pbiviz
+
+  publish-release:
+    name: Publish Packages as Release
+    needs: build-pbiviz-packages
+    runs-on: ubuntu-latest
+    steps:
+    - name: Restore built pacakges
+      uses: actions/download-artifact@master
+      with:
+        name: packages
+        path: ./packages
+
     - name : "Create Release"
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -36,4 +71,4 @@ jobs:
         automatic_release_tag: "latest"
         prerelease: false
         title: "Development Build"
-        files: dist/*.pbiviz
+        files: packages/*.pbiviz
