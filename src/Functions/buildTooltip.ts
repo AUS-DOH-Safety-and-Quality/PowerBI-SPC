@@ -1,6 +1,7 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { controlLimitsObject, dataClass, defaultSettingsType, outliersObject } from "../Classes";
+import type { controlLimitsObject, defaultSettingsType, outliersObject } from "../Classes";
+import type { dataObject } from "./extractInputData";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -22,7 +23,7 @@ const integerParams: string[] = ["c", "p", "pp"];
 export default function buildTooltip(index: number,
                                       controlLimits: controlLimitsObject,
                                       outliers: outliersObject,
-                                      inputData: dataClass,
+                                      inputData: dataObject,
                                       inputSettings: defaultSettingsType): VisualTooltipDataItem[] {
   const chart_type: string = inputSettings.spc.chart_type;
   const date: string = controlLimits.keys[index].label;

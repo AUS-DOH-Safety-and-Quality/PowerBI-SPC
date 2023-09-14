@@ -7,8 +7,8 @@ type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
-import { settingsClass, type defaultSettingsType, dataClass, plotPropertiesClass } from "../Classes";
-import { checkInvalidDataView, buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep } from "../Functions"
+import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
+import { checkInvalidDataView, buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
 export type lineData = {
@@ -59,7 +59,7 @@ export type outliersObject = {
 }
 
 export default class viewModelClass {
-  inputData: dataClass;
+  inputData: dataObject;
   inputSettings: settingsClass;
   controlLimits: controlLimitsObject;
   outliers: outliersObject;
@@ -85,7 +85,7 @@ export default class viewModelClass {
     // Make sure that the construction returns early with null members so
     // that the visual does not crash when trying to process invalid data
     if (checkInvalidDataView(dv)) {
-      this.inputData = <dataClass>null;
+      this.inputData = <dataObject>null;
       this.limitFunction = null;
       this.controlLimits = null;
       this.plotPoints = new Array<plotData>();
@@ -97,7 +97,7 @@ export default class viewModelClass {
       if (options.type === 2 || this.firstRun) {
 
         // Extract input data, filter out invalid values, and identify any settings passed as data
-        this.inputData = new dataClass(dv[0].categorical, this.inputSettings.settings)
+        this.inputData = extractInputData(dv[0].categorical, this.inputSettings.settings);
 
         // Initialise a new chartObject class which can be used to calculate the control limits
         this.limitFunction = limitFunctions[this.inputSettings.settings.spc.chart_type as keyof typeof limitFunctions]
@@ -136,9 +136,9 @@ export default class viewModelClass {
       const indexes: number[] = this.splitIndexes
                                   .concat([this.inputData.limitInputArgs.keys.length - 1])
                                   .sort((a,b) => a - b);
-      const groupedData: dataClass[] = indexes.map((d, idx) => {
+      const groupedData: dataObject[] = indexes.map((d, idx) => {
         // Force a deep copy
-        const data: dataClass = JSON.parse(JSON.stringify(this.inputData));
+        const data: dataObject = JSON.parse(JSON.stringify(this.inputData));
          if(idx === 0) {
           data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(0, d + 1)
           data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(0, d + 1)
@@ -288,7 +288,7 @@ export default class viewModelClass {
   }
 
   constructor() {
-    this.inputData = <dataClass>null;
+    this.inputData = <dataObject>null;
     this.inputSettings = <settingsClass>null;
     this.limitFunction = null;
     this.controlLimits = null;
