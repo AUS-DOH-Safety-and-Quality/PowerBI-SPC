@@ -155,7 +155,6 @@ export default class viewModelClass {
       this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
-          console.log(entry)
           if (this.inputSettings.settings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
             allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
           }
