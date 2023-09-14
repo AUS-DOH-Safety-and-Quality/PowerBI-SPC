@@ -28,6 +28,7 @@ jobs:
       run: |
         sed -i 's/\("apiVersion":\)"\([0-9.]*\)",/\1"${{ matrix.config.powerbi-api }}",/g' pbiviz.json
         sed -i 's/\("powerbi-visuals-api": \)"~\([0-9.]*\)",/\1"~${{ matrix.config.powerbi-api }}",/g' package.json
+        sed -i 's/[[:space:]]*"privileges":[[:space:]]\[\],//g' capabilities.json
       shell: bash
 
     - name: Build
