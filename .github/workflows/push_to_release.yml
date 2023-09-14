@@ -6,7 +6,7 @@ on:
     branches: [ api-builds ]
 
 jobs:
-  pre-release:
+  build-pbiviz-packages:
     name: "Pre Release"
     runs-on: "ubuntu-latest"
 
@@ -53,11 +53,22 @@ jobs:
         name: packages
         path: dist/*.pbiviz
 
-    #- name : "Create Release"
-    #  uses: "marvinpinto/action-automatic-releases@latest"
-    #  with:
-    #    repo_token: "${{ secrets.GITHUB_TOKEN }}"
-    #    automatic_release_tag: "latest"
-    #    prerelease: false
-    #    title: "Development Build"
-    #    files: dist/*.pbiviz
+  publish-release:
+    name: Publish Packages as Release
+    needs: build-pbiviz-packages
+    runs-on: ubuntu-latest
+    steps:
+    - name: Restore built pacakges
+      uses: actions/download-artifact@master
+      with:
+        name: packages
+        path: ./packages
+
+    - name : "Create Release"
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "Development Build"
+        files: packages/*.pbiviz
