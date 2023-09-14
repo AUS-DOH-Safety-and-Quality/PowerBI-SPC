@@ -1,5 +1,4 @@
-import { mean, median } from "../D3 Plotting Functions/D3 Modules";
-import { sqrt, rep } from "../Functions";
+import { sqrt, rep, mean, median } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function gLimits(args: controlLimitsArgs): controlLimitsObject {

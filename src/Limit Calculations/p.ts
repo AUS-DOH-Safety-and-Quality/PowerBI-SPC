@@ -1,5 +1,4 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { subtract, add, divide, multiply, truncate, sqrt, rep } from "../Functions";
+import { subtract, add, divide, multiply, truncate, sqrt, rep, sum } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function pLimits(args: controlLimitsArgs): controlLimitsObject {

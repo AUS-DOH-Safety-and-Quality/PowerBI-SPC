@@ -1,5 +1,5 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import { truncate } from "../Functions";
+import { truncate, min, max } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import type { defaultSettingsType, dataClass, plotData, controlLimitsObject } from "../Classes";
@@ -66,17 +66,17 @@ export default class plotPropertiesClass {
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
     if (args.inputData && args.controlLimits) {
-      xUpperLimit = xUpperLimit !== null ? xUpperLimit : d3.max(args.controlLimits.keys.map(d => d.x))
+      xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(args.controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
       const values: number[] = args.controlLimits.values;
       const ul99: number[] = args.controlLimits.ul99;
       const ll99: number[] = args.controlLimits.ll99;
       const alt_targets: number[] = args.controlLimits.alt_targets;
-      const maxValueOrLimit: number = d3.max(values.concat(ul99).concat(alt_targets));
-      const minValueOrLimit: number = d3.min(values.concat(ll99).concat(alt_targets));
-      const maxTarget: number = d3.max(args.controlLimits.targets);
-      const minTarget: number = d3.min(args.controlLimits.targets);
+      const maxValueOrLimit: number = max(values.concat(ul99).concat(alt_targets));
+      const minValueOrLimit: number = min(values.concat(ll99).concat(alt_targets));
+      const maxTarget: number = max(args.controlLimits.targets);
+      const minTarget: number = min(args.controlLimits.targets);
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
@@ -96,11 +96,11 @@ export default class plotPropertiesClass {
 
       xLowerLimit = xLowerLimit !== null
         ? xLowerLimit
-        : d3.min(keysToPlot);
+        : min(keysToPlot);
 
       xUpperLimit = xUpperLimit !== null
         ? xUpperLimit
-        : d3.max(keysToPlot);
+        : max(keysToPlot);
     }
 
     const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size;

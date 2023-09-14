@@ -1,5 +1,4 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { abs } from "../Functions";
+import { abs, sum } from "../Functions";
 
 export default function twoInThree(val: number[], ll95: number[], ul95: number[]): string[] {
   const outside95: number[] = val.map((d, i) => {

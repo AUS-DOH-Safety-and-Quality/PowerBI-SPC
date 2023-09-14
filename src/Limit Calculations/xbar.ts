@@ -1,5 +1,4 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { subtract, add, multiply, divide, sqrt, square, a3, rep } from "../Functions";
+import { subtract, add, multiply, divide, sqrt, square, a3, rep, sum } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject {

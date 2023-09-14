@@ -1,5 +1,4 @@
-import { median } from "../D3 Plotting Functions/D3 Modules";
-import { divide, rep } from "../Functions";
+import { divide, rep, median } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function runLimits(args: controlLimitsArgs): controlLimitsObject {

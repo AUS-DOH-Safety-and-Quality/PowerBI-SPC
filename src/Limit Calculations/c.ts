@@ -1,5 +1,4 @@
-import { mean } from "../D3 Plotting Functions/D3 Modules";
-import { truncate, rep } from "../Functions";
+import { truncate, rep, mean } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function cLimits(args: controlLimitsArgs): controlLimitsObject {

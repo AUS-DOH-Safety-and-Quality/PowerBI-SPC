@@ -1,5 +1,4 @@
-import { sum } from "../D3 Plotting Functions/D3 Modules";
-import { subtract, pow, multiply, b3, b4, sqrt, rep } from "../Functions";
+import { subtract, pow, multiply, b3, b4, sqrt, rep, sum } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function sLimits(args: controlLimitsArgs): controlLimitsObject {

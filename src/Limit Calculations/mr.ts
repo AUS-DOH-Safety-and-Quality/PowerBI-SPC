@@ -1,5 +1,4 @@
-import { mean } from "../D3 Plotting Functions/D3 Modules";
-import { abs, diff, divide, rep } from "../Functions";
+import { abs, diff, divide, rep, mean } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function mrLimits(args: controlLimitsArgs): controlLimitsObject {
