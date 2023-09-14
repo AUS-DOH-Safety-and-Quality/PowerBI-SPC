@@ -96,18 +96,9 @@ export default class viewModelClass {
       // Only re-construct data and re-calculate limits if they have changed
       if (options.type === 2 || this.firstRun) {
 
-        // Extract input data, filter out invalid values, and identify any settings passed as data
         this.inputData = extractInputData(dv[0].categorical, this.inputSettings.settings);
-
-        // Initialise a new chartObject class which can be used to calculate the control limits
-        this.limitFunction = limitFunctions[this.inputSettings.settings.spc.chart_type as keyof typeof limitFunctions]
-
-        // Use initialised chartObject to calculate control limits
+        this.limitFunction = limitFunctions[this.inputSettings.settings.spc.chart_type]
         this.calculateLimits();
-
-        this.controlLimits.alt_targets = rep(this.inputSettings.settings.spc.alt_target,
-                                              this.inputData.limitInputArgs.keys.length);
-
         this.scaleAndTruncateLimits();
         this.flagOutliers();
 
@@ -165,6 +156,9 @@ export default class viewModelClass {
       // Calculate control limits using user-specified type
       this.controlLimits = this.limitFunction(this.inputData.limitInputArgs);
     }
+
+    this.controlLimits.alt_targets = rep(this.inputSettings.settings.spc.alt_target,
+                                          this.inputData.limitInputArgs.keys.length);
   }
 
   initialisePlotData(host: IVisualHost): void {
