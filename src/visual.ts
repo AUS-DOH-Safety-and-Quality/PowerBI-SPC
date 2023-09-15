@@ -50,6 +50,11 @@ export class Visual implements powerbi.extensibility.IVisual {
               .call(updateHighlighting, this)
               .call(addContextMenu, this)
 
+      if (this.viewModel.inputData.warningMessage !== "") {
+        this.host.displayWarningIcon("Invalid inputs have been removed",
+                                     this.viewModel.inputData.warningMessage);
+      }
+
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
       // Clear any existing plot items/graphics

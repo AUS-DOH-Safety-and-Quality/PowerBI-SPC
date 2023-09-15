@@ -9,7 +9,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
     throw("Error: No grouping/ID variable passed!");
   }
 
-  let numeratorsPresent: boolean
+  const numeratorsPresent: boolean
     = inputDV.at(0).categorical
                    ?.values
                    ?.some(d => d.source?.roles?.numerators);
@@ -20,7 +20,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   const chart_type: string = inputSettings.spc.chart_type;
   const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
   if (denominatorRequired.includes(chart_type)) {
-    let denominatorsPresent: boolean
+    const denominatorsPresent: boolean
       = inputDV.at(0).categorical
                      ?.values
                      ?.some(d => d.source?.roles?.denominators);
@@ -31,7 +31,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   }
 
   if (chart_type === "xbar") {
-    let xbarSDPresent: boolean
+    const xbarSDPresent: boolean
       = inputDV.at(0).categorical
                      ?.values
                      ?.some(d => d.source?.roles?.xbar_sds);
