@@ -3,7 +3,7 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import { extractDataColumn, checkValidInput, extractValues, extractConditionalFormatting } from "../Functions"
+import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData } from "../Functions"
 import { type defaultSettingsType, type controlLimitsArgs } from "../Classes";
 
 export type dataObject = {
@@ -25,22 +25,19 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
   const highlights: powerbi.PrimitiveValue[] = inputView.values[0].highlights;
 
+  const inputIsValid: boolean[] = validateInputData(keys, numerators, denominators, xbar_sds, inputSettings.spc.chart_type);
+
   const valid_ids: number[] = new Array<number>();
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
 
+  let valid_x: number = 0;
   for (let i: number = 0; i < numerators.length; i++) {
-    const dateValid: boolean = keys[i] !== null;
-    const inputValid: boolean = checkValidInput(numerators[i],
-                                                denominators ? denominators[i] : null,
-                                                xbar_sds ? xbar_sds[i] : null,
-                                                inputSettings.spc.chart_type)
-    if (dateValid && inputValid) {
+    if (inputIsValid[i]) {
       valid_ids.push(i);
-      valid_keys.push({ x: null, id: i, label: keys[i] })
+      valid_keys.push({ x: valid_x, id: i, label: keys[i] })
+      valid_x += 1;
     }
   }
-
-  valid_keys.forEach((d, idx) => { d.x = idx });
 
   let percent_labels: boolean;
   if (inputSettings.spc.perc_labels === "Automatic") {
