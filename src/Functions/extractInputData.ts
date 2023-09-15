@@ -25,14 +25,14 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
   const highlights: powerbi.PrimitiveValue[] = inputView.values[0].highlights;
 
-  const validInputs: boolean[] = validateInputData(keys, numerators, denominators, xbar_sds, inputSettings.spc.chart_type);
+  const inputIsValid: boolean[] = validateInputData(keys, numerators, denominators, xbar_sds, inputSettings.spc.chart_type);
 
   const valid_ids: number[] = new Array<number>();
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
 
   let valid_x: number = 0;
   for (let i: number = 0; i < numerators.length; i++) {
-    if (validInputs[i]) {
+    if (inputIsValid[i]) {
       valid_ids.push(i);
       valid_keys.push({ x: valid_x, id: i, label: keys[i] })
       valid_x += 1;
