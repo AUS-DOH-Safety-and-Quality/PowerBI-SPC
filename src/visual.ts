@@ -60,7 +60,8 @@ export class Visual implements powerbi.extensibility.IVisual {
               .attr("x",options.viewport.width / 2)
               .attr("y",options.viewport.height / 2)
               .style("text-anchor", "middle")
-              .text(<string>caught_error);
+              .text(<string>caught_error)
+              .style("font-size", "10px");
 
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
