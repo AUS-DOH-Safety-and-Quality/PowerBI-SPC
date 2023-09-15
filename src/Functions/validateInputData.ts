@@ -11,7 +11,7 @@ export default function validateInputData(keys: string[], numerators: number[], 
     denominatorRequired.push(data_type);
   }
   const numeratorNonNegativeRequired: string[] = ["p", "pp", "u", "up", "s", "c", "g", "t"];
-  let status: string[] = rep("", keys.length);
+  const status: string[] = rep("", keys.length);
   keys.forEach((d, idx) => status[idx] = (status[idx] === "" && d != null) ? "" : "Date missing");
   if (!status.some(d => d == "")) {
     throw("All dates/IDs are missing or null!")
