@@ -30,7 +30,6 @@ export default class plotPropertiesClass {
   yAxis: axisProperties;
   xScale: d3.ScaleLinear<number, number, never>;
   yScale: d3.ScaleLinear<number, number, never>;
-  firstRun: boolean;
 
   // Separate function so that the axis can be re-calculated on changes to padding
   initialiseScale(): void {
@@ -151,6 +150,5 @@ export default class plotPropertiesClass {
     };
 
     this.initialiseScale();
-    this.firstRun = false;
   }
 }
