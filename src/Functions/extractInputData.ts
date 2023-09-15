@@ -59,7 +59,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     },
     tooltips: extractValues(tooltips, valid_ids),
     highlights: extractValues(highlights, valid_ids),
-    anyHighlights: highlights ? true : false,
+    anyHighlights: highlights != null,
     categories: inputView.categories[0],
     percentLabels: percent_labels,
     scatter_formatting: extractValues(scatter_cond, valid_ids),

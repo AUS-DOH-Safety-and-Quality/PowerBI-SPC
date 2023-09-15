@@ -1,14 +1,12 @@
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-type DataViewPropertyValue = powerbi.DataViewPropertyValue;
-type DataViewObject = powerbi.DataViewObject;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
-import { checkInvalidDataView, buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
 export type lineData = {
@@ -69,48 +67,33 @@ export default class viewModelClass {
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   firstRun: boolean;
-  limitFunction: (args: controlLimitsArgs) => controlLimitsObject;
+
+  constructor() {
+    this.inputData = <dataObject>null;
+    this.inputSettings = new settingsClass();
+    this.controlLimits = null;
+    this.plotPoints = new Array<plotData>();
+    this.groupedLines = new Array<[string, lineData[]]>();
+    this.plotProperties = new plotPropertiesClass();
+    this.firstRun = true
+    this.splitIndexes = new Array<number>();
+  }
 
   update(options: VisualUpdateOptions, host: IVisualHost) {
-    if (this.firstRun) {
-      this.inputSettings = new settingsClass();
+    // Only re-construct data and re-calculate limits if they have changed
+    if (options.type === 2 || this.firstRun) {
+      const split_indexes: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+      this.splitIndexes = JSON.parse(split_indexes);
+      this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings.settings);
+      this.calculateLimits();
+      this.scaleAndTruncateLimits();
+      this.flagOutliers();
+
+      // Structure the data and calculated limits to the format needed for plotting
+      this.initialisePlotData(host);
+      this.initialiseGroupedLines();
     }
-    const dv: powerbi.DataView[] = options.dataViews;
-    this.inputSettings.update(dv[0]);
 
-    const split_indexes_storage: DataViewObject = dv[0].metadata.objects ? dv[0].metadata.objects.split_indexes_storage : null;
-    const split_indexes: DataViewPropertyValue = split_indexes_storage ? split_indexes_storage.split_indexes : null;
-    this.splitIndexes = split_indexes ? JSON.parse(<string>(split_indexes)) : new Array<number>();
-
-    // Make sure that the construction returns early with null members so
-    // that the visual does not crash when trying to process invalid data
-    if (checkInvalidDataView(dv)) {
-      this.inputData = <dataObject>null;
-      this.limitFunction = null;
-      this.controlLimits = null;
-      this.plotPoints = new Array<plotData>();
-      this.groupedLines = new Array<[string, lineData[]]>();
-      this.splitIndexes = new Array<number>();
-    } else {
-
-      // Only re-construct data and re-calculate limits if they have changed
-      if (options.type === 2 || this.firstRun) {
-
-        this.inputData = extractInputData(dv[0].categorical, this.inputSettings.settings);
-        this.limitFunction = limitFunctions[this.inputSettings.settings.spc.chart_type]
-        this.calculateLimits();
-        this.scaleAndTruncateLimits();
-        this.flagOutliers();
-
-        // Structure the data and calculated limits to the format needed for plotting
-        this.initialisePlotData(host);
-        this.initialiseGroupedLines();
-      }
-    }
-    if (this.firstRun) {
-      this.plotProperties = new plotPropertiesClass();
-      this.plotProperties.firstRun = true;
-    }
     this.plotProperties.update({
       options: options,
       plotPoints: this.plotPoints,
@@ -123,6 +106,9 @@ export default class viewModelClass {
 
   calculateLimits(): void {
     this.inputData.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
+    const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
+      = limitFunctions[this.inputSettings.settings.spc.chart_type];
+
     if (this.splitIndexes.length > 0) {
       const indexes: number[] = this.splitIndexes
                                   .concat([this.inputData.limitInputArgs.keys.length - 1])
@@ -142,7 +128,7 @@ export default class viewModelClass {
         return data;
       })
 
-      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => this.limitFunction(d.limitInputArgs));
+      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => limitFunction(d.limitInputArgs));
       this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
@@ -154,7 +140,7 @@ export default class viewModelClass {
       })
     } else {
       // Calculate control limits using user-specified type
-      this.controlLimits = this.limitFunction(this.inputData.limitInputArgs);
+      this.controlLimits = limitFunction(this.inputData.limitInputArgs);
     }
 
     this.controlLimits.alt_targets = rep(this.inputSettings.settings.spc.alt_target,
@@ -193,7 +179,7 @@ export default class viewModelClass {
                       .withCategory(this.inputData.categories,
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
-        highlighted: this.inputData.highlights ? (this.inputData.highlights[index] ? true : false) : false,
+        highlighted: this.inputData.highlights?.at(index) != null,
         tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
@@ -201,7 +187,10 @@ export default class viewModelClass {
   }
 
   initialiseGroupedLines(): void {
-    const labels: string[] = ["ll99", "ll95", "ul95", "ul99", "targets", "values", "alt_targets"];
+    let labels: string[] = ["targets", "values", "alt_targets"];
+    if (this.inputSettings.settings.spc.chart_type !== "run") {
+      labels = ["ll99", "ll95", "ul95", "ul99"].concat(labels);
+    }
 
     const formattedLines: lineData[] = new Array<lineData>();
     const nLimits = this.controlLimits.keys.length;
@@ -219,7 +208,7 @@ export default class viewModelClass {
         }
         formattedLines.push({
           x: this.controlLimits.keys[i].x,
-          line_value: this.controlLimits[label] ? this.controlLimits[label][i] : null,
+          line_value: this.controlLimits[label]?.at(i),
           group: label
         })
       })
@@ -278,17 +267,5 @@ export default class viewModelClass {
       this.outliers.shift = checkFlagDirection(shift(this.controlLimits.values, this.controlLimits.targets, this.inputSettings.settings.outliers.shift_n),
                                       { process_flag_type, improvement_direction });
     }
-  }
-
-  constructor() {
-    this.inputData = <dataObject>null;
-    this.inputSettings = <settingsClass>null;
-    this.limitFunction = null;
-    this.controlLimits = null;
-    this.plotPoints = new Array<plotData>();
-    this.groupedLines = new Array<[string, lineData[]]>();
-    this.plotProperties = <plotPropertiesClass>null;
-    this.firstRun = true
-    this.splitIndexes = new Array<number>();
   }
 }
