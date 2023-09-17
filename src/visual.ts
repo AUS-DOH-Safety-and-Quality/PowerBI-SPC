@@ -59,14 +59,23 @@ export class Visual implements powerbi.extensibility.IVisual {
     } catch (caught_error) {
       // Clear any existing plot items/graphics
       this.initialiseSVG(true);
+      const errMessageSVG = this.svg.append("g").classed("errormessage", true);
 
-      this.svg.append('text')
-              .classed("errormessage", true)
-              .attr("x",options.viewport.width / 2)
-              .attr("y",options.viewport.height / 2)
-              .style("text-anchor", "middle")
-              .text(<string>caught_error)
-              .style("font-size", "10px");
+      if (caught_error?.name !== "DataValidationError") {
+        errMessageSVG.append('text')
+                    .attr("x",options.viewport.width / 2)
+                    .attr("y",options.viewport.height / 3)
+                    .style("text-anchor", "middle")
+                    .text("Internal Error! Please file a bug report with the following text:")
+                    .style("font-size", "10px");
+      }
+
+      errMessageSVG.append('text')
+                    .attr("x",options.viewport.width / 2)
+                    .attr("y",options.viewport.height / 2)
+                    .style("text-anchor", "middle")
+                    .text(caught_error.message)
+                    .style("font-size", "10px");
 
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
