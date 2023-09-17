@@ -59,7 +59,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     } catch (caught_error) {
       // Clear any existing plot items/graphics
       this.initialiseSVG(true);
-      let errMessageSVG = this.svg.append("g").classed("errormessage", true);
+      const errMessageSVG = this.svg.append("g").classed("errormessage", true);
 
       if (caught_error?.name !== "DataValidationError") {
         errMessageSVG.append('text')
