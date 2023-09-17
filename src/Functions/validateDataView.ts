@@ -1,12 +1,12 @@
 import type powerbi from "powerbi-visuals-api";
-import type { defaultSettingsType } from "../Classes";
+import { validationErrorClass, type defaultSettingsType } from "../Classes";
 
 export default function validateDataView(inputDV: powerbi.DataView[], inputSettings: defaultSettingsType) {
   if (!(inputDV?.at(0))) {
-    throw("No data present");
+    throw(new validationErrorClass("No data present"));
   }
   if (!(inputDV.at(0)?.categorical?.categories?.at(0)?.values?.length > 0)) {
-    throw("Error: No grouping/ID variable passed!");
+    throw(new validationErrorClass("No grouping/ID variable passed!"));
   }
 
   const numeratorsPresent: boolean
@@ -15,7 +15,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
                    ?.some(d => d.source?.roles?.numerators);
 
   if (!numeratorsPresent) {
-    throw("Error: No Numerators passed!");
+    throw(new validationErrorClass("No Numerators passed!"));
   }
   const chart_type: string = inputSettings.spc.chart_type;
   const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
@@ -26,7 +26,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
                      ?.some(d => d.source?.roles?.denominators);
 
     if (!denominatorsPresent) {
-      throw(`Error: Chart type '${chart_type}' requires denominators!`);
+      throw(new validationErrorClass(`Chart type '${chart_type}' requires denominators!`));
     }
   }
 
@@ -37,7 +37,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
                      ?.some(d => d.source?.roles?.xbar_sds);
 
     if (!xbarSDPresent) {
-      throw(`Error: Chart type '${chart_type}' requires SDs!`);
+      throw(new validationErrorClass(`Chart type '${chart_type}' requires SDs!`));
     }
   }
 }
