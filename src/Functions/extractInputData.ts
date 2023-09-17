@@ -31,6 +31,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const valid_ids: number[] = new Array<number>();
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
   const removalMessages: string[] = new Array<string>();
+  const groupVarName: string = inputView.categories[0].source.displayName;
   let valid_x: number = 0;
   for (let i: number = 0; i < numerators.length; i++) {
     if (inputValidStatus[i] === "") {
@@ -38,7 +39,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       valid_keys.push({ x: valid_x, id: i, label: keys[i] })
       valid_x += 1;
     } else {
-      removalMessages.push(`${keys[i]} removed due to: ${inputValidStatus[i]}.`)
+      removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus[i]}.`)
     }
   }
 
@@ -63,6 +64,6 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     categories: inputView.categories[0],
     percentLabels: percent_labels,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
-    warningMessage: removalMessages.length >0 ? removalMessages.join(" ") : ""
+    warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : ""
   }
 }
