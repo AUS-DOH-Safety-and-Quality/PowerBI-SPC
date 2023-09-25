@@ -40,6 +40,8 @@ export default function buildTooltip(index: number,
   const trend: string = outliers.trend[index];
   const shift: string = outliers.shift[index];
   const two_in_three: string = outliers.two_in_three[index];
+  let multiplier: number = inputSettings.spc.multiplier;
+  multiplier = prop_labels ? (multiplier === 100 ? 1 : (multiplier === 1 ? 100 : multiplier)) : 1;
   const suffix: string = prop_labels ? "%" : "";
   const intNumDen: boolean = integerParams.includes(chart_type);
 
@@ -51,7 +53,7 @@ export default function buildTooltip(index: number,
   });
   tooltip.push({
     displayName: valueNames[chart_type],
-    value: (value).toFixed(sig_figs) + suffix
+    value: (value * multiplier).toFixed(sig_figs) + suffix
   })
   if(numerator || !(numerator === null || numerator === undefined)) {
     tooltip.push({
@@ -68,17 +70,17 @@ export default function buildTooltip(index: number,
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Upper 99% Limit",
-      value: (limits.ul99).toFixed(sig_figs) + suffix
+      value: (limits.ul99 * multiplier).toFixed(sig_figs) + suffix
     })
   }
   tooltip.push({
     displayName: "Centerline",
-    value: (target).toFixed(sig_figs) + suffix
+    value: (target * multiplier).toFixed(sig_figs) + suffix
   })
   if (chart_type !== "run") {
     tooltip.push({
       displayName: "Lower 99% Limit",
-      value: (limits.ll99).toFixed(sig_figs) + suffix
+      value: (limits.ll99 * multiplier).toFixed(sig_figs) + suffix
     })
   }
 
