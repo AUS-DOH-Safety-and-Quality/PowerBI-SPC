@@ -241,13 +241,11 @@ export default class viewModelClass {
   flagOutliers() {
     const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
     const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
-    if (!(this.outliers)) {
-      this.outliers = {
-        astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
-        two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
-        trend: rep("none", this.inputData.limitInputArgs.keys.length),
-        shift: rep("none", this.inputData.limitInputArgs.keys.length)
-      }
+    this.outliers = {
+      astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
+      two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
+      trend: rep("none", this.inputData.limitInputArgs.keys.length),
+      shift: rep("none", this.inputData.limitInputArgs.keys.length)
     }
     if (this.inputSettings.settings.spc.chart_type !== "run") {
       if (this.inputSettings.settings.outliers.astronomical) {
