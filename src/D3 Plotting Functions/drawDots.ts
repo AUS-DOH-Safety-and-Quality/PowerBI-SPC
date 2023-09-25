@@ -14,9 +14,11 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       .attr("cx", (d: plotData) => visualObj.viewModel.plotProperties.xScale(d.x))
       .attr("r", (d: plotData) => d.aesthetics.size)
       .style("fill", (d: plotData) => {
-        const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-        const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-        return between(d.value, lower, upper) ? d.aesthetics.colour : "#FFFFFF";
+        const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+        const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
+        const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
+        const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
+        return (between(d.value, ylower, yupper) && between(d.x, xlower, xupper)) ? d.aesthetics.colour : "#FFFFFF";
       })
       .on("click", (event, d: plotData) => {
           if (visualObj.viewModel.inputSettings.settings.spc.split_on_click) {
