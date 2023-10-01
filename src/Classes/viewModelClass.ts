@@ -209,7 +209,7 @@ export default class viewModelClass {
         }
         formattedLines.push({
           x: this.controlLimits.keys[i].x,
-          line_value: this.controlLimits[label]?.at(i),
+          line_value: this.controlLimits[label]?.[i],
           group: label
         })
       })
