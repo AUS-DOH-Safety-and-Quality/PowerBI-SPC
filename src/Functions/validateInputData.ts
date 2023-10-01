@@ -8,7 +8,6 @@ export default function validateInputData(keys: string[], numerators: number[], 
 
   const checkOptionalDenominator: boolean = denominatorOptional.includes(data_type) && !(denominators === null);
   if (checkOptionalDenominator) {
-    denominatorConstraintRequired.push(data_type);
     denominatorRequired.push(data_type);
   }
   const numeratorNonNegativeRequired: string[] = ["p", "pp", "u", "up", "s", "c", "g", "t"];
