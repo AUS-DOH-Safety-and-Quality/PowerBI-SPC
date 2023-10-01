@@ -47,7 +47,6 @@ function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultS
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
                                               inputSettings: defaultSettingsType): T {
-  let columnRaw: DataViewValueColumn[];
   if (name === "key") {
     return extractKeys(inputView, inputSettings) as Extract<T, string[]>;
   }
@@ -56,6 +55,6 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
   }
 
   // Assumed that any other requested columns are numeric columns for plotting
-  columnRaw = inputView.values.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
+  const columnRaw = inputView.values.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
   return columnRaw?.[0]?.values?.map(d => d === null ? null : Number(d)) as T
 }
