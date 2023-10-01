@@ -10,7 +10,6 @@ export type dataObject = {
   limitInputArgs: controlLimitsArgs;
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
-  percentLabels: boolean;
   categories: DataViewCategoryColumn;
   scatter_formatting: defaultSettingsType["scatter"][];
   tooltips: VisualTooltipDataItem[][];
@@ -43,13 +42,6 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     }
   }
 
-  let percent_labels: boolean;
-  if (inputSettings.spc.perc_labels === "Automatic") {
-    percent_labels = ["p", "pp"].includes(inputSettings.spc.chart_type) && (inputSettings.spc.multiplier === 1 || inputSettings.spc.multiplier === 100);
-  } else {
-    percent_labels = inputSettings.spc.perc_labels === "Yes";
-  }
-
   return {
     limitInputArgs: {
       keys: valid_keys,
@@ -62,7 +54,6 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     highlights: extractValues(highlights, valid_ids),
     anyHighlights: highlights != null,
     categories: inputView.categories[0],
-    percentLabels: percent_labels,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
     warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : ""
   }

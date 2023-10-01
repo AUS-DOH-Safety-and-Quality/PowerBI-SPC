@@ -8,6 +8,7 @@ type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContain
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import { extractConditionalFormatting } from "../Functions";
 import { default as defaultSettings, settingsPaneGroupings } from "../defaultSettings";
+import derivedSettingsClass from "./derivedSettingsClass";
 
 export type defaultSettingsType = typeof defaultSettings;
 export type defaultSettingsKey = keyof defaultSettingsType;
@@ -22,6 +23,7 @@ export type settingsScalarTypes = number | string | boolean;
  */
 export default class settingsClass {
   settings: defaultSettingsType;
+  derivedSettings: derivedSettingsClass
 
   /**
    * Function to read the values from the settings pane and update the
@@ -43,6 +45,8 @@ export default class settingsClass {
         this.settings[settingGroup][settingName] = condFormatting ? condFormatting[settingName] : defaultSettings[settingGroup][settingName]
       })
     })
+
+    this.derivedSettings.update(this.settings)
   }
 
   /**
@@ -86,5 +90,6 @@ export default class settingsClass {
 
   constructor() {
     this.settings = JSON.parse(JSON.stringify(defaultSettings));
+    this.derivedSettings = new derivedSettingsClass();
   }
 }

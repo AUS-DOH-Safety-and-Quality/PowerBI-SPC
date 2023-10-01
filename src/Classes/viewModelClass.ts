@@ -94,13 +94,14 @@ export default class viewModelClass {
       this.initialiseGroupedLines();
     }
 
-    this.plotProperties.update({
-      options: options,
-      plotPoints: this.plotPoints,
-      controlLimits: this.controlLimits,
-      inputData: this.inputData,
-      inputSettings: this.inputSettings.settings
-    })
+    this.plotProperties.update(
+      options,
+      this.plotPoints,
+      this.controlLimits,
+      this.inputData,
+      this.inputSettings.settings,
+      this.inputSettings.derivedSettings
+    )
     this.firstRun = false;
   }
 
@@ -180,7 +181,7 @@ export default class viewModelClass {
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
         highlighted: this.inputData.highlights?.at(index) != null,
-        tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings)
+        tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings, this.inputSettings.derivedSettings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
     }
@@ -218,7 +219,7 @@ export default class viewModelClass {
 
   scaleAndTruncateLimits(): void {
     // Scale limits using provided multiplier
-    const multiplier: number = this.inputSettings.settings.spc.multiplier;
+    const multiplier: number = this.inputSettings.derivedSettings.multiplier;
 
     ["values", "targets", "alt_targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
       this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
