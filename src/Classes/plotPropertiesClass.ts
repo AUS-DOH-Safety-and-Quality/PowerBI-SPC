@@ -82,15 +82,13 @@ export default class plotPropertiesClass {
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
       const multiplier: number = derivedSettings.multiplier;
 
-      yUpperLimit = yUpperLimit !== null ? yUpperLimit :
-      derivedSettings.percentLabels
-        ? truncate(upperLimitRaw, {upper: 1 * multiplier})
-        : upperLimitRaw;
+      yUpperLimit ??= derivedSettings.percentLabels
+                      ? truncate(upperLimitRaw, {upper: 1 * multiplier})
+                      : upperLimitRaw;
 
-      yLowerLimit = yLowerLimit !== null ? yLowerLimit :
-        derivedSettings.percentLabels
-        ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
-        : lowerLimitRaw;
+      yLowerLimit ??= derivedSettings.percentLabels
+                      ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
+                      : lowerLimitRaw;
 
       const keysToPlot: number[] = controlLimits.keys.map(d => d.x);
 
