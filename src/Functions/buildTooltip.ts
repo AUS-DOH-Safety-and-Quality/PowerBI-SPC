@@ -1,6 +1,6 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { controlLimitsObject, defaultSettingsType, outliersObject } from "../Classes";
+import type { controlLimitsObject, defaultSettingsType, derivedSettingsClass, outliersObject } from "../Classes";
 import type { dataObject } from "./extractInputData";
 
 const valueNames: Record<string, string> = {
@@ -24,23 +24,23 @@ export default function buildTooltip(index: number,
                                       controlLimits: controlLimitsObject,
                                       outliers: outliersObject,
                                       inputData: dataObject,
-                                      inputSettings: defaultSettingsType): VisualTooltipDataItem[] {
+                                      inputSettings: defaultSettingsType,
+                                      derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
   const chart_type: string = inputSettings.spc.chart_type;
   const date: string = controlLimits.keys[index].label;
   const value: number = controlLimits.values[index];
-  const numerator: number = controlLimits.numerators ? controlLimits.numerators[index] : null;
-  const denominator: number = controlLimits.denominators ? controlLimits.denominators[index] : null;
+  const numerator: number = controlLimits.numerators?.[index];
+  const denominator: number = controlLimits.denominators?.[index];
   const target: number = controlLimits.targets[index];
   const limits = {
-      ll99: controlLimits.ll99 ? controlLimits.ll99[index] : null,
-      ul99: controlLimits.ll99 ? controlLimits.ul99[index] : null
-    };
-  const prop_labels: boolean = inputData.percentLabels;
+    ll99: controlLimits?.ll99?.[index],
+    ul99: controlLimits?.ul99?.[index]
+  };
   const astpoint: string = outliers.astpoint[index];
   const trend: string = outliers.trend[index];
   const shift: string = outliers.shift[index];
   const two_in_three: string = outliers.two_in_three[index];
-  const suffix: string = prop_labels ? "%" : "";
+  const suffix: string = derivedSettings.percentLabels ? "%" : "";
   const intNumDen: boolean = integerParams.includes(chart_type);
 
   const sig_figs: number = inputSettings.spc.sig_figs;

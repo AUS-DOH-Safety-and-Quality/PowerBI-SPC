@@ -2,7 +2,7 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import { truncate, min, max, type dataObject } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import type { defaultSettingsType, plotData, controlLimitsObject } from "../Classes";
+import type { defaultSettingsType, plotData, controlLimitsObject, derivedSettingsClass } from "../Classes";
 
 export type axisProperties = {
   lower: number,
@@ -44,54 +44,55 @@ export default class plotPropertiesClass {
                             this.yAxis.end_padding]);
   }
 
-  update(args: { options: VisualUpdateOptions,
-                      plotPoints: plotData[],
-                      controlLimits: controlLimitsObject,
-                      inputData: dataObject,
-                      inputSettings: defaultSettingsType }): void {
+  update(options: VisualUpdateOptions,
+          plotPoints: plotData[],
+          controlLimits: controlLimitsObject,
+          inputData: dataObject,
+          inputSettings: defaultSettingsType,
+          derivedSettings: derivedSettingsClass): void {
 
     // Get the width and height of plotting space
-    this.width = args.options.viewport.width;
-    this.height = args.options.viewport.height;
+    this.width = options.viewport.width;
+    this.height = options.viewport.height;
 
-    this.displayPlot = args.plotPoints
-      ? args.plotPoints.length > 1
+    this.displayPlot = plotPoints
+      ? plotPoints.length > 1
       : null;
 
-    let xLowerLimit: number = args.inputSettings.x_axis.xlimit_l;
-    let xUpperLimit: number = args.inputSettings.x_axis.xlimit_u;
-    let yLowerLimit: number = args.inputSettings.y_axis.ylimit_l;
-    let yUpperLimit: number = args.inputSettings.y_axis.ylimit_u;
+    let xLowerLimit: number = inputSettings.x_axis.xlimit_l;
+    let xUpperLimit: number = inputSettings.x_axis.xlimit_u;
+    let yLowerLimit: number = inputSettings.y_axis.ylimit_l;
+    let yUpperLimit: number = inputSettings.y_axis.ylimit_u;
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
-    if (args.inputData && args.controlLimits) {
-      xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(args.controlLimits.keys.map(d => d.x))
+    if (inputData && controlLimits) {
+      xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(controlLimits.keys.map(d => d.x))
 
-      const limitMultiplier: number = args.inputSettings.y_axis.limit_multiplier;
-      const values: number[] = args.controlLimits.values;
-      const ul99: number[] = args.controlLimits.ul99;
-      const ll99: number[] = args.controlLimits.ll99;
-      const alt_targets: number[] = args.controlLimits.alt_targets;
+      const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
+      const values: number[] = controlLimits.values;
+      const ul99: number[] = controlLimits.ul99;
+      const ll99: number[] = controlLimits.ll99;
+      const alt_targets: number[] = controlLimits.alt_targets;
       const maxValueOrLimit: number = max(values.concat(ul99).concat(alt_targets));
       const minValueOrLimit: number = min(values.concat(ll99).concat(alt_targets));
-      const maxTarget: number = max(args.controlLimits.targets);
-      const minTarget: number = min(args.controlLimits.targets);
+      const maxTarget: number = max(controlLimits.targets);
+      const minTarget: number = min(controlLimits.targets);
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
-      const multiplier: number = args.inputSettings.spc.multiplier;
+      const multiplier: number = derivedSettings.multiplier;
 
       yUpperLimit = yUpperLimit !== null ? yUpperLimit :
-      args.inputData.percentLabels
+      derivedSettings.percentLabels
         ? truncate(upperLimitRaw, {upper: 1 * multiplier})
         : upperLimitRaw;
 
       yLowerLimit = yLowerLimit !== null ? yLowerLimit :
-        args.inputData.percentLabels
+        derivedSettings.percentLabels
         ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
         : lowerLimitRaw;
 
-      const keysToPlot: number[] = args.controlLimits.keys.map(d => d.x);
+      const keysToPlot: number[] = controlLimits.keys.map(d => d.x);
 
       xLowerLimit = xLowerLimit !== null
         ? xLowerLimit
@@ -102,51 +103,51 @@ export default class plotPropertiesClass {
         : max(keysToPlot);
     }
 
-    const xTickSize: number = args.inputSettings.x_axis.xlimit_tick_size;
-    const yTickSize: number = args.inputSettings.y_axis.ylimit_tick_size;
+    const xTickSize: number = inputSettings.x_axis.xlimit_tick_size;
+    const yTickSize: number = inputSettings.y_axis.ylimit_tick_size;
 
-    const leftLabelPadding: number = args.inputSettings.y_axis.ylimit_label
-                                      ? args.inputSettings.y_axis.ylimit_label_size
+    const leftLabelPadding: number = inputSettings.y_axis.ylimit_label
+                                      ? inputSettings.y_axis.ylimit_label_size
                                       : 0;
 
-    const lowerLabelPadding: number = args.inputSettings.x_axis.xlimit_label
-                                      ? args.inputSettings.x_axis.xlimit_label_size
+    const lowerLabelPadding: number = inputSettings.x_axis.xlimit_label
+                                      ? inputSettings.x_axis.xlimit_label_size
                                       : 0;
 
     this.xAxis = {
       lower: xLowerLimit !== null ? xLowerLimit : 0,
       upper: xUpperLimit,
-      start_padding: args.inputSettings.canvas.left_padding + leftLabelPadding,
-      end_padding: args.inputSettings.canvas.right_padding,
-      colour: args.inputSettings.x_axis.xlimit_colour,
-      ticks: args.inputSettings.x_axis.xlimit_ticks,
+      start_padding: inputSettings.canvas.left_padding + leftLabelPadding,
+      end_padding: inputSettings.canvas.right_padding,
+      colour: inputSettings.x_axis.xlimit_colour,
+      ticks: inputSettings.x_axis.xlimit_ticks,
       tick_size: `${xTickSize}px`,
-      tick_font: args.inputSettings.x_axis.xlimit_tick_font,
-      tick_colour: args.inputSettings.x_axis.xlimit_tick_colour,
-      tick_rotation: args.inputSettings.x_axis.xlimit_tick_rotation,
-      tick_count: args.inputSettings.x_axis.xlimit_tick_count,
-      label: args.inputSettings.x_axis.xlimit_label,
-      label_size: `${args.inputSettings.x_axis.xlimit_label_size}px`,
-      label_font: args.inputSettings.x_axis.xlimit_label_font,
-      label_colour: args.inputSettings.x_axis.xlimit_label_colour
+      tick_font: inputSettings.x_axis.xlimit_tick_font,
+      tick_colour: inputSettings.x_axis.xlimit_tick_colour,
+      tick_rotation: inputSettings.x_axis.xlimit_tick_rotation,
+      tick_count: inputSettings.x_axis.xlimit_tick_count,
+      label: inputSettings.x_axis.xlimit_label,
+      label_size: `${inputSettings.x_axis.xlimit_label_size}px`,
+      label_font: inputSettings.x_axis.xlimit_label_font,
+      label_colour: inputSettings.x_axis.xlimit_label_colour
     };
 
     this.yAxis = {
       lower: yLowerLimit,
       upper: yUpperLimit,
-      start_padding: args.inputSettings.canvas.lower_padding + lowerLabelPadding,
-      end_padding: args.inputSettings.canvas.upper_padding,
-      colour: args.inputSettings.y_axis.ylimit_colour,
-      ticks: args.inputSettings.y_axis.ylimit_ticks,
+      start_padding: inputSettings.canvas.lower_padding + lowerLabelPadding,
+      end_padding: inputSettings.canvas.upper_padding,
+      colour: inputSettings.y_axis.ylimit_colour,
+      ticks: inputSettings.y_axis.ylimit_ticks,
       tick_size: `${yTickSize}px`,
-      tick_font: args.inputSettings.y_axis.ylimit_tick_font,
-      tick_colour: args.inputSettings.y_axis.ylimit_tick_colour,
-      tick_rotation: args.inputSettings.y_axis.ylimit_tick_rotation,
-      tick_count: args.inputSettings.y_axis.ylimit_tick_count,
-      label: args.inputSettings.y_axis.ylimit_label,
-      label_size: `${args.inputSettings.y_axis.ylimit_label_size}px`,
-      label_font: args.inputSettings.y_axis.ylimit_label_font,
-      label_colour: args.inputSettings.y_axis.ylimit_label_colour
+      tick_font: inputSettings.y_axis.ylimit_tick_font,
+      tick_colour: inputSettings.y_axis.ylimit_tick_colour,
+      tick_rotation: inputSettings.y_axis.ylimit_tick_rotation,
+      tick_count: inputSettings.y_axis.ylimit_tick_count,
+      label: inputSettings.y_axis.ylimit_label,
+      label_size: `${inputSettings.y_axis.ylimit_label_size}px`,
+      label_font: inputSettings.y_axis.ylimit_label_font,
+      label_colour: inputSettings.y_axis.ylimit_label_colour
     };
 
     this.initialiseScale();

@@ -10,12 +10,18 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
       .data(visualObj.viewModel.groupedLines)
       .join("path")
       .attr("d", d => {
-        const lower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-        const upper: number = visualObj.viewModel.plotProperties.yAxis.upper;
+        const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+        const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
+        const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
+        const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
         return d3.line<lineData>()
                   .x(d => visualObj.viewModel.plotProperties.xScale(d.x))
                   .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value))
-                  .defined(d => d.line_value !== null && between(d.line_value, lower, upper))(d[1])
+                  .defined(d => {
+                    return d.line_value !== null
+                      && between(d.line_value, ylower, yupper)
+                      && between(d.x, xlower, xupper)
+                  })(d[1])
       })
       .attr("fill", "none")
       .attr("stroke", d => getAesthetic(d[0], "lines", "colour", visualObj.viewModel.inputSettings.settings))
