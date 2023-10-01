@@ -221,7 +221,7 @@ export default class viewModelClass {
     // Scale limits using provided multiplier
     const multiplier: number = this.inputSettings.derivedSettings.multiplier;
 
-    ["values", "targets", "alt_targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+    ["values", "targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
       this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
     })
 
