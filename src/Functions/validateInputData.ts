@@ -6,7 +6,7 @@ export default function validateInputData(keys: string[], numerators: number[], 
   const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
   const denominatorOptional: string[] = ["i", "run", "mr"];
 
-  const checkOptionalDenominator: boolean = denominatorOptional.includes(data_type) && !(denominators === null);
+  const checkOptionalDenominator: boolean = denominatorOptional.includes(data_type) && !(denominators === null || denominators === undefined);
   if (checkOptionalDenominator) {
     denominatorRequired.push(data_type);
   }
