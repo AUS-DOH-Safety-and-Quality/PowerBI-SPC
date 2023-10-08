@@ -72,10 +72,19 @@ export default class settingsClass {
         })
       );
 
+      type propArray = Array<string | powerbi.default.VisualEnumerationInstanceKinds>;
+      let propertyKinds: propArray[] = new Array<propArray>();
+
+      (paneGroupings[currKey]).forEach(setting => {
+        if ((typeof this.settings[settingGroupName][setting]) != "boolean") {
+          propertyKinds.push([setting, powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule])
+        }
+      })
+
       rtnInstances.push({
         objectName: settingGroupName,
         properties: props,
-        propertyInstanceKind: Object.fromEntries((paneGroupings[currKey]).map(setting => [setting, powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule])),
+        propertyInstanceKind: Object.fromEntries(propertyKinds),
         selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals)
       })
 
