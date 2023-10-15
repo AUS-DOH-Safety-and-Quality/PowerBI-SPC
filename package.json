@@ -26,7 +26,7 @@
     "@typescript-eslint/parser": "^6.2.0",
     "eslint": "^8.45.0",
     "eslint-plugin-powerbi-visuals": "^0.8.1",
-    "ts-loader": "9.4.4",
+    "ts-loader": "9.5.0",
     "typescript": "5.2.2"
   },
   "override": {
