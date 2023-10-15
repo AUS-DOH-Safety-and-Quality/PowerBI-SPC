@@ -36,7 +36,7 @@ jobs:
       run: |
         npm install
         npm install -g powerbi-visuals-tools
-        pbiviz package
+        pbiviz package --skip-api
 
     - name: Rename pbiviz for old API
       if: matrix.config.powerbi-api != 'current'

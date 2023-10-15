@@ -24,4 +24,4 @@ jobs:
       run: |
         npm install
         npm install -g powerbi-visuals-tools
-        pbiviz package
+        pbiviz package --skip-api
