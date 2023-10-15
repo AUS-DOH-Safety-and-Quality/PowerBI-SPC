@@ -112,6 +112,10 @@
             ]
           }
         },
+        "flag_series": {
+          "displayName": "Highlight all in Pattern",
+          "type" : { "bool" : true }
+        },
         "astronomical": {
           "displayName": "Astronomical Points",
           "type" : { "bool" : true }

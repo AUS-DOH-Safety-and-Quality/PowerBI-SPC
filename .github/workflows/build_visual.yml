@@ -10,8 +10,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
-    
+        node-version: [20.x]
+
     steps:
     - uses: actions/checkout@v2
 
@@ -23,5 +23,5 @@ jobs:
     - name: Build
       run: |
         npm install
-        npm install -g powerbi-visuals-tools
+        npm install -g powerbi-visuals-tools@5.1.1
         pbiviz package

@@ -1,6 +1,6 @@
 import { abs, sum } from "../Functions";
 
-export default function shift(val: number[], targets: number[], n: number): string[] {
+export default function shift(val: number[], targets: number[], n: number, flag_series: boolean): string[] {
   const lagged_sign: number[] = val.map((d, i) => {
     return Math.sign(d - targets[i]);
   });
@@ -14,10 +14,12 @@ export default function shift(val: number[], targets: number[], n: number): stri
       return "none";
     }
   })
-  for (let i: number = 0; i < shift_detected.length; i++) {
-    if (shift_detected[i] !== "none") {
-      for (let j: number = (i - 1); j >= (i - (n - 1)); j--) {
-        shift_detected[j] = shift_detected[i];
+  if (flag_series) {
+    for (let i: number = 0; i < shift_detected.length; i++) {
+      if (shift_detected[i] !== "none") {
+        for (let j: number = (i - 1); j >= (i - (n - 1)); j--) {
+          shift_detected[j] = shift_detected[i];
+        }
       }
     }
   }

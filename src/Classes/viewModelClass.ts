@@ -250,21 +250,25 @@ export default class viewModelClass {
     }
     if (this.inputSettings.settings.spc.chart_type !== "run") {
       if (this.inputSettings.settings.outliers.astronomical) {
-        this.outliers.astpoint = checkFlagDirection(astronomical(this.controlLimits.values, this.controlLimits.ll99, this.controlLimits.ul99),
-                                            { process_flag_type, improvement_direction });
+        this.outliers.astpoint = checkFlagDirection(
+          astronomical(this.controlLimits.values, this.controlLimits.ll99, this.controlLimits.ul99),
+          { process_flag_type, improvement_direction });
       }
       if (this.inputSettings.settings.outliers.two_in_three) {
-        this.outliers.two_in_three = checkFlagDirection(twoInThree(this.controlLimits.values, this.controlLimits.ll95, this.controlLimits.ul95),
-                                                { process_flag_type, improvement_direction });
+        this.outliers.two_in_three = checkFlagDirection(
+          twoInThree(this.controlLimits.values, this.controlLimits.ll95, this.controlLimits.ul95, this.inputSettings.settings.outliers.flag_series),
+          { process_flag_type, improvement_direction });
       }
     }
     if (this.inputSettings.settings.outliers.trend) {
-      this.outliers.trend = checkFlagDirection(trend(this.controlLimits.values, this.inputSettings.settings.outliers.trend_n),
-                                      { process_flag_type, improvement_direction });
+      this.outliers.trend = checkFlagDirection(
+        trend(this.controlLimits.values, this.inputSettings.settings.outliers.trend_n, this.inputSettings.settings.outliers.flag_series),
+        { process_flag_type, improvement_direction });
     }
     if (this.inputSettings.settings.outliers.shift) {
-      this.outliers.shift = checkFlagDirection(shift(this.controlLimits.values, this.controlLimits.targets, this.inputSettings.settings.outliers.shift_n),
-                                      { process_flag_type, improvement_direction });
+      this.outliers.shift = checkFlagDirection(
+        shift(this.controlLimits.values, this.controlLimits.targets, this.inputSettings.settings.outliers.shift_n, this.inputSettings.settings.outliers.flag_series),
+        { process_flag_type, improvement_direction });
     }
   }
 }

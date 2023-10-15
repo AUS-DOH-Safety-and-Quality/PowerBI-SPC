@@ -19,6 +19,7 @@ const defaultSettings = {
   outliers: {
     process_flag_type: "both",
     improvement_direction: "increase",
+    flag_series: true,
     astronomical: false,
     ast_colour_improvement: "#E1C233",
     ast_colour_deterioration: "#E1C233",
@@ -117,10 +118,10 @@ const defaultSettings = {
 
 export const settingsPaneGroupings = {
   outliers: {
-    "Astronomical Points": ["process_flag_type", "improvement_direction", "astronomical", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
-    "Shifts": ["process_flag_type", "improvement_direction", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
-    "Trends": ["process_flag_type", "improvement_direction", "trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
-    "Two-In-Three": ["process_flag_type", "improvement_direction", "two_in_three", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
+    "Astronomical Points": ["process_flag_type", "improvement_direction", "flag_series", "astronomical", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
+    "Shifts": ["process_flag_type", "improvement_direction", "flag_series", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
+    "Trends": ["process_flag_type", "improvement_direction", "flag_series", "trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
+    "Two-In-Three": ["process_flag_type", "improvement_direction", "flag_series", "two_in_three", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
   },
   nhs_icons: {
     "Variation": ["show_variation_icons", "flag_variation_last", "variation_icons_locations", "variation_icons_scaling"],
