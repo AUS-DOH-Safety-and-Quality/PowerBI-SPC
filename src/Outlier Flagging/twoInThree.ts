@@ -1,6 +1,6 @@
 import { abs, sum } from "../Functions";
 
-export default function twoInThree(val: number[], ll95: number[], ul95: number[]): string[] {
+export default function twoInThree(val: number[], ll95: number[], ul95: number[], flag_series: boolean): string[] {
   const outside95: number[] = val.map((d, i) => {
     return d > ul95[i] ? 1 : (d < ll95[i] ? -1 : 0);
   });
@@ -15,10 +15,12 @@ export default function twoInThree(val: number[], ll95: number[], ul95: number[]
     }
   })
 
-  for (let i: number = 0; i < two_in_three_detected.length; i++) {
-    if (two_in_three_detected[i] !== "none") {
-      for (let j: number = (i - 1); j >= (i - 2); j--) {
-        two_in_three_detected[j] = two_in_three_detected[i];
+  if (flag_series) {
+    for (let i: number = 0; i < two_in_three_detected.length; i++) {
+      if (two_in_three_detected[i] !== "none") {
+        for (let j: number = (i - 1); j >= (i - 2); j--) {
+          two_in_three_detected[j] = two_in_three_detected[i];
+        }
       }
     }
   }
