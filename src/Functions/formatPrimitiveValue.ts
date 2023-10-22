@@ -9,7 +9,7 @@ const formatPrimitiveValue = broadcastBinary((rawValue: PrimitiveValue,
                                               config: { valueType: ValueTypeDescriptor,
                                                         dateSettings: defaultSettingsType["dates"]}): string => {
   if (rawValue === null || rawValue === undefined) {
-    return "";
+    return null;
   }
 
   if (config.valueType.numeric) {
