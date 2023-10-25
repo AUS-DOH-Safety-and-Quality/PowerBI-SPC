@@ -20,8 +20,15 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
+    - name: Install Dependencies
       run: |
         npm install
         npm install -g powerbi-visuals-tools@5.1.1
+
+    - name: Run linter
+      run: |
+        npm run eslint
+
+    - name: Test if package can be built
+      run: |
         pbiviz package

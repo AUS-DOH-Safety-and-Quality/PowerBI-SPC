@@ -33,8 +33,8 @@ function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultS
   const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
   return tooltipColumns?.[0]?.values?.map((_, idx) => {
     return tooltipColumns.map(viewColumn => {
-      let config = { valueType: viewColumn.source.type, dateSettings: inputSettings.dates };
-      let tooltipValueFormatted: string = formatPrimitiveValue(viewColumn?.values?.[idx], config)
+      const config = { valueType: viewColumn.source.type, dateSettings: inputSettings.dates };
+      const tooltipValueFormatted: string = formatPrimitiveValue(viewColumn?.values?.[idx], config)
 
       return <VisualTooltipDataItem>{
         displayName: viewColumn.source.displayName,

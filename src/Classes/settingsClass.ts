@@ -73,7 +73,7 @@ export default class settingsClass {
       );
 
       type propArray = Array<string | powerbi.default.VisualEnumerationInstanceKinds>;
-      let propertyKinds: propArray[] = new Array<propArray>();
+      const propertyKinds: propArray[] = new Array<propArray>();
 
       (paneGroupings[currKey]).forEach(setting => {
         if ((typeof this.settings[settingGroupName][setting]) != "boolean") {
