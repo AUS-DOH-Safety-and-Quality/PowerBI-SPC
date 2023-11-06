@@ -1,10 +1,12 @@
 # Introduction 
-This repository contains a free PowerBI custom visual to create Statistical Process Control (SPC) charts. This page is a guide on how to download, and install it.  It has been developed by the Safety and Quality team at the West Australian Health Department's Healthcare Quality Intelligence Unit.  The visual is implemented purely within PowerBI and has no dependencies on external programs like R or Python. The visual supports hover-over-tooltips as well as cross-plot filtering and highlighting.
+This repository contains a free PowerBI custom visual for you to create Statistical Process Control (SPC) charts. This page is a short guide on how to download and install it.  It has been developed by the Safety and Quality team at the West Australian Health Department's Healthcare Quality Intelligence Unit.  If you'd like more detail on SPC we recommend the [NHS Making Data Count guide]([url](https://www.england.nhs.uk/publication/making-data-count/)).
 
-The following chart types are (currently) implemented:
+The visual is implemented purely within PowerBI and has no dependencies on external programs like R or Python. The visual supports hover-over-tooltips as well as cross-plot filtering and highlighting.
+
+The following chart types are (currently) available:
 
   - Run: Run Chart
-  - i: Individual Measurements (AKA XmR)
+  - i: Individual Measurements (also known as XmR)
   - mr: Moving Range of Individual Measurements
   - p: Proportions
   - p': Proportions with Large-Sample Correction
@@ -18,7 +20,7 @@ The following chart types are (currently) implemented:
 
 # Installing the Visual
 
-The most recent version of the visual can be downloaded from the ['Releases' section](https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC/releases/tag/latest).  Save the file to your desktop.   Within Power BI, use the Visuals pane and add using the 'Import visual from a file' option:
+You can download the most recent version from the ['Releases' section](https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC/releases/tag/latest).  Save the file to your desktop.   Within Power BI, use the Visuals pane and add using the 'Import visual from a file' option:
 
 ![image](https://user-images.githubusercontent.com/27717896/128833977-51ae139d-43f2-4d32-8c8c-4cdcabc2bdaf.png)
 
@@ -40,9 +42,9 @@ You can change this through the 'Data Settings' menu:
 
 Aesthetic options for the lines, scatter dots, and chart axes are also available.
 
-# Building Locally
+# (Advanced) Building Locally
 
-You won't need to do this step if you have installed the visual.  However, if you have strong IT skills and you'd like to build the PowerBI visual locally, (.pbiviz file), you will need a working Node.js installation and internet access. After that, navigate to the project source directory and run:
+You won't need to do this step if you have installed the visual using the steps above.  However, if you have strong IT skills and you'd like to build the PowerBI visual locally, (.pbiviz file), you will need a working Node.js installation and internet access. After that, navigate to the project source directory and run:
 ```
 npm install
 npm install -g powerbi-visuals-tools
