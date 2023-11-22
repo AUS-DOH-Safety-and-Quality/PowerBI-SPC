@@ -307,6 +307,10 @@
             ]
           }
         },
+        "show_day": {
+          "displayName" : "Show Day",
+          "type" : { "bool" : true }
+        },
         "date_format_day": {
           "displayName": "Day Format",
           "type": {
