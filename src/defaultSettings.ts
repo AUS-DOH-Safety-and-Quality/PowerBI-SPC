@@ -112,8 +112,7 @@ const defaultSettings = {
     date_format_month: "MM",
     date_format_year: "YYYY",
     date_format_delim: "/",
-    date_format_locale: "en-GB",
-    show_day: true
+    date_format_locale: "en-GB"
   }
 };
 

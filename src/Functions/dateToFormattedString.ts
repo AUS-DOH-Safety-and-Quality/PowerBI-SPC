@@ -33,22 +33,23 @@ const dateToFormattedString = broadcastBinary(
     const inpMonth: string = date_settings.date_format_month;
     const inpYear: string = date_settings.date_format_year;
     const inpDelim: string = date_settings.date_format_delim;
-    const inpShowDay: boolean = date_settings.show_day;
+    const inpHideDay : boolean = inpDay === "DoNotShowDay"
+
 
     const formatOptions: Intl.DateTimeFormatOptions = {
-      ...(inpShowDay ? {day: "2-digit"} : {}), 
+      ...(inpHideDay ?  {} : {day: "2-digit"}), 
       month: monthDateMap[inpMonth],
       year: yearDateMap[inpYear]
     };
 
     const formattedDateString: string = input_date.toLocaleDateString(inpLocale, formatOptions)
                                                   .replace(/(\/|(\s|,\s))/gi, inpDelim);
-    if (inpShowDay && inpDay !== "DD") { 
+    if ( inpDay == "DD" || inpHideDay ) {
+      return formattedDateString;
+    } else  {
       const weekdayName: string = input_date.toLocaleDateString(inpLocale, {weekday : weekdayDateMap[inpDay]})
       return weekdayName + " " + formattedDateString;
-    } else {
-      return formattedDateString;
-    }
+    } 
   }
 );
 

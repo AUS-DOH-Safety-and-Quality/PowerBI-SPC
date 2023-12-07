@@ -307,17 +307,14 @@
             ]
           }
         },
-        "show_day": {
-          "displayName" : "Show Day",
-          "type" : { "bool" : true }
-        },
         "date_format_day": {
           "displayName": "Day Format",
           "type": {
             "enumeration" : [
               { "displayName" : "DD",          "value" : "DD" },
               { "displayName" : "Thurs DD",    "value" : "Thurs DD" },
-              { "displayName" : "Thursday DD", "value" : "Thursday DD"  }
+              { "displayName" : "Thursday DD", "value" : "Thursday DD"  },
+              { "displayName" : "(None)",    "value" : "DoNotShowDay" }
             ]
           }
         },
