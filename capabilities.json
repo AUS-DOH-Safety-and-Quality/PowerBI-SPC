@@ -313,7 +313,8 @@
             "enumeration" : [
               { "displayName" : "DD",          "value" : "DD" },
               { "displayName" : "Thurs DD",    "value" : "Thurs DD" },
-              { "displayName" : "Thursday DD", "value" : "Thursday DD"  }
+              { "displayName" : "Thursday DD", "value" : "Thursday DD"  },
+              { "displayName" : "(None)",    "value" : "DoNotShowDay" }
             ]
           }
         },
