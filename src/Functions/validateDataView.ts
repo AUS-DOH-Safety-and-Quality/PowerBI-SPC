@@ -2,15 +2,15 @@ import type powerbi from "powerbi-visuals-api";
 import { validationErrorClass, type defaultSettingsType } from "../Classes";
 
 export default function validateDataView(inputDV: powerbi.DataView[], inputSettings: defaultSettingsType) {
-  if (!(inputDV?.at(0))) {
+  if (!(inputDV?.[0])) {
     throw(new validationErrorClass("No data present"));
   }
-  if (!(inputDV.at(0)?.categorical?.categories?.at(0)?.values?.length > 0)) {
+  if (!(inputDV[0]?.categorical?.categories?.[0]?.values?.length > 0)) {
     throw(new validationErrorClass("No grouping/ID variable passed!"));
   }
 
   const numeratorsPresent: boolean
-    = inputDV.at(0).categorical
+    = inputDV[0].categorical
                    ?.values
                    ?.some(d => d.source?.roles?.numerators);
 
@@ -21,7 +21,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
   if (denominatorRequired.includes(chart_type)) {
     const denominatorsPresent: boolean
-      = inputDV.at(0).categorical
+      = inputDV[0].categorical
                      ?.values
                      ?.some(d => d.source?.roles?.denominators);
 
@@ -32,7 +32,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
 
   if (chart_type === "xbar") {
     const xbarSDPresent: boolean
-      = inputDV.at(0).categorical
+      = inputDV[0].categorical
                      ?.values
                      ?.some(d => d.source?.roles?.xbar_sds);
 

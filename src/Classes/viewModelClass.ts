@@ -180,7 +180,7 @@ export default class viewModelClass {
                       .withCategory(this.inputData.categories,
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
-        highlighted: this.inputData.highlights?.at(index) != null,
+        highlighted: this.inputData.highlights?.[index] != null,
         tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings, this.inputSettings.derivedSettings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
