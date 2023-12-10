@@ -19,10 +19,6 @@ import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
  * It includes keys (categories), and numerators (values for each category).
  * @returns {controlLimitsObject} An object containing the keys, values, targets (center line),
  * and the lower and upper control limits for both 95% and 99% confidence intervals.
- *
- * @example
- * // Returns control limits for the provided data
- * gLimits({ keys: ['a', 'b', 'c'], numerators: [5, 7, 9] })
  */
 export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
   const cl: number = mean(args.numerators);
