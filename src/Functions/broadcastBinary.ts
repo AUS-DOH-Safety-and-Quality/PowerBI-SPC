@@ -1,5 +1,16 @@
 type ReturnT<Input1T, Input2T, BaseT> = Input1T extends Array<any> ? BaseT[] : Input2T extends Array<any> ? BaseT[] : BaseT;
 
+/**
+ * Applies a binary function to scalar or array inputs, broadcasting the
+ * operation if necessary.
+ *
+ * @template ScalarInput1T - The type of the first scalar input.
+ * @template ScalarInput2T - The type of the second scalar input.
+ * @template ScalarReturnT - The type of the return value.
+ * @param {function} fun - The binary function to apply.
+ * @returns {function} - A function that accepts scalar or array inputs and
+ *                       applies the binary function.
+ */
 export default function broadcastBinary<ScalarInput1T, ScalarInput2T, ScalarReturnT>(fun: (x: ScalarInput1T, y: ScalarInput2T) => ScalarReturnT) {
   return function<T1 extends ScalarInput1T | ScalarInput1T[],
                   T2 extends ScalarInput2T | ScalarInput2T[]>(x: T1, y: T2): ReturnT<T1, T2, ScalarReturnT> {

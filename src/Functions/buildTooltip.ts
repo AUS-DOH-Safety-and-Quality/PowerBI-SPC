@@ -20,6 +20,17 @@ const valueNames: Record<string, string> = {
 
 const integerParams: string[] = ["c", "p", "pp"];
 
+/**
+ * Builds the tooltip data for a specific index in the chart.
+ *
+ * @param index - The index of the data point.
+ * @param controlLimits - The control limits object.
+ * @param outliers - The outliers object.
+ * @param inputData - The input data object.
+ * @param inputSettings - The input settings object.
+ * @param derivedSettings - The derived settings object.
+ * @returns An array of VisualTooltipDataItem objects representing the tooltip data.
+ */
 export default function buildTooltip(index: number,
                                       controlLimits: controlLimitsObject,
                                       outliers: outliersObject,
