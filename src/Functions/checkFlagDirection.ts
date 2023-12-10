@@ -1,5 +1,13 @@
 import { broadcastBinary } from "../Functions"
 
+/**
+ * Checks the flag direction based on the outlier status and flag settings.
+ *
+ * @param outlierStatus - The outlier status.
+ * @param flagSettings - The flag settings object containing process_flag_type
+ *                         and improvement_direction.
+ * @returns The flag direction based on the outlier status and flag settings.
+ */
 const checkFlagDirection = broadcastBinary(
   (outlierStatus: string, flagSettings: {process_flag_type: string, improvement_direction: string}): string => {
     if (outlierStatus === "none") {
