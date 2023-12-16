@@ -91,13 +91,13 @@ export class Visual implements powerbi.extensibility.IVisual {
     if (removeAll) {
       this.svg.selectChildren().remove();
     }
-    this.svg.append('g').classed("linesgroup", true)
-    this.svg.append('g').classed("dotsgroup", true)
     this.svg.append('line').classed("ttip-line-x", true)
     this.svg.append('line').classed("ttip-line-y", true)
     this.svg.append('g').classed("xaxisgroup", true)
     this.svg.append('text').classed("xaxislabel", true)
     this.svg.append('g').classed("yaxisgroup", true)
     this.svg.append('text').classed("yaxislabel", true)
+    this.svg.append('g').classed("linesgroup", true)
+    this.svg.append('g').classed("dotsgroup", true)
   }
 }
