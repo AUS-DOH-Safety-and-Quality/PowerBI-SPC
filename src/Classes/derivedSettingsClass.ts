@@ -11,6 +11,10 @@ export default class derivedSettingsClass {
     let multiplier: number = inputSettings.spc.multiplier;
     let percentLabels: boolean;
 
+    if (percentSettingString === "Yes") {
+      multiplier = 100
+    }
+
     if (pChartType) {
       multiplier = multiplier === 1 ? 100 : multiplier
     }

@@ -73,6 +73,7 @@ export default class plotPropertiesClass {
       const ul99: number[] = controlLimits.ul99;
       const ll99: number[] = controlLimits.ll99;
       const alt_targets: number[] = controlLimits.alt_targets;
+      const maxValue: number = max(values);
       const maxValueOrLimit: number = max(values.concat(ul99).concat(alt_targets));
       const minValueOrLimit: number = min(values.concat(ll99).concat(alt_targets));
       const maxTarget: number = max(controlLimits.targets);
@@ -82,7 +83,8 @@ export default class plotPropertiesClass {
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
       const multiplier: number = derivedSettings.multiplier;
 
-      yUpperLimit ??= derivedSettings.percentLabels
+      // Assume that observed values > 100% are intentional, and do not truncate
+      yUpperLimit ??= (derivedSettings.percentLabels && !(maxValue > (1 * multiplier)))
                       ? truncate(upperLimitRaw, {upper: 1 * multiplier})
                       : upperLimitRaw;
 
