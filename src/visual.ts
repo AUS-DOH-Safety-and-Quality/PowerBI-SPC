@@ -49,7 +49,6 @@ export class Visual implements powerbi.extensibility.IVisual {
               .call(drawIcons, this)
               .call(updateHighlighting, this)
               .call(addContextMenu, this)
-      console.log(this.viewModel)
 
       if (this.viewModel.inputData.warningMessage !== "") {
         this.host.displayWarningIcon("Invalid inputs have been removed",
