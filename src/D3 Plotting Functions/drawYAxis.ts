@@ -43,7 +43,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-  const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").selectAll(".tick text").node() as SVGGElement;
+  const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
   if (!yAxisNode) {
     selection.select(".yaxislabel")
               .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
@@ -53,7 +53,6 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
 
   const settingsPadding: number = visualObj.viewModel.inputSettings.settings.canvas.left_padding
   const tickLeftofPadding: number = yAxisCoordinates.left - settingsPadding;
-
   if (tickLeftofPadding < 0) {
     if (!refresh) {
       visualObj.viewModel.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)

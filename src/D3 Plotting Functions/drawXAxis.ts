@@ -44,7 +44,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual, ref
       .style("font-family", xAxisProperties.tick_font)
       .style("fill", displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
-  const xAxisNode: SVGGElement = selection.selectAll(".xaxisgroup").selectAll(".tick text").node() as SVGGElement;
+  const xAxisNode: SVGGElement = selection.selectAll(".xaxisgroup").node() as SVGGElement;
   if (!xAxisNode) {
     selection.select(".xaxislabel")
               .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
