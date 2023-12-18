@@ -48,7 +48,7 @@ jobs:
       shell: bash
 
     - name: Stash built visuals
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v3
       with:
         name: packages
         path: dist/*.pbiviz
@@ -58,8 +58,8 @@ jobs:
     needs: build-pbiviz-packages
     runs-on: ubuntu-latest
     steps:
-    - name: Restore built pacakges
-      uses: actions/download-artifact@master
+    - name: Restore built packages
+      uses: actions/download-artifact@v3
       with:
         name: packages
         path: ./packages
