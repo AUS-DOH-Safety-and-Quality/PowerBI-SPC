@@ -44,6 +44,7 @@ jobs:
         OLDFILE=$(ls *.pbiviz)
         NEWFILE=$(ls *.pbiviz | sed "s/\(.*\)\(.pbiviz\)/\1-oldapi.pbiviz/g")
         mv $OLDFILE $NEWFILE
+        ls
       shell: bash
 
     - name: Stash built visuals
