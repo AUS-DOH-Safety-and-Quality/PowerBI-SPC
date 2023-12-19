@@ -6,33 +6,16 @@ nav_order: 7.7
 ---
 
 # Line Plot Aesthetics
+With the line settings, users can modify the width, type and colour of the lines in the SPC chart. Each line type can be modified by selecting the different line type:
 
-## 99.8% Line Width
+![Line Options](images\lineSettings\LineOptions.png)
 
-## 95% Line Width
+Both the main target (center line) and the alternative target are available in the Target(s) option.
 
-## Main Line Width
+The formatting options for lines is as follows:
 
-## Target Line Width
+![Line Settings](images\lineSettings\LineSettings.png)
 
-## Alt. Target Line Width
-
-## 99.8% Line Type
-
-## 95% Line Type
-
-## Main Line Type
-
-## Target Line Type
-
-## Alt. Target Line Type
-
-## 99.8% Line Colour
-
-## 95% Line Colour
-
-## Main Line Colour
-
-## Target Line Colour
-
-## Alt. Target Line Colour
+- **Main Line Width** - Numeric value for the width of the line
+- **Main Line Type** - Setting colour for line. Use hex colour code for conditional formatting.
+- **Main Line Colour** - Type of line, one of *Solid*, *Dashed* or *Dotted*
