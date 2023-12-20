@@ -1,32 +1,31 @@
-import type powerbi from "powerbi-visuals-api"
+import powerbi from "powerbi-visuals-api"
 type DataViewValueColumn = powerbi.DataViewValueColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { defaultSettingsType } from "../Classes/";
-import { formatPrimitiveValue } from "../Functions";
+import { formatPrimitiveValue, dateSettingsToFormatOptions, parseInputDates } from "../Functions";
 type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 
-function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType): string[] {
-  const primitiveKeyColumns = inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"])
+function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
+  const datePartsRecord = Object.fromEntries(dateParts.filter(part => part.type !== "literal").map(part => [part.type, part.value]));
+  ["weekday", "day", "month", "year"].forEach(key => {
+    datePartsRecord[key] ??= ""
+  })
+  return datePartsRecord
+}
 
-  // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
-  if (primitiveKeyColumns.length > 1) {
-    return primitiveKeyColumns[primitiveKeyColumns.length - 1].values.map((lastKeyValue: powerbi.PrimitiveValue, index) => {
-      if (lastKeyValue === null) {
-        return null
-      }
-      let concatKey: string = <string>lastKeyValue;
-      for (let i = (primitiveKeyColumns.length - 2); i >= 0; i--) {
-        concatKey += " " + primitiveKeyColumns[i].values[index];
-      }
-      return concatKey;
-    }) as string[];
-  } else {
-    const primitiveKeyValues = primitiveKeyColumns?.[0]?.values;
-    const primitiveKeyTypes = primitiveKeyColumns?.[0]?.source?.type;
-    const config = { valueType: primitiveKeyTypes, dateSettings: inputSettings.dates}
-    return formatPrimitiveValue(primitiveKeyValues, config)
-  }
+function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType): string[] {
+  const inputDates = parseInputDates(inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]))
+  const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
+  const delim: string = inputSettings.dates.date_format_delim;
+  return inputDates.dates.map((value: Date, idx) => {
+    if (value === null) {
+      return null
+    }
+    const dateParts = datePartsToRecord(formatter.formatToParts(<Date>value))
+    const quarter: string = inputDates.quarters?.[idx] ?? ""
+    return `${dateParts.weekday} ${dateParts.day}${delim}${dateParts.month}${delim}${quarter}${delim}${dateParts.year}`
+  })
 }
 
 function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultSettingsType): VisualTooltipDataItem[][] {
