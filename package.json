@@ -15,7 +15,8 @@
     "d3-selection": "^3.0.0",
     "d3-shape": "^3.2.0",
     "powerbi-visuals-api": "~4.6.0",
-    "powerbi-visuals-utils-dataviewutils": "^6.0.1"
+    "powerbi-visuals-utils-dataviewutils": "^6.0.1",
+    "powerbi-visuals-utils-typeutils": "^6.0.1"
   },
   "devDependencies": {
     "@types/d3-array": "^3.2.1",
