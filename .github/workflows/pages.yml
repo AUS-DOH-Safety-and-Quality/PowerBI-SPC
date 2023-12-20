@@ -10,7 +10,7 @@ on:
   push:
     branches: ["main"]
     include:
-      - docs/** # Push events to docs folder
+      - PowerBI-SPC-Docs/** # Push events to docs folder
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,17 +32,19 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: docs
+        working-directory: PowerBI-SPC-Docs
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
           cache-version: 0 # Increment this number if you need to re-download cached gems
-          working-directory: '${{ github.workspace }}/docs'
+          working-directory: '${{ github.workspace }}/PowerBI-SPC-Docs'
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
@@ -55,7 +57,7 @@ jobs:
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "docs/_site/"
+          path: "PowerBI-SPC-Docs/_site/"
 
   # Deployment job
   deploy:
