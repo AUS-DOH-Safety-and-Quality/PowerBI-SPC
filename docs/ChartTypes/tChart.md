@@ -12,6 +12,6 @@ The t Chart to the left monitors the number of days between each recorded surgic
 
 To construct this chart, you provide the outcome variable of interest (number of days) in the 'Outcome/Numerator' field, and the date variable (Month) in the 'ID Key' field (depicted below). Then, select the 't' option from the 'Data Settings' dropdown.
 
-<iframe title="SPCVisualExamplesTesting" width="100%" height="486" src="https://app.powerbi.com/view?r=eyJrIjoiYjg0ZmZlYzQtM2MyMC00NDg0LWIwMWQtOThjNTE2ZjJhOGQ5IiwidCI6IjIzMjA0YzgxLTVlNzYtNDE0ZS04Y2M1LTYzMWI0ODc0ZTIwOCJ9&pageName=ReportSection8083fc94f7deeeec9b94" frameborder="0" allowFullScreen="true"></iframe>
-
 ![t Chart Fields](images\tChartFields.png) ![t Chart Type](images\tChartType.png)
+
+<iframe title="SPCVisualExamplesTesting" width="100%" height="486" src="https://app.powerbi.com/view?r=eyJrIjoiYjg0ZmZlYzQtM2MyMC00NDg0LWIwMWQtOThjNTE2ZjJhOGQ5IiwidCI6IjIzMjA0YzgxLTVlNzYtNDE0ZS04Y2M1LTYzMWI0ODc0ZTIwOCJ9&pageName=ReportSection8083fc94f7deeeec9b94" frameborder="0" allowFullScreen="true"></iframe>
