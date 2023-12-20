@@ -1,0 +1,3 @@
+[submodule "PowerBI-SPC-Docs"]
+	path = PowerBI-SPC-Docs
+	url = https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC-Docs
