@@ -30,6 +30,8 @@ export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
     targets: rep(median(args.numerators), args.keys.length),
     ll99: rep(0, args.keys.length),
     ll95: rep(0, args.keys.length),
+    ll68: rep(0, args.keys.length),
+    ul68: rep(cl + 1*sigma, args.keys.length),
     ul95: rep(cl + 2*sigma, args.keys.length),
     ul99: rep(cl + 3*sigma, args.keys.length)
   };

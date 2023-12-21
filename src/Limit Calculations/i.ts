@@ -24,6 +24,8 @@ export default function iLimits(args: controlLimitsArgs): controlLimitsObject {
     targets: rep(cl, args.keys.length),
     ll99: rep(cl - 3 * sigma, args.keys.length),
     ll95: rep(cl - 2 * sigma, args.keys.length),
+    ll68: rep(cl - 1 * sigma, args.keys.length),
+    ul68: rep(cl + 1 * sigma, args.keys.length),
     ul95: rep(cl + 2 * sigma, args.keys.length),
     ul99: rep(cl + 3 * sigma, args.keys.length)
   };
