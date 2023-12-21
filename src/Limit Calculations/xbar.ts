@@ -27,6 +27,8 @@ export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject
     targets: rep(cl, args.keys.length),
     ll99: subtract(cl, multiply(A3, sd)),
     ll95: subtract(cl, multiply(multiply(divide(A3, 3), 2), sd)),
+    ll68: subtract(cl, multiply(divide(A3, 3), sd)),
+    ul68: add(cl, multiply(divide(A3, 3), sd)),
     ul95: add(cl, multiply(multiply(divide(A3, 3), 2), sd)),
     ul99: add(cl, multiply(A3, sd)),
     count: count_per_group

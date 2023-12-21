@@ -3,6 +3,8 @@ import type { defaultSettingsType } from "../Classes"
 const lineNameMap: Record<string, string> = {
   "ll99" : "99",
   "ll95" : "95",
+  "ll68" : "68",
+  "ul68" : "68",
   "ul95" : "95",
   "ul99" : "99",
   "targets" : "target",

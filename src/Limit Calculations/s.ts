@@ -11,19 +11,15 @@ export default function sLimits(args: controlLimitsArgs): controlLimitsObject {
   // Calculate weighted SD
   const cl: number = sqrt(sum(multiply(Nm1,pow(group_sd,2))) / sum(Nm1));
 
-  // Sample-size dependent constant
-  const B3: number[] = b3(count_per_group, false);
-  const B395: number[] = b3(count_per_group, true);
-  const B4: number[] = b4(count_per_group, false);
-  const B495: number[] = b4(count_per_group, true);
-
   return {
     keys: args.keys,
     values: group_sd,
     targets: rep(cl, args.keys.length),
-    ll99: multiply(cl, B3),
-    ll95: multiply(cl, B395),
-    ul95: multiply(cl, B495),
-    ul99: multiply(cl, B4)
+    ll99: multiply(cl, b3(count_per_group, 3)),
+    ll95: multiply(cl, b3(count_per_group, 2)),
+    ll68: multiply(cl, b3(count_per_group, 1)),
+    ul68: multiply(cl, b4(count_per_group, 1)),
+    ul95: multiply(cl, b4(count_per_group, 2)),
+    ul99: multiply(cl, b4(count_per_group, 3))
   };
 }

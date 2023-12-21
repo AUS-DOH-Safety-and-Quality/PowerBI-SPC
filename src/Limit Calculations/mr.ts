@@ -18,6 +18,8 @@ export default function mrLimits(args: controlLimitsArgs): controlLimitsObject {
     targets: rep(cl, args.keys.length - 1),
     ll99: rep(0, args.keys.length - 1),
     ll95: rep(0, args.keys.length - 1),
+    ll68: rep(0, args.keys.length - 1),
+    ul68: rep((3.267 / 3) * 1 * cl, args.keys.length - 1),
     ul95: rep((3.267 / 3) * 2 * cl, args.keys.length - 1),
     ul99: rep(3.267 * cl, args.keys.length - 1)
   };

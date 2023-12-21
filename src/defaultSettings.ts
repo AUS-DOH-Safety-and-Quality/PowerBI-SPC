@@ -59,18 +59,24 @@ const defaultSettings = {
     opacity_unselected: 0.2
   },
   lines: {
+    show_99: true,
+    show_95: true,
+    show_68: false,
     width_99: 2,
     width_95: 2,
+    width_68: 2,
     width_main: 1,
     width_target: 1.5,
     width_alt_target: 1.5,
     type_99: "10 10",
     type_95: "2 5",
+    type_68: "2 5",
     type_main: "10 0",
     type_target: "10 0",
     type_alt_target: "10 0",
     colour_99: "#6495ED",
     colour_95: "#6495ED",
+    colour_68: "#6495ED",
     colour_main: "#000000",
     colour_target: "#000000",
     colour_alt_target: "#000000"
@@ -130,8 +136,9 @@ export const settingsPaneGroupings = {
   lines: {
     "Main": ["width_main", "type_main", "colour_main"],
     "Target(s)": ["width_target", "type_target", "colour_target", "width_alt_target", "type_alt_target", "colour_alt_target"],
-    "95% Limits": ["width_95", "type_95", "colour_95"],
-    "99% Limits": ["width_99", "type_99", "colour_99"]
+    "68% Limits": ["show_68", "width_68", "type_68", "colour_68"],
+    "95% Limits": ["show_95", "width_95", "type_95", "colour_95"],
+    "99% Limits": ["show_99", "width_99", "type_99", "colour_99"]
   },
   x_axis: {
     "Axis": ["xlimit_colour", "xlimit_l", "xlimit_u"],

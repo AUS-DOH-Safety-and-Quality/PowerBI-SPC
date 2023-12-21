@@ -354,12 +354,28 @@
     "lines": {
       "displayName": "Line Settings",
       "properties": {
+        "show_99": {
+          "displayName": "Show 99.8% Lines",
+          "type" : { "bool" : true }
+        },
+        "show_95": {
+          "displayName": "Show 95% Lines",
+          "type" : { "bool" : true }
+        },
+        "show_68": {
+          "displayName": "Show 68% Lines",
+          "type" : { "bool" : true }
+        },
         "width_99": {
           "displayName": "99.8% Line Width",
           "type": { "numeric": true }
         },
         "width_95": {
           "displayName": "95% Line Width",
+          "type": { "numeric": true }
+        },
+        "width_68": {
+          "displayName": "68% Line Width",
           "type": { "numeric": true }
         },
         "width_main": {
@@ -386,6 +402,16 @@
         },
         "type_95": {
           "displayName": "95% Line Type",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
+            ]
+          }
+        },
+        "type_68": {
+          "displayName": "68% Line Type",
           "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
@@ -430,6 +456,10 @@
         },
         "colour_95":{
           "displayName": "95% Line Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "colour_68":{
+          "displayName": "68% Line Colour",
           "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_main":{

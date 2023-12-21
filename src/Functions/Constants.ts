@@ -26,20 +26,19 @@ export const a3 = broadcastUnary(
 );
 
 const b_helper = broadcastBinary(
-  (sampleSize: number, use95: boolean): number => {
-    const sigma: number = use95 ? 2 : 3;
+  (sampleSize: number, sigma: number): number => {
     return (sigma * c5(sampleSize)) / c4(sampleSize);
   }
 )
 
 export const b3 = broadcastBinary(
-  (sampleSize: number, use95: boolean): number => {
-    return 1 - b_helper(sampleSize, use95);
+  (sampleSize: number, sigma: number): number => {
+    return 1 - b_helper(sampleSize, sigma);
   }
 );
 
 export const b4 = broadcastBinary(
-  (sampleSize: number, use95: boolean): number => {
-    return 1 + b_helper(sampleSize, use95);
+  (sampleSize: number, sigma: number): number => {
+    return 1 + b_helper(sampleSize, sigma);
   }
 );

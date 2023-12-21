@@ -35,6 +35,8 @@ export type controlLimitsObject = {
   targets: number[];
   ll99?: number[];
   ll95?: number[];
+  ll68?: number[];
+  ul68?: number[];
   ul95?: number[];
   ul99?: number[];
   count?: number[];
@@ -133,7 +135,7 @@ export default class viewModelClass {
       this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
-          if (this.inputSettings.settings.spc.chart_type !== "run" || !["ll99", "ll95", "ul95", "ul99"].includes(entry[0])) {
+          if (this.inputSettings.settings.spc.chart_type !== "run" || !["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"].includes(entry[0])) {
             allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
           }
         })
@@ -190,7 +192,15 @@ export default class viewModelClass {
   initialiseGroupedLines(): void {
     let labels: string[] = ["targets", "values", "alt_targets"];
     if (this.inputSettings.settings.spc.chart_type !== "run") {
-      labels = ["ll99", "ll95", "ul95", "ul99"].concat(labels);
+      if (this.inputSettings.settings.lines.show_99) {
+        labels.push("ll99", "ul99");
+      }
+      if (this.inputSettings.settings.lines.show_95) {
+        labels.push("ll95", "ul95");
+      }
+      if (this.inputSettings.settings.lines.show_68) {
+        labels.push("ll68", "ul68");
+      }
     }
 
     const formattedLines: lineData[] = new Array<lineData>();
@@ -221,7 +231,7 @@ export default class viewModelClass {
     // Scale limits using provided multiplier
     const multiplier: number = this.inputSettings.derivedSettings.multiplier;
 
-    ["values", "targets", "ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+    ["values", "targets", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99"].forEach(limit => {
       this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
     })
 
@@ -234,7 +244,7 @@ export default class viewModelClass {
       upper: this.inputSettings.settings.spc.ul_truncate
     };
 
-    ["ll99", "ll95", "ul95", "ul99"].forEach(limit => {
+    ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"].forEach(limit => {
       this.controlLimits[limit] = truncate(this.controlLimits[limit], limits);
     });
   }
