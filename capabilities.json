@@ -314,7 +314,7 @@
               { "displayName" : "DD",          "value" : "DD" },
               { "displayName" : "Thurs DD",    "value" : "Thurs DD" },
               { "displayName" : "Thursday DD", "value" : "Thursday DD"  },
-              { "displayName" : "(blank)",    "value" : "blank" }
+              { "displayName" : "(blank)",    "value" : "(blank)" }
             ]
           }
         },
@@ -325,7 +325,7 @@
               { "displayName" : "MM",    "value" : "MM" },
               { "displayName" : "Mon",   "value" : "Mon" },
               { "displayName" : "Month", "value" : "Month" },
-              { "displayName" : "(blank)",    "value" : "blank" }
+              { "displayName" : "(blank)",    "value" : "(blank)" }
             ]
           }
         },
@@ -335,7 +335,7 @@
             "enumeration" : [
               { "displayName" : "YYYY", "value" : "YYYY" },
               { "displayName" : "YY",   "value" : "YY" },
-              { "displayName" : "(blank)",    "value" : "blank" }
+              { "displayName" : "(blank)",    "value" : "(blank)" }
             ]
           }
         },

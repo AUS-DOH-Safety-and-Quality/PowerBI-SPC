@@ -23,8 +23,11 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
       return null
     }
     const dateParts = datePartsToRecord(formatter.formatToParts(<Date>value))
-    const quarter: string = inputDates.quarters?.[idx] ?? ""
-    return `${dateParts.weekday} ${dateParts.day}${delim}${dateParts.month}${delim}${quarter}${delim}${dateParts.year}`
+    const datePartStrings: string[] = [dateParts.weekday + " " + dateParts.day,
+                                        dateParts.month,
+                                        inputDates.quarters?.[idx] ?? "",
+                                        dateParts.year];
+    return datePartStrings.filter(d => String(d).trim()).join(delim)
   })
 }
 
