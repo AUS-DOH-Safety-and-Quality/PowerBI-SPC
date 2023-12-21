@@ -5,27 +5,27 @@ const weekdayDateMap: Record<string, "long" | "short"> = {
   "DD" : null,
   "Thurs DD" : "short",
   "Thursday DD" : "long",
-  "blank" : null
+  "(blank)" : null
 }
 
 const monthDateMap: Record<string, "2-digit" | "short" | "long"> = {
   "MM" : "2-digit",
   "Mon" : "short",
   "Month" : "long",
-  "blank" : null
+  "(blank)" : null
 }
 
 const yearDateMap: Record<string, "numeric" | "2-digit"> = {
   "YYYY" : "numeric",
   "YY" : "2-digit",
-  "blank" : null
+  "(blank)" : null
 }
 
 const dayDateMap = {
   "DD" : "2-digit",
   "Thurs DD" : "2-digit",
   "Thursday DD" : "2-digit",
-  "blank" : null
+  "(blank)" : null
 }
 
 const dateOptionsLookup = {
