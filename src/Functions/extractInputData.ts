@@ -11,6 +11,8 @@ export type dataObject = {
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
   categories: DataViewCategoryColumn;
+  facets: string[];
+  facetIndexes: number[];
   scatter_formatting: defaultSettingsType["scatter"][];
   tooltips: VisualTooltipDataItem[][];
   warningMessage: string;
@@ -23,9 +25,10 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings);
   const scatter_cond = extractConditionalFormatting(inputView, "scatter", inputSettings) as defaultSettingsType["scatter"][];
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
+  const facets: string[] = extractDataColumn<string[]>(inputView, "facets", inputSettings);
   const highlights: powerbi.PrimitiveValue[] = inputView.values[0].highlights;
 
-  const inputValidStatus: string[] = validateInputData(keys, numerators, denominators, xbar_sds, inputSettings.spc.chart_type);
+  const inputValidStatus: string[] = validateInputData(keys, numerators, denominators, xbar_sds, facets, inputSettings.spc.chart_type);
 
   const valid_ids: number[] = new Array<number>();
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
@@ -41,7 +44,17 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus[i]}.`)
     }
   }
-
+  
+  const valid_facets: string[] = extractValues(facets, valid_ids);
+  const facetIndexes: number[] = new Array<number>();
+  let current_facet: string = valid_facets[0];
+  valid_facets.forEach((d, idx) => {
+    if (d !== current_facet) {
+      facetIndexes.push(idx - 1);
+      current_facet = d;
+    }
+  })
+  
   return {
     limitInputArgs: {
       keys: valid_keys,
@@ -54,6 +67,8 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     highlights: extractValues(highlights, valid_ids),
     anyHighlights: highlights != null,
     categories: inputView.categories[0],
+    facets: valid_facets,
+    facetIndexes: facetIndexes,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
     warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : ""
   }

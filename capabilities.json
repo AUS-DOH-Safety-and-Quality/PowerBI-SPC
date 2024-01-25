@@ -14,6 +14,7 @@
     { "displayName": "Outcome/Numerator", "name": "numerators",   "kind": "Measure" },
     { "displayName": "Denominator",       "name": "denominators", "kind": "Measure" },
     { "displayName": "ID Key (Date)",     "name": "key",          "kind": "Grouping" },
+    { "displayName": "Facets",            "name": "facets",       "kind": "Measure" },
     { "displayName": "SD (for xbar)",     "name": "xbar_sds",     "kind": "Measure" },
     { "displayName": "Tooltips",          "name": "tooltips",     "kind": "Measure" }
   ],
@@ -615,6 +616,7 @@
         "select": [
           { "bind": { "to": "numerators" } },
           { "bind": { "to": "denominators" } },
+          { "bind": { "to": "facets" } },
           { "bind": { "to": "xbar_sds" } },
           { "bind": { "to": "tooltips" } }
         ]

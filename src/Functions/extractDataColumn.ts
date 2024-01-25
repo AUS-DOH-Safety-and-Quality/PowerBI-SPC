@@ -56,7 +56,10 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     return extractTooltips(inputView, inputSettings) as Extract<T, VisualTooltipDataItem[][]>;
   }
 
-  // Assumed that any other requested columns are numeric columns for plotting
   const columnRaw = inputView.values.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
+  if (name === "facets") {
+    return columnRaw?.[0]?.values?.map(d => d === null ? null : String(d)) as T
+  }
+  // Assumed that any other requested columns are numeric columns for plotting
   return columnRaw?.[0]?.values?.map(d => d === null ? null : Number(d)) as T
 }
