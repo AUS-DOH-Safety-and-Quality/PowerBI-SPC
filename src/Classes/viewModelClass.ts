@@ -88,7 +88,6 @@ export default class viewModelClass {
       this.splitIndexes = JSON.parse(split_indexes);
       this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings.settings);
 
-      console.log(this)
       this.calculateLimits();
       this.scaleAndTruncateLimits();
       this.flagOutliers();
