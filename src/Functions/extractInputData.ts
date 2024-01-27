@@ -8,6 +8,8 @@ import { type defaultSettingsType, type controlLimitsArgs } from "../Classes";
 
 export type dataObject = {
   limitInputArgs: controlLimitsArgs;
+  ids: number[];
+  x_values: number[];
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
   categories: DataViewCategoryColumn;
@@ -31,14 +33,18 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const inputValidStatus: string[] = validateInputData(keys, numerators, denominators, xbar_sds, facets, inputSettings.spc.chart_type);
 
   const valid_ids: number[] = new Array<number>();
-  const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
+  const valid_labels: string[] = new Array<string>();
+  const x_values: number[] = new Array<number>();
+  const original_ids: number[] = new Array<number>();
   const removalMessages: string[] = new Array<string>();
   const groupVarName: string = inputView.categories[0].source.displayName;
   let valid_x: number = 0;
   for (let i: number = 0; i < numerators.length; i++) {
     if (inputValidStatus[i] === "") {
       valid_ids.push(i);
-      valid_keys.push({ x: valid_x, id: i, label: keys[i] })
+      valid_labels.push(keys[i])
+      x_values.push(valid_x);
+      original_ids.push(i);
       valid_x += 1;
     } else {
       removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus[i]}.`)
@@ -57,12 +63,14 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   
   return {
     limitInputArgs: {
-      keys: valid_keys,
+      labels: valid_labels,
       numerators: extractValues(numerators, valid_ids),
       denominators: extractValues(denominators, valid_ids),
       xbar_sds: extractValues(xbar_sds, valid_ids),
       outliers_in_limits: false,
     },
+    ids: valid_ids,
+    x_values: x_values,
     tooltips: extractValues(tooltips, valid_ids),
     highlights: extractValues(highlights, valid_ids),
     anyHighlights: highlights != null,

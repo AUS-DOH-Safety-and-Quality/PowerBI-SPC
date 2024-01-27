@@ -38,7 +38,7 @@ export default function buildTooltip(index: number,
                                       inputSettings: defaultSettingsType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
   const chart_type: string = inputSettings.spc.chart_type;
-  const date: string = controlLimits.keys[index].label;
+  const date: string = controlLimits.labels[index];
   const value: number = controlLimits.values[index];
   const numerator: number = controlLimits.numerators?.[index];
   const denominator: number = controlLimits.denominators?.[index];

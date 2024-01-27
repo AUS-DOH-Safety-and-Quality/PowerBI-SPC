@@ -4,7 +4,7 @@ type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import * as limitFunctions from "../Limit Calculations"
+import * as limitFunctions from "spc-limits-js"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
 import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
@@ -28,7 +28,7 @@ export type plotData = {
 }
 
 export type controlLimitsObject = {
-  keys: { x: number, id: number, label: string }[];
+  labels: string[];
   values: number[];
   numerators?: number[];
   denominators?: number[];
@@ -44,7 +44,7 @@ export type controlLimitsObject = {
 };
 
 export type controlLimitsArgs = {
-  keys: { x: number, id: number, label: string }[];
+  labels: string[];
   numerators: number[];
   denominators?: number[];
   outliers_in_limits?: boolean;
@@ -116,7 +116,7 @@ export default class viewModelClass {
     if (this.splitIndexes.length > 0 || this.inputData.facetIndexes.length > 0) {
       const indexes: number[] = this.splitIndexes
                                   .concat(this.inputData.facetIndexes)
-                                  .concat([this.inputData.limitInputArgs.keys.length - 1])
+                                  .concat([this.inputData.limitInputArgs.labels.length - 1])
                                   .filter((d, idx, arr) => arr.indexOf(d) === idx)
                                   .sort((a,b) => a - b);
       const groupedData: dataObject[] = indexes.map((d, idx) => {
@@ -125,11 +125,11 @@ export default class viewModelClass {
          if(idx === 0) {
           data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(0, d + 1)
           data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(0, d + 1)
-          data.limitInputArgs.keys = data.limitInputArgs.keys.slice(0, d + 1)
+          data.limitInputArgs.labels = data.limitInputArgs.labels.slice(0, d + 1)
          } else {
           data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[idx - 1] + 1, d + 1)
           data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[idx - 1] + 1, d + 1)
-          data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[idx - 1] + 1, d + 1)
+          data.limitInputArgs.labels = data.limitInputArgs.labels.slice(indexes[idx - 1] + 1, d + 1)
          }
         return data;
       })
@@ -150,15 +150,15 @@ export default class viewModelClass {
     }
 
     this.controlLimits.alt_targets = rep(this.inputSettings.settings.spc.alt_target,
-                                          this.inputData.limitInputArgs.keys.length);
+                                          this.inputData.limitInputArgs.labels.length);
   }
 
   initialisePlotData(host: IVisualHost): void {
     this.plotPoints = new Array<plotData>();
     this.tickLabels = new Array<{ x: number; label: string; }>();
 
-    for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
-      const index: number = this.controlLimits.keys[i].x;
+    for (let i: number = 0; i < this.controlLimits.labels.length; i++) {
+      const index: number = this.inputData.x_values[i];
       const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i]
       if (this.outliers.shift[i] !== "none") {
         aesthetics.colour = getAesthetic(this.outliers.shift[i], "outliers",
@@ -183,12 +183,12 @@ export default class viewModelClass {
         aesthetics: aesthetics,
         identity: host.createSelectionIdBuilder()
                       .withCategory(this.inputData.categories,
-                                    this.inputData.limitInputArgs.keys[i].id)
+                                    this.inputData.ids[i])
                       .createSelectionId(),
         highlighted: this.inputData.highlights?.[index] != null,
         tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings, this.inputSettings.derivedSettings)
       })
-      this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
+      this.tickLabels.push({x: index, label: this.controlLimits.labels[i]});
     }
   }
 
@@ -207,7 +207,7 @@ export default class viewModelClass {
     }
 
     const formattedLines: lineData[] = new Array<lineData>();
-    const nLimits = this.controlLimits.keys.length;
+    const nLimits = this.controlLimits.labels.length;
 
     for (let i: number = 0; i < nLimits; i++) {
       labels.forEach(label => {
@@ -215,13 +215,13 @@ export default class viewModelClass {
         // we avoid rendering a line joining each segment
         if (this.splitIndexes.includes(i - 1) || this.inputData.facetIndexes.includes(i - 1)) {
           formattedLines.push({
-            x: this.controlLimits.keys[i].x,
+            x: this.inputData.x_values[i],
             line_value: null,
             group: label
           })
         }
         formattedLines.push({
-          x: this.controlLimits.keys[i].x,
+          x: this.inputData.x_values[i],
           line_value: this.controlLimits[label]?.[i],
           group: label
         })
@@ -256,10 +256,10 @@ export default class viewModelClass {
     const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
     const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
     this.outliers = {
-      astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
-      two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
-      trend: rep("none", this.inputData.limitInputArgs.keys.length),
-      shift: rep("none", this.inputData.limitInputArgs.keys.length)
+      astpoint: rep("none", this.inputData.limitInputArgs.labels.length),
+      two_in_three: rep("none", this.inputData.limitInputArgs.labels.length),
+      trend: rep("none", this.inputData.limitInputArgs.labels.length),
+      shift: rep("none", this.inputData.limitInputArgs.labels.length)
     }
     if (this.inputSettings.settings.spc.chart_type !== "run") {
       if (this.inputSettings.settings.outliers.astronomical) {

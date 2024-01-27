@@ -66,7 +66,7 @@ export default class plotPropertiesClass {
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
     if (inputData && controlLimits) {
-      xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(controlLimits.keys.map(d => d.x))
+      xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(inputData.x_values);
 
       const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
       const values: number[] = controlLimits.values;
@@ -92,7 +92,7 @@ export default class plotPropertiesClass {
                       ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
                       : lowerLimitRaw;
 
-      const keysToPlot: number[] = controlLimits.keys.map(d => d.x);
+      const keysToPlot: number[] = inputData.x_values;
 
       xLowerLimit = xLowerLimit !== null
         ? xLowerLimit
