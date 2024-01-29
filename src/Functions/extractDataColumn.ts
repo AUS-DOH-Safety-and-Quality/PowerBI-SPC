@@ -57,7 +57,7 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
   }
 
   const columnRaw = inputView.values.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
-  if (name === "facets") {
+  if (name === "groupings") {
     return columnRaw?.[0]?.values?.map(d => d === null ? null : String(d)) as T
   }
   // Assumed that any other requested columns are numeric columns for plotting

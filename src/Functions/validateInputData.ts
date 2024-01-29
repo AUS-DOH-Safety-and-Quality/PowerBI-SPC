@@ -5,7 +5,7 @@ export default function validateInputData(keys: string[],
                                           numerators: number[],
                                           denominators: number[],
                                           xbar_sds: number[],
-                                          facets: string[],
+                                          groupings: string[],
                                           data_type: string): string[] {
   const denominatorConstraintRequired: string[] = ["p", "pp", "u", "up"];
   const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
@@ -17,8 +17,8 @@ export default function validateInputData(keys: string[],
   }
   const numeratorNonNegativeRequired: string[] = ["p", "pp", "u", "up", "s", "c", "g", "t"];
   const status: string[] = rep("", keys.length);
-  if (!(facets === null || facets === undefined)) {
-    facets.forEach((d, idx) => status[idx] = status[idx] === "" ? ((d != null) ? "" : "Facet missing") : status[idx]);
+  if (!(groupings === null || groupings === undefined)) {
+    groupings.forEach((d, idx) => status[idx] = status[idx] === "" ? ((d != null) ? "" : "Grouping missing") : status[idx]);
   }
   keys.forEach((d, idx) => status[idx] = status[idx] === "" ? ((d != null) ? "" : "Date missing") : status[idx]);
   if (!status.some(d => d == "")) {
