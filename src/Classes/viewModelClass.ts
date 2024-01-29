@@ -149,8 +149,7 @@ export default class viewModelClass {
       this.controlLimits = limitFunction(this.inputData.limitInputArgs);
     }
 
-    this.controlLimits.alt_targets = rep(this.inputSettings.settings.lines.alt_target,
-                                          this.inputData.limitInputArgs.keys.length);
+    this.controlLimits.alt_targets = this.inputData.alt_targets;
   }
 
   initialisePlotData(host: IVisualHost): void {
@@ -219,16 +218,31 @@ export default class viewModelClass {
     const nLimits = this.controlLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
+      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || this.inputData.groupingIndexes.includes(i - 1);
+      let isNewAltTarget: boolean = false;
+      if (i > 0 && this.inputSettings.settings.lines.show_alt_target) {
+        isNewAltTarget = this.controlLimits.alt_targets[i] !== this.controlLimits.alt_targets[i - 1];
+      }
       labels.forEach(label => {
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
-        if (this.splitIndexes.includes(i - 1) || this.inputData.groupingIndexes.includes(i - 1)) {
+        if (isRebaselinePoint || (label === "alt_targets" && isNewAltTarget)) {
           formattedLines.push({
             x: this.controlLimits.keys[i].x,
             line_value: null,
             group: label
           })
+
+          // Only align alt target with previous target if it is not a re-baseline point
+          if (!isRebaselinePoint && (label === "alt_targets" && isNewAltTarget)) {
+            formattedLines.push({
+              x: this.controlLimits.keys[i].x - 1,
+              line_value: this.controlLimits[label]?.[i],
+              group: label
+            })
+          }
         }
+        
         formattedLines.push({
           x: this.controlLimits.keys[i].x,
           line_value: this.controlLimits[label]?.[i],
