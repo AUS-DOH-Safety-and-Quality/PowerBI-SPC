@@ -79,7 +79,13 @@ const defaultSettings = {
     colour_68: "#6495ED",
     colour_main: "#000000",
     colour_target: "#000000",
-    colour_alt_target: "#000000"
+    colour_alt_target: "#000000",
+    ttip_show_99: true,
+    ttip_show_95: false,
+    ttip_show_68: false,
+    ttip_label_99: "99% Limit",
+    ttip_label_95: "95% Limit",
+    ttip_label_68: "68% Limit"
   },
   x_axis: {
     xlimit_colour: "#000000",
@@ -136,9 +142,9 @@ export const settingsPaneGroupings = {
   lines: {
     "Main": ["width_main", "type_main", "colour_main"],
     "Target(s)": ["width_target", "type_target", "colour_target", "width_alt_target", "type_alt_target", "colour_alt_target"],
-    "68% Limits": ["show_68", "width_68", "type_68", "colour_68"],
-    "95% Limits": ["show_95", "width_95", "type_95", "colour_95"],
-    "99% Limits": ["show_99", "width_99", "type_99", "colour_99"]
+    "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68"],
+    "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95"],
+    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"]
   },
   x_axis: {
     "Axis": ["xlimit_colour", "xlimit_l", "xlimit_u"],
@@ -154,9 +160,18 @@ export const settingsPaneGroupings = {
 
 export const settingsPaneToggles = {
   lines: {
-    "68% Limits": { "show_68": ["width_68", "type_68", "colour_68"] },
-    "95% Limits": { "show_95": ["width_95", "type_95", "colour_95"] },
-    "99% Limits": { "show_99": ["width_99", "type_99", "colour_99"] }
+    "68% Limits": { 
+      "show_68": ["width_68", "type_68", "colour_68", "ttip_show_68"],
+      "ttip_show_68": ["ttip_label_68"]
+    },
+    "95% Limits": { 
+      "show_95": ["width_95", "type_95", "colour_95", "ttip_show_95"],
+      "ttip_show_95": ["ttip_label_95"] 
+    },
+    "99% Limits": { 
+      "show_99": ["width_99", "type_99", "colour_99", "ttip_show_99"],
+      "ttip_show_99": ["ttip_label_99"] 
+    }
   }
 }
 

@@ -474,6 +474,30 @@
         "colour_alt_target":{
           "displayName": "Alt. Target Line Colour",
           "type": { "fill": { "solid": { "color": true } } }
+        },
+        "ttip_show_68": {
+          "displayName": "Show value in tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_show_95": {
+          "displayName": "Show value in tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_show_99": {
+          "displayName": "Show value in tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_label_68": {
+          "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_label_95": {
+          "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_label_99": {
+          "displayName": "Tooltip Label",
+          "type": { "text": true }
         }
       }
     },
