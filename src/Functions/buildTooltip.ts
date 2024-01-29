@@ -45,6 +45,10 @@ export default function buildTooltip(index: number,
   const target: number = controlLimits.targets[index];
   const limits = {
     ll99: controlLimits?.ll99?.[index],
+    ll95: controlLimits?.ll95?.[index],
+    ll68: controlLimits?.ll68?.[index],
+    ul68: controlLimits?.ul68?.[index],
+    ul95: controlLimits?.ul95?.[index],
     ul99: controlLimits?.ul99?.[index]
   };
   const astpoint: string = outliers.astpoint[index];
@@ -77,9 +81,13 @@ export default function buildTooltip(index: number,
     })
   }
   if (chart_type !== "run") {
-    tooltip.push({
-      displayName: "Upper 99% Limit",
-      value: (limits.ul99).toFixed(sig_figs) + suffix
+    ["68", "95", "99"].forEach(limit => { 
+      if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
+        tooltip.push({
+          displayName: `Upper ${inputSettings.lines[`ttip_label_${limit}`]}`,
+          value: (limits[`ul${limit}`]).toFixed(sig_figs) + suffix
+        })
+      }
     })
   }
   tooltip.push({
@@ -87,9 +95,13 @@ export default function buildTooltip(index: number,
     value: (target).toFixed(sig_figs) + suffix
   })
   if (chart_type !== "run") {
-    tooltip.push({
-      displayName: "Lower 99% Limit",
-      value: (limits.ll99).toFixed(sig_figs) + suffix
+    ["68", "95", "99"].forEach(limit => { 
+      if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
+        tooltip.push({
+          displayName: `Lower ${inputSettings.lines[`ttip_label_${limit}`]}`,
+          value: (limits[`ll${limit}`]).toFixed(sig_figs) + suffix
+        })
+      }
     })
   }
 
