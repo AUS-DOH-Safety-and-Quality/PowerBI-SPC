@@ -83,10 +83,6 @@
         "ul_truncate": {
           "displayName": "Truncate Upper Limits at:",
           "type": { "numeric": true }
-        },
-        "alt_target": {
-          "displayName": "Additional Target Value:",
-          "type": { "numeric": true }
         }
       }
     },
@@ -526,6 +522,10 @@
         "ttip_label_alt_target": {
           "displayName": "Tooltip Label",
           "type": { "text": true }
+        },
+        "alt_target": {
+          "displayName": "Additional Target Value:",
+          "type": { "numeric": true }
         }
       }
     },

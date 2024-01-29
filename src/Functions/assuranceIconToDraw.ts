@@ -2,7 +2,7 @@ import type { viewModelClass } from "../Classes/";
 
 export default function assuranceIconToDraw(viewModel: viewModelClass): string {
   const imp_direction: string = viewModel.inputSettings.settings.outliers.improvement_direction;
-  const alt_target: number = viewModel.inputSettings.settings.spc.alt_target;
+  const alt_target: number = viewModel.inputSettings.settings.lines.alt_target;
 
   if (alt_target === null || imp_direction === "neutral") {
     return "none";
