@@ -7,7 +7,7 @@ type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import { extractConditionalFormatting } from "../Functions";
-import { default as defaultSettings, settingsPaneGroupings } from "../defaultSettings";
+import { default as defaultSettings, settingsPaneGroupings, settingsPaneToggles } from "../defaultSettings";
 import derivedSettingsClass from "./derivedSettingsClass";
 
 export type defaultSettingsType = typeof defaultSettings;
@@ -59,8 +59,23 @@ export default class settingsClass {
    */
   createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumerationObject {
     const settingNames: string[] = Object.keys(this.settings[settingGroupName]);
+    const toggledSettings: Record<string, string[]> = Object.keys(settingsPaneToggles).includes(settingGroupName) ? settingsPaneToggles[settingGroupName] : {};
     const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
-    const paneGroupings: Record<string, string[]> = settingsGrouped ? settingsPaneGroupings[settingGroupName] : { "all": settingNames };
+    const paneGroupings: Record<string, string[]> = settingsGrouped ? JSON.parse(JSON.stringify(settingsPaneGroupings[settingGroupName])) : { "all": settingNames };
+    
+    if (Object.keys(toggledSettings).length > 0) {
+      Object.keys(toggledSettings).forEach(toggleGroup => {
+        const possibleSettings: string[] = paneGroupings[toggleGroup];
+        let settingsToRemove: string[] = new Array<string>();
+        Object.keys(toggledSettings[toggleGroup]).forEach(settingToggle => {
+          if (this.settings[settingGroupName][settingToggle] !== true) {
+            settingsToRemove = settingsToRemove.concat(toggledSettings[toggleGroup][settingToggle])
+          }
+        })
+        paneGroupings[toggleGroup] = possibleSettings.filter(setting => !settingsToRemove.includes(setting))
+      })
+    }
+  
     const rtnInstances = new Array<VisualObjectInstance>();
     const rtnContainers = new Array<VisualObjectInstanceContainer>();
 

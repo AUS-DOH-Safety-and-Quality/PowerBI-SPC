@@ -152,4 +152,12 @@ export const settingsPaneGroupings = {
   }
 }
 
+export const settingsPaneToggles = {
+  lines: {
+    "68% Limits": { "show_68": ["width_68", "type_68", "colour_68"] },
+    "95% Limits": { "show_95": ["width_95", "type_95", "colour_95"] },
+    "99% Limits": { "show_99": ["width_99", "type_99", "colour_99"] }
+  }
+}
+
 export default defaultSettings;
