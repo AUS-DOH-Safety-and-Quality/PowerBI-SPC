@@ -122,7 +122,7 @@ const defaultSettings = {
   }
 };
 
-const settingsPaneGroupings = {
+export const settingsPaneGroupings = {
   outliers: {
     "Astronomical Points": ["process_flag_type", "improvement_direction", "flag_series", "astronomical", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
     "Shifts": ["process_flag_type", "improvement_direction", "flag_series", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
@@ -152,7 +152,7 @@ const settingsPaneGroupings = {
   }
 }
 
-const settingsPaneToggles = {
+export const settingsPaneToggles = {
   lines: {
     "68% Limits": { "show_68": ["width_68", "type_68", "colour_68"] },
     "95% Limits": { "show_95": ["width_95", "type_95", "colour_95"] },
@@ -160,12 +160,4 @@ const settingsPaneToggles = {
   }
 }
 
-Object.freeze(defaultSettings);
-Object.freeze(settingsPaneGroupings);
-Object.freeze(settingsPaneToggles);
-
-export { 
-  settingsPaneGroupings,
-  settingsPaneToggles 
-}
 export default defaultSettings;
