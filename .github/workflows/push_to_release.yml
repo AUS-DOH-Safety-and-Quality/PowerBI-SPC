@@ -3,7 +3,6 @@ name: "Build release"
 
 on:
   workflow_dispatch:
-    inputs:
 jobs:
   build-pbiviz-packages:
     name: "Pre Release"
@@ -21,7 +20,7 @@ jobs:
     - name: Use Node.js ${{ matrix.config.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ matrix.config.node-version }}
 
     - name: Update PowerBI Visuals API Version
       if: matrix.config.powerbi-api != 'current'
@@ -29,6 +28,13 @@ jobs:
         sed -i 's/\("apiVersion":\)"\([0-9.]*\)",/\1"${{ matrix.config.powerbi-api }}",/g' pbiviz.json
         sed -i 's/\("powerbi-visuals-api": \)"~\([0-9.]*\)",/\1"~${{ matrix.config.powerbi-api }}",/g' package.json
         sed -i 's/[[:space:]]*"privileges":[[:space:]]\[\],//g' capabilities.json
+      shell: bash
+      
+    - name: Label visuals as 'Development'
+      run: |
+        sed -i 's/"name":"PBISPC"/"name":"PBISPC_DEV"/g' pbiviz.json
+        sed -i 's/"displayName":"SPC Charts"/"displayName":"SPC Charts (Dev)"/g' pbiviz.json
+        sed -i 's/"guid":"PBISPC"/"guid":"PBISPC_DEV"/g' pbiviz.json
       shell: bash
 
     - name: Build
