@@ -16,6 +16,7 @@ export type dataObject = {
   scatter_formatting: defaultSettingsType["scatter"][];
   tooltips: VisualTooltipDataItem[][];
   warningMessage: string;
+  alt_targets: number[];
 }
 
 export default function extractInputData(inputView: DataViewCategorical, inputSettings: defaultSettingsType): dataObject {
@@ -23,10 +24,12 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings);
   const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings);
   const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings);
-  const scatter_cond = extractConditionalFormatting(inputView, "scatter", inputSettings) as defaultSettingsType["scatter"][];
+  const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings);
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
   const groupings: string[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings);
   const highlights: powerbi.PrimitiveValue[] = inputView.values[0].highlights;
+  const alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
+                                    .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
 
   const inputValidStatus: string[] = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettings.spc.chart_type);
 
@@ -70,6 +73,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     groupings: valid_groupings,
     groupingIndexes: groupingIndexes,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
-    warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : ""
+    warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : "",
+    alt_targets: extractValues(alt_targets, valid_ids)
   }
 }

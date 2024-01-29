@@ -63,7 +63,7 @@ const defaultSettings = {
     show_68: false,
     show_main: true,
     show_target: true,
-    show_alt_target: true,
+    show_alt_target: false,
     width_99: 2,
     width_95: 2,
     width_68: 2,
