@@ -38,8 +38,6 @@ export default function buildTooltip(index: number,
                                       inputSettings: defaultSettingsType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
   const chart_type: string = inputSettings.spc.chart_type;
-  const date: string = controlLimits.keys[index].label;
-  const value: number = controlLimits.values[index];
   const numerator: number = controlLimits.numerators?.[index];
   const denominator: number = controlLimits.denominators?.[index];
   const target: number = controlLimits.targets[index];
@@ -63,11 +61,11 @@ export default function buildTooltip(index: number,
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
     displayName: "Date",
-    value: date
+    value: controlLimits.keys[index].label
   });
   tooltip.push({
     displayName: valueNames[chart_type],
-    value: (value).toFixed(sig_figs) + suffix
+    value: (controlLimits.values[index]).toFixed(sig_figs) + suffix
   })
   if(numerator || !(numerator === null || numerator === undefined)) {
     tooltip.push({
@@ -114,21 +112,12 @@ export default function buildTooltip(index: number,
     })
   }
 
-  if (astpoint !== "none" || trend !== "none" ||
-      shift !== "none" || two_in_three !== "none") {
+  if (astpoint !== "none" || trend !== "none" || shift !== "none" || two_in_three !== "none") {
     const patterns: string[] = new Array<string>();
-    if (astpoint !== "none") {
-      patterns.push("Astronomical Point")
-    }
-    if (trend !== "none") {
-      patterns.push("Trend")
-    }
-    if (shift !== "none") {
-      patterns.push("Shift")
-    }
-    if (two_in_three !== "none") {
-      patterns.push("Two-in-Three")
-    }
+    if (astpoint !== "none") { patterns.push("Astronomical Point") }
+    if (trend !== "none") { patterns.push("Trend") }
+    if (shift !== "none") { patterns.push("Shift") }
+    if (two_in_three !== "none") { patterns.push("Two-in-Three") }
     tooltip.push({
       displayName: "Pattern(s)",
       value: patterns.join("\n")
