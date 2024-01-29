@@ -367,6 +367,18 @@
           "displayName": "Show 68% Lines",
           "type" : { "bool" : true }
         },
+        "show_main": {
+          "displayName": "Show Main Line",
+          "type" : { "bool" : true }
+        },
+        "show_target": {
+          "displayName": "Show Target Line",
+          "type" : { "bool" : true }
+        },
+        "show_alt_target": {
+          "displayName": "Show Alt. Target Line",
+          "type" : { "bool" : true }
+        },
         "width_99": {
           "displayName": "99.8% Line Width",
           "type": { "numeric": true }
@@ -475,7 +487,7 @@
           "displayName": "Alt. Target Line Colour",
           "type": { "fill": { "solid": { "color": true } } }
         },
-        "ttip_show_68": {
+        "ttip_show_99": {
           "displayName": "Show value in tooltip",
           "type" : { "bool" : true }
         },
@@ -483,11 +495,19 @@
           "displayName": "Show value in tooltip",
           "type" : { "bool" : true }
         },
-        "ttip_show_99": {
+        "ttip_show_68": {
           "displayName": "Show value in tooltip",
           "type" : { "bool" : true }
         },
-        "ttip_label_68": {
+        "ttip_show_target": {
+          "displayName": "Show value in tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_show_alt_target": {
+          "displayName": "Show value in tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_label_99": {
           "displayName": "Tooltip Label",
           "type": { "text": true }
         },
@@ -495,7 +515,15 @@
           "displayName": "Tooltip Label",
           "type": { "text": true }
         },
-        "ttip_label_99": {
+        "ttip_label_68": {
+          "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_label_target": {
+          "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_label_alt_target": {
           "displayName": "Tooltip Label",
           "type": { "text": true }
         }
