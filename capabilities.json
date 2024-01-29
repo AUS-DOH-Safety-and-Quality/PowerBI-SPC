@@ -11,12 +11,12 @@
   },
   "privileges": [],
   "dataRoles": [
-    { "displayName": "Outcome/Numerator", "name": "numerators",   "kind": "Measure" },
-    { "displayName": "Denominator",       "name": "denominators", "kind": "Measure" },
-    { "displayName": "ID Key (Date)",     "name": "key",          "kind": "Grouping" },
-    { "displayName": "Facets",            "name": "facets",       "kind": "Measure" },
-    { "displayName": "SD (for xbar)",     "name": "xbar_sds",     "kind": "Measure" },
-    { "displayName": "Tooltips",          "name": "tooltips",     "kind": "Measure" }
+    { "displayName": "Outcome/Numerator",     "name": "numerators",   "kind": "Measure" },
+    { "displayName": "Denominator",           "name": "denominators", "kind": "Measure" },
+    { "displayName": "ID Key (Date)",         "name": "key",          "kind": "Grouping" },
+    { "displayName": "Rebaseline Groupings",  "name": "groupings",    "kind": "Measure" },
+    { "displayName": "SD (for xbar)",         "name": "xbar_sds",     "kind": "Measure" },
+    { "displayName": "Tooltips",              "name": "tooltips",     "kind": "Measure" }
   ],
   "objects": {
     "split_indexes_storage" : {
@@ -668,7 +668,7 @@
         "select": [
           { "bind": { "to": "numerators" } },
           { "bind": { "to": "denominators" } },
-          { "bind": { "to": "facets" } },
+          { "bind": { "to": "groupings" } },
           { "bind": { "to": "xbar_sds" } },
           { "bind": { "to": "tooltips" } }
         ]

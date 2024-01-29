@@ -113,9 +113,9 @@ export default class viewModelClass {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
       = limitFunctions[this.inputSettings.settings.spc.chart_type];
 
-    if (this.splitIndexes.length > 0 || this.inputData.facetIndexes.length > 0) {
+    if (this.splitIndexes.length > 0 || this.inputData.groupingIndexes.length > 0) {
       const indexes: number[] = this.splitIndexes
-                                  .concat(this.inputData.facetIndexes)
+                                  .concat(this.inputData.groupingIndexes)
                                   .concat([this.inputData.limitInputArgs.keys.length - 1])
                                   .filter((d, idx, arr) => arr.indexOf(d) === idx)
                                   .sort((a,b) => a - b);
@@ -222,7 +222,7 @@ export default class viewModelClass {
       labels.forEach(label => {
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
-        if (this.splitIndexes.includes(i - 1) || this.inputData.facetIndexes.includes(i - 1)) {
+        if (this.splitIndexes.includes(i - 1) || this.inputData.groupingIndexes.includes(i - 1)) {
           formattedLines.push({
             x: this.controlLimits.keys[i].x,
             line_value: null,
