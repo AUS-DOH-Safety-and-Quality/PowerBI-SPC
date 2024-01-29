@@ -193,7 +193,16 @@ export default class viewModelClass {
   }
 
   initialiseGroupedLines(): void {
-    const labels: string[] = ["targets", "values", "alt_targets"];
+    const labels: string[] = new Array<string>();
+    if (this.inputSettings.settings.lines.show_main) {
+      labels.push("values");
+    }
+    if (this.inputSettings.settings.lines.show_target) {
+      labels.push("targets");
+    }
+    if (this.inputSettings.settings.lines.show_alt_target) {
+      labels.push("alt_targets");
+    }
     if (this.inputSettings.settings.spc.chart_type !== "run") {
       if (this.inputSettings.settings.lines.show_99) {
         labels.push("ll99", "ul99");

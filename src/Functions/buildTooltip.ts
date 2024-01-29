@@ -43,6 +43,7 @@ export default function buildTooltip(index: number,
   const numerator: number = controlLimits.numerators?.[index];
   const denominator: number = controlLimits.denominators?.[index];
   const target: number = controlLimits.targets[index];
+  const alt_target: number = controlLimits?.alt_targets?.[index];
   const limits = {
     ll99: controlLimits?.ll99?.[index],
     ll95: controlLimits?.ll95?.[index],
@@ -90,10 +91,18 @@ export default function buildTooltip(index: number,
       }
     })
   }
-  tooltip.push({
-    displayName: "Centerline",
-    value: (target).toFixed(sig_figs) + suffix
-  })
+  if (inputSettings.lines.show_target && inputSettings.lines.ttip_show_target) {
+    tooltip.push({
+      displayName: inputSettings.lines.ttip_label_target,
+      value: (target).toFixed(sig_figs) + suffix
+    })
+  }
+  if (inputSettings.lines.show_alt_target && inputSettings.lines.ttip_show_alt_target && !(alt_target === null || alt_target === undefined)) {
+    tooltip.push({
+      displayName: inputSettings.lines.ttip_label_alt_target,
+      value: (alt_target).toFixed(sig_figs) + suffix
+    })
+  }
   if (chart_type !== "run") {
     ["68", "95", "99"].forEach(limit => { 
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {

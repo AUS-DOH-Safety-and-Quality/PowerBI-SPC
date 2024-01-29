@@ -62,6 +62,9 @@ const defaultSettings = {
     show_99: true,
     show_95: true,
     show_68: false,
+    show_main: true,
+    show_target: true,
+    show_alt_target: true,
     width_99: 2,
     width_95: 2,
     width_68: 2,
@@ -83,9 +86,13 @@ const defaultSettings = {
     ttip_show_99: true,
     ttip_show_95: false,
     ttip_show_68: false,
+    ttip_show_target: true,
+    ttip_show_alt_target: true,
     ttip_label_99: "99% Limit",
     ttip_label_95: "95% Limit",
-    ttip_label_68: "68% Limit"
+    ttip_label_68: "68% Limit",
+    ttip_label_target: "Centerline",
+    ttip_label_alt_target: "Additional Target"
   },
   x_axis: {
     xlimit_colour: "#000000",
@@ -140,8 +147,9 @@ export const settingsPaneGroupings = {
     "Assurance": ["show_assurance_icons", "assurance_icons_locations", "assurance_icons_scaling"]
   },
   lines: {
-    "Main": ["width_main", "type_main", "colour_main"],
-    "Target(s)": ["width_target", "type_target", "colour_target", "width_alt_target", "type_alt_target", "colour_alt_target"],
+    "Main": ["show_main", "width_main", "type_main", "colour_main"],
+    "Target": ["show_target", "width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target"],
+    "Alt. Target": ["show_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
     "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68"],
     "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95"],
     "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"]
@@ -160,16 +168,27 @@ export const settingsPaneGroupings = {
 
 export const settingsPaneToggles = {
   lines: {
+    "Main": {
+      "show_main": ["width_main", "type_main", "colour_main"]
+    },
+    "Target": {
+      "show_target": ["width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target"],
+      "ttip_show_target": ["ttip_label_target"]
+    },
+    "Alt. Target": {
+      "show_alt_target": ["width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
+      "ttip_show_alt_target": ["ttip_label_alt_target"]
+    },
     "68% Limits": { 
-      "show_68": ["width_68", "type_68", "colour_68", "ttip_show_68"],
+      "show_68": ["width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68"],
       "ttip_show_68": ["ttip_label_68"]
     },
     "95% Limits": { 
-      "show_95": ["width_95", "type_95", "colour_95", "ttip_show_95"],
+      "show_95": ["width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95"],
       "ttip_show_95": ["ttip_label_95"] 
     },
     "99% Limits": { 
-      "show_99": ["width_99", "type_99", "colour_99", "ttip_show_99"],
+      "show_99": ["width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"],
       "ttip_show_99": ["ttip_label_99"] 
     }
   }
