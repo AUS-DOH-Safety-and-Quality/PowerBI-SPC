@@ -13,8 +13,7 @@ const defaultSettings = {
     perc_labels: "Automatic",
     split_on_click: false,
     ll_truncate: <number>(null),
-    ul_truncate: <number>(null),
-    alt_target: <number>(null)
+    ul_truncate: <number>(null)
   },
   outliers: {
     process_flag_type: "both",
@@ -92,7 +91,8 @@ const defaultSettings = {
     ttip_label_95: "95% Limit",
     ttip_label_68: "68% Limit",
     ttip_label_target: "Centerline",
-    ttip_label_alt_target: "Additional Target"
+    ttip_label_alt_target: "Additional Target",
+    alt_target: <number>(null)
   },
   x_axis: {
     xlimit_colour: "#000000",
@@ -149,7 +149,7 @@ export const settingsPaneGroupings = {
   lines: {
     "Main": ["show_main", "width_main", "type_main", "colour_main"],
     "Target": ["show_target", "width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target"],
-    "Alt. Target": ["show_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
+    "Alt. Target": ["show_alt_target", "alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
     "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68"],
     "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95"],
     "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"]
@@ -176,7 +176,7 @@ export const settingsPaneToggles = {
       "ttip_show_target": ["ttip_label_target"]
     },
     "Alt. Target": {
-      "show_alt_target": ["width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
+      "show_alt_target": ["alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
       "ttip_show_alt_target": ["ttip_label_alt_target"]
     },
     "68% Limits": { 

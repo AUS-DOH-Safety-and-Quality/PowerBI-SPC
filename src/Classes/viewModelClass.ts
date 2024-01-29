@@ -149,7 +149,7 @@ export default class viewModelClass {
       this.controlLimits = limitFunction(this.inputData.limitInputArgs);
     }
 
-    this.controlLimits.alt_targets = rep(this.inputSettings.settings.spc.alt_target,
+    this.controlLimits.alt_targets = rep(this.inputSettings.settings.lines.alt_target,
                                           this.inputData.limitInputArgs.keys.length);
   }
 
