@@ -281,33 +281,47 @@ export default class viewModelClass {
   flagOutliers() {
     const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
     const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
+    const flag_series: boolean = this.inputSettings.settings.outliers.flag_series;
+    const trend_n: number = this.inputSettings.settings.outliers.trend_n;
+    const shift_n: number = this.inputSettings.settings.outliers.shift_n;
     this.outliers = {
       astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
       two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
       trend: rep("none", this.inputData.limitInputArgs.keys.length),
       shift: rep("none", this.inputData.limitInputArgs.keys.length)
     }
-    if (this.inputSettings.settings.spc.chart_type !== "run") {
-      if (this.inputSettings.settings.outliers.astronomical) {
-        this.outliers.astpoint = checkFlagDirection(
-          astronomical(this.controlLimits.values, this.controlLimits.ll99, this.controlLimits.ul99),
-          { process_flag_type, improvement_direction });
+    for (let i: number = 0; i < this.groupStartEndIndexes.length; i++) {
+      const start: number = this.groupStartEndIndexes[i][0];
+      const end: number = this.groupStartEndIndexes[i][1];
+      const group_values: number[] = this.controlLimits.values.slice(start, end);
+      const group_targets: number[] = this.controlLimits.targets.slice(start, end);
+      const group_ll99: number[] = this.controlLimits?.ll99?.slice(start, end);
+      const group_ll95: number[] = this.controlLimits?.ll95?.slice(start, end);
+      const group_ul95: number[] = this.controlLimits?.ul95?.slice(start, end);
+      const group_ul99: number[] = this.controlLimits?.ul99?.slice(start, end);
+
+      if (this.inputSettings.settings.spc.chart_type !== "run") {
+        if (this.inputSettings.settings.outliers.astronomical) {
+          astronomical(group_values, group_ll99, group_ul99)
+            .forEach((flag, idx) => this.outliers.astpoint[start + idx] = flag)
+        }
+        if (this.inputSettings.settings.outliers.two_in_three) {
+          twoInThree(group_values, group_ll95, group_ul95, flag_series)
+            .forEach((flag, idx) => this.outliers.two_in_three[start + idx] = flag)
+        }
       }
-      if (this.inputSettings.settings.outliers.two_in_three) {
-        this.outliers.two_in_three = checkFlagDirection(
-          twoInThree(this.controlLimits.values, this.controlLimits.ll95, this.controlLimits.ul95, this.inputSettings.settings.outliers.flag_series),
-          { process_flag_type, improvement_direction });
+      if (this.inputSettings.settings.outliers.trend) {
+        trend(group_values, trend_n, flag_series)
+          .forEach((flag, idx) => this.outliers.trend[start + idx] = flag)
+      }
+      if (this.inputSettings.settings.outliers.shift) {
+        shift(group_values, group_targets, shift_n, flag_series)
+          .forEach((flag, idx) => this.outliers.shift[start + idx] = flag)
       }
     }
-    if (this.inputSettings.settings.outliers.trend) {
-      this.outliers.trend = checkFlagDirection(
-        trend(this.controlLimits.values, this.inputSettings.settings.outliers.trend_n, this.inputSettings.settings.outliers.flag_series),
-        { process_flag_type, improvement_direction });
-    }
-    if (this.inputSettings.settings.outliers.shift) {
-      this.outliers.shift = checkFlagDirection(
-        shift(this.controlLimits.values, this.controlLimits.targets, this.inputSettings.settings.outliers.shift_n, this.inputSettings.settings.outliers.flag_series),
-        { process_flag_type, improvement_direction });
-    }
+    Object.keys(this.outliers).forEach(key => {
+      this.outliers[key] = checkFlagDirection(this.outliers[key],
+                                              { process_flag_type, improvement_direction });
+    })
   }
 }
