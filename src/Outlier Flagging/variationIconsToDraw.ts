@@ -14,7 +14,7 @@ export default function variationIconsToDraw(viewModel: viewModelClass): string[
     "" : ""
   }
   const suffix: string = suffix_map[imp_direction];
-  const flag_last: boolean = viewModel.inputSettings.settings.nhs_icons.flag_variation_last;
+  const flag_last: boolean = viewModel.inputSettings.settings.nhs_icons.flag_last_point;
   let allFlags: string[];
   if (flag_last) {
     const N: number = currLimits.astpoint.length - 1;

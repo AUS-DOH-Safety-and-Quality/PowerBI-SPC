@@ -114,7 +114,7 @@
           "type" : { "bool" : true }
         },
         "astronomical": {
-          "displayName": "Astronomical Points",
+          "displayName": "Highlight Astronomical Points",
           "type" : { "bool" : true }
         },
         "ast_colour_improvement":{
@@ -134,7 +134,7 @@
           "type": { "fill": { "solid": { "color": true } } }
         },
         "shift": {
-          "displayName": "Shifts",
+          "displayName": "Highlight Shifts",
           "type" : { "bool" : true }
         },
         "shift_n": {
@@ -158,7 +158,7 @@
           "type": { "fill": { "solid": { "color": true } } }
         },
         "trend": {
-          "displayName": "Trends",
+          "displayName": "Highlight Trends",
           "type" : { "bool" : true }
         },
         "trend_n": {
@@ -182,7 +182,7 @@
           "type": { "fill": { "solid": { "color": true } } }
         },
         "two_in_three": {
-          "displayName": "Two-in-Three",
+          "displayName": "Highlight Two-in-Three",
           "type" : { "bool" : true }
         },
         "twointhree_colour_improvement":{
@@ -210,7 +210,7 @@
           "displayName": "Show Variation Icons",
           "type" : { "bool" : true }
         },
-        "flag_variation_last": {
+        "flag_last_point": {
           "displayName": "Flag Only Last Point",
           "type" : { "bool" : true }
         },
