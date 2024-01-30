@@ -100,7 +100,6 @@ export default class viewModelClass {
       for (let i: number = 0; i < allIndexes.length - 1; i++) {
         this.groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
       }
-      console.log(this.groupStartEndIndexes)
 
       this.calculateLimits();
       this.scaleAndTruncateLimits();
