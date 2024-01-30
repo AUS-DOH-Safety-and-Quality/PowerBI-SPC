@@ -1,4 +1,4 @@
-import type { viewModelClass } from "../Classes/";
+import type { viewModelClass } from "../Classes";
 
 export default function assuranceIconToDraw(viewModel: viewModelClass): string {
   const imp_direction: string = viewModel.inputSettings.settings.outliers.improvement_direction;

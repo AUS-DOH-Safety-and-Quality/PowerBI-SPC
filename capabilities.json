@@ -210,7 +210,7 @@
           "displayName": "Show Variation Icons",
           "type" : { "bool" : true }
         },
-        "flag_variation_last": {
+        "flag_last_point": {
           "displayName": "Flag Only Last Point",
           "type" : { "bool" : true }
         },

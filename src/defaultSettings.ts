@@ -44,7 +44,7 @@ const defaultSettings = {
   },
   nhs_icons: {
     show_variation_icons: false,
-    flag_variation_last: true,
+    flag_last_point: true,
     variation_icons_locations: "Top Right",
     variation_icons_scaling: 1,
     show_assurance_icons: false,
@@ -143,7 +143,7 @@ export const settingsPaneGroupings = {
     "Two-In-Three": ["process_flag_type", "improvement_direction", "flag_series", "two_in_three", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
   },
   nhs_icons: {
-    "Variation": ["show_variation_icons", "flag_variation_last", "variation_icons_locations", "variation_icons_scaling"],
+    "Variation": ["show_variation_icons", "flag_last_point", "variation_icons_locations", "variation_icons_scaling"],
     "Assurance": ["show_assurance_icons", "assurance_icons_locations", "assurance_icons_scaling"]
   },
   lines: {

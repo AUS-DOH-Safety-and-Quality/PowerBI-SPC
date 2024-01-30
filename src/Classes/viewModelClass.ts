@@ -68,6 +68,7 @@ export default class viewModelClass {
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
+  groupStartEndIndexes: number[][];
   firstRun: boolean;
 
   constructor() {
@@ -87,6 +88,19 @@ export default class viewModelClass {
       const split_indexes: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       this.splitIndexes = JSON.parse(split_indexes);
       this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings.settings);
+
+      const allIndexes: number[] = this.splitIndexes
+                                        .concat([-1])
+                                        .concat(this.inputData.groupingIndexes)
+                                        .concat([this.inputData.limitInputArgs.keys.length - 1])
+                                        .filter((d, idx, arr) => arr.indexOf(d) === idx)
+                                        .sort((a,b) => a - b);
+                                  
+      this.groupStartEndIndexes = new Array<number[]>();
+      for (let i: number = 0; i < allIndexes.length - 1; i++) {
+        this.groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
+      }
+      console.log(this.groupStartEndIndexes)
 
       this.calculateLimits();
       this.scaleAndTruncateLimits();
@@ -113,24 +127,13 @@ export default class viewModelClass {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
       = limitFunctions[this.inputSettings.settings.spc.chart_type];
 
-    if (this.splitIndexes.length > 0 || this.inputData.groupingIndexes.length > 0) {
-      const indexes: number[] = this.splitIndexes
-                                  .concat(this.inputData.groupingIndexes)
-                                  .concat([this.inputData.limitInputArgs.keys.length - 1])
-                                  .filter((d, idx, arr) => arr.indexOf(d) === idx)
-                                  .sort((a,b) => a - b);
-      const groupedData: dataObject[] = indexes.map((d, idx) => {
+    if (this.groupStartEndIndexes.length > 1) {
+      const groupedData: dataObject[] = this.groupStartEndIndexes.map((indexes) => {
         // Force a deep copy
         const data: dataObject = JSON.parse(JSON.stringify(this.inputData));
-         if(idx === 0) {
-          data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(0, d + 1)
-          data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(0, d + 1)
-          data.limitInputArgs.keys = data.limitInputArgs.keys.slice(0, d + 1)
-         } else {
-          data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[idx - 1] + 1, d + 1)
-          data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[idx - 1] + 1, d + 1)
-          data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[idx - 1] + 1, d + 1)
-         }
+        data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[0], indexes[1])
+        data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[0], indexes[1])
+        data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[0], indexes[1])
         return data;
       })
 
