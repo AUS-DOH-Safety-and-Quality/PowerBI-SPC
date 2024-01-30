@@ -59,11 +59,16 @@ export default class settingsClass {
    */
   createSettingsEntry(settingGroupName: string): VisualObjectInstanceEnumerationObject {
     const settingNames: string[] = Object.keys(this.settings[settingGroupName]);
-    const toggledSettings: Record<string, string[]> = Object.keys(settingsPaneToggles).includes(settingGroupName) ? settingsPaneToggles[settingGroupName] : {};
     const settingsGrouped: boolean = Object.keys(settingsPaneGroupings).includes(settingGroupName);
-    const paneGroupings: Record<string, string[]> = settingsGrouped ? JSON.parse(JSON.stringify(settingsPaneGroupings[settingGroupName])) : { "all": settingNames };
+    const paneGroupings: Record<string, string[]>
+      = settingsGrouped ? JSON.parse(JSON.stringify(settingsPaneGroupings[settingGroupName]))
+                        : { "all": settingNames };
+   
+    if (Object.keys(settingsPaneToggles).includes(settingGroupName)) {
+      const toggledSettings: Record<string, Record<string, string[]>>
+        = settingsGrouped ? settingsPaneToggles[settingGroupName]
+                          : { "all": settingsPaneToggles[settingGroupName]};
     
-    if (Object.keys(toggledSettings).length > 0) {
       Object.keys(toggledSettings).forEach(toggleGroup => {
         const possibleSettings: string[] = paneGroupings[toggleGroup];
         let settingsToRemove: string[] = new Array<string>();

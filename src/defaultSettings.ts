@@ -163,6 +163,24 @@ export const settingsPaneGroupings = {
 }
 
 export const settingsPaneToggles = {
+  outliers: {
+    "Astronomical Points": {
+      "astronomical": ["ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"]
+    },
+    "Shifts": {
+      "shift": ["shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"]
+    },
+    "Trends": {
+      "trend": ["trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"]
+    },
+    "Two-In-Three": {
+      "two_in_three": ["twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
+    }
+  },
+  nhs_icons: {
+    "show_variation_icons": ["variation_icons_locations", "variation_icons_scaling"],
+    "show_assurance_icons": ["assurance_icons_locations", "assurance_icons_scaling"]
+  },
   lines: {
     "Main": {
       "show_main": ["width_main", "type_main", "colour_main"]
