@@ -20,7 +20,6 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
     return col[0].values.map(d => d === null ? null : String(d));
   }
   const inputDates = parseInputDates(col)
-  console.log(col, inputDates)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
   const delim: string = inputSettings.dates.date_format_delim;
   return inputDates.dates.map((value: Date, idx) => {
