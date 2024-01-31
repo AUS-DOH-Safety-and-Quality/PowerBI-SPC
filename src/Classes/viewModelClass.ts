@@ -84,30 +84,32 @@ export default class viewModelClass {
 
   update(options: VisualUpdateOptions, host: IVisualHost) {
     // Only re-construct data and re-calculate limits if they have changed
-    if (options.type === 2 || this.firstRun) {
+    if (options.type === 2 || this.firstRun || this.inputData.limitInputArgs === null) {
       const split_indexes: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       this.splitIndexes = JSON.parse(split_indexes);
       this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings.settings);
 
-      const allIndexes: number[] = this.splitIndexes
-                                        .concat([-1])
-                                        .concat(this.inputData.groupingIndexes)
-                                        .concat([this.inputData.limitInputArgs.keys.length - 1])
-                                        .filter((d, idx, arr) => arr.indexOf(d) === idx)
-                                        .sort((a,b) => a - b);
-                                  
-      this.groupStartEndIndexes = new Array<number[]>();
-      for (let i: number = 0; i < allIndexes.length - 1; i++) {
-        this.groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
+      if (this.inputData.validationStatus.status === 0) {
+        const allIndexes: number[] = this.splitIndexes
+                                          .concat([-1])
+                                          .concat(this.inputData.groupingIndexes)
+                                          .concat([this.inputData.limitInputArgs.keys.length - 1])
+                                          .filter((d, idx, arr) => arr.indexOf(d) === idx)
+                                          .sort((a,b) => a - b);
+
+        this.groupStartEndIndexes = new Array<number[]>();
+        for (let i: number = 0; i < allIndexes.length - 1; i++) {
+          this.groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
+        }
+
+        this.calculateLimits();
+        this.scaleAndTruncateLimits();
+        this.flagOutliers();
+
+        // Structure the data and calculated limits to the format needed for plotting
+        this.initialisePlotData(host);
+        this.initialiseGroupedLines();
       }
-
-      this.calculateLimits();
-      this.scaleAndTruncateLimits();
-      this.flagOutliers();
-
-      // Structure the data and calculated limits to the format needed for plotting
-      this.initialisePlotData(host);
-      this.initialiseGroupedLines();
     }
 
     this.plotProperties.update(
@@ -244,7 +246,7 @@ export default class viewModelClass {
             })
           }
         }
-        
+
         formattedLines.push({
           x: this.controlLimits.keys[i].x,
           line_value: this.controlLimits[label]?.[i],

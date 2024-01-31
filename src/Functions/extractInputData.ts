@@ -5,6 +5,7 @@ type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData } from "../Functions"
 import { type defaultSettingsType, type controlLimitsArgs } from "../Classes";
+import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {
   limitInputArgs: controlLimitsArgs;
@@ -17,6 +18,7 @@ export type dataObject = {
   tooltips: VisualTooltipDataItem[][];
   warningMessage: string;
   alt_targets: number[];
+  validationStatus: ValidationT;
 }
 
 export default function extractInputData(inputView: DataViewCategorical, inputSettings: defaultSettingsType): dataObject {
@@ -31,7 +33,23 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
                                     .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
 
-  const inputValidStatus: string[] = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettings.spc.chart_type);
+  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettings.spc.chart_type);
+
+  if (inputValidStatus.status !== 0) {
+    return {
+      limitInputArgs: null,
+      highlights: null,
+      anyHighlights: false,
+      categories: null,
+      groupings: null,
+      groupingIndexes: null,
+      scatter_formatting: null,
+      tooltips: null,
+      warningMessage: inputValidStatus.error,
+      alt_targets: null,
+      validationStatus: inputValidStatus
+    }
+  }
 
   const valid_ids: number[] = new Array<number>();
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
@@ -39,15 +57,15 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const groupVarName: string = inputView.categories[0].source.displayName;
   let valid_x: number = 0;
   for (let i: number = 0; i < numerators.length; i++) {
-    if (inputValidStatus[i] === "") {
+    if (inputValidStatus.messages[i] === "") {
       valid_ids.push(i);
       valid_keys.push({ x: valid_x, id: i, label: keys[i] })
       valid_x += 1;
     } else {
-      removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus[i]}.`)
+      removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus.messages[i]}.`)
     }
   }
-  
+
   const valid_groupings: string[] = extractValues(groupings, valid_ids);
   const groupingIndexes: number[] = new Array<number>();
   let current_grouping: string = valid_groupings[0];
@@ -57,7 +75,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       current_grouping = d;
     }
   })
-  
+
   return {
     limitInputArgs: {
       keys: valid_keys,
@@ -74,6 +92,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     groupingIndexes: groupingIndexes,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
     warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : "",
-    alt_targets: extractValues(alt_targets, valid_ids)
+    alt_targets: extractValues(alt_targets, valid_ids),
+    validationStatus: inputValidStatus
   }
 }

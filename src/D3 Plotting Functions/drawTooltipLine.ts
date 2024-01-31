@@ -3,19 +3,20 @@ import type { svgBaseType, Visual } from "../visual";
 import type { plotData, plotPropertiesClass } from "../Classes";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
+  const plotProperties: plotPropertiesClass = visualObj.viewModel.plotProperties;
   const xAxisLine = selection
             .select(".ttip-line-x")
             .attr("x1", 0)
             .attr("x2", 0)
-            .attr("y1", visualObj.viewModel.plotProperties.yAxis.end_padding)
-            .attr("y2", visualObj.viewModel.plotProperties.height - visualObj.viewModel.plotProperties.yAxis.start_padding)
+            .attr("y1", plotProperties.yAxis.end_padding)
+            .attr("y2", plotProperties.height - plotProperties.yAxis.start_padding)
             .attr("stroke-width", "1px")
             .attr("stroke", "black")
             .style("stroke-opacity", 0);
   const yAxisLine = selection
             .select(".ttip-line-y")
-            .attr("x1", visualObj.viewModel.plotProperties.xAxis.start_padding)
-            .attr("x2", visualObj.viewModel.plotProperties.width - visualObj.viewModel.plotProperties.xAxis.end_padding)
+            .attr("x1", plotProperties.xAxis.start_padding)
+            .attr("x2", plotProperties.width - plotProperties.xAxis.end_padding)
             .attr("y1", 0)
             .attr("y2", 0)
             .attr("stroke-width", "1px")
@@ -23,10 +24,9 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
             .style("stroke-opacity", 0);
 
   selection.on("mousemove", (event) => {
-    if (!visualObj.viewModel.plotProperties.displayPlot) {
+    if (!plotProperties.displayPlot) {
       return;
     }
-    const plotProperties: plotPropertiesClass = visualObj.viewModel.plotProperties;
     const plotPoints: plotData[] = visualObj.viewModel.plotPoints
 
     const xValue: number = plotProperties.xScale.invert(event.pageX);
@@ -49,7 +49,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
               .attr("y2", y_coord);
   })
   .on("mouseleave", () => {
-    if (!visualObj.viewModel.plotProperties.displayPlot) {
+    if (!plotProperties.displayPlot) {
       return;
     }
     visualObj.host.tooltipService.hide({ immediately: true, isTouchEvent: false });

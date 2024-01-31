@@ -253,6 +253,10 @@
     "canvas": {
       "displayName": "Canvas Settings",
       "properties": {
+        "show_errors": {
+          "displayName": "Show Errors on Canvas",
+          "type": { "bool": true }
+        },
         "lower_padding":{
           "displayName": "Padding Below Plot (pixels):",
           "type": { "numeric": true }

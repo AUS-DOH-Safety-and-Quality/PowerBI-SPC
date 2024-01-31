@@ -65,7 +65,7 @@ export default class plotPropertiesClass {
     let yUpperLimit: number = inputSettings.y_axis.ylimit_u;
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
-    if (inputData && controlLimits) {
+    if (inputData?.validationStatus?.status == 0 && controlLimits) {
       xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;

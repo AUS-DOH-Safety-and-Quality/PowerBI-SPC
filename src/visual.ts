@@ -5,7 +5,8 @@ type EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstan
 type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
-          drawDots, drawIcons, updateHighlighting, addContextMenu } from "./D3 Plotting Functions"
+          drawDots, drawIcons, updateHighlighting, addContextMenu,
+          drawErrors, initialiseSVG } from "./D3 Plotting Functions"
 import { viewModelClass } from "./Classes"
 import { validateDataView } from "./Functions";
 
@@ -26,7 +27,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.selectionManager.registerOnSelectCallback(() => {
       this.svg.call(updateHighlighting, this);
     });
-    this.initialiseSVG();
+    this.svg.call(initialiseSVG);
   }
 
   public update(options: powerbi.extensibility.visual.VisualUpdateOptions) {
@@ -38,45 +39,39 @@ export class Visual implements powerbi.extensibility.IVisual {
               .attr("height", options.viewport.height)
 
       this.viewModel.inputSettings.update(options.dataViews[0]);
-      validateDataView(options.dataViews, this.viewModel.inputSettings.settings);
-      this.viewModel.update(options, this.host);
 
-      this.svg.call(drawXAxis, this)
-              .call(drawYAxis, this)
-              .call(drawTooltipLine, this)
-              .call(drawLines, this)
-              .call(drawDots, this)
-              .call(drawIcons, this)
-              .call(updateHighlighting, this)
-              .call(addContextMenu, this)
+      const checkDV: string = validateDataView(options.dataViews,
+                                               this.viewModel.inputSettings.settings);
+      if (checkDV !== "valid") {
+        if (this.viewModel.inputSettings.settings.canvas.show_errors) {
+          this.svg.call(drawErrors, options, checkDV);
+        } else {
+          this.svg.call(initialiseSVG, true);
+        }
+      } else {
+        this.viewModel.update(options, this.host);
 
-      if (this.viewModel.inputData.warningMessage !== "") {
-        this.host.displayWarningIcon("Invalid inputs have been removed",
-                                     this.viewModel.inputData.warningMessage);
+        if (this.viewModel.inputData.validationStatus.status === 0) {
+          this.svg.call(drawXAxis, this)
+                  .call(drawYAxis, this)
+                  .call(drawTooltipLine, this)
+                  .call(drawLines, this)
+                  .call(drawDots, this)
+                  .call(drawIcons, this)
+                  .call(updateHighlighting, this)
+                  .call(addContextMenu, this)
+
+          if (this.viewModel.inputData.warningMessage !== "") {
+            this.host.displayWarningIcon("Invalid inputs have been removed",
+                                        this.viewModel.inputData.warningMessage);
+          }
+        } else {
+          this.svg.call(drawErrors, options, this.viewModel.inputData.validationStatus.error);
+        }
       }
-
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
-      // Clear any existing plot items/graphics
-      this.initialiseSVG(true);
-      const errMessageSVG = this.svg.append("g").classed("errormessage", true);
-
-      if (caught_error?.name !== "DataValidationError") {
-        errMessageSVG.append('text')
-                    .attr("x",options.viewport.width / 2)
-                    .attr("y",options.viewport.height / 3)
-                    .style("text-anchor", "middle")
-                    .text("Internal Error! Please file a bug report with the following text:")
-                    .style("font-size", "10px");
-      }
-
-      errMessageSVG.append('text')
-                    .attr("x",options.viewport.width / 2)
-                    .attr("y",options.viewport.height / 2)
-                    .style("text-anchor", "middle")
-                    .text(caught_error.message)
-                    .style("font-size", "10px");
-
+      this.svg.call(drawErrors, options, caught_error.message, true);
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
     }
@@ -85,19 +80,5 @@ export class Visual implements powerbi.extensibility.IVisual {
   // Function to render the properties specified in capabilities.json to the properties pane
   public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumerationObject {
     return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
-  }
-
-  initialiseSVG(removeAll: boolean = false): void {
-    if (removeAll) {
-      this.svg.selectChildren().remove();
-    }
-    this.svg.append('line').classed("ttip-line-x", true)
-    this.svg.append('line').classed("ttip-line-y", true)
-    this.svg.append('g').classed("xaxisgroup", true)
-    this.svg.append('text').classed("xaxislabel", true)
-    this.svg.append('g').classed("yaxisgroup", true)
-    this.svg.append('text').classed("yaxislabel", true)
-    this.svg.append('g').classed("linesgroup", true)
-    this.svg.append('g').classed("dotsgroup", true)
   }
 }
