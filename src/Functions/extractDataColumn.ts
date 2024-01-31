@@ -15,7 +15,11 @@ function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
 }
 
 function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType): string[] {
-  const inputDates = parseInputDates(inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]))
+  const col: powerbi.DataViewCategoryColumn[] = inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]);
+  if (col.length === 1 && !(col[0].source.type?.temporal)) {
+    return col[0].values.map(d => d === null ? null : String(d));
+  }
+  const inputDates = parseInputDates(col)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
   const delim: string = inputSettings.dates.date_format_delim;
   return inputDates.dates.map((value: Date, idx) => {
