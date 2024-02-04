@@ -19,7 +19,7 @@
 
       - name: Label visuals as 'Development'
         run: |
-          sed -i 's/"name":"PBISPC"/"name":PBISPC_DEV"/g' pbiviz.json
+          sed -i 's/"name":"PBISPC"/"name":"PBISPC_DEV"/g' pbiviz.json
           sed -i 's/"displayName":"SPC Charts"/"displayName":"SPC Charts (Dev)"/g' pbiviz.json
           sed -i 's/"guid":"PBISPC"/"guid":"PBISPC_DEV"/g' pbiviz.json
         shell: bash
