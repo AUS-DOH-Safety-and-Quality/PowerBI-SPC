@@ -260,13 +260,10 @@ export default class viewModelClass {
   scaleAndTruncateLimits(): void {
     // Scale limits using provided multiplier
     const multiplier: number = this.inputSettings.derivedSettings.multiplier;
+    let lines_to_scale: string[] = ["values", "targets"];
 
-    ["values", "targets", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99"].forEach(limit => {
-      this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
-    })
-
-    if (this.inputSettings.settings.spc.chart_type === "run") {
-      return;
+    if (this.inputSettings.settings.spc.chart_type !== "run") {
+      lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
     const limits: truncateInputs = {
@@ -274,9 +271,9 @@ export default class viewModelClass {
       upper: this.inputSettings.settings.spc.ul_truncate
     };
 
-    ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"].forEach(limit => {
-      this.controlLimits[limit] = truncate(this.controlLimits[limit], limits);
-    });
+    lines_to_scale.forEach(limit => {
+      this.controlLimits[limit] = truncate(multiply(this.controlLimits[limit], multiplier), limits)
+    })
   }
 
   flagOutliers() {
