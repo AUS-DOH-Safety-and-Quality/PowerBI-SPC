@@ -19,7 +19,10 @@ export default function twoInThree(val: number[], ll95: number[], ul95: number[]
     for (let i: number = 0; i < two_in_three_detected.length; i++) {
       if (two_in_three_detected[i] !== "none") {
         for (let j: number = (i - 1); j >= (i - 2); j--) {
-          two_in_three_detected[j] = two_in_three_detected[i];
+          // Only highlight points exceeding the 95% limits
+          if (outside95[j] !== 0) {
+            two_in_three_detected[j] = two_in_three_detected[i];
+          }
         }
       }
     }
