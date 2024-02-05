@@ -83,6 +83,30 @@
         "ul_truncate": {
           "displayName": "Truncate Upper Limits at:",
           "type": { "numeric": true }
+        },
+        "ttip_show_numerator": {
+          "displayName": "Show Numerator in Tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_label_numerator": {
+          "displayName": "Numerator Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_show_denominator": {
+          "displayName": "Show Denominator in Tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_label_denominator": {
+          "displayName": "Denominator Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_show_value": {
+          "displayName": "Show Value in Tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_label_value": {
+          "displayName": "Value Tooltip Label",
+          "type": { "text": true }
         }
       }
     },

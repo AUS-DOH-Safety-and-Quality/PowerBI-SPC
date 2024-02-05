@@ -13,6 +13,12 @@ const defaultSettings = {
     sig_figs: 2,
     perc_labels: "Automatic",
     split_on_click: false,
+    ttip_show_numerator: true,
+    ttip_label_numerator: "Numerator",
+    ttip_show_denominator: true,
+    ttip_label_denominator: "Denominator",
+    ttip_show_value: true,
+    ttip_label_value: "Automatic",
     ll_truncate: <number>(null),
     ul_truncate: <number>(null)
   },
@@ -164,6 +170,11 @@ export const settingsPaneGroupings = {
 }
 
 export const settingsPaneToggles = {
+  spc: {
+    "ttip_show_numerator": ["ttip_label_numerator"],
+    "ttip_show_denominator": ["ttip_label_denominator"],
+    "ttip_show_value": ["ttip_label_value"]
+  },
   outliers: {
     "Astronomical Points": {
       "astronomical": ["ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"]

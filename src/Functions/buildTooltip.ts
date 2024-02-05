@@ -63,24 +63,27 @@ export default function buildTooltip(index: number,
     displayName: "Date",
     value: controlLimits.keys[index].label
   });
-  tooltip.push({
-    displayName: valueNames[chart_type],
-    value: (controlLimits.values[index]).toFixed(sig_figs) + suffix
-  })
-  if(numerator || !(numerator === null || numerator === undefined)) {
+  if (inputSettings.spc.ttip_show_value) {
+    const ttip_label_value: string = inputSettings.spc.ttip_label_value;
     tooltip.push({
-      displayName: "Numerator",
+      displayName: ttip_label_value === "Automatic" ? valueNames[chart_type] : ttip_label_value,
+      value: (controlLimits.values[index]).toFixed(sig_figs) + suffix
+    })
+  }
+  if(inputSettings.spc.ttip_show_numerator && !(numerator === null || numerator === undefined)) {
+    tooltip.push({
+      displayName: inputSettings.spc.ttip_label_numerator,
       value: (numerator).toFixed(intNumDen ? 0 : sig_figs)
     })
   }
-  if(denominator || !(denominator === null || denominator === undefined)) {
+  if(inputSettings.spc.ttip_show_denominator && !(denominator === null || denominator === undefined)) {
     tooltip.push({
-      displayName: "Denominator",
+      displayName: inputSettings.spc.ttip_label_denominator,
       value: (denominator).toFixed(intNumDen ? 0 : sig_figs)
     })
   }
   if (chart_type !== "run") {
-    ["68", "95", "99"].forEach(limit => { 
+    ["68", "95", "99"].forEach(limit => {
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `Upper ${inputSettings.lines[`ttip_label_${limit}`]}`,
@@ -102,7 +105,7 @@ export default function buildTooltip(index: number,
     })
   }
   if (chart_type !== "run") {
-    ["68", "95", "99"].forEach(limit => { 
+    ["68", "95", "99"].forEach(limit => {
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `Lower ${inputSettings.lines[`ttip_label_${limit}`]}`,

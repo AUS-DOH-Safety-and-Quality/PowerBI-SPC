@@ -24,6 +24,9 @@ export default function twoInThree(val: number[], ll95: number[], ul95: number[]
             two_in_three_detected[j] = two_in_three_detected[i];
           }
         }
+        if (outside95[i] === 0) {
+          two_in_three_detected[i] = "none";
+        }
       }
     }
   }
