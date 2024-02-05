@@ -9,7 +9,7 @@ name: Deploy Jekyll site to Pages
 on:
   push:
     branches: ["main"]
-    include:
+    paths:
       - PowerBI-SPC-Docs/** # Push events to docs folder
 
   # Allows you to run this workflow manually from the Actions tab
