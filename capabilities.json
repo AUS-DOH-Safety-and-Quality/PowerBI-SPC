@@ -133,13 +133,19 @@
             ]
           }
         },
-        "flag_series": {
-          "displayName": "Highlight all in Pattern",
-          "type" : { "bool" : true }
-        },
         "astronomical": {
           "displayName": "Highlight Astronomical Points",
           "type" : { "bool" : true }
+        },
+        "astronomical_limit": {
+          "displayName": "Limit for Astronomical Points",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "1 Sigma", "value" : "1 Sigma" },
+              { "displayName" : "2 Sigma", "value" : "2 Sigma" },
+              { "displayName" : "3 Sigma", "value" : "3 Sigma" }
+            ]
+          }
         },
         "ast_colour_improvement":{
           "displayName": "Imp. Ast. Colour",
@@ -208,6 +214,20 @@
         "two_in_three": {
           "displayName": "Highlight Two-in-Three",
           "type" : { "bool" : true }
+        },
+        "two_in_three_highlight_series": {
+          "displayName": "Highlight all in Pattern",
+          "type" : { "bool" : true }
+        },
+        "two_in_three_limit": {
+          "displayName": "Warning Limit for Two-in-Three",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "1 Sigma", "value" : "1 Sigma" },
+              { "displayName" : "2 Sigma", "value" : "2 Sigma" },
+              { "displayName" : "3 Sigma", "value" : "3 Sigma" }
+            ]
+          }
         },
         "twointhree_colour_improvement":{
           "displayName": "Imp. Two-in-Three Colour",

@@ -1,6 +1,6 @@
 import { abs, sum } from "../Functions";
 
-export default function twoInThree(val: number[], ll95: number[], ul95: number[], flag_series: boolean): string[] {
+export default function twoInThree(val: number[], ll95: number[], ul95: number[], highlight_series: boolean): string[] {
   const outside95: number[] = val.map((d, i) => {
     return d > ul95[i] ? 1 : (d < ll95[i] ? -1 : 0);
   });
@@ -15,18 +15,16 @@ export default function twoInThree(val: number[], ll95: number[], ul95: number[]
     }
   })
 
-  if (flag_series) {
-    for (let i: number = 0; i < two_in_three_detected.length; i++) {
-      if (two_in_three_detected[i] !== "none") {
-        for (let j: number = (i - 1); j >= (i - 2); j--) {
-          // Only highlight points exceeding the 95% limits
-          if (outside95[j] !== 0) {
-            two_in_three_detected[j] = two_in_three_detected[i];
-          }
+  for (let i: number = 0; i < two_in_three_detected.length; i++) {
+    if (two_in_three_detected[i] !== "none") {
+      for (let j: number = (i - 1); j >= (i - 2); j--) {
+        // Only highlight points exceeding the 95% limits (unless requested)
+        if (outside95[j] !== 0 || highlight_series) {
+          two_in_three_detected[j] = two_in_three_detected[i];
         }
-        if (outside95[i] === 0) {
-          two_in_three_detected[i] = "none";
-        }
+      }
+      if (outside95[i] === 0 && !highlight_series) {
+        two_in_three_detected[i] = "none";
       }
     }
   }

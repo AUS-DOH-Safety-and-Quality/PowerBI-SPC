@@ -1,6 +1,6 @@
 import { abs, sum } from "../Functions";
 
-export default function trend(val: number[], n: number, flag_series: boolean): string[] {
+export default function trend(val: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {
     return (i == 0) ? i : Math.sign(d - val[i - 1]);
   });
@@ -15,12 +15,10 @@ export default function trend(val: number[], n: number, flag_series: boolean): s
     }
   })
 
-  if (flag_series) {
-    for (let i: number = 0; i < trend_detected.length; i++) {
-      if (trend_detected[i] !== "none") {
-        for (let j: number = (i - 1); j >= (i - (n - 1)); j--) {
-          trend_detected[j] = trend_detected[i];
-        }
+  for (let i: number = 0; i < trend_detected.length; i++) {
+    if (trend_detected[i] !== "none") {
+      for (let j: number = (i - 1); j >= (i - (n - 1)); j--) {
+        trend_detected[j] = trend_detected[i];
       }
     }
   }

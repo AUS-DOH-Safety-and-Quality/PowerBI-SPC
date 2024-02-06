@@ -279,7 +279,6 @@ export default class viewModelClass {
   flagOutliers() {
     const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
     const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
-    const flag_series: boolean = this.inputSettings.settings.outliers.flag_series;
     const trend_n: number = this.inputSettings.settings.outliers.trend_n;
     const shift_n: number = this.inputSettings.settings.outliers.shift_n;
     this.outliers = {
@@ -293,27 +292,35 @@ export default class viewModelClass {
       const end: number = this.groupStartEndIndexes[i][1];
       const group_values: number[] = this.controlLimits.values.slice(start, end);
       const group_targets: number[] = this.controlLimits.targets.slice(start, end);
-      const group_ll99: number[] = this.controlLimits?.ll99?.slice(start, end);
-      const group_ll95: number[] = this.controlLimits?.ll95?.slice(start, end);
-      const group_ul95: number[] = this.controlLimits?.ul95?.slice(start, end);
-      const group_ul99: number[] = this.controlLimits?.ul99?.slice(start, end);
 
       if (this.inputSettings.settings.spc.chart_type !== "run") {
+        const limit_map: Record<string, number> = {
+          "1 Sigma": 68,
+          "2 Sigma": 95,
+          "3 Sigma": 99
+        };
         if (this.inputSettings.settings.outliers.astronomical) {
-          astronomical(group_values, group_ll99, group_ul99)
+          const ast_limit: number = limit_map[this.inputSettings.settings.outliers.astronomical_limit];
+          const lower_limits: number[] = this.controlLimits?.[`ll${ast_limit}`]?.slice(start, end);
+          const upper_limits: number[] = this.controlLimits?.[`ul${ast_limit}`]?.slice(start, end);
+          astronomical(group_values, lower_limits, upper_limits)
             .forEach((flag, idx) => this.outliers.astpoint[start + idx] = flag)
         }
         if (this.inputSettings.settings.outliers.two_in_three) {
-          twoInThree(group_values, group_ll95, group_ul95, flag_series)
+          const highlight_series: boolean = this.inputSettings.settings.outliers.two_in_three_highlight_series;
+          const two_in_three_limit: number = limit_map[this.inputSettings.settings.outliers.two_in_three_limit];
+          const lower_warn_limits: number[] = this.controlLimits?.[`ll${two_in_three_limit}`]?.slice(start, end);
+          const upper_warn_limits: number[] = this.controlLimits?.[`ul${two_in_three_limit}`]?.slice(start, end);
+          twoInThree(group_values, lower_warn_limits, upper_warn_limits, highlight_series)
             .forEach((flag, idx) => this.outliers.two_in_three[start + idx] = flag)
         }
       }
       if (this.inputSettings.settings.outliers.trend) {
-        trend(group_values, trend_n, flag_series)
+        trend(group_values, trend_n)
           .forEach((flag, idx) => this.outliers.trend[start + idx] = flag)
       }
       if (this.inputSettings.settings.outliers.shift) {
-        shift(group_values, group_targets, shift_n, flag_series)
+        shift(group_values, group_targets, shift_n)
           .forEach((flag, idx) => this.outliers.shift[start + idx] = flag)
       }
     }

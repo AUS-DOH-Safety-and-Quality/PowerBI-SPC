@@ -31,6 +31,8 @@ const integerParams: string[] = ["c", "p", "pp"];
  * @param derivedSettings - The derived settings object.
  * @returns An array of VisualTooltipDataItem objects representing the tooltip data.
  */
+// ESLint errors due to number of lines in function, but would reduce readability to separate further
+/* eslint-disable max-lines-per-function */
 export default function buildTooltip(index: number,
                                       controlLimits: controlLimitsObject,
                                       outliers: outliersObject,
@@ -54,6 +56,8 @@ export default function buildTooltip(index: number,
   const trend: string = outliers.trend[index];
   const shift: string = outliers.shift[index];
   const two_in_three: string = outliers.two_in_three[index];
+  const ast_limit: string = inputSettings.outliers.astronomical_limit;
+  const two_in_three_limit: string = inputSettings.outliers.two_in_three_limit;
   const suffix: string = derivedSettings.percentLabels ? "%" : "";
   const intNumDen: boolean = integerParams.includes(chart_type);
 
@@ -117,10 +121,24 @@ export default function buildTooltip(index: number,
 
   if (astpoint !== "none" || trend !== "none" || shift !== "none" || two_in_three !== "none") {
     const patterns: string[] = new Array<string>();
-    if (astpoint !== "none") { patterns.push("Astronomical Point") }
+    if (astpoint !== "none") {
+      // Note if flagged according to non-default limit
+      let flag_text: string = "Astronomical Point";
+      if (ast_limit !== "3 Sigma") {
+        flag_text = `${flag_text} (${ast_limit})`;
+      }
+      patterns.push(flag_text)
+    }
     if (trend !== "none") { patterns.push("Trend") }
     if (shift !== "none") { patterns.push("Shift") }
-    if (two_in_three !== "none") { patterns.push("Two-in-Three") }
+    if (two_in_three !== "none") {
+      // Note if flagged according to non-default limit
+      let flag_text: string = "Two-in-Three";
+      if (two_in_three_limit !== "2 Sigma") {
+        flag_text = `${flag_text} (${two_in_three_limit})`;
+      }
+      patterns.push(flag_text)
+    }
     tooltip.push({
       displayName: "Pattern(s)",
       value: patterns.join("\n")
@@ -133,3 +151,4 @@ export default function buildTooltip(index: number,
 
   return tooltip;
 }
+/* eslint-enable max-lines-per-function */
