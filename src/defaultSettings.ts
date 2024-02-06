@@ -25,8 +25,8 @@ const defaultSettings = {
   outliers: {
     process_flag_type: "both",
     improvement_direction: "increase",
-    flag_series: true,
     astronomical: false,
+    astronomical_limit: "3 Sigma",
     ast_colour_improvement: "#00B0F0",
     ast_colour_deterioration: "#E46C0A",
     ast_colour_neutral_low: "#490092",
@@ -44,6 +44,8 @@ const defaultSettings = {
     trend_colour_neutral_low: "#490092",
     trend_colour_neutral_high: "#490092",
     two_in_three: false,
+    two_in_three_highlight_series: false,
+    two_in_three_limit: "2 Sigma",
     twointhree_colour_improvement: "#00B0F0",
     twointhree_colour_deterioration: "#E46C0A",
     twointhree_colour_neutral_low: "#490092",
@@ -144,10 +146,10 @@ const defaultSettings = {
 
 export const settingsPaneGroupings = {
   outliers: {
-    "Astronomical Points": ["process_flag_type", "improvement_direction", "flag_series", "astronomical", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
-    "Shifts": ["process_flag_type", "improvement_direction", "flag_series", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
-    "Trends": ["process_flag_type", "improvement_direction", "flag_series", "trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
-    "Two-In-Three": ["process_flag_type", "improvement_direction", "flag_series", "two_in_three", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
+    "Astronomical Points": ["process_flag_type", "improvement_direction", "astronomical", "astronomical_limit", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
+    "Shifts": ["process_flag_type", "improvement_direction", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
+    "Trends": ["process_flag_type", "improvement_direction", "trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
+    "Two-In-Three": ["process_flag_type", "improvement_direction", "two_in_three", "two_in_three_highlight_series", "two_in_three_limit", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
   },
   lines: {
     "Main": ["show_main", "width_main", "type_main", "colour_main"],
@@ -177,7 +179,7 @@ export const settingsPaneToggles = {
   },
   outliers: {
     "Astronomical Points": {
-      "astronomical": ["ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"]
+      "astronomical": ["astronomical_limit", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"]
     },
     "Shifts": {
       "shift": ["shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"]
@@ -186,7 +188,7 @@ export const settingsPaneToggles = {
       "trend": ["trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"]
     },
     "Two-In-Three": {
-      "two_in_three": ["twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
+      "two_in_three": ["two_in_three_limit", "two_in_three_highlight_series", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
     }
   },
   nhs_icons: {
