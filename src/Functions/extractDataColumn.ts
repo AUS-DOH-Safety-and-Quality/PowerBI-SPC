@@ -3,7 +3,7 @@ type DataViewValueColumn = powerbi.DataViewValueColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { defaultSettingsType } from "../Classes/";
-import { formatPrimitiveValue, dateSettingsToFormatOptions, parseInputDates } from "../Functions";
+import { formatPrimitiveValue, dateSettingsToFormatOptions, parseInputDates, rep } from "../Functions";
 type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 
 function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
@@ -19,9 +19,20 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   if (col.length === 1 && !(col[0].source.type?.temporal)) {
     return col[0].values.map(d => d === null ? null : String(d));
   }
+  const delim: string = inputSettings.dates.date_format_delim;
+  // If multiple inputs are passed but not as a 'Date Hierarchy' type then
+  // just concatenate and do not attempt to format
+  // TODO(Andrew): Support formatting individual date parts
+  //  - e.g., Mixing Date Hierarchy and string inputs
+  if (!(col.every(d => d.source?.type?.temporal))) {
+    const blankKey: string = rep("", col.length).join(delim)
+    return col[0].values.map((_, idx) => {
+      const currKey: string = col.map(keyCol => keyCol.values[idx]).join(delim)
+      return currKey === blankKey ? null : currKey
+    })
+  }
   const inputDates = parseInputDates(col)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
-  const delim: string = inputSettings.dates.date_format_delim;
   return inputDates.dates.map((value: Date, idx) => {
     if (value === null) {
       return null
