@@ -7,7 +7,7 @@ import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, updateHighlighting, addContextMenu,
           drawErrors, initialiseSVG } from "./D3 Plotting Functions"
-import { viewModelClass } from "./Classes"
+import { defaultSettingsKey, viewModelClass } from "./Classes"
 import { validateDataView } from "./Functions";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
@@ -79,6 +79,6 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   // Function to render the properties specified in capabilities.json to the properties pane
   public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumerationObject {
-    return this.viewModel.inputSettings.createSettingsEntry(options.objectName);
+    return this.viewModel.inputSettings.createSettingsEntry(options.objectName as defaultSettingsKey);
   }
 }
