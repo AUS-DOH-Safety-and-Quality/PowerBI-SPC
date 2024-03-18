@@ -179,23 +179,22 @@ const defaultSettings = {
   }
 };
 
-type RemoveValidEntry<T> = {
-  [K in keyof T as Exclude<K, "valid">]: T[K]
-};
-type Unwrap<T> = T[keyof RemoveValidEntry<T>];
+
+type DefaultTypes<T> = T[Extract<keyof T, "default">];
 
 export type settingsValueTypes = {
   [K in keyof typeof defaultSettings]: {
-    [L in keyof typeof defaultSettings[K]]: Unwrap<typeof defaultSettings[K][L]>
+    [L in keyof typeof defaultSettings[K]]: DefaultTypes<typeof defaultSettings[K][L]>
   }
 }
 
 export const settingsPaneGroupings = {
   outliers: {
-    "Astronomical Points": ["process_flag_type", "improvement_direction", "astronomical", "astronomical_limit", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
-    "Shifts": ["process_flag_type", "improvement_direction", "shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
-    "Trends": ["process_flag_type", "improvement_direction", "trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
-    "Two-In-Three": ["process_flag_type", "improvement_direction", "two_in_three", "two_in_three_highlight_series", "two_in_three_limit", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
+    "General": ["process_flag_type", "improvement_direction"],
+    "Astronomical Points": ["astronomical", "astronomical_limit", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
+    "Shifts": ["shift", "shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"],
+    "Trends": ["trend", "trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"],
+    "Two-In-Three": ["two_in_three", "two_in_three_highlight_series", "two_in_three_limit", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
   },
   lines: {
     "Main": ["show_main", "width_main", "type_main", "colour_main"],
