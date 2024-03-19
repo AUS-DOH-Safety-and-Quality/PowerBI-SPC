@@ -9,7 +9,9 @@ const lineNameMap: Record<string, string> = {
   "ul99" : "99",
   "targets" : "target",
   "values" : "main",
-  "alt_targets" : "alt_target"
+  "alt_targets" : "alt_target",
+  "speclimits_lower" : "specification",
+  "speclimits_upper" : "specification"
 }
 
 export default function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: defaultSettingsType): string | number {

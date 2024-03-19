@@ -108,35 +108,43 @@ const defaultSettings = {
     show_main: { default: true },
     show_target: { default: true },
     show_alt_target: { default: false },
+    show_specification: { default: false },
     width_99: { default: 2, valid: { numberRange: { min: 0, max: 100 }}},
     width_95: { default: 2, valid: { numberRange: { min: 0, max: 100 }}},
     width_68: { default: 2, valid: { numberRange: { min: 0, max: 100 }}},
     width_main: { default: 1, valid: { numberRange: { min: 0, max: 100 }}},
     width_target: { default: 1.5, valid: { numberRange: { min: 0, max: 100 }}},
     width_alt_target: { default: 1.5, valid: { numberRange: { min: 0, max: 100 }}},
+    width_specification: { default: 2, valid: { numberRange: { min: 0, max: 100 }}},
     type_99: { default: "10 10", valid: validLineTypes},
     type_95: { default: "2 5", valid: validLineTypes},
     type_68: { default: "2 5", valid: validLineTypes},
     type_main: { default: "10 0", valid: validLineTypes},
     type_target: { default: "10 0", valid: validLineTypes},
     type_alt_target: { default: "10 0", valid: validLineTypes},
+    type_specification: { default: "10 10", valid: validLineTypes},
     colour_99: { default: "#6495ED" },
     colour_95: { default: "#6495ED" },
     colour_68: { default: "#6495ED" },
     colour_main: { default: "#000000" },
     colour_target: { default: "#000000" },
     colour_alt_target: { default: "#000000" },
+    colour_specification: { default: "#6495ED" },
     ttip_show_99: { default: true },
     ttip_show_95: { default: false },
     ttip_show_68: { default: false },
     ttip_show_target: { default: true },
     ttip_show_alt_target: { default: true },
+    ttip_show_specification: { default: true },
     ttip_label_99: { default: "99% Limit" },
     ttip_label_95: { default: "95% Limit" },
     ttip_label_68: { default: "68% Limit" },
     ttip_label_target: { default: "Centerline" },
-    ttip_label_alt_target: { default: "Additional Target" },
-    alt_target: { default: <number>null }
+    ttip_label_alt_target: { default: "Specification Limit" },
+    ttip_label_specification: { default: "Specification Limit" },
+    alt_target: { default: <number>null },
+    specification_upper: { default: <number>null },
+    specification_lower: { default: <number>null }
   },
   x_axis: {
     xlimit_colour: { default: "#000000" },
@@ -202,7 +210,8 @@ export const settingsPaneGroupings = {
     "Alt. Target": ["show_alt_target", "alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
     "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68"],
     "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95"],
-    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"]
+    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"],
+    "Specification Limits": ["show_specification", "specification_upper", "specification_lower", "width_specification", "type_specification", "colour_specification", "ttip_show_specification", "ttip_label_specification"]
   },
   x_axis: {
     "Axis": ["xlimit_colour", "xlimit_l", "xlimit_u"],
@@ -263,6 +272,10 @@ export const settingsPaneToggles = {
     "99% Limits": {
       "show_99": ["width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"],
       "ttip_show_99": ["ttip_label_99"]
+    },
+    "Specification Limits": {
+      "show_specification": ["specification_upper", "specification_lower", "width_specification", "type_specification", "colour_specification", "ttip_show_specification", "ttip_label_specification"],
+      "ttip_show_specification": ["ttip_label_specification"]
     }
   }
 }

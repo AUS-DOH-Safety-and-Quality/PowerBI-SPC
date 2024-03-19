@@ -41,6 +41,8 @@ export type controlLimitsObject = {
   ul99?: number[];
   count?: number[];
   alt_targets?: number[];
+  speclimits_lower?: number[];
+  speclimits_upper?: number[];
 };
 
 export type controlLimitsArgs = {
@@ -154,6 +156,8 @@ export default class viewModelClass {
     }
 
     this.controlLimits.alt_targets = this.inputData.alt_targets;
+    this.controlLimits.speclimits_lower = this.inputData.speclimits_lower;
+    this.controlLimits.speclimits_upper = this.inputData.speclimits_upper;
   }
 
   initialisePlotData(host: IVisualHost): void {
@@ -205,6 +209,9 @@ export default class viewModelClass {
     }
     if (this.inputSettings.settings.lines.show_alt_target) {
       labels.push("alt_targets");
+    }
+    if (this.inputSettings.settings.lines.show_specification) {
+      labels.push("speclimits_lower", "speclimits_upper");
     }
     if (this.inputSettings.settings.spc.chart_type !== "run") {
       if (this.inputSettings.settings.lines.show_99) {
@@ -261,6 +268,12 @@ export default class viewModelClass {
     // Scale limits using provided multiplier
     const multiplier: number = this.inputSettings.derivedSettings.multiplier;
     let lines_to_scale: string[] = ["values", "targets"];
+    if (this.inputSettings.settings.lines.show_alt_target) {
+      lines_to_scale = lines_to_scale.concat(["alt_targets"]);
+    }
+    if (this.inputSettings.settings.lines.show_specification) {
+      lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
+    }
 
     if (this.inputSettings.settings.spc.chart_type !== "run") {
       lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
