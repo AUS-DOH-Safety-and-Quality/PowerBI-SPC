@@ -423,6 +423,10 @@
           "displayName": "Show Alt. Target Line",
           "type" : { "bool" : true }
         },
+        "show_specification": {
+          "displayName": "Show Specification Lines",
+          "type" : { "bool" : true }
+        },
         "width_99": {
           "displayName": "99.8% Line Width",
           "type": { "numeric": true }
@@ -445,6 +449,10 @@
         },
         "width_alt_target": {
           "displayName": "Alt. Target Line Width",
+          "type": { "numeric": true }
+        },
+        "width_specification": {
+          "displayName": "Specification Line Width",
           "type": { "numeric": true }
         },
         "type_99": {
@@ -507,6 +515,16 @@
             ]
           }
         },
+        "type_specification": {
+          "displayName": "Specification Line Type",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
+            ]
+          }
+        },
         "colour_99":{
           "displayName": "99.8% Line Colour",
           "type": { "fill": { "solid": { "color": true } } }
@@ -531,6 +549,10 @@
           "displayName": "Alt. Target Line Colour",
           "type": { "fill": { "solid": { "color": true } } }
         },
+        "colour_specification":{
+          "displayName": "Specification Line Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
         "ttip_show_99": {
           "displayName": "Show value in tooltip",
           "type" : { "bool" : true }
@@ -548,6 +570,10 @@
           "type" : { "bool" : true }
         },
         "ttip_show_alt_target": {
+          "displayName": "Show value in tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_show_specification": {
           "displayName": "Show value in tooltip",
           "type" : { "bool" : true }
         },
@@ -571,8 +597,20 @@
           "displayName": "Tooltip Label",
           "type": { "text": true }
         },
+        "ttip_label_specification": {
+          "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
         "alt_target": {
           "displayName": "Additional Target Value:",
+          "type": { "numeric": true }
+        },
+        "specification_upper": {
+          "displayName": "Upper Specification Limit:",
+          "type": { "numeric": true }
+        },
+        "specification_lower": {
+          "displayName": "Lower Specification Limit:",
           "type": { "numeric": true }
         }
       }

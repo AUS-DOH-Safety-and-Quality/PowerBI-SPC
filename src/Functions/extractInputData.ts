@@ -18,6 +18,8 @@ export type dataObject = {
   tooltips: VisualTooltipDataItem[][];
   warningMessage: string;
   alt_targets: number[];
+  speclimits_lower: number[];
+  speclimits_upper: number[];
   validationStatus: ValidationT;
 }
 
@@ -32,6 +34,11 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const highlights: powerbi.PrimitiveValue[] = inputView.values[0].highlights;
   const alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
                                     .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
+  const speclimits_lower: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
+                                    .map(d => d.show_specification ? d.specification_lower : null);
+  const speclimits_upper: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
+                                    .map(d => d.show_specification ? d.specification_upper : null);
+
 
   const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettings.spc.chart_type);
 
@@ -47,6 +54,8 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       tooltips: null,
       warningMessage: inputValidStatus.error,
       alt_targets: null,
+      speclimits_lower: null,
+      speclimits_upper: null,
       validationStatus: inputValidStatus
     }
   }
@@ -93,6 +102,8 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     scatter_formatting: extractValues(scatter_cond, valid_ids),
     warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : "",
     alt_targets: extractValues(alt_targets, valid_ids),
+    speclimits_lower: extractValues(speclimits_lower, valid_ids),
+    speclimits_upper: extractValues(speclimits_upper, valid_ids),
     validationStatus: inputValidStatus
   }
 }

@@ -44,6 +44,8 @@ export default function buildTooltip(index: number,
   const denominator: number = controlLimits.denominators?.[index];
   const target: number = controlLimits.targets[index];
   const alt_target: number = controlLimits?.alt_targets?.[index];
+  const speclimits_lower: number = controlLimits?.speclimits_lower?.[index];
+  const speclimits_upper: number = controlLimits?.speclimits_upper?.[index];
   const limits = {
     ll99: controlLimits?.ll99?.[index],
     ll95: controlLimits?.ll95?.[index],
@@ -85,6 +87,20 @@ export default function buildTooltip(index: number,
       displayName: inputSettings.spc.ttip_label_denominator,
       value: (denominator).toFixed(intNumDen ? 0 : sig_figs)
     })
+  }
+  if (inputSettings.lines.show_specification && inputSettings.lines.ttip_show_specification) {
+    if (speclimits_upper !== null && speclimits_upper !== undefined) {
+      tooltip.push({
+        displayName: `Upper ${inputSettings.lines.ttip_label_specification}`,
+        value: (speclimits_upper).toFixed(sig_figs) + suffix
+      })
+    }
+    if (speclimits_lower !== null && speclimits_lower !== undefined) {
+      tooltip.push({
+        displayName: `Lower ${inputSettings.lines.ttip_label_specification}`,
+        value: (speclimits_lower).toFixed(sig_figs) + suffix
+      })
+    }
   }
   if (chart_type !== "run") {
     ["68", "95", "99"].forEach(limit => {
