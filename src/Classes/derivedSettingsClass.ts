@@ -15,7 +15,7 @@ export default class derivedSettingsClass {
       multiplier = 100
     }
 
-    if (pChartType) {
+    if (pChartType && percentSettingString !== "No") {
       multiplier = multiplier === 1 ? 100 : multiplier
     }
 
