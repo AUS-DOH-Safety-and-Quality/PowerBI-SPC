@@ -273,23 +273,30 @@ export default class viewModelClass {
       lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
+    let lines_to_truncate: string[] = lines_to_scale;
+    if (this.inputSettings.settings.lines.show_alt_target) {
+      lines_to_truncate = lines_to_truncate.concat("alt_targets");
+      if (this.inputSettings.settings.lines.multiplier_alt_target) {
+        lines_to_scale = lines_to_scale.concat(["alt_targets"]);
+      }
+    }
+    if (this.inputSettings.settings.lines.show_specification) {
+      lines_to_truncate = lines_to_truncate.concat(["speclimits_lower", "speclimits_upper"]);
+      if (this.inputSettings.settings.lines.multiplier_specification) {
+        lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
+      }
+    }
+
     lines_to_scale.forEach(limit => {
       this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
     })
-
-    if (this.inputSettings.settings.lines.show_alt_target) {
-      lines_to_scale = lines_to_scale.concat(["alt_targets"]);
-    }
-    if (this.inputSettings.settings.lines.show_specification) {
-      lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
-    }
 
     const limits: truncateInputs = {
       lower: this.inputSettings.settings.spc.ll_truncate,
       upper: this.inputSettings.settings.spc.ul_truncate
     };
 
-    lines_to_scale.forEach(limit => {
+    lines_to_truncate.forEach(limit => {
       this.controlLimits[limit] = truncate(this.controlLimits[limit], limits)
     })
   }

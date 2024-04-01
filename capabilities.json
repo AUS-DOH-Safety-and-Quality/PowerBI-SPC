@@ -612,6 +612,14 @@
         "specification_lower": {
           "displayName": "Lower Specification Limit:",
           "type": { "numeric": true }
+        },
+        "multiplier_alt_target": {
+          "displayName": "Apply Multiplier to Alt. Target",
+          "type" : { "bool" : true }
+        },
+        "multiplier_specification": {
+          "displayName": "Apply Multiplier to Specification Limits",
+          "type" : { "bool" : true }
         }
       }
     },
