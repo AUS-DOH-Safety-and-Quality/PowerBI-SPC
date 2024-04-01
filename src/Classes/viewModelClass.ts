@@ -306,6 +306,8 @@ export default class viewModelClass {
     const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
     const trend_n: number = this.inputSettings.settings.outliers.trend_n;
     const shift_n: number = this.inputSettings.settings.outliers.shift_n;
+    const ast_specification: boolean = this.inputSettings.settings.outliers.astronomical_limit === "Specification";
+    const two_in_three_specification: boolean = this.inputSettings.settings.outliers.two_in_three_limit === "Specification";
     this.outliers = {
       astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
       two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
@@ -318,24 +320,29 @@ export default class viewModelClass {
       const group_values: number[] = this.controlLimits.values.slice(start, end);
       const group_targets: number[] = this.controlLimits.targets.slice(start, end);
 
-      if (this.inputSettings.settings.spc.chart_type !== "run") {
-        const limit_map: Record<string, number> = {
-          "1 Sigma": 68,
-          "2 Sigma": 95,
-          "3 Sigma": 99
+      if (this.inputSettings.settings.spc.chart_type !== "run" || ast_specification || two_in_three_specification) {
+        const limit_map: Record<string, string> = {
+          "1 Sigma": "68",
+          "2 Sigma": "95",
+          "3 Sigma": "99",
+          "Specification": "",
         };
         if (this.inputSettings.settings.outliers.astronomical) {
-          const ast_limit: number = limit_map[this.inputSettings.settings.outliers.astronomical_limit];
-          const lower_limits: number[] = this.controlLimits?.[`ll${ast_limit}`]?.slice(start, end);
-          const upper_limits: number[] = this.controlLimits?.[`ul${ast_limit}`]?.slice(start, end);
+          const ast_limit: string = limit_map[this.inputSettings.settings.outliers.astronomical_limit];
+          const ll_prefix: string = ast_specification ? "speclimits_lower" : "ll";
+          const ul_prefix: string = ast_specification ? "speclimits_upper" : "ul";
+          const lower_limits: number[] = this.controlLimits?.[`${ll_prefix}${ast_limit}`]?.slice(start, end);
+          const upper_limits: number[] = this.controlLimits?.[`${ul_prefix}${ast_limit}`]?.slice(start, end);
           astronomical(group_values, lower_limits, upper_limits)
             .forEach((flag, idx) => this.outliers.astpoint[start + idx] = flag)
         }
         if (this.inputSettings.settings.outliers.two_in_three) {
           const highlight_series: boolean = this.inputSettings.settings.outliers.two_in_three_highlight_series;
-          const two_in_three_limit: number = limit_map[this.inputSettings.settings.outliers.two_in_three_limit];
-          const lower_warn_limits: number[] = this.controlLimits?.[`ll${two_in_three_limit}`]?.slice(start, end);
-          const upper_warn_limits: number[] = this.controlLimits?.[`ul${two_in_three_limit}`]?.slice(start, end);
+          const two_in_three_limit: string = limit_map[this.inputSettings.settings.outliers.two_in_three_limit];
+          const ll_prefix: string = two_in_three_specification ? "speclimits_lower" : "ll";
+          const ul_prefix: string = two_in_three_specification ? "speclimits_upper" : "ul";
+          const lower_warn_limits: number[] = this.controlLimits?.[`${ll_prefix}${two_in_three_limit}`]?.slice(start, end);
+          const upper_warn_limits: number[] = this.controlLimits?.[`${ul_prefix}${two_in_three_limit}`]?.slice(start, end);
           twoInThree(group_values, lower_warn_limits, upper_warn_limits, highlight_series)
             .forEach((flag, idx) => this.outliers.two_in_three[start + idx] = flag)
         }
