@@ -275,7 +275,7 @@ export default class viewModelClass {
 
     let lines_to_truncate: string[] = lines_to_scale;
     if (this.inputSettings.settings.lines.show_alt_target) {
-      lines_to_truncate = lines_to_truncate.concat("alt_targets");
+      lines_to_truncate = lines_to_truncate.concat(["alt_targets"]);
       if (this.inputSettings.settings.lines.multiplier_alt_target) {
         lines_to_scale = lines_to_scale.concat(["alt_targets"]);
       }
