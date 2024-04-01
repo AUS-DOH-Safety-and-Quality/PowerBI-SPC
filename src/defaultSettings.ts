@@ -80,7 +80,7 @@ const defaultSettings = {
     trend_colour_neutral_high: { default: "#490092" },
     two_in_three: { default: false },
     two_in_three_highlight_series: { default: false },
-    two_in_three_limit: { default: "2 Sigma", valid: ["1 Sigma", "2 Sigma", "3 Sigma"]},
+    two_in_three_limit: { default: "2 Sigma", valid: ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"]},
     twointhree_colour_improvement: { default: "#00B0F0" },
     twointhree_colour_deterioration: { default: "#E46C0A" },
     twointhree_colour_neutral_low: { default: "#490092" },
