@@ -4,7 +4,7 @@ type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData } from "../Functions"
-import { type defaultSettingsType, type controlLimitsArgs } from "../Classes";
+import { type defaultSettingsType, type controlLimitsArgs, settingsClass } from "../Classes";
 import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {
@@ -23,20 +23,24 @@ export type dataObject = {
   validationStatus: ValidationT;
 }
 
-export default function extractInputData(inputView: DataViewCategorical, inputSettings: defaultSettingsType): dataObject {
+export default function extractInputData(inputView: DataViewCategorical, inputSettingsClass: settingsClass): dataObject {
+  const inputSettings: defaultSettingsType = inputSettingsClass.settings;
   const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings);
   const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings);
   const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings);
   const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings);
-  const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings);
+  const scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings)?.values;
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings);
   const groupings: string[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings);
   const highlights: powerbi.PrimitiveValue[] = inputView.values[0].highlights;
   const alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
+                                    ?.values
                                     .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
   const speclimits_lower: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
+                                    ?.values
                                     .map(d => d.show_specification ? d.specification_lower : null);
   const speclimits_upper: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
+                                    ?.values
                                     .map(d => d.show_specification ? d.specification_upper : null);
 
 
@@ -64,12 +68,21 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
   const removalMessages: string[] = new Array<string>();
   const groupVarName: string = inputView.categories[0].source.displayName;
+  const settingsMessages = inputSettingsClass.validationStatus.messages;
   let valid_x: number = 0;
   for (let i: number = 0; i < numerators.length; i++) {
     if (inputValidStatus.messages[i] === "") {
       valid_ids.push(i);
       valid_keys.push({ x: valid_x, id: i, label: keys[i] })
       valid_x += 1;
+
+      if (settingsMessages[i].length > 0) {
+        settingsMessages[i].forEach(setting_removal_message => {
+          removalMessages.push(
+            `Conditional formatting for ${groupVarName} ${keys[i]} ignored due to: ${setting_removal_message}.`
+          )}
+        );
+      }
     } else {
       removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus.messages[i]}.`)
     }

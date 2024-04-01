@@ -6,16 +6,20 @@ import initialiseSVG from "./initialiseSVG";
 export default function drawErrors(selection: svgBaseType,
                                     options: VisualUpdateOptions,
                                     message: string,
-                                    internal: boolean = false) {
+                                    type: string = null) {
   selection.call(initialiseSVG, true);
   const errMessageSVG = selection.append("g").classed("errormessage", true);
 
-  if (internal) {
+  if (type) {
+    const preamble: Record<string, string> = {
+      "internal": "Internal Error! Please file a bug report with the following text:",
+      "settings": "Invalid settings provided for all observations! First error:"
+    }
     errMessageSVG.append('text')
                 .attr("x",options.viewport.width / 2)
                 .attr("y",options.viewport.height / 3)
                 .style("text-anchor", "middle")
-                .text("Internal Error! Please file a bug report with the following text:")
+                .text(preamble[type])
                 .style("font-size", "10px");
   }
 
