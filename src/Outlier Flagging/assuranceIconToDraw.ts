@@ -1,6 +1,9 @@
 import type { viewModelClass } from "../Classes";
 
 export default function assuranceIconToDraw(viewModel: viewModelClass): string {
+  if (viewModel.inputSettings.settings.spc.chart_type === "run") {
+    return "none";
+  }
   const imp_direction: string = viewModel.inputSettings.settings.outliers.improvement_direction;
   const N: number = viewModel.controlLimits.ll99.length - 1;
   const alt_target: number = viewModel.controlLimits?.alt_targets?.[N];
