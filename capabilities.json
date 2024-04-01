@@ -1,6 +1,7 @@
 {
   "supportsHighlight": true,
   "supportsKeyboardFocus": true,
+  "supportsMultiVisualSelection": true,
   "sorting": {
     "implicit": { "clauses": [{ "role": "key", "direction": 1 }] }
   },
