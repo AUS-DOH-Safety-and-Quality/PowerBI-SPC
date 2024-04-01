@@ -60,6 +60,14 @@ export type outliersObject = {
   shift: string[];
 }
 
+export type colourPaletteType = {
+  isHighContrast: boolean,
+  foregroundColour: string,
+  backgroundColour: string,
+  foregroundSelectedColour: string,
+  hyperlinkColour: string
+};
+
 export default class viewModelClass {
   inputData: dataObject;
   inputSettings: settingsClass;
@@ -72,6 +80,7 @@ export default class viewModelClass {
   splitIndexes: number[];
   groupStartEndIndexes: number[][];
   firstRun: boolean;
+  colourPalette: colourPaletteType;
 
   constructor() {
     this.inputData = <dataObject>null;
@@ -82,9 +91,19 @@ export default class viewModelClass {
     this.plotProperties = new plotPropertiesClass();
     this.firstRun = true
     this.splitIndexes = new Array<number>();
+    this.colourPalette = null;
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost) {
+    if (this.colourPalette === null || this.colourPalette === undefined) {
+      this.colourPalette = {
+        isHighContrast: host.colorPalette.isHighContrast,
+        foregroundColour: host.colorPalette.foreground.value,
+        backgroundColour: host.colorPalette.background.value,
+        foregroundSelectedColour: host.colorPalette.foregroundSelected.value,
+        hyperlinkColour: host.colorPalette.hyperlink.value
+      }
+    }
     // Only re-construct data and re-calculate limits if they have changed
     if (options.type === 2 || this.firstRun) {
       const split_indexes: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
@@ -120,7 +139,8 @@ export default class viewModelClass {
       this.controlLimits,
       this.inputData,
       this.inputSettings.settings,
-      this.inputSettings.derivedSettings
+      this.inputSettings.derivedSettings,
+      this.colourPalette
     )
     this.firstRun = false;
   }
@@ -166,7 +186,10 @@ export default class viewModelClass {
 
     for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
       const index: number = this.controlLimits.keys[i].x;
-      const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i]
+      const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i];
+      if (this.colourPalette.isHighContrast) {
+        aesthetics.colour = this.colourPalette.foregroundColour;
+      }
       if (this.outliers.shift[i] !== "none") {
         aesthetics.colour = getAesthetic(this.outliers.shift[i], "outliers",
                                   "shift_colour", this.inputSettings.settings) as string;

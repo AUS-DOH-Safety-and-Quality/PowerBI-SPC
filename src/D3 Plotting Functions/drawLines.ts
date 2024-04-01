@@ -24,7 +24,11 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
                   })(d[1])
       })
       .attr("fill", "none")
-      .attr("stroke", d => getAesthetic(d[0], "lines", "colour", visualObj.viewModel.inputSettings.settings))
+      .attr("stroke", d => {
+        return visualObj.viewModel.colourPalette.isHighContrast
+                ? visualObj.viewModel.colourPalette.foregroundColour
+                : getAesthetic(d[0], "lines", "colour", visualObj.viewModel.inputSettings.settings)
+      })
       .attr("stroke-width", d => getAesthetic(d[0], "lines", "width", visualObj.viewModel.inputSettings.settings))
       .attr("stroke-dasharray", d => getAesthetic(d[0], "lines", "type", visualObj.viewModel.inputSettings.settings));
 }
