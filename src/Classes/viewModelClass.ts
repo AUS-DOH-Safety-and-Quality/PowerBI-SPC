@@ -89,7 +89,7 @@ export default class viewModelClass {
     if (options.type === 2 || this.firstRun) {
       const split_indexes: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       this.splitIndexes = JSON.parse(split_indexes);
-      this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings.settings);
+      this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings);
 
       if (this.inputData.validationStatus.status === 0) {
         const allIndexes: number[] = this.splitIndexes
@@ -268,15 +268,20 @@ export default class viewModelClass {
     // Scale limits using provided multiplier
     const multiplier: number = this.inputSettings.derivedSettings.multiplier;
     let lines_to_scale: string[] = ["values", "targets"];
+
+    if (this.inputSettings.settings.spc.chart_type !== "run") {
+      lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
+    }
+
+    lines_to_scale.forEach(limit => {
+      this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
+    })
+
     if (this.inputSettings.settings.lines.show_alt_target) {
       lines_to_scale = lines_to_scale.concat(["alt_targets"]);
     }
     if (this.inputSettings.settings.lines.show_specification) {
       lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
-    }
-
-    if (this.inputSettings.settings.spc.chart_type !== "run") {
-      lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
     const limits: truncateInputs = {
@@ -285,7 +290,7 @@ export default class viewModelClass {
     };
 
     lines_to_scale.forEach(limit => {
-      this.controlLimits[limit] = truncate(multiply(this.controlLimits[limit], multiplier), limits)
+      this.controlLimits[limit] = truncate(this.controlLimits[limit], limits)
     })
   }
 
