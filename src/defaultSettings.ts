@@ -61,7 +61,7 @@ const defaultSettings = {
     process_flag_type: { default: "both", valid: ["both", "improvement", "deterioration"]},
     improvement_direction: { default: "increase", valid: ["increase", "neutral", "decrease"]},
     astronomical: { default: false },
-    astronomical_limit: { default: "3 Sigma", valid: ["1 Sigma", "2 Sigma", "3 Sigma"]},
+    astronomical_limit: { default: "3 Sigma", valid: ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"]},
     ast_colour_improvement: { default: "#00B0F0" },
     ast_colour_deterioration: { default: "#E46C0A" },
     ast_colour_neutral_low: { default: "#490092" },
