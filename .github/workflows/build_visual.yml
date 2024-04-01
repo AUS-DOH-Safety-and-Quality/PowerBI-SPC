@@ -25,7 +25,7 @@ jobs:
     - name: Install Dependencies
       run: |
         npm install
-        npm install -g powerbi-visuals-tools@5.1.1
+        npm install -g powerbi-visuals-tools
 
     - name: Run linter
       run: |
