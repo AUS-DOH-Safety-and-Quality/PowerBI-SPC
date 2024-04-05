@@ -38,7 +38,8 @@
             "enumeration" : [
               { "displayName" : "run - Run Chart",                                   "value" : "run" },
               { "displayName" : "i - Individual Measurements",                       "value" : "i" },
-              { "displayName" : "i_m - Individual Measurements (Median centerline)",  "value" : "i_m" },
+              { "displayName" : "i_m - Individual Measurements: Median centerline",  "value" : "i_m" },
+              { "displayName" : "i_mm - Individual Measurements: Median centerline, Median MR Limits",  "value" : "i_mm" },
               { "displayName" : "mr - Moving Range of Individual Measurements",       "value" : "mr" },
               { "displayName" : "p - Proportions",                                    "value" : "p" },
               { "displayName" : "p prime - Proportions: Large-Sample Corrected",      "value" : "pp" },
