@@ -23,6 +23,24 @@ export type dataObject = {
   validationStatus: ValidationT;
 }
 
+function invalidInputData(inputValidStatus: ValidationT): dataObject {
+  return {
+    limitInputArgs: null,
+    highlights: null,
+    anyHighlights: false,
+    categories: null,
+    groupings: null,
+    groupingIndexes: null,
+    scatter_formatting: null,
+    tooltips: null,
+    warningMessage: inputValidStatus.error,
+    alt_targets: null,
+    speclimits_lower: null,
+    speclimits_upper: null,
+    validationStatus: inputValidStatus
+  }
+}
+
 export default function extractInputData(inputView: DataViewCategorical, inputSettingsClass: settingsClass): dataObject {
   const inputSettings: defaultSettingsType = inputSettingsClass.settings;
   const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings);
@@ -47,21 +65,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettings.spc.chart_type);
 
   if (inputValidStatus.status !== 0) {
-    return {
-      limitInputArgs: null,
-      highlights: null,
-      anyHighlights: false,
-      categories: null,
-      groupings: null,
-      groupingIndexes: null,
-      scatter_formatting: null,
-      tooltips: null,
-      warningMessage: inputValidStatus.error,
-      alt_targets: null,
-      speclimits_lower: null,
-      speclimits_upper: null,
-      validationStatus: inputValidStatus
-    }
+    return invalidInputData(inputValidStatus);
   }
 
   const valid_ids: number[] = new Array<number>();
@@ -98,6 +102,22 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     }
   })
 
+  const valid_alt_targets: number[] = extractValues(alt_targets, valid_ids);
+  if (inputSettings.nhs_icons.show_assurance_icons) {
+    const alt_targets_length: number = valid_alt_targets?.length;
+    if (alt_targets_length > 0) {
+      const last_target: number = valid_alt_targets?.[alt_targets_length - 1];
+      if (last_target === null || last_target === undefined) {
+        removalMessages.push("NHS Assurance icon requires a valid alt. target at last observation.")
+      }
+    }
+
+    const chart_type: string = inputSettings.spc.chart_type;
+    if (chart_type === "run") {
+      removalMessages.push("NHS Assurance icon requires chart with control limits.")
+    }
+  }
+
   return {
     limitInputArgs: {
       keys: valid_keys,
@@ -113,8 +133,8 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     groupings: valid_groupings,
     groupingIndexes: groupingIndexes,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
-    warningMessage: removalMessages.length >0 ? removalMessages.join("\n") : "",
-    alt_targets: extractValues(alt_targets, valid_ids),
+    warningMessage: removalMessages.length > 0 ? removalMessages.join("\n") : "",
+    alt_targets: valid_alt_targets,
     speclimits_lower: extractValues(speclimits_lower, valid_ids),
     speclimits_upper: extractValues(speclimits_upper, valid_ids),
     validationStatus: inputValidStatus
