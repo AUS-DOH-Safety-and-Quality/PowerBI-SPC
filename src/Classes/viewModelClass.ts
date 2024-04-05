@@ -214,7 +214,8 @@ export default class viewModelClass {
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
         highlighted: this.inputData.highlights?.[index] != null,
-        tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData, this.inputSettings.settings, this.inputSettings.derivedSettings)
+        tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData,
+                              this.inputSettings.settings, this.inputSettings.derivedSettings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
     }

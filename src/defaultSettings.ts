@@ -42,7 +42,7 @@ const defaultSettings = {
     right_padding: { default: 10 }
   },
   spc: {
-    chart_type: { default: "i", valid: ["run", "i", "mr", "p", "pp", "u", "up", "c", "xbar", "s", "g", "t"] },
+    chart_type: { default: "i", valid: ["run", "i", "i_m", "mr", "p", "pp", "u", "up", "c", "xbar", "s", "g", "t"] },
     outliers_in_limits: { default: false },
     multiplier: { default: 1, valid: { numberRange: { min: 0 } } },
     sig_figs: { default: 2, valid: { numberRange: { min: 0, max: 20 } } },

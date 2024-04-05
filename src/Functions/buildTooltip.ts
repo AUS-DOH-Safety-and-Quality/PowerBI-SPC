@@ -3,23 +3,6 @@ type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { controlLimitsObject, defaultSettingsType, derivedSettingsClass, outliersObject } from "../Classes";
 import type { dataObject } from "./extractInputData";
 
-const valueNames: Record<string, string> = {
-  "i": "Observation",
-  "c": "Count",
-  "t": "Time",
-  "xbar": "Group Mean",
-  "s": "Group SD",
-  "g": "Non-Events",
-  "run": "Observation",
-  "mr": "Moving Range",
-  "p": "Proportion",
-  "pp": "Proportion",
-  "u": "Rate",
-  "up": "Rate"
-}
-
-const integerParams: string[] = ["c", "p", "pp"];
-
 /**
  * Builds the tooltip data for a specific index in the chart.
  *
@@ -39,7 +22,6 @@ export default function buildTooltip(index: number,
                                       inputData: dataObject,
                                       inputSettings: defaultSettingsType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
-  const chart_type: string = inputSettings.spc.chart_type;
   const numerator: number = controlLimits.numerators?.[index];
   const denominator: number = controlLimits.denominators?.[index];
   const target: number = controlLimits.targets[index];
@@ -61,7 +43,6 @@ export default function buildTooltip(index: number,
   const ast_limit: string = inputSettings.outliers.astronomical_limit;
   const two_in_three_limit: string = inputSettings.outliers.two_in_three_limit;
   const suffix: string = derivedSettings.percentLabels ? "%" : "";
-  const intNumDen: boolean = integerParams.includes(chart_type);
 
   const sig_figs: number = inputSettings.spc.sig_figs;
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
@@ -72,20 +53,20 @@ export default function buildTooltip(index: number,
   if (inputSettings.spc.ttip_show_value) {
     const ttip_label_value: string = inputSettings.spc.ttip_label_value;
     tooltip.push({
-      displayName: ttip_label_value === "Automatic" ? valueNames[chart_type] : ttip_label_value,
+      displayName: ttip_label_value === "Automatic" ? derivedSettings.chart_type_props.value_name : ttip_label_value,
       value: (controlLimits.values[index]).toFixed(sig_figs) + suffix
     })
   }
   if(inputSettings.spc.ttip_show_numerator && !(numerator === null || numerator === undefined)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_numerator,
-      value: (numerator).toFixed(intNumDen ? 0 : sig_figs)
+      value: (numerator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
     })
   }
   if(inputSettings.spc.ttip_show_denominator && !(denominator === null || denominator === undefined)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_denominator,
-      value: (denominator).toFixed(intNumDen ? 0 : sig_figs)
+      value: (denominator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
     })
   }
   if (inputSettings.lines.show_specification && inputSettings.lines.ttip_show_specification) {
