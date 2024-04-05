@@ -1,6 +1,7 @@
 export { default as c } from "./c"
 export { default as g } from "./g"
 export { default as i } from "./i"
+export { default as i_m } from "./i_m"
 export { default as mr } from "./mr"
 export { default as p } from "./p"
 export { default as pp } from "./pprime"
@@ -11,4 +12,3 @@ export { default as u } from "./u"
 export { default as up } from "./uprime"
 export { default as xbar } from "./xbar"
 export { default as run } from "./run"
-

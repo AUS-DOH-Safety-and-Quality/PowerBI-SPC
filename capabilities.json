@@ -36,18 +36,19 @@
           "displayName": "Chart Type",
           "type" : {
             "enumeration" : [
-              { "displayName" : "run - Run Chart",                               "value" : "run" },
-              { "displayName" : "i - Individual Measurements",                   "value" : "i" },
-              { "displayName" : "mr - Moving Range of Individual Measurements",  "value" : "mr" },
-              { "displayName" : "p - Proportions",                               "value" : "p" },
-              { "displayName" : "p prime - Proportions: Large-Sample Corrected", "value" : "pp" },
-              { "displayName" : "u - Rates",                                     "value" : "u" },
-              { "displayName" : "u prime - Rates: Large-Sample Correction",      "value" : "up" },
-              { "displayName" : "c - Counts",                                    "value" : "c" },
-              { "displayName" : "xbar - Sample Means",                           "value" : "xbar" },
-              { "displayName" : "s - Sample SDs",                                "value" : "s" },
-              { "displayName" : "g - Number of Non-Events Between Events",       "value" : "g" },
-              { "displayName" : "t - Time Between Events",                       "value" : "t" }
+              { "displayName" : "run - Run Chart",                                   "value" : "run" },
+              { "displayName" : "i - Individual Measurements",                       "value" : "i" },
+              { "displayName" : "i_m - Individual Measurements (Median centerline)",  "value" : "i_m" },
+              { "displayName" : "mr - Moving Range of Individual Measurements",       "value" : "mr" },
+              { "displayName" : "p - Proportions",                                    "value" : "p" },
+              { "displayName" : "p prime - Proportions: Large-Sample Corrected",      "value" : "pp" },
+              { "displayName" : "u - Rates",                                          "value" : "u" },
+              { "displayName" : "u prime - Rates: Large-Sample Correction",           "value" : "up" },
+              { "displayName" : "c - Counts",                                         "value" : "c" },
+              { "displayName" : "xbar - Sample Means",                                "value" : "xbar" },
+              { "displayName" : "s - Sample SDs",                                     "value" : "s" },
+              { "displayName" : "g - Number of Non-Events Between Events",            "value" : "g" },
+              { "displayName" : "t - Time Between Events",                            "value" : "t" }
             ]
           }
         },
