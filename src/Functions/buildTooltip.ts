@@ -102,7 +102,7 @@ export default function buildTooltip(index: number,
       })
     }
   }
-  if (chart_type !== "run") {
+  if (derivedSettings.chart_type_props.has_control_limits) {
     ["68", "95", "99"].forEach(limit => {
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
@@ -124,7 +124,7 @@ export default function buildTooltip(index: number,
       value: (alt_target).toFixed(sig_figs) + suffix
     })
   }
-  if (chart_type !== "run") {
+  if (derivedSettings.chart_type_props.has_control_limits) {
     ["68", "95", "99"].forEach(limit => {
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({

@@ -1,7 +1,7 @@
 import type powerbi from "powerbi-visuals-api";
-import { type defaultSettingsType } from "../Classes";
+import { settingsClass } from "../Classes";
 
-export default function validateDataView(inputDV: powerbi.DataView[], inputSettings: defaultSettingsType): string {
+export default function validateDataView(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
   if (!(inputDV?.[0])) {
     return "No data present";
   }
@@ -17,9 +17,8 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   if (!numeratorsPresent) {
     return "No Numerators passed!";
   }
-  const chart_type: string = inputSettings.spc.chart_type;
-  const denominatorRequired: string[] = ["p", "pp", "u", "up", "xbar", "s"];
-  if (denominatorRequired.includes(chart_type)) {
+  const chart_type: string = inputSettingsClass.settings.spc.chart_type;
+  if (inputSettingsClass.derivedSettings.chart_type_props.needs_denominator) {
     const denominatorsPresent: boolean
       = inputDV[0].categorical
                      ?.values
@@ -30,7 +29,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
     }
   }
 
-  if (chart_type === "xbar") {
+  if (inputSettingsClass.derivedSettings.chart_type_props.needs_sd) {
     const xbarSDPresent: boolean
       = inputDV[0].categorical
                      ?.values

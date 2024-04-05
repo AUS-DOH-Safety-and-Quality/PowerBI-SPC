@@ -62,7 +62,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
                                     .map(d => d.show_specification ? d.specification_upper : null);
 
 
-  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettings.spc.chart_type);
+  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettingsClass.derivedSettings.chart_type_props);
 
   if (inputValidStatus.status !== 0) {
     return invalidInputData(inputValidStatus);
@@ -112,8 +112,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       }
     }
 
-    const chart_type: string = inputSettings.spc.chart_type;
-    if (chart_type === "run") {
+    if (!inputSettingsClass.derivedSettings.chart_type_props.has_control_limits) {
       removalMessages.push("NHS Assurance icon requires chart with control limits.")
     }
   }

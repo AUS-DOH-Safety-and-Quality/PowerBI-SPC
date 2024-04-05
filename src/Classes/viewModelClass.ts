@@ -164,9 +164,7 @@ export default class viewModelClass {
       this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
-          if (this.inputSettings.settings.spc.chart_type !== "run" || !["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"].includes(entry[0])) {
-            allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
-          }
+          allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
         })
         return allInner;
       })
@@ -236,7 +234,7 @@ export default class viewModelClass {
     if (this.inputSettings.settings.lines.show_specification) {
       labels.push("speclimits_lower", "speclimits_upper");
     }
-    if (this.inputSettings.settings.spc.chart_type !== "run") {
+    if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
       if (this.inputSettings.settings.lines.show_99) {
         labels.push("ll99", "ul99");
       }
@@ -292,7 +290,7 @@ export default class viewModelClass {
     const multiplier: number = this.inputSettings.derivedSettings.multiplier;
     let lines_to_scale: string[] = ["values", "targets"];
 
-    if (this.inputSettings.settings.spc.chart_type !== "run") {
+    if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
       lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
@@ -343,7 +341,7 @@ export default class viewModelClass {
       const group_values: number[] = this.controlLimits.values.slice(start, end);
       const group_targets: number[] = this.controlLimits.targets.slice(start, end);
 
-      if (this.inputSettings.settings.spc.chart_type !== "run" || ast_specification || two_in_three_specification) {
+      if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
         const limit_map: Record<string, string> = {
           "1 Sigma": "68",
           "2 Sigma": "95",

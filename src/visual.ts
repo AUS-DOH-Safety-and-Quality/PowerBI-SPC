@@ -46,7 +46,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       const checkDV: string = validateDataView(options.dataViews,
-                                               this.viewModel.inputSettings.settings);
+                                               this.viewModel.inputSettings);
       if (checkDV !== "valid") {
         if (this.viewModel.inputSettings.settings.canvas.show_errors) {
           this.svg.call(drawErrors, options, checkDV);
