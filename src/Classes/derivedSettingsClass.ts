@@ -3,6 +3,7 @@ import { defaultSettingsType } from "./settingsClass"
 const valueNames: Record<string, string> = {
   "i": "Observation",
   "i_m": "Observation",
+  "i_mm": "Observation",
   "c": "Count",
   "t": "Time",
   "xbar": "Group Mean",
@@ -53,7 +54,7 @@ export default class derivedSettingsClass {
 
     this.chart_type_props = {
       needs_denominator: ["p", "pp", "u", "up", "xbar", "s"].includes(chartType),
-      denominator_optional: ["i", "i_m", "run", "mr"].includes(chartType),
+      denominator_optional: ["i", "i_m", "i_mm", "run", "mr"].includes(chartType),
       numerator_non_negative: ["p", "pp", "u", "up", "s", "c", "g", "t"].includes(chartType),
       numerator_leq_denominator: ["p", "pp", "u", "up"].includes(chartType),
       has_control_limits: !(["run"].includes(chartType)),
