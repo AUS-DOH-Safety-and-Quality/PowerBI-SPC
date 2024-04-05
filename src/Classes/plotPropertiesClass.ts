@@ -72,12 +72,12 @@ export default class plotPropertiesClass {
 
       const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
       const values: number[] = controlLimits.values;
-      const ul99: number[] = controlLimits.ul99;
-      const ll99: number[] = controlLimits.ll99;
+      const upper_limits: number[] = controlLimits.ul99.concat(controlLimits?.speclimits_upper);
+      const lower_limits: number[] = controlLimits.ll99.concat(controlLimits?.speclimits_lower);
       const alt_targets: number[] = controlLimits.alt_targets;
       const maxValue: number = max(values);
-      const maxValueOrLimit: number = max(values.concat(ul99).concat(alt_targets));
-      const minValueOrLimit: number = min(values.concat(ll99).concat(alt_targets));
+      const maxValueOrLimit: number = max(values.concat(upper_limits).concat(alt_targets));
+      const minValueOrLimit: number = min(values.concat(lower_limits).concat(alt_targets));
       const maxTarget: number = max(controlLimits.targets);
       const minTarget: number = min(controlLimits.targets);
 
