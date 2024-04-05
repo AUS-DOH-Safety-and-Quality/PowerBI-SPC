@@ -74,8 +74,8 @@ export class Visual implements powerbi.extensibility.IVisual {
               .call(addContextMenu, this)
 
       if (this.viewModel.inputData.warningMessage !== "") {
-        this.host.displayWarningIcon("Invalid inputs have been removed",
-                                    this.viewModel.inputData.warningMessage);
+        this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
+                                     this.viewModel.inputData.warningMessage);
       }
 
       this.host.eventService.renderingFinished(options);
