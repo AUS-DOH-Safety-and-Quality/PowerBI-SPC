@@ -6,6 +6,7 @@ import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils"
 import defaultSettings from "../defaultSettings";
 import rep from "./rep";
 import between from "./between";
+import isNullOrUndefined from "./isNullOrUndefined";
 
 type SettingsTypes = defaultSettingsType[defaultSettingsKey];
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
@@ -15,10 +16,10 @@ export default function
   extractConditionalFormatting<T extends SettingsTypes>(categoricalView: DataViewCategorical,
                                                         settingGroupName: string,
                                                         inputSettings: defaultSettingsType): ConditionalReturnT<T> {
-  if (categoricalView === null) {
+  if (isNullOrUndefined(categoricalView)) {
     return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
-  if ((categoricalView.categories === null) || (categoricalView.categories === undefined)) {
+  if (isNullOrUndefined(categoricalView.categories)) {
     return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
   const inputCategories: DataViewCategoryColumn = (categoricalView.categories as DataViewCategoryColumn[])[0];

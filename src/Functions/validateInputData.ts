@@ -1,4 +1,5 @@
 import { derivedSettingsClass } from "../Classes";
+import isNullOrUndefined from "./isNullOrUndefined";
 import rep from "./rep";
 
 export type ValidationT = { status: number, messages: string[], error?: string };
@@ -12,20 +13,20 @@ export default function validateInputData(keys: string[],
                                           groupings: string[],
                                           chart_type_props: derivedSettingsClass["chart_type_props"]): { status: number, messages: string[], error?: string } {
 
-  const check_optional: boolean = chart_type_props.denominator_optional && !(denominators === null || denominators === undefined);
+  const check_optional: boolean = chart_type_props.denominator_optional && !isNullOrUndefined(denominators);
 
   const validationRtn: ValidationT = { status: 0, messages: rep("", keys.length) };
 
-  if (!(groupings === null || groupings === undefined)) {
+  if (!isNullOrUndefined(groupings)) {
     groupings.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d != null) ? "" : "Grouping missing")
+                                    ? (!isNullOrUndefined(d) ? "" : "Grouping missing")
                                     : validationRtn.messages[idx]
     });
   }
   keys.forEach((d, idx) => {
     validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                  ? ((d != null) ? "" : "Date missing")
+                                  ? (!isNullOrUndefined(d) ? "" : "Date missing")
                                   : validationRtn.messages[idx]});
   if (!validationRtn.messages.some(d => d == "")) {
     validationRtn.status = 1;
@@ -35,7 +36,7 @@ export default function validateInputData(keys: string[],
 
   numerators.forEach((d, idx) => {
     validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                  ? ((d != null) ? "" : "Numerator missing")
+                                  ? (!isNullOrUndefined(d) ? "" : "Numerator missing")
                                   : validationRtn.messages[idx]});
   if (!validationRtn.messages.some(d => d == "")) {
     validationRtn.status = 1;
@@ -57,7 +58,7 @@ export default function validateInputData(keys: string[],
   if (chart_type_props.needs_denominator || check_optional) {
     denominators.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d != null) ? "" : "Denominator missing")
+                                    ? (!isNullOrUndefined(d) ? "" : "Denominator missing")
                                     : validationRtn.messages[idx]});
     if (!validationRtn.messages.some(d => d == "")) {
       validationRtn.status = 1;
@@ -89,7 +90,7 @@ export default function validateInputData(keys: string[],
   if (chart_type_props.needs_sd) {
     xbar_sds.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d != null) ? "" : "SD missing")
+                                    ? (!isNullOrUndefined(d) ? "" : "SD missing")
                                     : validationRtn.messages[idx]});
     if (!validationRtn.messages.some(d => d == "")) {
       validationRtn.status = 1;

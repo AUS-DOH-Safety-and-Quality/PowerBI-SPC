@@ -2,6 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { controlLimitsObject, defaultSettingsType, derivedSettingsClass, outliersObject } from "../Classes";
 import type { dataObject } from "./extractInputData";
+import isNullOrUndefined from "./isNullOrUndefined";
 
 /**
  * Builds the tooltip data for a specific index in the chart.
@@ -57,26 +58,26 @@ export default function buildTooltip(index: number,
       value: (controlLimits.values[index]).toFixed(sig_figs) + suffix
     })
   }
-  if(inputSettings.spc.ttip_show_numerator && !(numerator === null || numerator === undefined)) {
+  if(inputSettings.spc.ttip_show_numerator && !isNullOrUndefined(numerator)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_numerator,
       value: (numerator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
     })
   }
-  if(inputSettings.spc.ttip_show_denominator && !(denominator === null || denominator === undefined)) {
+  if(inputSettings.spc.ttip_show_denominator && !isNullOrUndefined(denominator)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_denominator,
       value: (denominator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
     })
   }
   if (inputSettings.lines.show_specification && inputSettings.lines.ttip_show_specification) {
-    if (speclimits_upper !== null && speclimits_upper !== undefined) {
+    if (!isNullOrUndefined(speclimits_upper)) {
       tooltip.push({
         displayName: `Upper ${inputSettings.lines.ttip_label_specification}`,
         value: (speclimits_upper).toFixed(sig_figs) + suffix
       })
     }
-    if (speclimits_lower !== null && speclimits_lower !== undefined) {
+    if (!isNullOrUndefined(speclimits_lower)) {
       tooltip.push({
         displayName: `Lower ${inputSettings.lines.ttip_label_specification}`,
         value: (speclimits_lower).toFixed(sig_figs) + suffix
@@ -99,7 +100,7 @@ export default function buildTooltip(index: number,
       value: (target).toFixed(sig_figs) + suffix
     })
   }
-  if (inputSettings.lines.show_alt_target && inputSettings.lines.ttip_show_alt_target && !(alt_target === null || alt_target === undefined)) {
+  if (inputSettings.lines.show_alt_target && inputSettings.lines.ttip_show_alt_target && !isNullOrUndefined(alt_target)) {
     tooltip.push({
       displayName: inputSettings.lines.ttip_label_alt_target,
       value: (alt_target).toFixed(sig_figs) + suffix

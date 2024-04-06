@@ -3,7 +3,7 @@ type DataViewValueColumn = powerbi.DataViewValueColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { defaultSettingsType } from "../Classes/";
-import { formatPrimitiveValue, dateSettingsToFormatOptions, parseInputDates, rep } from "../Functions";
+import { formatPrimitiveValue, dateSettingsToFormatOptions, parseInputDates, rep, isNullOrUndefined } from "../Functions";
 type TargetT = number[] | string[] | number | string | VisualTooltipDataItem[][];
 
 function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
@@ -17,7 +17,7 @@ function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
 function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType): string[] {
   const col: powerbi.DataViewCategoryColumn[] = inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]);
   if (col.length === 1 && !(col[0].source.type?.temporal)) {
-    return col[0].values.map(d => d === null ? null : String(d));
+    return col[0].values.map(d => isNullOrUndefined(d) ? null : String(d));
   }
   const delim: string = inputSettings.dates.date_format_delim;
   // If multiple inputs are passed but not as a 'Date Hierarchy' type then
@@ -34,7 +34,7 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   const inputDates = parseInputDates(col)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
   return inputDates.dates.map((value: Date, idx) => {
-    if (value === null) {
+    if (isNullOrUndefined(value)) {
       return null
     }
     const dateParts = datePartsToRecord(formatter.formatToParts(<Date>value))
@@ -73,8 +73,8 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
 
   const columnRaw = inputView.values.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
   if (name === "groupings") {
-    return columnRaw?.[0]?.values?.map(d => d === null ? null : String(d)) as T
+    return columnRaw?.[0]?.values?.map(d => isNullOrUndefined(d) ? null : String(d)) as T
   }
   // Assumed that any other requested columns are numeric columns for plotting
-  return columnRaw?.[0]?.values?.map(d => d === null ? null : Number(d)) as T
+  return columnRaw?.[0]?.values?.map(d => isNullOrUndefined(d) ? null : Number(d)) as T
 }

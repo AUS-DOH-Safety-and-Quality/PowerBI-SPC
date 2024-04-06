@@ -6,7 +6,7 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
 export type lineData = {
@@ -95,7 +95,7 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost) {
-    if (this.colourPalette === null || this.colourPalette === undefined) {
+    if (isNullOrUndefined(this.colourPalette)) {
       this.colourPalette = {
         isHighContrast: host.colorPalette.isHighContrast,
         foregroundColour: host.colorPalette.foreground.value,
@@ -213,7 +213,7 @@ export default class viewModelClass {
                       .withCategory(this.inputData.categories,
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
-        highlighted: this.inputData.highlights?.[index] != null,
+        highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
         tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData,
                               this.inputSettings.settings, this.inputSettings.derivedSettings)
       })

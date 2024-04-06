@@ -1,4 +1,5 @@
 import type { defaultSettingsType } from "../Classes"
+import isNullOrUndefined from "./isNullOrUndefined"
 
 // Mapping from the Visual settings options to the required option for the dateFormat function
 const weekdayDateMap: Record<string, "long" | "short"> = {
@@ -42,7 +43,7 @@ export default function dateSettingsToFormatOptions(date_settings: defaultSettin
       const formattedKey = key.replace("date_format_", "");
       const lookup = dateOptionsLookup[formattedKey];
       const val = lookup[date_settings[key]];
-      if (val !== null) {
+      if (!isNullOrUndefined(val)) {
         formatOpts.push([formattedKey, val])
         if (formattedKey === "day" && date_settings[key] !== "DD") {
           formatOpts.push(["weekday", weekdayDateMap[date_settings[key]]])

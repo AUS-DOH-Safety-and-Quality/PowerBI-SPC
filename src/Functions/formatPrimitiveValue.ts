@@ -1,13 +1,14 @@
 import type powerbi from "powerbi-visuals-api"
 import { defaultSettingsType } from "../Classes"
 import broadcastBinary from "./broadcastBinary"
+import isNullOrUndefined from "./isNullOrUndefined"
 type PrimitiveValue = powerbi.PrimitiveValue
 type ValueTypeDescriptor = powerbi.ValueTypeDescriptor
 
 const formatPrimitiveValue = broadcastBinary((rawValue: PrimitiveValue,
                                               config: { valueType: ValueTypeDescriptor,
                                                         dateSettings: defaultSettingsType["dates"]}): string => {
-  if (rawValue === null || rawValue === undefined) {
+  if (isNullOrUndefined(rawValue)) {
     return null;
   }
 

@@ -3,7 +3,7 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData } from "../Functions"
+import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData, isNullOrUndefined } from "../Functions"
 import { type defaultSettingsType, type controlLimitsArgs, settingsClass } from "../Classes";
 import type { ValidationT } from "./validateInputData";
 
@@ -107,7 +107,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     const alt_targets_length: number = valid_alt_targets?.length;
     if (alt_targets_length > 0) {
       const last_target: number = valid_alt_targets?.[alt_targets_length - 1];
-      if (last_target === null || last_target === undefined) {
+      if (isNullOrUndefined(last_target)) {
         removalMessages.push("NHS Assurance icon requires a valid alt. target at last observation.")
       }
     }
@@ -127,7 +127,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     },
     tooltips: extractValues(tooltips, valid_ids),
     highlights: extractValues(highlights, valid_ids),
-    anyHighlights: highlights != null,
+    anyHighlights: !isNullOrUndefined(highlights),
     categories: inputView.categories[0],
     groupings: valid_groupings,
     groupingIndexes: groupingIndexes,
