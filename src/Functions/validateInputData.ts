@@ -20,13 +20,13 @@ export default function validateInputData(keys: string[],
   if (!isNullOrUndefined(groupings)) {
     groupings.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d != null) ? "" : "Grouping missing")
+                                    ? (!isNullOrUndefined(d) ? "" : "Grouping missing")
                                     : validationRtn.messages[idx]
     });
   }
   keys.forEach((d, idx) => {
     validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                  ? ((d != null) ? "" : "Date missing")
+                                  ? (!isNullOrUndefined(d) ? "" : "Date missing")
                                   : validationRtn.messages[idx]});
   if (!validationRtn.messages.some(d => d == "")) {
     validationRtn.status = 1;
@@ -36,7 +36,7 @@ export default function validateInputData(keys: string[],
 
   numerators.forEach((d, idx) => {
     validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                  ? ((d != null) ? "" : "Numerator missing")
+                                  ? (!isNullOrUndefined(d) ? "" : "Numerator missing")
                                   : validationRtn.messages[idx]});
   if (!validationRtn.messages.some(d => d == "")) {
     validationRtn.status = 1;
@@ -58,7 +58,7 @@ export default function validateInputData(keys: string[],
   if (chart_type_props.needs_denominator || check_optional) {
     denominators.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d != null) ? "" : "Denominator missing")
+                                    ? (!isNullOrUndefined(d) ? "" : "Denominator missing")
                                     : validationRtn.messages[idx]});
     if (!validationRtn.messages.some(d => d == "")) {
       validationRtn.status = 1;
@@ -90,7 +90,7 @@ export default function validateInputData(keys: string[],
   if (chart_type_props.needs_sd) {
     xbar_sds.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d != null) ? "" : "SD missing")
+                                    ? (!isNullOrUndefined(d) ? "" : "SD missing")
                                     : validationRtn.messages[idx]});
     if (!validationRtn.messages.some(d => d == "")) {
       validationRtn.status = 1;

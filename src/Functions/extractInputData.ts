@@ -127,7 +127,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
     },
     tooltips: extractValues(tooltips, valid_ids),
     highlights: extractValues(highlights, valid_ids),
-    anyHighlights: highlights != null,
+    anyHighlights: !isNullOrUndefined(highlights),
     categories: inputView.categories[0],
     groupings: valid_groupings,
     groupingIndexes: groupingIndexes,

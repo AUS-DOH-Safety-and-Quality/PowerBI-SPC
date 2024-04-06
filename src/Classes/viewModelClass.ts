@@ -213,7 +213,7 @@ export default class viewModelClass {
                       .withCategory(this.inputData.categories,
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
-        highlighted: this.inputData.highlights?.[index] != null,
+        highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
         tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData,
                               this.inputSettings.settings, this.inputSettings.derivedSettings)
       })
