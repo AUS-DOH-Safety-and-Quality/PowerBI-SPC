@@ -20,6 +20,15 @@
     { "displayName": "Tooltips",              "name": "tooltips",     "kind": "Measure" }
   ],
   "objects": {
+    "summary_table": {
+      "displayName": "Summary Table",
+      "properties": {
+        "show_table": {
+          "displayName": "Show Summary Table",
+          "type" : { "bool" : true }
+        }
+      }
+    },
     "split_indexes_storage" : {
       "displayName" : "Hidden",
       "properties": {
