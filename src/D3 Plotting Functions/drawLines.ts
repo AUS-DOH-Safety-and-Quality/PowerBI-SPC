@@ -1,6 +1,6 @@
 import * as d3 from "./D3 Modules";
 import type { lineData } from "../Classes";
-import { between, getAesthetic } from "../Functions";
+import { between, getAesthetic, isNullOrUndefined } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {
@@ -18,7 +18,7 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
                   .x(d => visualObj.viewModel.plotProperties.xScale(d.x))
                   .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value))
                   .defined(d => {
-                    return d.line_value !== null
+                    return !isNullOrUndefined(d.line_value)
                       && between(d.line_value, ylower, yupper)
                       && between(d.x, xlower, xupper)
                   })(d[1])

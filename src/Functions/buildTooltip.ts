@@ -77,7 +77,7 @@ export default function buildTooltip(index: number,
         value: (speclimits_upper).toFixed(sig_figs) + suffix
       })
     }
-    if (speclimits_lower !== null && speclimits_lower !== undefined) {
+    if (!isNullOrUndefined(speclimits_lower)) {
       tooltip.push({
         displayName: `Lower ${inputSettings.lines.ttip_label_specification}`,
         value: (speclimits_lower).toFixed(sig_figs) + suffix

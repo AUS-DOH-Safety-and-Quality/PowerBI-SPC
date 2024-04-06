@@ -1,5 +1,5 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import { truncate, min, max, type dataObject } from "../Functions";
+import { truncate, min, max, type dataObject, isNullOrUndefined } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import type { defaultSettingsType, plotData, controlLimitsObject, derivedSettingsClass } from "../Classes";
@@ -68,7 +68,7 @@ export default class plotPropertiesClass {
 
     // Only update data-/settings-dependent plot aesthetics if they have changed
     if (inputData?.validationStatus?.status == 0 && controlLimits) {
-      xUpperLimit = xUpperLimit !== null ? xUpperLimit : max(controlLimits.keys.map(d => d.x))
+      xUpperLimit = !isNullOrUndefined(xUpperLimit) ? xUpperLimit : max(controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
       const values: number[] = controlLimits.values;
@@ -98,11 +98,11 @@ export default class plotPropertiesClass {
 
       const keysToPlot: number[] = controlLimits.keys.map(d => d.x);
 
-      xLowerLimit = xLowerLimit !== null
+      xLowerLimit = !isNullOrUndefined(xLowerLimit)
         ? xLowerLimit
         : min(keysToPlot);
 
-      xUpperLimit = xUpperLimit !== null
+      xUpperLimit = !isNullOrUndefined(xUpperLimit)
         ? xUpperLimit
         : max(keysToPlot);
     }
@@ -119,7 +119,7 @@ export default class plotPropertiesClass {
                                       : 0;
 
     this.xAxis = {
-      lower: xLowerLimit !== null ? xLowerLimit : 0,
+      lower: !isNullOrUndefined(xLowerLimit) ? xLowerLimit : 0,
       upper: xUpperLimit,
       start_padding: inputSettings.canvas.left_padding + leftLabelPadding,
       end_padding: inputSettings.canvas.right_padding,

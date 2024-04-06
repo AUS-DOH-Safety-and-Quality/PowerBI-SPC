@@ -1,5 +1,5 @@
 import type { plotData } from "../Classes";
-import { between } from "../Functions";
+import { between, isNullOrUndefined } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 import updateHighlighting from "./updateHighlighting";
 
@@ -9,7 +9,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       .selectAll("circle")
       .data(visualObj.viewModel.plotPoints)
       .join("circle")
-      .filter((d: plotData) => d.value !== null)
+      .filter((d: plotData) => !isNullOrUndefined(d.value))
       .attr("cy", (d: plotData) => visualObj.viewModel.plotProperties.yScale(d.value))
       .attr("cx", (d: plotData) => visualObj.viewModel.plotProperties.xScale(d.x))
       .attr("r", (d: plotData) => d.aesthetics.size)
