@@ -1,4 +1,5 @@
 import { derivedSettingsClass } from "../Classes";
+import isNullOrUndefined from "./isNullOrUndefined";
 import rep from "./rep";
 
 export type ValidationT = { status: number, messages: string[], error?: string };
@@ -12,11 +13,11 @@ export default function validateInputData(keys: string[],
                                           groupings: string[],
                                           chart_type_props: derivedSettingsClass["chart_type_props"]): { status: number, messages: string[], error?: string } {
 
-  const check_optional: boolean = chart_type_props.denominator_optional && !(denominators === null || denominators === undefined);
+  const check_optional: boolean = chart_type_props.denominator_optional && !isNullOrUndefined(denominators);
 
   const validationRtn: ValidationT = { status: 0, messages: rep("", keys.length) };
 
-  if (!(groupings === null || groupings === undefined)) {
+  if (!isNullOrUndefined(groupings)) {
     groupings.forEach((d, idx) => {
       validationRtn.messages[idx] = validationRtn.messages[idx] === ""
                                     ? ((d != null) ? "" : "Grouping missing")

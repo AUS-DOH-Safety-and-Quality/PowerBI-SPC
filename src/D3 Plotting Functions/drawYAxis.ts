@@ -1,5 +1,5 @@
 import * as d3 from "./D3 Modules";
-import { abs } from "../Functions";
+import { abs, isNullOrUndefined } from "../Functions";
 import drawXAxis from "./drawXAxis";
 import type { axisProperties } from "../Classes";
 import type { svgBaseType, Visual } from "../visual";
@@ -8,7 +8,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
   const yAxisProperties: axisProperties = visualObj.viewModel.plotProperties.yAxis;
   const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.settings.y_axis.ylimit_sig_figs;
-  const sig_figs: number = yaxis_sig_figs === null ? visualObj.viewModel.inputSettings.settings.spc.sig_figs : yaxis_sig_figs;
+  const sig_figs: number = isNullOrUndefined(yaxis_sig_figs) ? visualObj.viewModel.inputSettings.settings.spc.sig_figs : yaxis_sig_figs;
   const displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
 
   if (yAxisProperties.ticks) {

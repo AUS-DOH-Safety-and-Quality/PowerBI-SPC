@@ -1,8 +1,8 @@
-import { sqrt, exp, lgamma, square, broadcastUnary, broadcastBinary } from "../Functions";
+import { sqrt, exp, lgamma, square, broadcastUnary, broadcastBinary, isNullOrUndefined } from "../Functions";
 
 export const c4 = broadcastUnary(
   (sampleSize: number): number => {
-    if ((sampleSize <= 1) || (sampleSize === null)) {
+    if ((sampleSize <= 1) || isNullOrUndefined(sampleSize)) {
       return null;
     }
     const Nminus1: number = sampleSize - 1;

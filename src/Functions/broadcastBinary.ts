@@ -1,3 +1,5 @@
+import isNullOrUndefined from "./isNullOrUndefined";
+
 type ReturnT<Input1T, Input2T, BaseT> = Input1T extends Array<any> ? BaseT[] : Input2T extends Array<any> ? BaseT[] : BaseT;
 
 /**
@@ -39,5 +41,5 @@ export const subtract = broadcastBinary((x: number, y: number): number => x - y)
 export const divide = broadcastBinary((x: number, y: number): number => x / y);
 export const multiply = broadcastBinary(
   (x: number, y: number): number => {
-    return (x === null || y === null) ? null : (x * y);
+    return (isNullOrUndefined(x) || isNullOrUndefined(y)) ? null : (x * y);
 });
