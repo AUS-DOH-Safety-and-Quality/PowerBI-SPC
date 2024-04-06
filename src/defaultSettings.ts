@@ -186,6 +186,9 @@ const defaultSettings = {
     date_format_year: { default: "YYYY", valid: ["YYYY", "YY", "(blank)"]},
     date_format_delim: { default: "/", valid: ["/", "-", " "]},
     date_format_locale: { default: "en-GB", valid: ["en-GB", "en-US"]}
+  },
+  summary_table: {
+    show_table: { default: false }
   }
 };
 

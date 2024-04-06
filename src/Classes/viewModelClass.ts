@@ -15,10 +15,28 @@ export type lineData = {
   group: string;
 }
 
+export type summaryTableRowData = {
+  date: string;
+  numerator: number;
+  denominator: number;
+  value: number;
+  target: number;
+  alt_target: number;
+  ll99: number;
+  ll95: number;
+  ll68: number;
+  ul68: number;
+  ul95: number;
+  ul99: number;
+  speclimits_lower: number;
+  speclimits_upper: number;
+}
+
 export type plotData = {
   x: number;
   value: number;
   aesthetics: defaultSettingsType["scatter"];
+  table_row: summaryTableRowData;
   // ISelectionId allows the visual to report the selection choice to PowerBI
   identity: ISelectionId;
   // Flag for whether dot should be highlighted by selections in other charts
@@ -205,10 +223,28 @@ export default class viewModelClass {
                                   "ast_colour", this.inputSettings.settings) as string;
       }
 
+      const table_row: summaryTableRowData = {
+        date: this.controlLimits.keys[i].label,
+        numerator: this.controlLimits.numerators?.[i],
+        denominator: this.controlLimits.denominators?.[i],
+        value: this.controlLimits.values[i],
+        target: this.controlLimits.targets[i],
+        alt_target: this.controlLimits.alt_targets[i],
+        ll99: this.controlLimits?.ll99?.[i],
+        ll95: this.controlLimits?.ll95?.[i],
+        ll68: this.controlLimits?.ll68?.[i],
+        ul68: this.controlLimits?.ul68?.[i],
+        ul95: this.controlLimits?.ul95?.[i],
+        ul99: this.controlLimits?.ul99?.[i],
+        speclimits_lower: this.controlLimits?.speclimits_lower?.[i],
+        speclimits_upper: this.controlLimits?.speclimits_upper?.[i]
+      }
+
       this.plotPoints.push({
         x: index,
         value: this.controlLimits.values[i],
         aesthetics: aesthetics,
+        table_row: table_row,
         identity: host.createSelectionIdBuilder()
                       .withCategory(this.inputData.categories,
                                     this.inputData.limitInputArgs.keys[i].id)
