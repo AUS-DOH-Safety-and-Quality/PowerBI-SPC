@@ -1,8 +1,8 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { controlLimitsObject, defaultSettingsType, derivedSettingsClass, outliersObject } from "../Classes";
-import type { dataObject } from "./extractInputData";
+import type { defaultSettingsType, derivedSettingsClass } from "../Classes";
 import isNullOrUndefined from "./isNullOrUndefined";
+import { summaryTableRowData } from "../Classes/viewModelClass";
 
 /**
  * Builds the tooltip data for a specific index in the chart.
@@ -17,70 +17,51 @@ import isNullOrUndefined from "./isNullOrUndefined";
  */
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 /* eslint-disable max-lines-per-function */
-export default function buildTooltip(index: number,
-                                      controlLimits: controlLimitsObject,
-                                      outliers: outliersObject,
-                                      inputData: dataObject,
+export default function buildTooltip(table_row: summaryTableRowData,
+                                      inputTooltips: powerbi.extensibility.VisualTooltipDataItem[],
                                       inputSettings: defaultSettingsType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
-  const numerator: number = controlLimits.numerators?.[index];
-  const denominator: number = controlLimits.denominators?.[index];
-  const target: number = controlLimits.targets[index];
-  const alt_target: number = controlLimits?.alt_targets?.[index];
-  const speclimits_lower: number = controlLimits?.speclimits_lower?.[index];
-  const speclimits_upper: number = controlLimits?.speclimits_upper?.[index];
-  const limits = {
-    ll99: controlLimits?.ll99?.[index],
-    ll95: controlLimits?.ll95?.[index],
-    ll68: controlLimits?.ll68?.[index],
-    ul68: controlLimits?.ul68?.[index],
-    ul95: controlLimits?.ul95?.[index],
-    ul99: controlLimits?.ul99?.[index]
-  };
-  const astpoint: string = outliers.astpoint[index];
-  const trend: string = outliers.trend[index];
-  const shift: string = outliers.shift[index];
-  const two_in_three: string = outliers.two_in_three[index];
+
   const ast_limit: string = inputSettings.outliers.astronomical_limit;
   const two_in_three_limit: string = inputSettings.outliers.two_in_three_limit;
   const suffix: string = derivedSettings.percentLabels ? "%" : "";
-
   const sig_figs: number = inputSettings.spc.sig_figs;
+
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
     displayName: "Date",
-    value: controlLimits.keys[index].label
+    value: table_row.date
   });
   if (inputSettings.spc.ttip_show_value) {
     const ttip_label_value: string = inputSettings.spc.ttip_label_value;
     tooltip.push({
       displayName: ttip_label_value === "Automatic" ? derivedSettings.chart_type_props.value_name : ttip_label_value,
-      value: (controlLimits.values[index]).toFixed(sig_figs) + suffix
+      value: (table_row.value).toFixed(sig_figs) + suffix
     })
   }
-  if(inputSettings.spc.ttip_show_numerator && !isNullOrUndefined(numerator)) {
+  if(inputSettings.spc.ttip_show_numerator && !isNullOrUndefined(table_row.numerator)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_numerator,
-      value: (numerator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
+      value: (table_row.numerator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
     })
   }
-  if(inputSettings.spc.ttip_show_denominator && !isNullOrUndefined(denominator)) {
+  if(inputSettings.spc.ttip_show_denominator && !isNullOrUndefined(table_row.denominator)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_denominator,
-      value: (denominator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
+      value: (table_row.denominator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
     })
   }
   if (inputSettings.lines.show_specification && inputSettings.lines.ttip_show_specification) {
-    if (!isNullOrUndefined(speclimits_upper)) {
+    if (!isNullOrUndefined(table_row.speclimits_upper)) {
       tooltip.push({
         displayName: `Upper ${inputSettings.lines.ttip_label_specification}`,
-        value: (speclimits_upper).toFixed(sig_figs) + suffix
+        value: (table_row.speclimits_upper).toFixed(sig_figs) + suffix
       })
     }
-    if (!isNullOrUndefined(speclimits_lower)) {
+    if (!isNullOrUndefined(table_row.speclimits_lower)) {
       tooltip.push({
         displayName: `Lower ${inputSettings.lines.ttip_label_specification}`,
-        value: (speclimits_lower).toFixed(sig_figs) + suffix
+        value: (table_row.speclimits_lower).toFixed(sig_figs) + suffix
       })
     }
   }
@@ -89,7 +70,7 @@ export default function buildTooltip(index: number,
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `Upper ${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: (limits[`ul${limit}`]).toFixed(sig_figs) + suffix
+          value: (table_row[`ul${limit}`]).toFixed(sig_figs) + suffix
         })
       }
     })
@@ -97,13 +78,13 @@ export default function buildTooltip(index: number,
   if (inputSettings.lines.show_target && inputSettings.lines.ttip_show_target) {
     tooltip.push({
       displayName: inputSettings.lines.ttip_label_target,
-      value: (target).toFixed(sig_figs) + suffix
+      value: (table_row.target).toFixed(sig_figs) + suffix
     })
   }
-  if (inputSettings.lines.show_alt_target && inputSettings.lines.ttip_show_alt_target && !isNullOrUndefined(alt_target)) {
+  if (inputSettings.lines.show_alt_target && inputSettings.lines.ttip_show_alt_target && !isNullOrUndefined(table_row.alt_target)) {
     tooltip.push({
       displayName: inputSettings.lines.ttip_label_alt_target,
-      value: (alt_target).toFixed(sig_figs) + suffix
+      value: (table_row.alt_target).toFixed(sig_figs) + suffix
     })
   }
   if (derivedSettings.chart_type_props.has_control_limits) {
@@ -111,15 +92,15 @@ export default function buildTooltip(index: number,
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `Lower ${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: (limits[`ll${limit}`]).toFixed(sig_figs) + suffix
+          value: (table_row[`ll${limit}`]).toFixed(sig_figs) + suffix
         })
       }
     })
   }
 
-  if (astpoint !== "none" || trend !== "none" || shift !== "none" || two_in_three !== "none") {
+  if ([table_row.astpoint, table_row.trend, table_row.shift, table_row.two_in_three].some(d => d !== "none")){
     const patterns: string[] = new Array<string>();
-    if (astpoint !== "none") {
+    if (table_row.astpoint !== "none") {
       // Note if flagged according to non-default limit
       let flag_text: string = "Astronomical Point";
       if (ast_limit !== "3 Sigma") {
@@ -127,9 +108,9 @@ export default function buildTooltip(index: number,
       }
       patterns.push(flag_text)
     }
-    if (trend !== "none") { patterns.push("Trend") }
-    if (shift !== "none") { patterns.push("Shift") }
-    if (two_in_three !== "none") {
+    if (table_row.trend !== "none") { patterns.push("Trend") }
+    if (table_row.shift !== "none") { patterns.push("Shift") }
+    if (table_row.two_in_three !== "none") {
       // Note if flagged according to non-default limit
       let flag_text: string = "Two-in-Three";
       if (two_in_three_limit !== "2 Sigma") {
@@ -143,8 +124,8 @@ export default function buildTooltip(index: number,
     })
   }
 
-  if (inputData.tooltips.length > 0) {
-    inputData.tooltips[index].forEach(customTooltip => tooltip.push(customTooltip))
+  if (!isNullOrUndefined(inputTooltips) && inputTooltips.length > 0) {
+    inputTooltips.forEach(customTooltip => tooltip.push(customTooltip))
   }
 
   return tooltip;
