@@ -189,6 +189,9 @@ const defaultSettings = {
   },
   summary_table: {
     show_table: { default: false }
+  },
+  download_options: {
+    show_button: { default: false }
   }
 };
 
