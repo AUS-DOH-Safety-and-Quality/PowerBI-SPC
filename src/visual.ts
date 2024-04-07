@@ -23,7 +23,9 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.div = d3.select(options.element).append("div");
-    this.svg = this.div.append("svg");
+    this.div.style("overflow", "auto");
+
+    this.svg = d3.select(options.element).append("svg");
     this.host = options.host;
     this.viewModel = new viewModelClass();
 
@@ -63,8 +65,11 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       if (this.viewModel.inputSettings.settings.summary_table.show_table) {
-        this.div.call(drawSummaryTable, this);
+        this.svg.attr("width", 0).attr("height", 0);
+        this.div.call(drawSummaryTable, this)
+                .call(addContextMenu, this);
       } else {
+        this.div.style("width", "0%").style("height", "0%");
         this.svg.attr("width", options.viewport.width)
                 .attr("height", options.viewport.height)
                 .call(drawXAxis, this)
@@ -84,13 +89,17 @@ export class Visual implements powerbi.extensibility.IVisual {
 
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
-      this.svg.call(drawErrors, options, caught_error.message, "internal");
+      this.div.style("width", "0%").style("height", "0%");
+      this.svg.attr("width", options.viewport.width)
+              .attr("height", options.viewport.height)
+              .call(drawErrors, options, caught_error.message, "internal");
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
     }
   }
 
   processVisualError(options: VisualUpdateOptions, message: string, type: string = null): void {
+    this.div.style("width", "0%").style("height", "0%");
     this.svg.attr("width", options.viewport.width)
             .attr("height", options.viewport.height)
     if (this.viewModel.inputSettings.settings.canvas.show_errors) {

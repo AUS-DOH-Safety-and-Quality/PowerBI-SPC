@@ -30,6 +30,10 @@ export type summaryTableRowData = {
   ul99: number;
   speclimits_lower: number;
   speclimits_upper: number;
+  astpoint: string;
+  trend: string;
+  shift: string;
+  two_in_three: string;
 }
 
 export type plotData = {
@@ -237,7 +241,11 @@ export default class viewModelClass {
         ul95: this.controlLimits?.ul95?.[i],
         ul99: this.controlLimits?.ul99?.[i],
         speclimits_lower: this.controlLimits?.speclimits_lower?.[i],
-        speclimits_upper: this.controlLimits?.speclimits_upper?.[i]
+        speclimits_upper: this.controlLimits?.speclimits_upper?.[i],
+        astpoint: this.outliers.astpoint[i],
+        trend: this.outliers.trend[i],
+        shift: this.outliers.shift[i],
+        two_in_three: this.outliers.two_in_three[i]
       }
 
       this.plotPoints.push({
@@ -250,7 +258,7 @@ export default class viewModelClass {
                                     this.inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
         highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
-        tooltip: buildTooltip(i, this.controlLimits, this.outliers, this.inputData,
+        tooltip: buildTooltip(table_row, this.inputData?.tooltips?.[index],
                               this.inputSettings.settings, this.inputSettings.derivedSettings)
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
