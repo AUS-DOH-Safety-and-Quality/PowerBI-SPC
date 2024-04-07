@@ -10,7 +10,7 @@ export default function drawDownloadButton(selection: svgBaseType, visualObj: Vi
     selection.append("text").classed("download-btn-group", true);
   }
   const table_rows: summaryTableRowData[] = visualObj.viewModel.plotPoints.map(d => d.table_row);
-  let csv_rows: string[] = new Array<string>();
+  const csv_rows: string[] = new Array<string>();
   csv_rows.push(Object.keys(table_rows[0]).join(","));
   table_rows.forEach(row => {
     csv_rows.push(Object.values(row).join(","));
