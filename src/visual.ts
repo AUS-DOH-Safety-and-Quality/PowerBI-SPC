@@ -7,7 +7,7 @@ type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, updateHighlighting, addContextMenu,
-          drawErrors, initialiseSVG, drawSummaryTable } from "./D3 Plotting Functions"
+          drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton } from "./D3 Plotting Functions"
 import { defaultSettingsKey, viewModelClass } from "./Classes"
 import { validateDataView } from "./Functions";
 
@@ -80,6 +80,7 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(drawIcons, this)
                 .call(updateHighlighting, this)
                 .call(addContextMenu, this)
+                .call(drawDownloadButton, this)
       }
 
       if (this.viewModel.inputData.warningMessage !== "") {
