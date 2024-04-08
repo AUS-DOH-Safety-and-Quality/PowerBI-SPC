@@ -30,16 +30,45 @@ const textOptions = {
       "Verdana",
       "Wingdings"
     ]
-  }
+  },
+  size: {
+    default: 10,
+    valid: { numberRange: { min: 0, max: 100 } }
+  },
 }
 
 const lineOptions = {
-  style: {
+  type: {
     valid: ["10 0", "10 10", "2 5"]
+  },
+  width: {
+    valid: { numberRange: { min: 0, max: 100 } }
   }
+}
+
+const iconOptions = {
+  location: {
+    default: "Top Right",
+    valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"]
+  },
+  scaling: {
+    default: 1,
+    valid: { numberRange: { min: 0 } }
+  }
+}
+
+const colourOptions = {
+  improvement: { default: "#00B0F0" },
+  deterioration: { default: "#E46C0A" },
+  neutral_low: { default: "#490092" },
+  neutral_high: { default: "#490092" },
+  limits: { default: "#6495ED" },
+  standard: { default: "#000000" }
 }
 
 export {
   textOptions,
-  lineOptions
+  lineOptions,
+  iconOptions,
+  colourOptions
 }
