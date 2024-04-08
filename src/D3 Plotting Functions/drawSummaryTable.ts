@@ -1,7 +1,6 @@
 import { plotData } from "../Classes/viewModelClass";
 import type { divBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules";
-import updateHighlighting from "./updateHighlighting";
 
 export default function drawSummaryTable(selection: divBaseType, visualObj: Visual) {
   selection.style("height", "100%").style("width", "100%");
@@ -39,7 +38,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
                 visualObj.selectionManager
                           .select(d.identity, event.ctrlKey || event.metaKey)
                           .then(() => {
-                            visualObj.svg.call(updateHighlighting, visualObj);
+                            visualObj.updateHighlighting();
                           });
                 event.stopPropagation();
               }
@@ -62,8 +61,6 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
 
   selection.on('click', () => {
     visualObj.selectionManager.clear();
-    visualObj.svg.call(updateHighlighting, visualObj);
+    visualObj.updateHighlighting();
   });
-
-  visualObj.svg.call(updateHighlighting, visualObj);
 }

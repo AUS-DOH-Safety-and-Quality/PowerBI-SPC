@@ -4,11 +4,12 @@ import type powerbi from "powerbi-visuals-api";
 type EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
-          drawDots, drawIcons, updateHighlighting, addContextMenu,
+          drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton } from "./D3 Plotting Functions"
-import { defaultSettingsKey, viewModelClass } from "./Classes"
+import { defaultSettingsKey, viewModelClass, type plotData } from "./Classes"
 import { validateDataView } from "./Functions";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
@@ -31,8 +32,9 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     this.selectionManager = this.host.createSelectionManager();
     this.selectionManager.registerOnSelectCallback(() => {
-      this.svg.call(updateHighlighting, this);
+      this.updateHighlighting();
     });
+
     this.svg.call(initialiseSVG);
   }
 
@@ -78,10 +80,10 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(drawLines, this)
                 .call(drawDots, this)
                 .call(drawIcons, this)
-                .call(updateHighlighting, this)
                 .call(addContextMenu, this)
                 .call(drawDownloadButton, this)
       }
+      this.updateHighlighting();
 
       if (this.viewModel.inputData.warningMessage !== "") {
         this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
@@ -109,6 +111,44 @@ export class Visual implements powerbi.extensibility.IVisual {
       this.svg.call(initialiseSVG, true);
     }
     this.host.eventService.renderingFinished(options);
+  }
+
+  updateHighlighting(): void {
+    const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
+    const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+    const opacityFull: number = this.viewModel.inputSettings.settings.scatter.opacity;
+    const opacityReduced: number = this.viewModel.inputSettings.settings.scatter.opacity_unselected;
+
+    const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
+                                      ? opacityReduced
+                                      : opacityFull;
+    this.svg.selectAll(".linesgroup").style("stroke-opacity", defaultOpacity);
+
+    const dotsSelection = this.svg.selectAll(".dotsgroup").selectChildren();
+    const tableSelection = this.div.selectAll(".table-body").selectChildren();
+
+    dotsSelection.style("fill-opacity", defaultOpacity);
+    tableSelection.style("opacity", defaultOpacity);
+    if (anyHighlights || (allSelectionIDs.length > 0)) {
+      const dotsNodes = dotsSelection.nodes();
+      const tableNodes = tableSelection.nodes();
+      // If either the table or dots haven't been initialised
+      // there will be no nodes to update styling for or iterate over
+      const maxNodes = Math.max(dotsNodes.length, tableNodes.length);
+
+      for (let i = 0; i < maxNodes; i++) {
+        const currentDotNode = dotsNodes?.[i];
+        const currentTableNode = tableNodes?.[i];
+        const dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
+        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
+          return currentSelectionId.includes(dot.identity);
+        });
+        const currentPointHighlighted: boolean = dot.highlighted;
+        const newOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
+        d3.select(currentDotNode).style("fill-opacity", newOpacity);
+        d3.select(currentTableNode).style("opacity", newOpacity);
+      }
+    }
   }
 
   // Function to render the properties specified in capabilities.json to the properties pane
