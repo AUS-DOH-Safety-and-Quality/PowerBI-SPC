@@ -1,37 +1,4 @@
-// Values returned by each option of PBI's built-in font picker
-// TODO(Andrew): Allow user to pass human-readable font names
-const validFonts: string[] = [
-  "'Arial', sans-serif",
-  "Arial",
-  "'Arial Black'",
-  "'Arial Unicode MS'",
-  "Calibri",
-  "Cambria",
-  "'Cambria Math'",
-  "Candara",
-  "'Comic Sans MS'",
-  "Consolas",
-  "Constantia",
-  "Corbel",
-  "'Courier New'",
-  "wf_standard-font, helvetica, arial, sans-serif",
-  "wf_standard-font_light, helvetica, arial, sans-serif",
-  "Georgia",
-  "'Lucida Sans Unicode'",
-  "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
-  "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif",
-  "'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
-  "'Segoe UI Bold', wf_segoe-ui_bold, helvetica, arial, sans-serif",
-  "Symbol",
-  "Tahoma",
-  "'Times New Roman'",
-  "'Trebuchet MS'",
-  "Verdana",
-  "Wingdings"
-];
-
-// TODO(Andrew): Allow user to pass human-readable names
-const validLineTypes: string[] = ["10 0", "10 10", "2 5"];
+import { textOptions, lineOptions } from "./validSettingValues";
 
 const defaultSettings = {
   canvas: {
@@ -116,13 +83,13 @@ const defaultSettings = {
     width_target: { default: 1.5, valid: { numberRange: { min: 0, max: 100 }}},
     width_alt_target: { default: 1.5, valid: { numberRange: { min: 0, max: 100 }}},
     width_specification: { default: 2, valid: { numberRange: { min: 0, max: 100 }}},
-    type_99: { default: "10 10", valid: validLineTypes},
-    type_95: { default: "2 5", valid: validLineTypes},
-    type_68: { default: "2 5", valid: validLineTypes},
-    type_main: { default: "10 0", valid: validLineTypes},
-    type_target: { default: "10 0", valid: validLineTypes},
-    type_alt_target: { default: "10 0", valid: validLineTypes},
-    type_specification: { default: "10 10", valid: validLineTypes},
+    type_99: { default: "10 10", valid: lineOptions.style.valid},
+    type_95: { default: "2 5", valid: lineOptions.style.valid},
+    type_68: { default: "2 5", valid: lineOptions.style.valid},
+    type_main: { default: "10 0", valid: lineOptions.style.valid},
+    type_target: { default: "10 0", valid: lineOptions.style.valid},
+    type_alt_target: { default: "10 0", valid: lineOptions.style.valid},
+    type_specification: { default: "10 10", valid: lineOptions.style.valid},
     colour_99: { default: "#6495ED" },
     colour_95: { default: "#6495ED" },
     colour_68: { default: "#6495ED" },
@@ -151,13 +118,13 @@ const defaultSettings = {
   x_axis: {
     xlimit_colour: { default: "#000000" },
     xlimit_ticks: { default: true },
-    xlimit_tick_font: { default: "'Arial', sans-serif", valid: validFonts},
+    xlimit_tick_font: { default: textOptions.font.default, valid: textOptions.font.valid },
     xlimit_tick_size: { default: 10, valid: { numberRange: { min: 0, max: 100 }}},
     xlimit_tick_colour: { default: "#000000" },
     xlimit_tick_rotation: { default: -35, valid: { numberRange: { min: -360, max: 360 }}},
     xlimit_tick_count: { default: 10, valid: { numberRange: { min: 0, max: 100 }}},
     xlimit_label: { default: <string>null },
-    xlimit_label_font: { default: "'Arial', sans-serif", valid: validFonts},
+    xlimit_label_font: { default: textOptions.font.default, valid: textOptions.font.valid },
     xlimit_label_size: { default: 10, valid: { numberRange: { min: 0, max: 100 }}},
     xlimit_label_colour: { default: "#000000" },
     xlimit_l: { default: <number>null },
@@ -166,13 +133,13 @@ const defaultSettings = {
   y_axis: {
     ylimit_colour: { default: "#000000" },
     ylimit_ticks: { default: true },
-    ylimit_tick_font: { default: "'Arial', sans-serif", valid: validFonts},
+    ylimit_tick_font: { default: textOptions.font.default, valid: textOptions.font.valid },
     ylimit_tick_size: { default: 10, valid: { numberRange: { min: 0, max: 100 }}},
     ylimit_tick_colour: { default: "#000000" },
     ylimit_tick_rotation: { default: 0, valid: { numberRange: { min: -360, max: 360 }}},
     ylimit_tick_count: { default: 10, valid: { numberRange: { min: 0, max: 100 }}},
     ylimit_label: { default: <string>null },
-    ylimit_label_font: { default: "'Arial', sans-serif", valid: validFonts},
+    ylimit_label_font: { default: textOptions.font.default, valid: textOptions.font.valid },
     ylimit_label_size: { default: 10, valid: { numberRange: { min: 0, max: 100 }}},
     ylimit_label_colour: { default: "#000000" },
     ylimit_l: { default: <number>null },
