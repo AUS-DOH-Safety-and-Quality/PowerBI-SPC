@@ -18,9 +18,11 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
 
   const plotPoints: plotData[] = visualObj.viewModel.plotPoints;
 
+  const cols: string[] = visualObj.viewModel.tableColumns;
+
   selection.select(".table-header")
             .selectAll("th")
-            .data(Object.keys(plotPoints[0].table_row))
+            .data(cols)
             .join("th")
             .text((d) => d)
             .style("border", "1px black solid")
@@ -44,7 +46,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
               }
             })
             .selectAll('td')
-            .data((d) => Object.values(d.table_row))
+            .data((d) => cols.map(col => d.table_row[col]))
             .join('td')
             .text((d) => {
               return typeof d === "number" ? d.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs) : d;
