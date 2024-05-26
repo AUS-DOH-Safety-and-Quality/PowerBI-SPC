@@ -17,6 +17,7 @@
     { "displayName": "Outcome/Numerator",     "name": "numerators",   "kind": "Measure" },
     { "displayName": "Denominator",           "name": "denominators", "kind": "Measure" },
     { "displayName": "ID Key (Date)",         "name": "key",          "kind": "Grouping" },
+    { "displayName": "Indicator",         "name": "indicator",          "kind": "Grouping" },
     { "displayName": "Rebaseline Groupings",  "name": "groupings",    "kind": "Measure" },
     { "displayName": "SD (for xbar)",         "name": "xbar_sds",     "kind": "Measure" },
     { "displayName": "Tooltips",              "name": "tooltips",     "kind": "Measure" }
@@ -776,7 +777,8 @@
       "key": { "max": 5 },
       "numerators": { "max": 1 },
       "denominators": { "max": 1 },
-      "xbar_sds": { "max": 1 }
+      "xbar_sds": { "max": 1 },
+      "indicator": { "max": 0 }
     }],
     "categorical": {
       "categories": {
@@ -791,6 +793,32 @@
           { "bind": { "to": "xbar_sds" } },
           { "bind": { "to": "tooltips" } }
         ]
+      }
+    }
+  },{
+    "conditions": [{
+      "key": { "max": 5 },
+      "numerators": { "max": 1 },
+      "denominators": { "max": 1 },
+      "xbar_sds": { "max": 1 },
+      "indicator": { "min": 1 }
+    }],
+    "categorical": {
+      "categories": {
+        "for": { "in": "key" },
+        "dataReductionAlgorithm": { "window": { "count": 30000 } }
+      },
+      "values": {
+        "group": {
+          "by": "indicator",
+          "select": [
+            { "for": { "in": "numerators" } },
+            { "for": { "in": "denominators" } },
+            { "for": { "in": "groupings" } },
+            { "for": { "in": "xbar_sds" } },
+            { "for": { "in": "tooltips" } }
+          ]
+        }
       }
     }
   }]
