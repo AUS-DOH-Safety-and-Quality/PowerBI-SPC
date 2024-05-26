@@ -17,14 +17,14 @@ export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>
 
 export class Visual implements powerbi.extensibility.IVisual {
   host: powerbi.extensibility.visual.IVisualHost;
-  div: divBaseType;
+  tableDiv: divBaseType;
   svg: svgBaseType;
   viewModel: viewModelClass;
   selectionManager: powerbi.extensibility.ISelectionManager;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
-    this.div = d3.select(options.element).append("div");
-    this.div.style("overflow", "auto");
+    this.tableDiv = d3.select(options.element).append("div");
+    this.tableDiv.style("overflow", "auto");
 
     this.svg = d3.select(options.element).append("svg");
     this.host = options.host;
@@ -38,7 +38,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.svg.call(initialiseSVG);
   }
 
-  public update(options: VisualUpdateOptions) {
+  public update(options: VisualUpdateOptions): void {
     try {
       this.host.eventService.renderingStarted(options);
       // Remove printed error if refreshing after a previous error run
@@ -68,10 +68,10 @@ export class Visual implements powerbi.extensibility.IVisual {
 
       if (this.viewModel.inputSettings.settings.summary_table.show_table) {
         this.svg.attr("width", 0).attr("height", 0);
-        this.div.call(drawSummaryTable, this)
-                .call(addContextMenu, this);
+        this.tableDiv.call(drawSummaryTable, this)
+                      .call(addContextMenu, this);
       } else {
-        this.div.style("width", "0%").style("height", "0%");
+        this.tableDiv.style("width", "0%").style("height", "0%");
         this.svg.attr("width", options.viewport.width)
                 .attr("height", options.viewport.height)
                 .call(drawXAxis, this)
@@ -92,7 +92,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
-      this.div.style("width", "0%").style("height", "0%");
+      this.tableDiv.style("width", "0%").style("height", "0%");
       this.svg.attr("width", options.viewport.width)
               .attr("height", options.viewport.height)
               .call(drawErrors, options, caught_error.message, "internal");
@@ -102,7 +102,7 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   processVisualError(options: VisualUpdateOptions, message: string, type: string = null): void {
-    this.div.style("width", "0%").style("height", "0%");
+    this.tableDiv.style("width", "0%").style("height", "0%");
     this.svg.attr("width", options.viewport.width)
             .attr("height", options.viewport.height)
     if (this.viewModel.inputSettings.settings.canvas.show_errors) {
@@ -125,7 +125,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.svg.selectAll(".linesgroup").style("stroke-opacity", defaultOpacity);
 
     const dotsSelection = this.svg.selectAll(".dotsgroup").selectChildren();
-    const tableSelection = this.div.selectAll(".table-body").selectChildren();
+    const tableSelection = this.tableDiv.selectAll(".table-body").selectChildren();
 
     dotsSelection.style("fill-opacity", defaultOpacity);
     tableSelection.style("opacity", defaultOpacity);

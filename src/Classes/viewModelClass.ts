@@ -103,6 +103,7 @@ export default class viewModelClass {
   groupStartEndIndexes: number[][];
   firstRun: boolean;
   colourPalette: colourPaletteType;
+  tableColumns: string[];
 
   constructor() {
     this.inputData = <dataObject>null;
@@ -203,6 +204,46 @@ export default class viewModelClass {
   initialisePlotData(host: IVisualHost): void {
     this.plotPoints = new Array<plotData>();
     this.tickLabels = new Array<{ x: number; label: string; }>();
+
+    this.tableColumns = new Array<string>();
+    this.tableColumns.push("date");
+    this.tableColumns.push("value");
+    if (!isNullOrUndefined(this.controlLimits.numerators)) {
+      this.tableColumns.push("numerator");
+    }
+    if (!isNullOrUndefined(this.controlLimits.denominators)) {
+      this.tableColumns.push("denominator");
+    }
+    if (this.inputSettings.settings.lines.show_target) {
+      this.tableColumns.push("target");
+    }
+    if (this.inputSettings.settings.lines.show_alt_target) {
+      this.tableColumns.push("alt_target");
+    }
+    if (this.inputSettings.settings.lines.show_specification) {
+      this.tableColumns.push("speclimits_lower", "speclimits_upper");
+    }
+    if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
+      if (this.inputSettings.settings.lines.show_99) {
+        this.tableColumns.push("ll99", "ul99");
+      }
+      if (this.inputSettings.settings.lines.show_95) {
+        this.tableColumns.push("ll95", "ul95");
+      }
+      if (this.inputSettings.settings.lines.show_68) {
+        this.tableColumns.push("ll68", "ul68");
+      }
+    }
+
+    if (this.inputSettings.settings.outliers.astronomical) {
+      this.tableColumns.push("astpoint");
+    }
+    if (this.inputSettings.settings.outliers.trend) {
+      this.tableColumns.push("trend");
+    }
+    if (this.inputSettings.settings.outliers.shift) {
+      this.tableColumns.push("shift");
+    }
 
     for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
       const index: number = this.controlLimits.keys[i].x;
