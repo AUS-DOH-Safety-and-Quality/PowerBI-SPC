@@ -4,7 +4,7 @@ type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import * as limitFunctions from "../Limit Calculations"
+import * as limitFunctions from "spc-limits-js"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
 import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
@@ -49,8 +49,8 @@ export type plotData = {
   tooltip: VisualTooltipDataItem[];
 }
 
-export type controlLimitsObject = {
-  keys: { x: number, id: number, label: string }[];
+export type controlLimitsObjectBase<T> = {
+  keys: T[];
   values: number[];
   numerators?: number[];
   denominators?: number[];
@@ -67,13 +67,17 @@ export type controlLimitsObject = {
   speclimits_upper?: number[];
 };
 
-export type controlLimitsArgs = {
-  keys: { x: number, id: number, label: string }[];
+export type controlLimitsObject = controlLimitsObjectBase<{ x: number, id: number, label: string }>;
+
+export type controlLimitsArgsBase<T> = {
+  keys: T[];
   numerators: number[];
   denominators?: number[];
   outliers_in_limits?: boolean;
   xbar_sds?: number[];
 }
+
+export type controlLimitsArgs = controlLimitsArgsBase<{ x: number, id: number, label: string }>;
 
 export type outliersObject = {
   astpoint: string[];
