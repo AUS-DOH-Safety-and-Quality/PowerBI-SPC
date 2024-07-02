@@ -24,12 +24,12 @@
     "@types/d3-scale": "^4.0.8",
     "@types/d3-selection": "^3.0.10",
     "@types/d3-shape": "^3.1.6",
-    "@typescript-eslint/eslint-plugin": "^7.11.0",
-    "@typescript-eslint/parser": "^7.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
     "eslint": "^8.57.0",
     "eslint-plugin-powerbi-visuals": "^0.8.1",
     "ts-loader": "9.5.1",
-    "typescript": "5.4.5",
+    "typescript": "5.5.3",
     "vitest": "^1.5.3"
   },
   "override": {
