@@ -4,7 +4,6 @@ type DataViewPropertyValue = powerbi.default.DataViewPropertyValue
 type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanceEnumerationObject;
 type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
-import { dataViewWildcard } from "powerbi-visuals-utils-dataviewutils";
 import { extractConditionalFormatting } from "../Functions";
 import { default as defaultSettings, type settingsValueTypes, settingsPaneGroupings, settingsPaneToggles } from "../defaultSettings";
 import derivedSettingsClass from "./derivedSettingsClass";
@@ -149,7 +148,7 @@ export default class settingsClass {
         objectName: settingGroupName,
         properties: props,
         propertyInstanceKind: Object.fromEntries(propertyKinds),
-        selector: dataViewWildcard.createDataViewWildcardSelector(dataViewWildcard.DataViewWildcardMatchingOption.InstancesAndTotals),
+        selector: { data: [{ roles: ["key"] }] },
         validValues: Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName: defaultSettingsNestedKey) => {
           return [settingName, defaultSettings[settingGroupName][settingName]?.["valid"]]
         }))
