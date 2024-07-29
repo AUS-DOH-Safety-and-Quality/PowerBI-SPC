@@ -1,8 +1,9 @@
 import type powerbi from "powerbi-visuals-api"
 type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
+type DataViewObjects = powerbi.DataViewObjects;
+type Fill = powerbi.Fill;
 import type { defaultSettingsType, defaultSettingsKey } from "../Classes";
-import { dataViewObjects } from "powerbi-visuals-utils-dataviewutils"
 import defaultSettings from "../defaultSettings";
 import rep from "./rep";
 import between from "./between";
@@ -11,6 +12,15 @@ import isNullOrUndefined from "./isNullOrUndefined";
 type SettingsTypes = defaultSettingsType[defaultSettingsKey];
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
 export type ConditionalReturnT<T extends SettingsTypes> = { values: T[], validation: SettingsValidationT }
+
+function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string, settingName: string, defaultValue: T): T {
+  const propertyValue: powerbi.DataViewPropertyValue = settingObject?.[settingGroup]?.[settingName];
+  if (isNullOrUndefined(propertyValue)) {
+    return defaultValue;
+  }
+  return (<Fill>propertyValue)?.solid ? (<Fill>propertyValue).solid.color as T
+                                      : propertyValue as T;
+}
 
 export default function
   extractConditionalFormatting<T extends SettingsTypes>(categoricalView: DataViewCategorical,
@@ -29,18 +39,13 @@ export default function
   const validationRtn: SettingsValidationT
     = JSON.parse(JSON.stringify({ status: 0, messages: rep([], inputCategories.values.length) }));
 
-
   const rtn = inputCategories.values.map((_, idx) => {
     const inpObjects = (inputCategories.objects ? inputCategories.objects[idx] : null) as powerbi.DataViewObjects;
     return Object.fromEntries(
       settingNames.map(settingName => {
         const defaultSetting = defaultSettings[settingGroupName][settingName]["default"];
 
-        let extractedSetting = dataViewObjects.getCommonValue(
-          inpObjects,
-          { objectName: settingGroupName, propertyName: settingName },
-          defaultSettings[settingGroupName][settingName]["default"]
-        );
+        let extractedSetting = getSettingValue(inpObjects, settingGroupName, settingName, defaultSetting);
         // PBI passes empty string when clearing conditional formatting
         // for dropdown setting using the eraser button, so just reset to default
         extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
