@@ -134,6 +134,7 @@ export default class viewModelClass {
 
     if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
       this.groupStartEndIndexesGrouped = new Array<number[][]>();
+
       this.inputDataGrouped = options.dataViews[0].categorical.values.grouped().map(d => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
         const inpData = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
@@ -174,10 +175,10 @@ export default class viewModelClass {
 
         this.calculateLimits();
         this.scaleAndTruncateLimits();
-        this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes);
+        this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
         if (this.inputDataGrouped) {
           this.outliersGrouped = this.controlLimitsGrouped.map((limits, idx) => {
-            return this.flagOutliers(limits, this.groupStartEndIndexesGrouped[idx]);
+            return this.flagOutliers(limits, this.groupStartEndIndexesGrouped[idx], this.inputSettings);
           });
         }
 
@@ -484,13 +485,13 @@ export default class viewModelClass {
     })
   }
 
-  flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][]): outliersObject {
-    const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
-    const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
-    const trend_n: number = this.inputSettings.settings.outliers.trend_n;
-    const shift_n: number = this.inputSettings.settings.outliers.shift_n;
-    const ast_specification: boolean = this.inputSettings.settings.outliers.astronomical_limit === "Specification";
-    const two_in_three_specification: boolean = this.inputSettings.settings.outliers.two_in_three_limit === "Specification";
+  flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][], inputSettings: settingsClass): outliersObject {
+    const process_flag_type: string = inputSettings.settings.outliers.process_flag_type;
+    const improvement_direction: string = inputSettings.settings.outliers.improvement_direction;
+    const trend_n: number = inputSettings.settings.outliers.trend_n;
+    const shift_n: number = inputSettings.settings.outliers.shift_n;
+    const ast_specification: boolean = inputSettings.settings.outliers.astronomical_limit === "Specification";
+    const two_in_three_specification: boolean = inputSettings.settings.outliers.two_in_three_limit === "Specification";
     let outliers = {
       astpoint: rep("none", controlLimits.values.length),
       two_in_three: rep("none", controlLimits.values.length),
@@ -503,15 +504,15 @@ export default class viewModelClass {
       const group_values: number[] = controlLimits.values.slice(start, end);
       const group_targets: number[] = controlLimits.targets.slice(start, end);
 
-      if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
+      if (inputSettings.derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
         const limit_map: Record<string, string> = {
           "1 Sigma": "68",
           "2 Sigma": "95",
           "3 Sigma": "99",
           "Specification": "",
         };
-        if (this.inputSettings.settings.outliers.astronomical) {
-          const ast_limit: string = limit_map[this.inputSettings.settings.outliers.astronomical_limit];
+        if (inputSettings.settings.outliers.astronomical) {
+          const ast_limit: string = limit_map[inputSettings.settings.outliers.astronomical_limit];
           const ll_prefix: string = ast_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = ast_specification ? "speclimits_upper" : "ul";
           const lower_limits: number[] = controlLimits?.[`${ll_prefix}${ast_limit}`]?.slice(start, end);
@@ -519,9 +520,9 @@ export default class viewModelClass {
           astronomical(group_values, lower_limits, upper_limits)
             .forEach((flag, idx) => outliers.astpoint[start + idx] = flag)
         }
-        if (this.inputSettings.settings.outliers.two_in_three) {
-          const highlight_series: boolean = this.inputSettings.settings.outliers.two_in_three_highlight_series;
-          const two_in_three_limit: string = limit_map[this.inputSettings.settings.outliers.two_in_three_limit];
+        if (inputSettings.settings.outliers.two_in_three) {
+          const highlight_series: boolean = inputSettings.settings.outliers.two_in_three_highlight_series;
+          const two_in_three_limit: string = limit_map[inputSettings.settings.outliers.two_in_three_limit];
           const ll_prefix: string = two_in_three_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = two_in_three_specification ? "speclimits_upper" : "ul";
           const lower_warn_limits: number[] = controlLimits?.[`${ll_prefix}${two_in_three_limit}`]?.slice(start, end);
@@ -530,11 +531,11 @@ export default class viewModelClass {
             .forEach((flag, idx) => outliers.two_in_three[start + idx] = flag)
         }
       }
-      if (this.inputSettings.settings.outliers.trend) {
+      if (inputSettings.settings.outliers.trend) {
         trend(group_values, trend_n)
           .forEach((flag, idx) => outliers.trend[start + idx] = flag)
       }
-      if (this.inputSettings.settings.outliers.shift) {
+      if (inputSettings.settings.outliers.shift) {
         shift(group_values, group_targets, shift_n)
           .forEach((flag, idx) => outliers.shift[start + idx] = flag)
       }
