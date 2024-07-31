@@ -134,10 +134,12 @@ export default class viewModelClass {
 
     if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
       this.groupStartEndIndexesGrouped = new Array<number[][]>();
+      this.controlLimitsGrouped = new Array<controlLimitsObject>();
 
       this.inputDataGrouped = options.dataViews[0].categorical.values.grouped().map(d => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
         const inpData = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
+
         const allIndexes: number[] = [-1].concat(inpData.groupingIndexes)
                                           .concat([inpData.limitInputArgs.keys.length - 1])
                                           .filter((d, idx, arr) => arr.indexOf(d) === idx)
@@ -147,6 +149,8 @@ export default class viewModelClass {
           groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
         }
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
+        this.controlLimitsGrouped.push(this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings));
+
         return inpData;
       })
     } else {
@@ -173,14 +177,9 @@ export default class viewModelClass {
           this.groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
         }
 
-        this.calculateLimits();
+        this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings);
         this.scaleAndTruncateLimits();
         this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
-        if (this.inputDataGrouped) {
-          this.outliersGrouped = this.controlLimitsGrouped.map((limits, idx) => {
-            return this.flagOutliers(limits, this.groupStartEndIndexesGrouped[idx], this.inputSettings);
-          });
-        }
 
         // Structure the data and calculated limits to the format needed for plotting
         this.initialisePlotData(host);
@@ -200,49 +199,16 @@ export default class viewModelClass {
     this.firstRun = false;
   }
 
-  calculateLimits(): void {
+  calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsClass): controlLimitsObject {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
-      = limitFunctions[this.inputSettings.settings.spc.chart_type];
+      = limitFunctions[inputSettings.settings.spc.chart_type];
 
-    if (this.inputDataGrouped) {
-      this.controlLimitsGrouped = this.inputDataGrouped.map((d, idx) => {
-        let limits: controlLimitsObject;
-        d.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
-
-        if (this.groupStartEndIndexesGrouped[idx].length > 1) {
-          const groupedData: dataObject[] = this.groupStartEndIndexesGrouped[idx].map((indexes) => {
-            // Force a deep copy
-            const data: dataObject = JSON.parse(JSON.stringify(d));
-            data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[0], indexes[1])
-            data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[0], indexes[1])
-            data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[0], indexes[1])
-            return data;
-          })
-          const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => limitFunction(d.limitInputArgs));
-          limits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
-            const allInner: controlLimitsObject = all;
-            Object.entries(all).forEach((entry, idx) => {
-              allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
-            })
-            return allInner;
-          });
-        } else {
-          limits = limitFunction(d.limitInputArgs);
-        }
-        limits.alt_targets = d.alt_targets;
-        limits.speclimits_lower = d.speclimits_lower;
-        limits.speclimits_upper = d.speclimits_upper;
-        return limits;
-      });
-    } else {
-      this.controlLimitsGrouped = null;
-    }
-
-    this.inputData.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
-    if (this.groupStartEndIndexes.length > 1) {
-      const groupedData: dataObject[] = this.groupStartEndIndexes.map((indexes) => {
+    inputData.limitInputArgs.outliers_in_limits = inputSettings.settings.spc.outliers_in_limits;
+    let controlLimits: controlLimitsObject;
+    if (groupStartEndIndexes.length > 1) {
+      const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
         // Force a deep copy
-        const data: dataObject = JSON.parse(JSON.stringify(this.inputData));
+        const data: dataObject = JSON.parse(JSON.stringify(inputData));
         data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[0], indexes[1])
         data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[0], indexes[1])
         data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[0], indexes[1])
@@ -250,7 +216,7 @@ export default class viewModelClass {
       })
 
       const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => limitFunction(d.limitInputArgs));
-      this.controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
+      controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
           allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
@@ -259,12 +225,13 @@ export default class viewModelClass {
       })
     } else {
       // Calculate control limits using user-specified type
-      this.controlLimits = limitFunction(this.inputData.limitInputArgs);
+      controlLimits = limitFunction(inputData.limitInputArgs);
     }
 
-    this.controlLimits.alt_targets = this.inputData.alt_targets;
-    this.controlLimits.speclimits_lower = this.inputData.speclimits_lower;
-    this.controlLimits.speclimits_upper = this.inputData.speclimits_upper;
+    controlLimits.alt_targets = inputData.alt_targets;
+    controlLimits.speclimits_lower = inputData.speclimits_lower;
+    controlLimits.speclimits_upper = inputData.speclimits_upper;
+    return controlLimits;
   }
 
   initialisePlotData(host: IVisualHost): void {
