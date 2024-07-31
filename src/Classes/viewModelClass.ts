@@ -139,15 +139,8 @@ export default class viewModelClass {
       this.inputDataGrouped = options.dataViews[0].categorical.values.grouped().map(d => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
         const inpData = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
+        const groupStartEndIndexes: number[][] = this.getGroupingIndexes(inpData, this.splitIndexes);
 
-        const allIndexes: number[] = [-1].concat(inpData.groupingIndexes)
-                                          .concat([inpData.limitInputArgs.keys.length - 1])
-                                          .filter((d, idx, arr) => arr.indexOf(d) === idx)
-                                          .sort((a,b) => a - b);
-        const groupStartEndIndexes = new Array<number[]>();
-        for (let i: number = 0; i < allIndexes.length - 1; i++) {
-          groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
-        }
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
         this.controlLimitsGrouped.push(this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings));
 
@@ -156,7 +149,6 @@ export default class viewModelClass {
     } else {
       this.inputDataGrouped = null;
     }
-    console.log(this.inputDataGrouped)
     // Only re-construct data and re-calculate limits if they have changed
     //if (options.type === 2 || this.firstRun) {
       const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
@@ -165,18 +157,7 @@ export default class viewModelClass {
       this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings);
 
       if (this.inputData.validationStatus.status === 0) {
-        const allIndexes: number[] = this.splitIndexes
-                                          .concat([-1])
-                                          .concat(this.inputData.groupingIndexes)
-                                          .concat([this.inputData.limitInputArgs.keys.length - 1])
-                                          .filter((d, idx, arr) => arr.indexOf(d) === idx)
-                                          .sort((a,b) => a - b);
-
-        this.groupStartEndIndexes = new Array<number[]>();
-        for (let i: number = 0; i < allIndexes.length - 1; i++) {
-          this.groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
-        }
-
+        this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
         this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings);
         this.scaleAndTruncateLimits();
         this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
@@ -197,6 +178,21 @@ export default class viewModelClass {
       this.colourPalette
     )
     this.firstRun = false;
+  }
+
+  getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {
+    const allIndexes: number[] = (splitIndexes ?? [])
+                                    .concat([-1])
+                                    .concat(inputData.groupingIndexes)
+                                    .concat([inputData.limitInputArgs.keys.length - 1])
+                                    .filter((d, idx, arr) => arr.indexOf(d) === idx)
+                                    .sort((a,b) => a - b);
+
+    const groupStartEndIndexes = new Array<number[]>();
+    for (let i: number = 0; i < allIndexes.length - 1; i++) {
+      groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
+    }
+    return groupStartEndIndexes;
   }
 
   calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsClass): controlLimitsObject {
