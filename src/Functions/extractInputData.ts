@@ -9,6 +9,7 @@ import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {
   limitInputArgs: controlLimitsArgs;
+  spcSettings: defaultSettingsType["spc"];
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
   categories: DataViewCategoryColumn;
@@ -26,6 +27,7 @@ export type dataObject = {
 function invalidInputData(inputValidStatus: ValidationT): dataObject {
   return {
     limitInputArgs: null,
+    spcSettings: null,
     highlights: null,
     anyHighlights: false,
     categories: null,
@@ -60,7 +62,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const speclimits_upper: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
                                     ?.values
                                     .map(d => d.show_specification ? d.specification_upper : null);
-
+  const spcSettings = extractConditionalFormatting<defaultSettingsType["spc"]>(inputView, "spc", inputSettings)?.values?.[0];
 
   const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettingsClass.derivedSettings.chart_type_props);
 
@@ -125,6 +127,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       xbar_sds: extractValues(xbar_sds, valid_ids),
       outliers_in_limits: false,
     },
+    spcSettings: spcSettings,
     tooltips: extractValues(tooltips, valid_ids),
     highlights: extractValues(highlights, valid_ids),
     anyHighlights: !isNullOrUndefined(highlights),

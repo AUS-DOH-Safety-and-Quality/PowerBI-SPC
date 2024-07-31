@@ -92,15 +92,19 @@ export type colourPaletteType = {
 
 export default class viewModelClass {
   inputData: dataObject;
+  inputDataGrouped: dataObject[];
   inputSettings: settingsClass;
   controlLimits: controlLimitsObject;
+  controlLimitsGrouped: controlLimitsObject[];
   outliers: outliersObject;
+  outliersGrouped: outliersObject[];
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   groupStartEndIndexes: number[][];
+  groupStartEndIndexesGrouped: number[][][];
   firstRun: boolean;
   colourPalette: colourPaletteType;
   tableColumns: string[];
@@ -127,10 +131,32 @@ export default class viewModelClass {
         hyperlinkColour: host.colorPalette.hyperlink.value
       }
     }
+
+    if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
+      this.groupStartEndIndexesGrouped = new Array<number[][]>();
+      this.inputDataGrouped = options.dataViews[0].categorical.values.grouped().map(d => {
+        (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
+        const inpData = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
+        const allIndexes: number[] = [-1].concat(inpData.groupingIndexes)
+                                          .concat([inpData.limitInputArgs.keys.length - 1])
+                                          .filter((d, idx, arr) => arr.indexOf(d) === idx)
+                                          .sort((a,b) => a - b);
+        const groupStartEndIndexes = new Array<number[]>();
+        for (let i: number = 0; i < allIndexes.length - 1; i++) {
+          groupStartEndIndexes.push([allIndexes[i] + 1, allIndexes[i + 1] + 1])
+        }
+        this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
+        return inpData;
+      })
+    } else {
+      this.inputDataGrouped = null;
+    }
+    console.log(this.inputDataGrouped)
     // Only re-construct data and re-calculate limits if they have changed
-    if (options.type === 2 || this.firstRun) {
-      const split_indexes: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
-      this.splitIndexes = JSON.parse(split_indexes);
+    //if (options.type === 2 || this.firstRun) {
+      const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+      const split_indexes: number[] = JSON.parse(split_indexes_str);
+      this.splitIndexes = split_indexes;
       this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings);
 
       if (this.inputData.validationStatus.status === 0) {
@@ -148,13 +174,18 @@ export default class viewModelClass {
 
         this.calculateLimits();
         this.scaleAndTruncateLimits();
-        this.flagOutliers();
+        this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes);
+        if (this.inputDataGrouped) {
+          this.outliersGrouped = this.controlLimitsGrouped.map((limits, idx) => {
+            return this.flagOutliers(limits, this.groupStartEndIndexesGrouped[idx]);
+          });
+        }
 
         // Structure the data and calculated limits to the format needed for plotting
         this.initialisePlotData(host);
         this.initialiseGroupedLines();
       }
-    }
+    //}
 
     this.plotProperties.update(
       options,
@@ -169,10 +200,44 @@ export default class viewModelClass {
   }
 
   calculateLimits(): void {
-    this.inputData.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
       = limitFunctions[this.inputSettings.settings.spc.chart_type];
 
+    if (this.inputDataGrouped) {
+      this.controlLimitsGrouped = this.inputDataGrouped.map((d, idx) => {
+        let limits: controlLimitsObject;
+        d.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
+
+        if (this.groupStartEndIndexesGrouped[idx].length > 1) {
+          const groupedData: dataObject[] = this.groupStartEndIndexesGrouped[idx].map((indexes) => {
+            // Force a deep copy
+            const data: dataObject = JSON.parse(JSON.stringify(d));
+            data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[0], indexes[1])
+            data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[0], indexes[1])
+            data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[0], indexes[1])
+            return data;
+          })
+          const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => limitFunction(d.limitInputArgs));
+          limits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
+            const allInner: controlLimitsObject = all;
+            Object.entries(all).forEach((entry, idx) => {
+              allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
+            })
+            return allInner;
+          });
+        } else {
+          limits = limitFunction(d.limitInputArgs);
+        }
+        limits.alt_targets = d.alt_targets;
+        limits.speclimits_lower = d.speclimits_lower;
+        limits.speclimits_upper = d.speclimits_upper;
+        return limits;
+      });
+    } else {
+      this.controlLimitsGrouped = null;
+    }
+
+    this.inputData.limitInputArgs.outliers_in_limits = this.inputSettings.settings.spc.outliers_in_limits;
     if (this.groupStartEndIndexes.length > 1) {
       const groupedData: dataObject[] = this.groupStartEndIndexes.map((indexes) => {
         // Force a deep copy
@@ -394,38 +459,49 @@ export default class viewModelClass {
       }
     }
 
-    lines_to_scale.forEach(limit => {
-      this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
-    })
-
     const limits: truncateInputs = {
       lower: this.inputSettings.settings.spc.ll_truncate,
       upper: this.inputSettings.settings.spc.ul_truncate
     };
+
+    if (this.controlLimitsGrouped) {
+      this.controlLimitsGrouped.forEach(limitGroup => {
+        lines_to_scale.forEach(limit => {
+          limitGroup[limit] = multiply(limitGroup[limit], multiplier)
+        })
+        lines_to_truncate.forEach(limit => {
+          limitGroup[limit] = truncate(limitGroup[limit], limits)
+        })
+      })
+    }
+
+    lines_to_scale.forEach(limit => {
+      this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
+    })
 
     lines_to_truncate.forEach(limit => {
       this.controlLimits[limit] = truncate(this.controlLimits[limit], limits)
     })
   }
 
-  flagOutliers() {
+  flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][]): outliersObject {
     const process_flag_type: string = this.inputSettings.settings.outliers.process_flag_type;
     const improvement_direction: string = this.inputSettings.settings.outliers.improvement_direction;
     const trend_n: number = this.inputSettings.settings.outliers.trend_n;
     const shift_n: number = this.inputSettings.settings.outliers.shift_n;
     const ast_specification: boolean = this.inputSettings.settings.outliers.astronomical_limit === "Specification";
     const two_in_three_specification: boolean = this.inputSettings.settings.outliers.two_in_three_limit === "Specification";
-    this.outliers = {
-      astpoint: rep("none", this.inputData.limitInputArgs.keys.length),
-      two_in_three: rep("none", this.inputData.limitInputArgs.keys.length),
-      trend: rep("none", this.inputData.limitInputArgs.keys.length),
-      shift: rep("none", this.inputData.limitInputArgs.keys.length)
+    let outliers = {
+      astpoint: rep("none", controlLimits.values.length),
+      two_in_three: rep("none", controlLimits.values.length),
+      trend: rep("none", controlLimits.values.length),
+      shift: rep("none", controlLimits.values.length)
     }
-    for (let i: number = 0; i < this.groupStartEndIndexes.length; i++) {
-      const start: number = this.groupStartEndIndexes[i][0];
-      const end: number = this.groupStartEndIndexes[i][1];
-      const group_values: number[] = this.controlLimits.values.slice(start, end);
-      const group_targets: number[] = this.controlLimits.targets.slice(start, end);
+    for (let i: number = 0; i < groupStartEndIndexes.length; i++) {
+      const start: number = groupStartEndIndexes[i][0];
+      const end: number = groupStartEndIndexes[i][1];
+      const group_values: number[] = controlLimits.values.slice(start, end);
+      const group_targets: number[] = controlLimits.targets.slice(start, end);
 
       if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
         const limit_map: Record<string, string> = {
@@ -438,34 +514,35 @@ export default class viewModelClass {
           const ast_limit: string = limit_map[this.inputSettings.settings.outliers.astronomical_limit];
           const ll_prefix: string = ast_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = ast_specification ? "speclimits_upper" : "ul";
-          const lower_limits: number[] = this.controlLimits?.[`${ll_prefix}${ast_limit}`]?.slice(start, end);
-          const upper_limits: number[] = this.controlLimits?.[`${ul_prefix}${ast_limit}`]?.slice(start, end);
+          const lower_limits: number[] = controlLimits?.[`${ll_prefix}${ast_limit}`]?.slice(start, end);
+          const upper_limits: number[] = controlLimits?.[`${ul_prefix}${ast_limit}`]?.slice(start, end);
           astronomical(group_values, lower_limits, upper_limits)
-            .forEach((flag, idx) => this.outliers.astpoint[start + idx] = flag)
+            .forEach((flag, idx) => outliers.astpoint[start + idx] = flag)
         }
         if (this.inputSettings.settings.outliers.two_in_three) {
           const highlight_series: boolean = this.inputSettings.settings.outliers.two_in_three_highlight_series;
           const two_in_three_limit: string = limit_map[this.inputSettings.settings.outliers.two_in_three_limit];
           const ll_prefix: string = two_in_three_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = two_in_three_specification ? "speclimits_upper" : "ul";
-          const lower_warn_limits: number[] = this.controlLimits?.[`${ll_prefix}${two_in_three_limit}`]?.slice(start, end);
-          const upper_warn_limits: number[] = this.controlLimits?.[`${ul_prefix}${two_in_three_limit}`]?.slice(start, end);
+          const lower_warn_limits: number[] = controlLimits?.[`${ll_prefix}${two_in_three_limit}`]?.slice(start, end);
+          const upper_warn_limits: number[] = controlLimits?.[`${ul_prefix}${two_in_three_limit}`]?.slice(start, end);
           twoInThree(group_values, lower_warn_limits, upper_warn_limits, highlight_series)
-            .forEach((flag, idx) => this.outliers.two_in_three[start + idx] = flag)
+            .forEach((flag, idx) => outliers.two_in_three[start + idx] = flag)
         }
       }
       if (this.inputSettings.settings.outliers.trend) {
         trend(group_values, trend_n)
-          .forEach((flag, idx) => this.outliers.trend[start + idx] = flag)
+          .forEach((flag, idx) => outliers.trend[start + idx] = flag)
       }
       if (this.inputSettings.settings.outliers.shift) {
         shift(group_values, group_targets, shift_n)
-          .forEach((flag, idx) => this.outliers.shift[start + idx] = flag)
+          .forEach((flag, idx) => outliers.shift[start + idx] = flag)
       }
     }
-    Object.keys(this.outliers).forEach(key => {
-      this.outliers[key] = checkFlagDirection(this.outliers[key],
+    Object.keys(outliers).forEach(key => {
+      outliers[key] = checkFlagDirection(outliers[key],
                                               { process_flag_type, improvement_direction });
     })
+    return outliers;
   }
 }

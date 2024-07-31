@@ -40,6 +40,8 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   public update(options: VisualUpdateOptions): void {
     try {
+      console.log(options)
+      console.log(options.dataViews[0].categorical.values.grouped())
       this.host.eventService.renderingStarted(options);
       // Remove printed error if refreshing after a previous error run
       this.svg.select(".errormessage").remove();
@@ -60,6 +62,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       this.viewModel.update(options, this.host);
+      console.log(this.viewModel)
       if (this.viewModel.inputData.validationStatus.status !== 0) {
         this.processVisualError(options,
                                 this.viewModel.inputData.validationStatus.error);
