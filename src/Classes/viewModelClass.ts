@@ -138,11 +138,13 @@ export default class viewModelClass {
 
       this.inputDataGrouped = options.dataViews[0].categorical.values.grouped().map(d => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
-        const inpData = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
-        const groupStartEndIndexes: number[][] = this.getGroupingIndexes(inpData, this.splitIndexes);
+        const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
+        const groupStartEndIndexes: number[][] = this.getGroupingIndexes(inpData);
+        const limits: controlLimitsObject = this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
 
+        this.scaleAndTruncateLimits(limits, this.inputSettings);
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
-        this.controlLimitsGrouped.push(this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings));
+        this.controlLimitsGrouped.push(limits);
 
         return inpData;
       })
@@ -159,7 +161,7 @@ export default class viewModelClass {
       if (this.inputData.validationStatus.status === 0) {
         this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
         this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings);
-        this.scaleAndTruncateLimits();
+        this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings);
         this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
 
         // Structure the data and calculated limits to the format needed for plotting
@@ -400,51 +402,40 @@ export default class viewModelClass {
     this.groupedLines = d3.groups(formattedLines, d => d.group);
   }
 
-  scaleAndTruncateLimits(): void {
+  scaleAndTruncateLimits(controlLimits: controlLimitsObject, inputSettings: settingsClass): void {
     // Scale limits using provided multiplier
-    const multiplier: number = this.inputSettings.derivedSettings.multiplier;
+    const multiplier: number = inputSettings.derivedSettings.multiplier;
     let lines_to_scale: string[] = ["values", "targets"];
 
-    if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
+    if (inputSettings.derivedSettings.chart_type_props.has_control_limits) {
       lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
     let lines_to_truncate: string[] = lines_to_scale;
-    if (this.inputSettings.settings.lines.show_alt_target) {
+    if (inputSettings.settings.lines.show_alt_target) {
       lines_to_truncate = lines_to_truncate.concat(["alt_targets"]);
-      if (this.inputSettings.settings.lines.multiplier_alt_target) {
+      if (inputSettings.settings.lines.multiplier_alt_target) {
         lines_to_scale = lines_to_scale.concat(["alt_targets"]);
       }
     }
-    if (this.inputSettings.settings.lines.show_specification) {
+    if (inputSettings.settings.lines.show_specification) {
       lines_to_truncate = lines_to_truncate.concat(["speclimits_lower", "speclimits_upper"]);
-      if (this.inputSettings.settings.lines.multiplier_specification) {
+      if (inputSettings.settings.lines.multiplier_specification) {
         lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
       }
     }
 
     const limits: truncateInputs = {
-      lower: this.inputSettings.settings.spc.ll_truncate,
-      upper: this.inputSettings.settings.spc.ul_truncate
+      lower: inputSettings.settings.spc.ll_truncate,
+      upper: inputSettings.settings.spc.ul_truncate
     };
 
-    if (this.controlLimitsGrouped) {
-      this.controlLimitsGrouped.forEach(limitGroup => {
-        lines_to_scale.forEach(limit => {
-          limitGroup[limit] = multiply(limitGroup[limit], multiplier)
-        })
-        lines_to_truncate.forEach(limit => {
-          limitGroup[limit] = truncate(limitGroup[limit], limits)
-        })
-      })
-    }
-
     lines_to_scale.forEach(limit => {
-      this.controlLimits[limit] = multiply(this.controlLimits[limit], multiplier)
+      controlLimits[limit] = multiply(controlLimits[limit], multiplier)
     })
 
     lines_to_truncate.forEach(limit => {
-      this.controlLimits[limit] = truncate(this.controlLimits[limit], limits)
+      controlLimits[limit] = truncate(controlLimits[limit], limits)
     })
   }
 
