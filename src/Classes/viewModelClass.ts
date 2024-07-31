@@ -92,22 +92,25 @@ export type colourPaletteType = {
 
 export default class viewModelClass {
   inputData: dataObject;
-  inputDataGrouped: dataObject[];
   inputSettings: settingsClass;
   controlLimits: controlLimitsObject;
-  controlLimitsGrouped: controlLimitsObject[];
   outliers: outliersObject;
-  outliersGrouped: outliersObject[];
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   groupStartEndIndexes: number[][];
-  groupStartEndIndexesGrouped: number[][][];
   firstRun: boolean;
   colourPalette: colourPaletteType;
   tableColumns: string[];
+
+  groupNames: string[];
+  inputDataGrouped: dataObject[];
+  controlLimitsGrouped: controlLimitsObject[];
+  outliersGrouped: outliersObject[];
+  groupStartEndIndexesGrouped: number[][][];
+  tableColumnsGrouped: string[][];
 
   constructor() {
     this.inputData = <dataObject>null;
@@ -133,23 +136,28 @@ export default class viewModelClass {
     }
 
     if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
+      this.groupNames = new Array<string>();
+      this.inputDataGrouped = new Array<dataObject>();
       this.groupStartEndIndexesGrouped = new Array<number[][]>();
       this.controlLimitsGrouped = new Array<controlLimitsObject>();
 
-      this.inputDataGrouped = options.dataViews[0].categorical.values.grouped().map(d => {
+      options.dataViews[0].categorical.values.grouped().forEach(d => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
         const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
         const groupStartEndIndexes: number[][] = this.getGroupingIndexes(inpData);
         const limits: controlLimitsObject = this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
-
         this.scaleAndTruncateLimits(limits, this.inputSettings);
+
+        this.groupNames.push(<string>d.name);
+        this.inputDataGrouped.push(inpData);
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
         this.controlLimitsGrouped.push(limits);
-
-        return inpData;
       })
     } else {
+      this.groupNames = null;
       this.inputDataGrouped = null;
+      this.groupStartEndIndexesGrouped = null;
+      this.controlLimitsGrouped = null;
     }
     // Only re-construct data and re-calculate limits if they have changed
     //if (options.type === 2 || this.firstRun) {
