@@ -1,5 +1,18 @@
 import type { svgBaseType } from "../visual";
 
+export function iconTransformSpec(svg_width: number, svg_height: number, location: string, scaling: number, count: number): string {
+  const scaling_factor: number = (0.08 * (svg_height / 378)) * scaling
+  const icon_x: number = location.includes("Right")
+                          ? (svg_width / scaling_factor) - (378 + (count * 378))
+                          : location.includes("Centre") ? (svg_width / scaling_factor) / 2 - 189
+                                                        : (count * 378);
+  const icon_y: number = location.includes("Bottom")
+                          ? (svg_height / scaling_factor) - 378
+                          : location.includes("Centre") ? (svg_height / scaling_factor) / 2 - 189
+                                                        : 0;
+  return `scale(${scaling_factor}) translate(${icon_x}, ${icon_y})`;
+}
+
 /**
  * This method initialises a plotting space for rendering a given NHS SVG icon.
  * The method uses the current number of the icon (i.e., whether it's the first,
@@ -9,19 +22,13 @@ import type { svgBaseType } from "../visual";
  * icon rendering function from the "Icons" folder.
  *
  */
-export default function initialiseIconSVG(selection: svgBaseType, icon_name: string, svg_width: number, svg_height: number, location: string, scaling: number, count: number): void {
-  const scaling_factor: number = (0.08 * (svg_height / 378)) * scaling
-  const scale: string = `scale(${scaling_factor})`
-  const icon_x: number = location.includes("Right")
-                          ? (svg_width / scaling_factor) - (378 + (count * 378))
-                          : (count * 378);
-  const icon_y: number = location.includes("Bottom")
-                          ? (svg_height / scaling_factor) - 378
-                          : 0;
-
+export default function initialiseIconSVG(selection: svgBaseType, icon_name: string, transform_spec?: string): void {
   const icon_group = selection.append('g')
-                                  .classed("icongroup", true)
-                                  .attr("transform", `${scale} translate(${icon_x}, ${icon_y})`)
+                                .classed("icongroup", true)
+
+  if (transform_spec) {
+    icon_group.attr("transform", transform_spec)
+  }
 
   const icon_defs = icon_group.append("defs")
   const icon_defs_filter = icon_defs.append("filter")

@@ -74,6 +74,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         this.svg.attr("width", 0).attr("height", 0);
         this.tableDiv.call(drawSummaryTable, this)
                       .call(addContextMenu, this);
+        console.log(this)
       } else {
         this.tableDiv.style("width", "0%").style("height", "0%");
         this.svg.attr("width", options.viewport.width)
@@ -86,6 +87,7 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(drawIcons, this)
                 .call(addContextMenu, this)
                 .call(drawDownloadButton, this)
+
       }
       this.updateHighlighting();
 

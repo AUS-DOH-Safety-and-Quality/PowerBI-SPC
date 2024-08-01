@@ -1,5 +1,6 @@
 import * as nhsIcons from "./NHS Icons"
 import initialiseIconSVG from "./initialiseIconSVG";
+import { iconTransformSpec } from "./initialiseIconSVG";
 import { assuranceIconToDraw, variationIconsToDraw } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 import type { defaultSettingsType } from "../Classes";
@@ -18,10 +19,10 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
 
   if (draw_variation) {
     const variation_scaling: number = nhsIconSettings.variation_icons_scaling;
-    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel);
+    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel.outliers, visualObj.viewModel.inputSettings);
     variationIconsPresent.forEach((icon: string, idx: number) => {
       selection
-          .call(initialiseIconSVG, icon, svg_width, svg_height, variation_location, variation_scaling, idx)
+          .call(initialiseIconSVG, icon, iconTransformSpec(svg_width, svg_height, variation_location, variation_scaling, idx))
           .selectAll(`.${icon}`)
           .call(nhsIcons[icon as keyof typeof nhsIcons])
     })
@@ -32,7 +33,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   if (draw_assurance) {
     const assurance_location: string = nhsIconSettings.assurance_icons_locations;
     const assurance_scaling: number = nhsIconSettings.assurance_icons_scaling;
-    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel);
+    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel.controlLimits, visualObj.viewModel.inputSettings);
     if (assuranceIconPresent === "none") {
       return;
     }
@@ -41,7 +42,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
                                     ? numVariationIcons
                                     : 0;
     selection
-        .call(initialiseIconSVG, assuranceIconPresent, svg_width, svg_height, assurance_location, assurance_scaling, currIconCount)
+        .call(initialiseIconSVG, assuranceIconPresent, iconTransformSpec(svg_width, svg_height, assurance_location, assurance_scaling, currIconCount))
         .selectAll(`.${assuranceIconPresent}`)
         .call(nhsIcons[assuranceIconPresent as keyof typeof nhsIcons])
   }
