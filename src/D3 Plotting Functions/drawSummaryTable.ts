@@ -1,4 +1,4 @@
-import { plotData } from "../Classes/viewModelClass";
+import { plotData, type plotDataGrouped } from "../Classes/viewModelClass";
 import type { divBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules";
 
@@ -16,15 +16,19 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
     table.append('tbody').classed("table-body", true);
   }
 
-  const plotPoints: plotData[] = visualObj.viewModel.plotPoints;
+  let plotPoints: plotData[] | plotDataGrouped[];
+  let cols: { name: string; label: string; }[];
 
-  const cols: string[] = visualObj.viewModel.tableColumns;
+  if (visualObj.viewModel.showGrouped){
+    plotPoints = visualObj.viewModel.plotPointsGrouped;
+    cols = visualObj.viewModel.tableColumnsGrouped;
+  }
 
   selection.select(".table-header")
             .selectAll("th")
             .data(cols)
             .join("th")
-            .text((d) => d)
+            .text((d) => d.label)
             .style("border", "1px black solid")
             .style("padding", "5px")
             .style("background-color", "lightgray")
@@ -33,8 +37,9 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
 
   selection.select(".table-body")
             .selectAll('tr')
-            .data(plotPoints)
+            .data(<plotData[]>plotPoints)
             .join('tr')
+            /*
             .on("click", (event, d: plotData) => {
               if (visualObj.host.hostCapabilities.allowInteractions) {
                 visualObj.selectionManager
@@ -45,8 +50,9 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
                 event.stopPropagation();
               }
             })
+              */
             .selectAll('td')
-            .data((d) => cols.map(col => d.table_row[col]))
+            .data((d) => cols.map(col => d.table_row[col.name]))
             .join('td')
             .text((d) => {
               return typeof d === "number" ? d.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs) : d;

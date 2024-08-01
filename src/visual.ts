@@ -69,7 +69,8 @@ export class Visual implements powerbi.extensibility.IVisual {
         return;
       }
 
-      if (this.viewModel.inputSettings.settings.summary_table.show_table) {
+      if (this.viewModel.inputSettings.settings.summary_table.show_table ||
+          this.viewModel.showGrouped) {
         this.svg.attr("width", 0).attr("height", 0);
         this.tableDiv.call(drawSummaryTable, this)
                       .call(addContextMenu, this);

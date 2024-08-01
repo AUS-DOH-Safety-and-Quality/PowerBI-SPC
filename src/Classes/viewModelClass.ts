@@ -36,6 +36,16 @@ export type summaryTableRowData = {
   two_in_three: string;
 }
 
+export type summaryTableRowDataGrouped = {
+  indicator: string;
+  latest_date: string;
+  value: number;
+  target: number;
+  alt_target: number;
+  upl: number;
+  lpl: number;
+}
+
 export type plotData = {
   x: number;
   value: number;
@@ -47,6 +57,10 @@ export type plotData = {
   highlighted: boolean;
   // Tooltip data to print
   tooltip: VisualTooltipDataItem[];
+}
+
+export type plotDataGrouped = {
+  table_row: summaryTableRowDataGrouped;
 }
 
 export type controlLimitsObject = {
@@ -103,14 +117,16 @@ export default class viewModelClass {
   groupStartEndIndexes: number[][];
   firstRun: boolean;
   colourPalette: colourPaletteType;
-  tableColumns: string[];
+  tableColumns: { name: string; label: string; }[];
 
+  showGrouped: boolean;
   groupNames: string[];
   inputDataGrouped: dataObject[];
   controlLimitsGrouped: controlLimitsObject[];
   outliersGrouped: outliersObject[];
   groupStartEndIndexesGrouped: number[][][];
-  tableColumnsGrouped: string[][];
+  tableColumnsGrouped: { name: string; label: string; }[];
+  plotPointsGrouped: plotDataGrouped[];
 
   constructor() {
     this.inputData = <dataObject>null;
@@ -136,6 +152,7 @@ export default class viewModelClass {
     }
 
     if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
+      this.showGrouped = true;
       this.groupNames = new Array<string>();
       this.inputDataGrouped = new Array<dataObject>();
       this.groupStartEndIndexesGrouped = new Array<number[][]>();
@@ -153,7 +170,9 @@ export default class viewModelClass {
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
         this.controlLimitsGrouped.push(limits);
       })
+      this.initialisePlotDataGrouped();
     } else {
+      this.showGrouped = false;
       this.groupNames = null;
       this.inputDataGrouped = null;
       this.groupStartEndIndexesGrouped = null;
@@ -240,48 +259,86 @@ export default class viewModelClass {
     return controlLimits;
   }
 
+  initialisePlotDataGrouped(/*host: IVisualHost*/): void {
+    this.plotPointsGrouped = new Array<plotDataGrouped>();
+    this.tableColumnsGrouped = [
+      { name: "indicator", label: "Indicator" },
+      { name: "latest_date", label: "Latest Date" },
+      { name: "value", label: "Value" },
+      { name: "target", label: "Target" },
+      { name: "alt_target", label: "Alt. Target" },
+      { name: "upl", label: "UPL" },
+      { name: "lpl", label: "LPL" }
+    ];
+
+    for (let i: number = 0; i < this.groupNames.length; i++) {
+      //const inputData: dataObject = this.inputDataGrouped[i];
+      const limits: controlLimitsObject = this.controlLimitsGrouped[i];
+      //const outliers: outliersObject = this.outliersGrouped[i];
+      const lastIndex: number = limits.keys.length - 1;
+
+      const table_row: summaryTableRowDataGrouped = {
+        indicator: this.groupNames[i],
+        latest_date: limits.keys[lastIndex].label,
+        value: limits.values[lastIndex],
+        target: limits.targets[lastIndex],
+        alt_target: limits.alt_targets[lastIndex],
+        upl: limits.ul99[lastIndex],
+        lpl: limits.ll99[lastIndex]
+      }
+
+      this.plotPointsGrouped.push({
+        table_row: table_row
+      })
+    }
+  }
+
   initialisePlotData(host: IVisualHost): void {
     this.plotPoints = new Array<plotData>();
     this.tickLabels = new Array<{ x: number; label: string; }>();
 
-    this.tableColumns = new Array<string>();
-    this.tableColumns.push("date");
-    this.tableColumns.push("value");
+    this.tableColumns = new Array<{ name: string; label: string; }>();
+    this.tableColumns.push({ name: "date", label: "Date" });
+    this.tableColumns.push({ name: "value", label: "Value" });
     if (!isNullOrUndefined(this.controlLimits.numerators)) {
-      this.tableColumns.push("numerator");
+      this.tableColumns.push({ name: "numerator", label: "Numerator" });
     }
     if (!isNullOrUndefined(this.controlLimits.denominators)) {
-      this.tableColumns.push("denominator");
+      this.tableColumns.push({ name: "denominator", label: "Denominator" });
     }
     if (this.inputSettings.settings.lines.show_target) {
-      this.tableColumns.push("target");
+      this.tableColumns.push({ name: "target", label: "Target" });
     }
     if (this.inputSettings.settings.lines.show_alt_target) {
-      this.tableColumns.push("alt_target");
+      this.tableColumns.push({ name: "alt_target", label: "Alt. Target" });
     }
     if (this.inputSettings.settings.lines.show_specification) {
-      this.tableColumns.push("speclimits_lower", "speclimits_upper");
+      this.tableColumns.push({ name: "speclimits_lower", label: "Spec. Lower" },
+                             { name: "speclimits_upper", label: "Spec. Upper" });
     }
     if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
       if (this.inputSettings.settings.lines.show_99) {
-        this.tableColumns.push("ll99", "ul99");
+        this.tableColumns.push({ name: "ll99", label: "LL 99%" },
+                               { name: "ul99", label: "UL 99%" });
       }
       if (this.inputSettings.settings.lines.show_95) {
-        this.tableColumns.push("ll95", "ul95");
+        this.tableColumns.push({ name: "ll95", label: "LL 95%" },
+                               { name: "ul95", label: "UL 95%" });
       }
       if (this.inputSettings.settings.lines.show_68) {
-        this.tableColumns.push("ll68", "ul68");
+        this.tableColumns.push({ name: "ll68", label: "LL 68%" },
+                               { name: "ul68", label: "UL 68%" });
       }
     }
 
     if (this.inputSettings.settings.outliers.astronomical) {
-      this.tableColumns.push("astpoint");
+      this.tableColumns.push({ name: "astpoint", label: "Ast. Point" });
     }
     if (this.inputSettings.settings.outliers.trend) {
-      this.tableColumns.push("trend");
+      this.tableColumns.push({ name: "trend", label: "Trend" });
     }
     if (this.inputSettings.settings.outliers.shift) {
-      this.tableColumns.push("shift");
+      this.tableColumns.push({ name: "shift", label: "Shift" });
     }
 
     for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
