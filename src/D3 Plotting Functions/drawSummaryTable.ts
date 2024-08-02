@@ -76,35 +76,25 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
       return typeof d === "number" ? d.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs) : d;
     })
 
-  //const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
-  //const variation_location: string = nhsIconSettings.variation_icons_locations;
-
-  const varSelection = tableSelect.filter((_, i) => i === (cols.length - 1))
-  const selHeight = (varSelection.node() as SVGGElement).getBoundingClientRect()
-  const svg_width: number = selHeight.width
-  const svg_height: number = selHeight.height
-  console.log(visualObj.viewModel.plotProperties.height)
-  console.log(visualObj.viewModel.plotProperties.width)
-  console.log(selHeight)
-
-  const cellSVG = varSelection.append("svg")
-                              .attr("width", svg_width * 0.8)
-                              .attr("height", svg_height * 0.8)
-                              .classed("rowsvg", true)
-
+  const varSelection = tableSelect.filter((_, i) => i === (cols.length - 2))
+  const thisSelDims = (varSelection.node() as SVGGElement).getBoundingClientRect()
   const scaling = visualObj.viewModel.inputSettings.settings.nhs_icons.variation_icons_scaling
-  //const scaling_factor: number = (0.08 * (svg_height / 378)) * scaling
-  cellSVG.call(initialiseIconSVG, "commonCause")
-          .selectAll(".icongroup")
-          .selectAll(".commonCause")
-          .attr("transform", `scale(${0.1 * scaling}) translate(0, ${ ((svg_height * 0.8) / 2) + 179 })`)
-          .call(nhsIcons.commonCause)
 
-  console.log(selection)
-  console.log(varSelection)
-  //console.log(varSelection.enter())
-
-
+  const icon_x: number = (thisSelDims.width * 0.8) / 0.08 / 2 - 189;
+  const icon_y: number = (thisSelDims.height * 0.8) / 0.08 / 2 - 189;
+  varSelection.each(function(d) {
+    d3.select(this)
+        .append("svg")
+        .attr("width", thisSelDims.width * 0.8)
+        .attr("height", thisSelDims.height * 0.8)
+        .classed("rowsvg", true)
+        .call(initialiseIconSVG, d)
+        .selectAll(".icongroup")
+        .attr("viewBox", "0 0 378 378")
+        .selectAll(`.${d}`)
+        .attr("transform", `scale(${0.08 * scaling}) translate(${icon_x}, ${icon_y})`)
+        .call(nhsIcons[d])
+  })
 
   selection.on('click', () => {
     visualObj.selectionManager.clear();

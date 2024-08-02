@@ -44,6 +44,8 @@ export type summaryTableRowDataGrouped = {
   alt_target: number;
   upl: number;
   lpl: number;
+  variation: string;
+  assurance: string;
 }
 
 export type plotData = {
@@ -284,7 +286,9 @@ export default class viewModelClass {
         target: limits.targets[lastIndex],
         alt_target: limits.alt_targets[lastIndex],
         upl: limits.ul99[lastIndex],
-        lpl: limits.ll99[lastIndex]
+        lpl: limits.ll99[lastIndex],
+        variation: i === 0 ? "commonCause" : "concernHigh",
+        assurance: "inconsistent"
       }
 
       this.plotPointsGrouped.push({
