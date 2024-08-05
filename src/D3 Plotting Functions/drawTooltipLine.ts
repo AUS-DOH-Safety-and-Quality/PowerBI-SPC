@@ -9,14 +9,14 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
             .attr("x1", 0)
             .attr("x2", 0)
             .attr("y1", plotProperties.yAxis.end_padding)
-            .attr("y2", plotProperties.height - plotProperties.yAxis.start_padding)
+            .attr("y2", visualObj.viewModel.svgHeight - plotProperties.yAxis.start_padding)
             .attr("stroke-width", "1px")
             .attr("stroke", "black")
             .style("stroke-opacity", 0);
   const yAxisLine = selection
             .select(".ttip-line-y")
             .attr("x1", plotProperties.xAxis.start_padding)
-            .attr("x2", plotProperties.width - plotProperties.xAxis.end_padding)
+            .attr("x2", visualObj.viewModel.svgWidth - plotProperties.xAxis.end_padding)
             .attr("y1", 0)
             .attr("y2", 0)
             .attr("stroke-width", "1px")

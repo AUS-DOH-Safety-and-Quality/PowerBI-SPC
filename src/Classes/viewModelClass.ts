@@ -120,6 +120,8 @@ export default class viewModelClass {
   firstRun: boolean;
   colourPalette: colourPaletteType;
   tableColumns: { name: string; label: string; }[];
+  svgWidth: number;
+  svgHeight: number;
 
   showGrouped: boolean;
   groupNames: string[];
@@ -153,6 +155,9 @@ export default class viewModelClass {
       }
     }
 
+    this.svgWidth = options.viewport.width;
+    this.svgHeight = options.viewport.height;
+
     if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
       this.showGrouped = true;
       this.groupNames = new Array<string>();
@@ -170,12 +175,14 @@ export default class viewModelClass {
                                                       this.inputSettings.derivedSettingsGrouped[idx],
                                                       this.inputSettings.validationStatus.messages,
                                                       first_idx, last_idx);
-        console.log(first_idx, last_idx, inpData)
-        const groupStartEndIndexes: number[][] = this.getGroupingIndexes(inpData);
-        const limits: controlLimitsObject = this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
-        const outliers: outliersObject = this.flagOutliers(limits, groupStartEndIndexes, this.inputSettings);
+        const invalidData: boolean = inpData.validationStatus.status !== 0;
+        const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
+        const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
+        const outliers: outliersObject = invalidData ? null : this.flagOutliers(limits, groupStartEndIndexes, this.inputSettings);
 
-        this.scaleAndTruncateLimits(limits, this.inputSettings);
+        if (!invalidData) {
+          this.scaleAndTruncateLimits(limits, this.inputSettings);
+        }
         this.groupNames.push(<string>d.name);
         this.inputDataGrouped.push(inpData);
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
@@ -210,19 +217,17 @@ export default class viewModelClass {
         this.initialisePlotData(host);
         this.initialiseGroupedLines();
       }
-
+      //}
+      this.plotProperties.update(
+        options,
+        this.plotPoints,
+        this.controlLimits,
+        this.inputData,
+        this.inputSettings.settings,
+        this.inputSettings.derivedSettings,
+        this.colourPalette
+      )
     }
-    //}
-
-    this.plotProperties.update(
-      options,
-      this.plotPoints,
-      this.controlLimits,
-      this.inputData,
-      this.inputSettings.settings,
-      this.inputSettings.derivedSettings,
-      this.colourPalette
-    )
     this.firstRun = false;
   }
 

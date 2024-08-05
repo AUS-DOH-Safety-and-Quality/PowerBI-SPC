@@ -24,8 +24,6 @@ export type axisProperties = {
 };
 
 export default class plotPropertiesClass {
-  width: number;
-  height: number;
   displayPlot: boolean;
   xAxis: axisProperties;
   yAxis: axisProperties;
@@ -33,15 +31,15 @@ export default class plotPropertiesClass {
   yScale: d3.ScaleLinear<number, number, never>;
 
   // Separate function so that the axis can be re-calculated on changes to padding
-  initialiseScale(): void {
+  initialiseScale(svgWidth: number, svgHeight: number): void {
     this.xScale = d3.scaleLinear()
                     .domain([this.xAxis.lower, this.xAxis.upper])
                     .range([this.xAxis.start_padding,
-                            this.width - this.xAxis.end_padding]);
+                            svgWidth - this.xAxis.end_padding]);
 
     this.yScale = d3.scaleLinear()
                     .domain([this.yAxis.lower, this.yAxis.upper])
-                    .range([this.height - this.yAxis.start_padding,
+                    .range([svgHeight - this.yAxis.start_padding,
                             this.yAxis.end_padding]);
   }
 
@@ -52,10 +50,6 @@ export default class plotPropertiesClass {
           inputSettings: defaultSettingsType,
           derivedSettings: derivedSettingsClass,
           colorPalette: colourPaletteType): void {
-
-    // Get the width and height of plotting space
-    this.width = options.viewport.width;
-    this.height = options.viewport.height;
 
     this.displayPlot = plotPoints
       ? plotPoints.length > 1
@@ -154,6 +148,6 @@ export default class plotPropertiesClass {
       label_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.y_axis.ylimit_label_colour
     };
 
-    this.initialiseScale();
+    this.initialiseScale(options.viewport.width, options.viewport.height);
   }
 }
