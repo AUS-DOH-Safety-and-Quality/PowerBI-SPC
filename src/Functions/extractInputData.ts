@@ -4,7 +4,7 @@ type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData, isNullOrUndefined } from "../Functions"
-import { type defaultSettingsType, type controlLimitsArgs, settingsClass } from "../Classes";
+import { type defaultSettingsType, type controlLimitsArgs, type derivedSettingsClass } from "../Classes";
 import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {
@@ -43,8 +43,11 @@ function invalidInputData(inputValidStatus: ValidationT): dataObject {
   }
 }
 
-export default function extractInputData(inputView: DataViewCategorical, inputSettingsClass: settingsClass): dataObject {
-  const inputSettings: defaultSettingsType = inputSettingsClass.settings;
+export default function extractInputData(inputView: DataViewCategorical,
+                                          inputSettings: defaultSettingsType,
+                                          derivedSettings: derivedSettingsClass,
+                                          validationMessages: string[][],
+                                          first_idx: number, last_idx: number): dataObject {
   const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings);
   const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings);
   const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings);
@@ -62,9 +65,8 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const speclimits_upper: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings)
                                     ?.values
                                     .map(d => d.show_specification ? d.specification_upper : null);
-  const spcSettings = extractConditionalFormatting<defaultSettingsType["spc"]>(inputView, "spc", inputSettings)?.values?.[0];
-
-  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, inputSettingsClass.derivedSettings.chart_type_props);
+  const spcSettings: defaultSettingsType["spc"][] = extractConditionalFormatting<defaultSettingsType["spc"]>(inputView, "spc", inputSettings)?.values
+  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, derivedSettings.chart_type_props, first_idx, last_idx);
 
   if (inputValidStatus.status !== 0) {
     return invalidInputData(inputValidStatus);
@@ -74,9 +76,9 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
   const removalMessages: string[] = new Array<string>();
   const groupVarName: string = inputView.categories[0].source.displayName;
-  const settingsMessages = inputSettingsClass.validationStatus.messages;
+  const settingsMessages = validationMessages;
   let valid_x: number = 0;
-  for (let i: number = 0; i < numerators.length; i++) {
+  for (let i: number = first_idx; i <= last_idx; i++) {
     if (inputValidStatus.messages[i] === "") {
       valid_ids.push(i);
       valid_keys.push({ x: valid_x, id: i, label: keys[i] })
@@ -114,7 +116,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       }
     }
 
-    if (!inputSettingsClass.derivedSettings.chart_type_props.has_control_limits) {
+    if (!derivedSettings.chart_type_props.has_control_limits) {
       removalMessages.push("NHS Assurance icon requires chart with control limits.")
     }
   }
@@ -127,7 +129,7 @@ export default function extractInputData(inputView: DataViewCategorical, inputSe
       xbar_sds: extractValues(xbar_sds, valid_ids),
       outliers_in_limits: false,
     },
-    spcSettings: spcSettings,
+    spcSettings: spcSettings[first_idx],
     tooltips: extractValues(tooltips, valid_ids),
     highlights: extractValues(highlights, valid_ids),
     anyHighlights: !isNullOrUndefined(highlights),

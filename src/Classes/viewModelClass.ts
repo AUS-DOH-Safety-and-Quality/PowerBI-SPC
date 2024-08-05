@@ -159,18 +159,28 @@ export default class viewModelClass {
       this.inputDataGrouped = new Array<dataObject>();
       this.groupStartEndIndexesGrouped = new Array<number[][]>();
       this.controlLimitsGrouped = new Array<controlLimitsObject>();
+      this.outliersGrouped = new Array<outliersObject>();
 
-      options.dataViews[0].categorical.values.grouped().forEach(d => {
+      options.dataViews[0].categorical.values.grouped().forEach((d, idx) => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
-        const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d, this.inputSettings);
+        let first_idx: number = d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
+        let last_idx: number = d.values[0].values.map(d_in => !isNullOrUndefined(d_in)).lastIndexOf(true);
+        const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d,
+                                                      this.inputSettings.settingsGrouped[idx],
+                                                      this.inputSettings.derivedSettingsGrouped[idx],
+                                                      this.inputSettings.validationStatus.messages,
+                                                      first_idx, last_idx);
+        console.log(first_idx, last_idx, inpData)
         const groupStartEndIndexes: number[][] = this.getGroupingIndexes(inpData);
         const limits: controlLimitsObject = this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
-        this.scaleAndTruncateLimits(limits, this.inputSettings);
+        const outliers: outliersObject = this.flagOutliers(limits, groupStartEndIndexes, this.inputSettings);
 
+        this.scaleAndTruncateLimits(limits, this.inputSettings);
         this.groupNames.push(<string>d.name);
         this.inputDataGrouped.push(inpData);
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
         this.controlLimitsGrouped.push(limits);
+        this.outliersGrouped.push(outliers);
       })
       this.initialisePlotDataGrouped();
     } else {
@@ -179,13 +189,16 @@ export default class viewModelClass {
       this.inputDataGrouped = null;
       this.groupStartEndIndexesGrouped = null;
       this.controlLimitsGrouped = null;
-    }
     // Only re-construct data and re-calculate limits if they have changed
     //if (options.type === 2 || this.firstRun) {
       const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       const split_indexes: number[] = JSON.parse(split_indexes_str);
       this.splitIndexes = split_indexes;
-      this.inputData = extractInputData(options.dataViews[0].categorical, this.inputSettings);
+      this.inputData = extractInputData(options.dataViews[0].categorical,
+                                        this.inputSettings.settings,
+                                        this.inputSettings.derivedSettings,
+                                        this.inputSettings.validationStatus.messages,
+                                        0, options.dataViews[0].categorical.values[0].values.length - 1);
 
       if (this.inputData.validationStatus.status === 0) {
         this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
@@ -197,6 +210,8 @@ export default class viewModelClass {
         this.initialisePlotData(host);
         this.initialiseGroupedLines();
       }
+
+    }
     //}
 
     this.plotProperties.update(
@@ -270,7 +285,9 @@ export default class viewModelClass {
       { name: "target", label: "Target" },
       { name: "alt_target", label: "Alt. Target" },
       { name: "upl", label: "UPL" },
-      { name: "lpl", label: "LPL" }
+      { name: "lpl", label: "LPL" },
+      { name: "variation", label: "Variation" },
+      { name: "assurance", label: "Assurance" }
     ];
 
     for (let i: number = 0; i < this.groupNames.length; i++) {

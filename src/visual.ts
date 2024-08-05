@@ -62,19 +62,31 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       this.viewModel.update(options, this.host);
-      console.log(this.viewModel)
+
+      if (this.viewModel.showGrouped) {
+        if (this.viewModel.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
+          this.processVisualError(options,
+                                  this.viewModel.inputDataGrouped.map(d => d.validationStatus.error).join("\n"));
+          return;
+        }
+
+        this.svg.attr("width", 0).attr("height", 0);
+        this.tableDiv.call(drawSummaryTable, this);
+
+        if (this.viewModel.inputDataGrouped.some(d => d.warningMessage !== "")) {
+          this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
+                                       this.viewModel.inputDataGrouped.map(d => d.warningMessage).join("\n"));
+        }
+      } else {
       if (this.viewModel.inputData.validationStatus.status !== 0) {
-        this.processVisualError(options,
-                                this.viewModel.inputData.validationStatus.error);
+        this.processVisualError(options, this.viewModel.inputData.validationStatus.error);
         return;
       }
 
-      if (this.viewModel.inputSettings.settings.summary_table.show_table ||
-          this.viewModel.showGrouped) {
+      if (this.viewModel.inputSettings.settings.summary_table.show_table) {
         this.svg.attr("width", 0).attr("height", 0);
         this.tableDiv.call(drawSummaryTable, this)
                       .call(addContextMenu, this);
-        console.log(this)
       } else {
         this.tableDiv.style("width", "0%").style("height", "0%");
         this.svg.attr("width", options.viewport.width)
@@ -95,7 +107,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
                                      this.viewModel.inputData.warningMessage);
       }
-
+    }
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
       this.tableDiv.style("width", "0%").style("height", "0%");

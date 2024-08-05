@@ -26,9 +26,10 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
 
   if (visualObj.viewModel.showGrouped){
     plotPoints = visualObj.viewModel.plotPointsGrouped;
-    cols = visualObj.viewModel.tableColumnsGrouped
-                              .concat({name: "variation", label: "Variation"})
-                              .concat({name: "assurance", label: "Assurance"});
+    cols = visualObj.viewModel.tableColumnsGrouped;
+  } else {
+    plotPoints = visualObj.viewModel.plotPoints;
+    cols = visualObj.viewModel.tableColumns;
   }
 
   selection.select(".table-header")
