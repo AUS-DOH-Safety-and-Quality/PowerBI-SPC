@@ -117,7 +117,7 @@
       }
     },
     "outliers" : {
-      "displayName": "Outlier Highlighting",
+      "displayName": "Outlier Detection",
       "properties": {
         "process_flag_type": {
           "displayName": "Type of Change to Flag",
