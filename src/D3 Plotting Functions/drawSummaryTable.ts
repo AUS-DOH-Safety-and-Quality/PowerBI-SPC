@@ -4,6 +4,8 @@ import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
 
+// ESLint errors due to number of lines in function, but would reduce readability to separate further
+/* eslint-disable */
 export default function drawSummaryTable(selection: divBaseType, visualObj: Visual) {
   selection.style("height", "100%").style("width", "100%");
   selection.selectAll(".iconrow").remove();
@@ -31,8 +33,8 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
     cols = visualObj.viewModel.tableColumns;
   }
 
-  let maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
-  let tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
+  const maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
+  const tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
 
   const tableHeaders = selection.select(".table-header")
             .selectAll("th")
@@ -77,31 +79,31 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
               }
             })
             .style("background-color", (d) => {
-              let groupBGColour: string = d.aesthetics?.["table_body_bg_colour"] ?? tableSettings.table_body_bg_colour;
+              const groupBGColour: string = d.aesthetics?.["table_body_bg_colour"] ?? tableSettings.table_body_bg_colour;
               return groupBGColour;
             })
             .style("font-weight", (d) => {
-              let groupWeight: string = d.aesthetics?.["table_body_font_weight"] ?? tableSettings.table_body_font_weight;
+              const groupWeight: string = d.aesthetics?.["table_body_font_weight"] ?? tableSettings.table_body_font_weight;
               return groupWeight;
             })
             .style("text-transform", (d) => {
-              let groupTransform: string = d.aesthetics?.["table_body_text_transform"] ?? tableSettings.table_body_text_transform;
+              const groupTransform: string = d.aesthetics?.["table_body_text_transform"] ?? tableSettings.table_body_text_transform;
               return groupTransform;
             })
             .style("text-align", (d) => {
-              let groupAlign: string = d.aesthetics?.["table_body_text_align"] ?? tableSettings.table_body_text_align;
+              const groupAlign: string = d.aesthetics?.["table_body_text_align"] ?? tableSettings.table_body_text_align;
               return groupAlign;
             })
             .style("font-size", (d) => {
-              let groupSize: number = d.aesthetics?.["table_body_size"] ?? tableSettings.table_body_size;
+              const groupSize: number = d.aesthetics?.["table_body_size"] ?? tableSettings.table_body_size;
               return `${groupSize}px`;
             })
             .style("font-family", (d) => {
-              let groupFont: string = d.aesthetics?.["table_body_font"] ?? tableSettings.table_body_font;
+              const groupFont: string = d.aesthetics?.["table_body_font"] ?? tableSettings.table_body_font;
               return groupFont;
             })
             .style("color", (d) => {
-              let groupColour: string = d.aesthetics?.["table_body_colour"] ?? tableSettings.table_body_colour;
+              const groupColour: string = d.aesthetics?.["table_body_colour"] ?? tableSettings.table_body_colour;
               return groupColour;
             });
 
@@ -156,7 +158,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
           .attr("transform", `scale(${0.08 * scaling}) translate(${icon_x}, ${icon_y})`)
           .call(nhsIcons[d.value]);
     } else {
-      let value: string = typeof d.value === "number"
+      const value: string = typeof d.value === "number"
         ? d.value.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs)
         : d.value;
 
@@ -169,3 +171,4 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
     visualObj.updateHighlighting();
   });
 }
+/* eslint-enable */

@@ -20,7 +20,7 @@ function validateInputDataImpl(key: string, numerator: number, denominator: numb
                               xbar_sd: number, grouping: string,
                               chart_type_props: derivedSettingsClass["chart_type_props"]): { message: string, type: ValidationFailTypes }  {
 
-  let rtn = { message: "", type: ValidationFailTypes.Valid };
+  const rtn = { message: "", type: ValidationFailTypes.Valid };
   if (isNullOrUndefined(grouping)) {
     //rtn.message = "Grouping missing";
     //rtn.type = ValidationFailTypes.GroupingMissing;

@@ -155,7 +155,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       for (let i = 0; i < maxNodes; i++) {
         const currentDotNode = dotsNodes?.[i];
         const currentTableNode = tableNodes?.[i];
-        let dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
+        const dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
         const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });

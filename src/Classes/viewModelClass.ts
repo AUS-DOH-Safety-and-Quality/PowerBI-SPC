@@ -179,8 +179,8 @@ export default class viewModelClass {
 
         options.dataViews[0].categorical.values.grouped().forEach((d, idx) => {
           (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
-          let first_idx: number = d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
-          let last_idx: number = d.values[0].values.map(d_in => !isNullOrUndefined(d_in)).lastIndexOf(true);
+          const first_idx: number = d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
+          const last_idx: number = d.values[0].values.map(d_in => !isNullOrUndefined(d_in)).lastIndexOf(true);
           const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d,
                                                         this.inputSettings.settingsGrouped[idx],
                                                         this.inputSettings.derivedSettingsGrouped[idx],
@@ -392,12 +392,10 @@ export default class viewModelClass {
                                { name: "ul99", label: "UL 99%" });
       }
       if (this.inputSettings.settings.lines.show_95) {
-        this.tableColumns.push({ name: "ll95", label: "LL 95%" },
-                               { name: "ul95", label: "UL 95%" });
+        this.tableColumns.push({ name: "ll95", label: "LL 95%" }, { name: "ul95", label: "UL 95%" });
       }
       if (this.inputSettings.settings.lines.show_68) {
-        this.tableColumns.push({ name: "ll68", label: "LL 68%" },
-                               { name: "ul68", label: "UL 68%" });
+        this.tableColumns.push({ name: "ll68", label: "LL 68%" }, { name: "ul68", label: "UL 68%" });
       }
     }
 
@@ -433,12 +431,6 @@ export default class viewModelClass {
         aesthetics.colour = getAesthetic(this.outliers.astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings.settings) as string;
       }
-
-      let identity: ISelectionId = host.createSelectionIdBuilder()
-      .withCategory(this.inputData.categories,
-                    this.inputData.limitInputArgs.keys[i].id)
-      .createSelectionId();
-
       const table_row: summaryTableRowData = {
         date: this.controlLimits.keys[i].label,
         numerator: this.controlLimits.numerators?.[i],
@@ -465,7 +457,9 @@ export default class viewModelClass {
         value: this.controlLimits.values[i],
         aesthetics: aesthetics,
         table_row: table_row,
-        identity: identity,
+        identity: host.createSelectionIdBuilder()
+                      .withCategory(this.inputData.categories, this.inputData.limitInputArgs.keys[i].id)
+                      .createSelectionId(),
         highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
         tooltip: buildTooltip(table_row, this.inputData?.tooltips?.[index],
                               this.inputSettings.settings, this.inputSettings.derivedSettings)
@@ -583,7 +577,7 @@ export default class viewModelClass {
     const shift_n: number = inputSettings.settings.outliers.shift_n;
     const ast_specification: boolean = inputSettings.settings.outliers.astronomical_limit === "Specification";
     const two_in_three_specification: boolean = inputSettings.settings.outliers.two_in_three_limit === "Specification";
-    let outliers = {
+    const outliers = {
       astpoint: rep("none", controlLimits.values.length),
       two_in_three: rep("none", controlLimits.values.length),
       trend: rep("none", controlLimits.values.length),
