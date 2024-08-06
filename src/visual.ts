@@ -23,8 +23,8 @@ export class Visual implements powerbi.extensibility.IVisual {
   selectionManager: powerbi.extensibility.ISelectionManager;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
-    this.tableDiv = d3.select(options.element).append("div");
-    this.tableDiv.style("overflow", "auto");
+    this.tableDiv = d3.select(options.element).append("div")
+                                              .style("overflow", "auto");
 
     this.svg = d3.select(options.element).append("svg");
     this.host = options.host;
@@ -40,8 +40,6 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   public update(options: VisualUpdateOptions): void {
     try {
-      console.log(options)
-      console.log(options.dataViews[0].categorical.values.grouped())
       this.host.eventService.renderingStarted(options);
       // Remove printed error if refreshing after a previous error run
       this.svg.select(".errormessage").remove();
@@ -62,7 +60,6 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       this.viewModel.update(options, this.host);
-      console.log(this.viewModel)
 
       if (this.viewModel.showGrouped) {
         if (this.viewModel.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
@@ -135,9 +132,6 @@ export class Visual implements powerbi.extensibility.IVisual {
     const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
     const anyHighlightsGrouped: boolean = this.viewModel.inputDataGrouped ? this.viewModel.inputDataGrouped.some(d => d.anyHighlights) : false;
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
-    console.log("ids", allSelectionIDs)
-    console.log("anyHighlights", anyHighlights)
-    console.log("anyHighlightsGrouped", anyHighlightsGrouped)
     const opacityFull: number = this.viewModel.inputSettings.settings.scatter.opacity;
     const opacityReduced: number = this.viewModel.inputSettings.settings.scatter.opacity_unselected;
 
@@ -162,7 +156,6 @@ export class Visual implements powerbi.extensibility.IVisual {
         const currentDotNode = dotsNodes?.[i];
         const currentTableNode = tableNodes?.[i];
         let dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
-        console.log("dot: ", dot)
         const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });

@@ -68,7 +68,7 @@ export type plotData = {
 export type plotDataGrouped = {
   table_row: summaryTableRowDataGrouped;
   identity: ISelectionId;
-  aesthetics: defaultSettingsType["scatter"];
+  aesthetics: defaultSettingsType["summary_table"];
   highlighted: boolean;
 }
 
@@ -166,71 +166,68 @@ export default class viewModelClass {
     this.svgWidth = options.viewport.width;
     this.svgHeight = options.viewport.height;
 
-    if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
-      this.showGrouped = true;
-      this.groupNames = new Array<string>();
-      this.inputDataGrouped = new Array<dataObject>();
-      this.groupStartEndIndexesGrouped = new Array<number[][]>();
-      this.controlLimitsGrouped = new Array<controlLimitsObject>();
-      this.outliersGrouped = new Array<outliersObject>();
-      this.identitiesGrouped = new Array<ISelectionId>();
-
-      options.dataViews[0].categorical.values.grouped().forEach((d, idx) => {
-        (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
-        let first_idx: number = d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
-        let last_idx: number = d.values[0].values.map(d_in => !isNullOrUndefined(d_in)).lastIndexOf(true);
-        const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d,
-                                                      this.inputSettings.settingsGrouped[idx],
-                                                      this.inputSettings.derivedSettingsGrouped[idx],
-                                                      this.inputSettings.validationStatus.messages,
-                                                      first_idx, last_idx);
-        //let identities: ISelectionId[] = inpData.limitInputArgs.keys.map(keys => {
-        //  return host.createSelectionIdBuilder().withCategory(inpData.categories, keys.id).createSelectionId()
-        //});
-        const invalidData: boolean = inpData.validationStatus.status !== 0;
-        const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
-        const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
-        const outliers: outliersObject = invalidData ? null : this.flagOutliers(limits, groupStartEndIndexes, this.inputSettings);
-
-        if (!invalidData) {
-          this.scaleAndTruncateLimits(limits, this.inputSettings);
-        }
-        this.identitiesGrouped.push(host.createSelectionIdBuilder().withSeries(options.dataViews[0].categorical.values, d).createSelectionId());
-        this.groupNames.push(<string>d.name);
-        this.inputDataGrouped.push(inpData);
-        this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
-        this.controlLimitsGrouped.push(limits);
-        this.outliersGrouped.push(outliers);
-      })
-      this.initialisePlotDataGrouped();
-    } else {
-      this.showGrouped = false;
-      this.groupNames = null;
-      this.inputDataGrouped = null;
-      this.groupStartEndIndexesGrouped = null;
-      this.controlLimitsGrouped = null;
     // Only re-construct data and re-calculate limits if they have changed
-    //if (options.type === 2 || this.firstRun) {
-      const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
-      const split_indexes: number[] = JSON.parse(split_indexes_str);
-      this.splitIndexes = split_indexes;
-      this.inputData = extractInputData(options.dataViews[0].categorical,
-                                        this.inputSettings.settings,
-                                        this.inputSettings.derivedSettings,
-                                        this.inputSettings.validationStatus.messages,
-                                        0, options.dataViews[0].categorical.values[0].values.length - 1);
+    if (options.type === 2 || this.firstRun) {
+      if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
+        this.showGrouped = true;
+        this.groupNames = new Array<string>();
+        this.inputDataGrouped = new Array<dataObject>();
+        this.groupStartEndIndexesGrouped = new Array<number[][]>();
+        this.controlLimitsGrouped = new Array<controlLimitsObject>();
+        this.outliersGrouped = new Array<outliersObject>();
+        this.identitiesGrouped = new Array<ISelectionId>();
 
-      if (this.inputData.validationStatus.status === 0) {
-        this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
-        this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings);
-        this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings);
-        this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
+        options.dataViews[0].categorical.values.grouped().forEach((d, idx) => {
+          (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
+          let first_idx: number = d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
+          let last_idx: number = d.values[0].values.map(d_in => !isNullOrUndefined(d_in)).lastIndexOf(true);
+          const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d,
+                                                        this.inputSettings.settingsGrouped[idx],
+                                                        this.inputSettings.derivedSettingsGrouped[idx],
+                                                        this.inputSettings.validationStatus.messages,
+                                                        first_idx, last_idx);
+          const invalidData: boolean = inpData.validationStatus.status !== 0;
+          const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
+          const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
+          const outliers: outliersObject = invalidData ? null : this.flagOutliers(limits, groupStartEndIndexes, this.inputSettings);
 
-        // Structure the data and calculated limits to the format needed for plotting
-        this.initialisePlotData(host);
-        this.initialiseGroupedLines();
+          if (!invalidData) {
+            this.scaleAndTruncateLimits(limits, this.inputSettings);
+          }
+          this.identitiesGrouped.push(host.createSelectionIdBuilder().withSeries(options.dataViews[0].categorical.values, d).createSelectionId());
+          this.groupNames.push(<string>d.name);
+          this.inputDataGrouped.push(inpData);
+          this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
+          this.controlLimitsGrouped.push(limits);
+          this.outliersGrouped.push(outliers);
+        })
+        this.initialisePlotDataGrouped();
+      } else {
+        this.showGrouped = false;
+        this.groupNames = null;
+        this.inputDataGrouped = null;
+        this.groupStartEndIndexesGrouped = null;
+        this.controlLimitsGrouped = null;
+        const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+        const split_indexes: number[] = JSON.parse(split_indexes_str);
+        this.splitIndexes = split_indexes;
+        this.inputData = extractInputData(options.dataViews[0].categorical,
+                                          this.inputSettings.settings,
+                                          this.inputSettings.derivedSettings,
+                                          this.inputSettings.validationStatus.messages,
+                                          0, options.dataViews[0].categorical.values[0].values.length - 1);
+
+        if (this.inputData.validationStatus.status === 0) {
+          this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
+          this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings);
+          this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings);
+          this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
+
+          // Structure the data and calculated limits to the format needed for plotting
+          this.initialisePlotData(host);
+          this.initialiseGroupedLines();
+        }
       }
-      //}
       this.plotProperties.update(
         options,
         this.plotPoints,
@@ -302,7 +299,7 @@ export default class viewModelClass {
     ];
     const lineSettings = this.inputSettings.settings.lines;
     if (lineSettings.show_main) {
-      this.tableColumnsGrouped.push({ name: "value", label: this.inputSettings.derivedSettings.chart_type_props.value_name });
+      this.tableColumnsGrouped.push({ name: "value", label: "Value" });
     }
     if (lineSettings.show_target) {
       this.tableColumnsGrouped.push({ name: "target", label: lineSettings.ttip_label_target });
@@ -333,16 +330,7 @@ export default class viewModelClass {
     if (nhsIconSettings.show_assurance_icons) {
       this.tableColumnsGrouped.push({ name: "assurance", label: "Assurance" });
     }
-
-    /*
-      { name: "upl", label: "UPL" },
-      { name: "lpl", label: "LPL" },
-      { name: "variation", label: "Variation" },
-      { name: "assurance", label: "Assurance" }
-    ];
-    */
     for (let i: number = 0; i < this.groupNames.length; i++) {
-      //const inputData: dataObject = this.inputDataGrouped[i];
       const limits: controlLimitsObject = this.controlLimitsGrouped[i];
       const outliers: outliersObject = this.outliersGrouped[i];
       const lastIndex: number = limits.keys.length - 1;
@@ -369,7 +357,7 @@ export default class viewModelClass {
       this.plotPointsGrouped.push({
         table_row: table_row,
         identity: this.identitiesGrouped[i],
-        aesthetics: this.inputSettings.settingsGrouped[i].scatter,
+        aesthetics: this.inputSettings.settingsGrouped[i].summary_table,
         highlighted: this.inputDataGrouped[i].anyHighlights
       })
     }

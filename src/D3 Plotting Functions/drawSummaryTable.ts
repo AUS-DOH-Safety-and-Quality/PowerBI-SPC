@@ -13,7 +13,6 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
     const table = selection.append("table")
                             .classed("table-group", true)
                             .style("border-collapse", "collapse")
-                            .style("border", "2px black solid")
                             .style("width", "100%")
                             .style("height", "100%");
 
@@ -33,46 +32,95 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   }
 
   let maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
+  let tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
 
-  selection.select(".table-header")
+  const tableHeaders = selection.select(".table-header")
             .selectAll("th")
             .data(cols)
             .join("th")
-            .text((d) => d.label)
             .style("border", "1px black solid")
             .style("padding", "5px")
-            .style("background-color", "lightgray")
-            .style("font-weight", "bold")
-            .style("text-transform", "uppercase")
-            .style("overflow", "hidden")
-            .style("text-overflow", "ellipsis")
-            .style("max-width", `${maxWidth}px`);
+            .style("background-color", tableSettings.table_header_bg_colour)
+            .style("font-weight", tableSettings.table_header_font_weight)
+            .style("text-transform", tableSettings.table_header_text_transform)
+            .style("text-align", tableSettings.table_header_text_align)
 
-  const tableSelect = selection.select(".table-body")
+  if (tableSettings.table_text_overflow !== "none") {
+    tableHeaders.style("overflow", "hidden")
+                .style("max-width", `${maxWidth}px`)
+                .style("text-overflow", tableSettings.table_text_overflow);
+  } else {
+    tableHeaders.style("overflow", "auto")
+                .style("max-width", "none")
+  }
+
+  tableHeaders.selectAll("text")
+              .data(d => [d.label])
+              .join("text")
+              .text(d => d)
+              .style("font-size", `${tableSettings.table_header_size}px`)
+              .style("font-family", tableSettings.table_header_font)
+              .style("color", tableSettings.table_header_colour)
+
+  const tableRows = selection.select(".table-body")
             .selectAll('tr')
             .data(<plotData[]>plotPoints)
             .join('tr')
             .on("click", (event, d: plotData) => {
-              //if (visualObj.host.hostCapabilities.allowInteractions) {
+              if (visualObj.host.hostCapabilities.allowInteractions) {
                 visualObj.selectionManager
                           .select(d.identity, event.ctrlKey || event.metaKey)
-                          .then((d2) => {
-                            console.log("Selection made")
-                            console.log(d2)
+                          .then(() => {
                             visualObj.updateHighlighting();
-                          }, (d2) => {
-                            console.log("Selection failed")
-                            console.log(d2)
                           });
                 event.stopPropagation();
-              //}
+              }
             })
-            .selectAll('td')
+            .style("background-color", (d) => {
+              let groupBGColour: string = d.aesthetics?.["table_body_bg_colour"] ?? tableSettings.table_body_bg_colour;
+              return groupBGColour;
+            })
+            .style("font-weight", (d) => {
+              let groupWeight: string = d.aesthetics?.["table_body_font_weight"] ?? tableSettings.table_body_font_weight;
+              return groupWeight;
+            })
+            .style("text-transform", (d) => {
+              let groupTransform: string = d.aesthetics?.["table_body_text_transform"] ?? tableSettings.table_body_text_transform;
+              return groupTransform;
+            })
+            .style("text-align", (d) => {
+              let groupAlign: string = d.aesthetics?.["table_body_text_align"] ?? tableSettings.table_body_text_align;
+              return groupAlign;
+            })
+            .style("font-size", (d) => {
+              let groupSize: number = d.aesthetics?.["table_body_size"] ?? tableSettings.table_body_size;
+              return `${groupSize}px`;
+            })
+            .style("font-family", (d) => {
+              let groupFont: string = d.aesthetics?.["table_body_font"] ?? tableSettings.table_body_font;
+              return groupFont;
+            })
+            .style("color", (d) => {
+              let groupColour: string = d.aesthetics?.["table_body_colour"] ?? tableSettings.table_body_colour;
+              return groupColour;
+            });
+
+  if (tableSettings.table_text_overflow !== "none") {
+    tableRows.style("overflow", "hidden")
+                .style("max-width", `${maxWidth}px`)
+                .style("text-overflow", tableSettings.table_text_overflow);
+  } else {
+    tableRows.style("overflow", "auto")
+                .style("max-width", "none")
+  }
+
+  const tableSelect = tableRows.selectAll('td')
             .data((d) => cols.map(col => {
               return {column: col.name, value: d.table_row[col.name]}
             }))
-            .join('td')
-            .on("mouseover", (event) => {
+            .join('td');
+
+  tableSelect.on("mouseover", (event) => {
               d3.select(event.target).select(function(){
                 return this.closest("td");
               }).style("background-color", "lightgray");
@@ -80,17 +128,14 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .on("mouseout", (event) => {
               d3.select(event.target).select(function(){
                 return this.closest("td");
-              }).style("background-color", "white");
+              }).style("background-color", "inherit");
             })
             .style("border", "1px black solid")
             .style("padding", "5px")
-            .style("font-size", "12px")
-            .style("overflow", "hidden")
-            .style("text-overflow", "ellipsis")
-            .style("max-width", `${maxWidth}px`);
 
   const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
   const draw_icons: boolean = nhsIconSettings.show_variation_icons || nhsIconSettings.show_assurance_icons;
+  const showGrouped: boolean = visualObj.viewModel.showGrouped;
   const thisSelDims = (tableSelect.node() as SVGGElement).getBoundingClientRect()
   const scaling = visualObj.viewModel.inputSettings.settings.nhs_icons.variation_icons_scaling
 
@@ -98,7 +143,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   const icon_y: number = (thisSelDims.height * 0.8) / 0.08 / 2 - 189;
 
   tableSelect.each(function(d) {
-    if (draw_icons && (d.column === "variation" || d.column === "assurance")) {
+    if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
       d3.select(this)
           .append("svg")
           .attr("width", thisSelDims.width * 0.8)
