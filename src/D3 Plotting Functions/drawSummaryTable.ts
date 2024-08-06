@@ -39,7 +39,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .data(cols)
             .join("th")
             .style("border", "1px black solid")
-            .style("padding", "5px")
+            .style("padding", "1px")
             .style("background-color", tableSettings.table_header_bg_colour)
             .style("font-weight", tableSettings.table_header_font_weight)
             .style("text-transform", tableSettings.table_header_text_transform)
@@ -131,7 +131,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
               }).style("background-color", "inherit");
             })
             .style("border", "1px black solid")
-            .style("padding", "5px")
+            .style("padding", "1px")
 
   const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
   const draw_icons: boolean = nhsIconSettings.show_variation_icons || nhsIconSettings.show_assurance_icons;
