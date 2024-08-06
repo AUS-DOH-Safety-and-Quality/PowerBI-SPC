@@ -70,14 +70,21 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             }))
             .join('td')
             .on("mouseover", (event) => {
-              d3.select(event.target).style("background-color", "lightgray");
+              d3.select(event.target).select(function(){
+                return this.closest("td");
+              }).style("background-color", "lightgray");
             })
             .on("mouseout", (event) => {
-              d3.select(event.target).style("background-color", "white");
+              d3.select(event.target).select(function(){
+                return this.closest("td");
+              }).style("background-color", "white");
             })
             .style("border", "1px black solid")
             .style("padding", "5px")
-            .style("font-size", "12px");
+            .style("font-size", "12px")
+            .style("overflow", "hidden")
+            .style("text-overflow", "ellipsis")
+            .style("max-width", `${maxWidth}px`);
 
   const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
   const draw_icons: boolean = nhsIconSettings.show_variation_icons || nhsIconSettings.show_assurance_icons;
