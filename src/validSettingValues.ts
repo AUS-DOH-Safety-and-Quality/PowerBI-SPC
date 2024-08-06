@@ -35,6 +35,22 @@ const textOptions = {
     default: 10,
     valid: { numberRange: { min: 0, max: 100 } }
   },
+  weight: {
+    default: "normal",
+    valid: ["normal", "bold", "bolder", "lighter"]
+  },
+  text_transform: {
+    default: "uppercase",
+    valid: ["uppercase", "lowercase", "capitalize", "none"]
+  },
+  text_overflow: {
+    default: "ellipsis",
+    valid: ["ellipsis", "clip", "none"]
+  },
+  text_align: {
+    default: "center",
+    valid: ["center", "left", "right"]
+  }
 }
 
 const lineOptions = {

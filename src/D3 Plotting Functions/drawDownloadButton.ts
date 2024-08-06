@@ -16,8 +16,8 @@ export default function drawDownloadButton(selection: svgBaseType, visualObj: Vi
     csv_rows.push(Object.values(row).join(","));
   });
   selection.select(".download-btn-group")
-            .attr("x", visualObj.viewModel.plotProperties.width - 50)
-            .attr("y", visualObj.viewModel.plotProperties.height - 5)
+            .attr("x", visualObj.viewModel.svgWidth - 50)
+            .attr("y", visualObj.viewModel.svgHeight - 5)
             .text("Download")
             .style("font-size", "10px")
             .style("text-decoration", "underline")

@@ -4,7 +4,7 @@ type DataViewPropertyValue = powerbi.default.DataViewPropertyValue
 type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanceEnumerationObject;
 type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
-import { extractConditionalFormatting } from "../Functions";
+import { extractConditionalFormatting, isNullOrUndefined } from "../Functions";
 import { default as defaultSettings, type settingsValueTypes, settingsPaneGroupings, settingsPaneToggles } from "../defaultSettings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
@@ -18,6 +18,10 @@ export type defaultSettingsType = settingsValueTypes;
 export type defaultSettingsKey = keyof defaultSettingsType;
 export type defaultSettingsNestedKey = NestedKeysOf<defaultSettingsType[defaultSettingsKey]>;
 export type settingsScalarTypes = number | string | boolean;
+
+export type optionalSettingsTypes = Partial<{
+  [K in keyof typeof defaultSettings]: Partial<defaultSettingsType[K]>;
+}>;
 
 export type paneGroupingsNestedKey = "all" | NestedKeysOf<typeof settingsPaneGroupings[keyof typeof settingsPaneGroupings]>;
 export type paneTogglesNestedKey = "all" | NestedKeysOf<typeof settingsPaneToggles[keyof typeof settingsPaneToggles]>;
@@ -33,6 +37,8 @@ export default class settingsClass {
   settings: defaultSettingsType;
   derivedSettings: derivedSettingsClass;
   validationStatus: SettingsValidationT;
+  settingsGrouped: defaultSettingsType[];
+  derivedSettingsGrouped: derivedSettingsClass[];
 
   /**
    * Function to read the values from the settings pane and update the
@@ -45,6 +51,22 @@ export default class settingsClass {
       = JSON.parse(JSON.stringify({ status: 0, messages: new Array<string[]>(), error: "" }));
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.keys(this.settings);
+
+    const is_grouped: boolean = inputView.categorical.values?.source?.roles?.indicator;
+    let group_idxs: number[] = new Array<number>();
+    this.settingsGrouped = new Array<defaultSettingsType>();
+    if (is_grouped) {
+      group_idxs = inputView.categorical.values.grouped().map(d => {
+        this.settingsGrouped.push(Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
+          return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
+            return [settingName, defaultSettings[settingGroupName][settingName]];
+          }))];
+        })) as settingsValueTypes);
+
+        return d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
+      });
+    }
+
 
     allSettingGroups.forEach((settingGroup: defaultSettingsKey) => {
       const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKey]>
@@ -73,10 +95,27 @@ export default class settingsClass {
           = condFormatting?.values
             ? condFormatting?.values[0][settingName]
             : defaultSettings[settingGroup][settingName]["default"]
+
+        if (is_grouped) {
+          group_idxs.forEach((idx, idx_idx) => {
+            this.settingsGrouped[idx_idx][settingGroup][settingName]
+              = condFormatting?.values
+                ? condFormatting?.values[idx][settingName]
+                : defaultSettings[settingGroup][settingName]["default"]
+          })
+        }
       })
     })
 
-    this.derivedSettings.update(this.settings)
+    this.derivedSettings.update(this.settings.spc)
+    this.derivedSettingsGrouped = new Array<derivedSettingsClass>();
+    if (is_grouped) {
+      this.settingsGrouped.forEach((d) => {
+        const newDerived = new derivedSettingsClass();
+        newDerived.update(d.spc);
+        this.derivedSettingsGrouped.push(newDerived);
+      })
+    }
   }
 
   /**

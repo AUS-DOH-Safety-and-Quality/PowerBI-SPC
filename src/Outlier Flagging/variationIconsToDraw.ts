@@ -1,8 +1,7 @@
-import type { viewModelClass, outliersObject } from "../Classes";
+import type { defaultSettingsType, outliersObject } from "../Classes";
 
-export default function variationIconsToDraw(viewModel: viewModelClass): string[] {
-  const currLimits: outliersObject = viewModel.outliers;
-  const imp_direction: string = viewModel.inputSettings.settings.outliers.improvement_direction;
+export default function variationIconsToDraw(outliers: outliersObject, inputSettings: defaultSettingsType): string[] {
+  const imp_direction: string = inputSettings.outliers.improvement_direction;
   const suffix_map: Record<string, string> = {
     "increase" : "High",
     "decrease" : "Low",
@@ -14,13 +13,13 @@ export default function variationIconsToDraw(viewModel: viewModelClass): string[
     "" : ""
   }
   const suffix: string = suffix_map[imp_direction];
-  const flag_last: boolean = viewModel.inputSettings.settings.nhs_icons.flag_last_point;
+  const flag_last: boolean = inputSettings.nhs_icons.flag_last_point;
   let allFlags: string[];
   if (flag_last) {
-    const N: number = currLimits.astpoint.length - 1;
-    allFlags = [currLimits.astpoint[N], currLimits.shift[N], currLimits.trend[N], currLimits.two_in_three[N]];
+    const N: number = outliers.astpoint.length - 1;
+    allFlags = [outliers.astpoint[N], outliers.shift[N], outliers.trend[N], outliers.two_in_three[N]];
   } else {
-    allFlags = currLimits.astpoint.concat(currLimits.shift, currLimits.trend, currLimits.two_in_three);
+    allFlags = outliers.astpoint.concat(outliers.shift, outliers.trend, outliers.two_in_three);
   }
 
   const iconsPresent: string[] = new Array<string>();

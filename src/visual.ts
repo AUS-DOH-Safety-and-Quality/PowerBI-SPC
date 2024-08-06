@@ -23,8 +23,8 @@ export class Visual implements powerbi.extensibility.IVisual {
   selectionManager: powerbi.extensibility.ISelectionManager;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
-    this.tableDiv = d3.select(options.element).append("div");
-    this.tableDiv.style("overflow", "auto");
+    this.tableDiv = d3.select(options.element).append("div")
+                                              .style("overflow", "auto");
 
     this.svg = d3.select(options.element).append("svg");
     this.host = options.host;
@@ -60,9 +60,24 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       this.viewModel.update(options, this.host);
+
+      if (this.viewModel.showGrouped) {
+        if (this.viewModel.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
+          this.processVisualError(options,
+                                  this.viewModel.inputDataGrouped.map(d => d.validationStatus.error).join("\n"));
+          return;
+        }
+
+        this.svg.attr("width", 0).attr("height", 0);
+        this.tableDiv.call(drawSummaryTable, this);
+
+        if (this.viewModel.inputDataGrouped.some(d => d.warningMessage !== "")) {
+          this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
+                                       this.viewModel.inputDataGrouped.map(d => d.warningMessage).join("\n"));
+        }
+      } else {
       if (this.viewModel.inputData.validationStatus.status !== 0) {
-        this.processVisualError(options,
-                                this.viewModel.inputData.validationStatus.error);
+        this.processVisualError(options, this.viewModel.inputData.validationStatus.error);
         return;
       }
 
@@ -83,13 +98,13 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(addContextMenu, this)
                 .call(drawDownloadButton, this)
       }
-      this.updateHighlighting();
 
       if (this.viewModel.inputData.warningMessage !== "") {
         this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
                                      this.viewModel.inputData.warningMessage);
       }
-
+    }
+      this.updateHighlighting();
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
       this.tableDiv.style("width", "0%").style("height", "0%");
@@ -115,6 +130,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   updateHighlighting(): void {
     const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
+    const anyHighlightsGrouped: boolean = this.viewModel.inputDataGrouped ? this.viewModel.inputDataGrouped.some(d => d.anyHighlights) : false;
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
     const opacityFull: number = this.viewModel.inputSettings.settings.scatter.opacity;
     const opacityReduced: number = this.viewModel.inputSettings.settings.scatter.opacity_unselected;
@@ -129,7 +145,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     dotsSelection.style("fill-opacity", defaultOpacity);
     tableSelection.style("opacity", defaultOpacity);
-    if (anyHighlights || (allSelectionIDs.length > 0)) {
+    if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
       const dotsNodes = dotsSelection.nodes();
       const tableNodes = tableSelection.nodes();
       // If either the table or dots haven't been initialised

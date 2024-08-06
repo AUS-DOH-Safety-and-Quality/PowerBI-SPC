@@ -17,7 +17,7 @@
     { "displayName": "Outcome/Numerator",     "name": "numerators",   "kind": "Measure" },
     { "displayName": "Denominator",           "name": "denominators", "kind": "Measure" },
     { "displayName": "ID Key (Date)",         "name": "key",          "kind": "Grouping" },
-    { "displayName": "Indicator",         "name": "indicator",          "kind": "Grouping" },
+    { "displayName": "Grouping (Summary Table)",         "name": "indicator",          "kind": "Grouping" },
     { "displayName": "Rebaseline Groupings",  "name": "groupings",    "kind": "Measure" },
     { "displayName": "SD (for xbar)",         "name": "xbar_sds",     "kind": "Measure" },
     { "displayName": "Tooltips",              "name": "tooltips",     "kind": "Measure" }
@@ -117,7 +117,7 @@
       }
     },
     "outliers" : {
-      "displayName": "Outlier Highlighting",
+      "displayName": "Outlier Detection",
       "properties": {
         "process_flag_type": {
           "displayName": "Type of Change to Flag",
@@ -759,6 +759,104 @@
         "show_table": {
           "displayName": "Show Summary Table",
           "type" : { "bool" : true }
+        },
+        "table_header_font": {
+          "displayName": "Header Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "table_header_size": {
+          "displayName": "Header Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "table_header_colour":{
+          "displayName": "Header Font Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_header_bg_colour":{
+          "displayName": "Header Background Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_header_font_weight": {
+          "displayName": "Header Font Weight",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Normal", "value" : "normal" },
+              { "displayName" : "Bold",   "value" : "bold" }
+            ]
+          }
+        },
+        "table_header_text_transform": {
+          "displayName": "Header Text Transform",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Uppercase",   "value" : "uppercase" },
+              { "displayName" : "Lowercase",   "value" : "lowercase" },
+              { "displayName" : "Capitalise",  "value" : "capitalize" },
+              { "displayName" : "None",        "value" : "none" }
+            ]
+          }
+        },
+        "table_header_text_align": {
+          "displayName": "Text Alignment",
+          "type": { "formatting": { "alignment": true } }
+        },
+        "table_body_font": {
+          "displayName": "Body Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "table_body_size": {
+          "displayName": "Body Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "table_body_colour":{
+          "displayName": "Body Font Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_body_bg_colour":{
+          "displayName": "Body Background Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_body_font_weight": {
+          "displayName": "Font Weight",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Normal", "value" : "normal" },
+              { "displayName" : "Bold",   "value" : "bold" }
+            ]
+          }
+        },
+        "table_body_text_transform": {
+          "displayName": "Text Transform",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Uppercase",   "value" : "uppercase" },
+              { "displayName" : "Lowercase",   "value" : "lowercase" },
+              { "displayName" : "Capitalise",  "value" : "capitalize" },
+              { "displayName" : "None",        "value" : "none" }
+            ]
+          }
+        },
+        "table_body_text_align": {
+          "displayName": "Text Alignment",
+          "type": { "formatting": { "alignment": true } }
+        },
+        "table_opacity": {
+          "displayName": "Opacity",
+          "type": { "numeric": true }
+        },
+        "table_opacity_unselected": {
+          "displayName": "Opacity if Unselected",
+          "type": { "numeric": true }
+        },
+        "table_text_overflow": {
+          "displayName": "Text Overflow Handling",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Ellipsis", "value" : "ellipsis" },
+              { "displayName" : "Truncate",     "value" : "clip" },
+              { "displayName" : "None",     "value" : "none" }
+            ]
+          }
         }
       }
     },

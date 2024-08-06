@@ -21,6 +21,7 @@ export default class derivedSettingsClass {
   multiplier: number
   percentLabels: boolean
   chart_type_props: {
+    name: string,
     needs_denominator: boolean,
     denominator_optional: boolean,
     numerator_non_negative: boolean,
@@ -31,11 +32,11 @@ export default class derivedSettingsClass {
     value_name: string
   }
 
-  update(inputSettings: defaultSettingsType) {
-    const chartType: string = inputSettings.spc.chart_type;
+  update(inputSettingsSpc: defaultSettingsType["spc"]) {
+    const chartType: string = inputSettingsSpc.chart_type;
     const pChartType: boolean = ["p", "pp"].includes(chartType);
-    const percentSettingString: string = inputSettings.spc.perc_labels;
-    let multiplier: number = inputSettings.spc.multiplier;
+    const percentSettingString: string = inputSettingsSpc.perc_labels;
+    let multiplier: number = inputSettingsSpc.multiplier;
     let percentLabels: boolean;
 
     if (percentSettingString === "Yes") {
@@ -53,6 +54,7 @@ export default class derivedSettingsClass {
     }
 
     this.chart_type_props = {
+      name: chartType,
       needs_denominator: ["p", "pp", "u", "up", "xbar", "s"].includes(chartType),
       denominator_optional: ["i", "i_m", "i_mm", "run", "mr"].includes(chartType),
       numerator_non_negative: ["p", "pp", "u", "up", "s", "c", "g", "t"].includes(chartType),

@@ -155,7 +155,24 @@ const defaultSettings = {
     date_format_locale: { default: "en-GB", valid: ["en-GB", "en-US"]}
   },
   summary_table: {
-    show_table: { default: false }
+    show_table: { default: false },
+    table_header_font: textOptions.font,
+    table_header_font_weight: textOptions.weight,
+    table_header_text_transform: textOptions.text_transform,
+    table_header_text_align: textOptions.text_align,
+    table_header_size: textOptions.size,
+    table_header_colour: colourOptions.standard,
+    table_header_bg_colour: { default: "#D3D3D3" },
+    table_body_font: textOptions.font,
+    table_body_font_weight: textOptions.weight,
+    table_body_text_transform: textOptions.text_transform,
+    table_body_text_align: textOptions.text_align,
+    table_body_size: textOptions.size,
+    table_body_colour: colourOptions.standard,
+    table_body_bg_colour: { default: "#FFFFFF" },
+    table_text_overflow: textOptions.text_overflow,
+    table_opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    table_opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } }
   },
   download_options: {
     show_button: { default: false }
@@ -197,6 +214,11 @@ export const settingsPaneGroupings = {
     "Axis": ["ylimit_colour", "limit_multiplier", "ylimit_sig_figs", "ylimit_l", "ylimit_u"],
     "Ticks": ["ylimit_ticks", "ylimit_tick_count", "ylimit_tick_font", "ylimit_tick_size", "ylimit_tick_colour", "ylimit_tick_rotation"],
     "Label": ["ylimit_label", "ylimit_label_font", "ylimit_label_size", "ylimit_label_colour"]
+  },
+  summary_table: {
+    "General": ["show_table", "table_text_overflow", "table_opacity", "table_opacity_unselected"],
+    "Header": ["table_header_font", "table_header_size", "table_header_text_align", "table_header_font_weight", "table_header_text_transform", "table_header_colour", "table_header_bg_colour"],
+    "Body": ["table_body_font", "table_body_size", "table_body_text_align", "table_body_font_weight", "table_body_text_transform", "table_body_colour", "table_body_bg_colour"]
   }
 }
 

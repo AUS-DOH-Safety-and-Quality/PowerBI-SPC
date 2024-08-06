@@ -1,8 +1,60 @@
 import { derivedSettingsClass } from "../Classes";
 import isNullOrUndefined from "./isNullOrUndefined";
-import rep from "./rep";
 
 export type ValidationT = { status: number, messages: string[], error?: string };
+
+const enum ValidationFailTypes {
+  Valid = 0,
+  GroupingMissing = 1,
+  DateMissing = 2,
+  NumeratorMissing = 3,
+  NumeratorNegative = 4,
+  DenominatorMissing = 5,
+  DenominatorNegative = 6,
+  DenominatorLessThanNumerator = 7,
+  SDMissing = 8,
+  SDNegative = 9
+}
+
+function validateInputDataImpl(key: string, numerator: number, denominator: number,
+                              xbar_sd: number, grouping: string,
+                              chart_type_props: derivedSettingsClass["chart_type_props"]): { message: string, type: ValidationFailTypes }  {
+
+  const rtn = { message: "", type: ValidationFailTypes.Valid };
+  if (isNullOrUndefined(grouping)) {
+    //rtn.message = "Grouping missing";
+    //rtn.type = ValidationFailTypes.GroupingMissing;
+  } else if (isNullOrUndefined(key)) {
+    rtn.message = "Date missing";
+    rtn.type = ValidationFailTypes.DateMissing;
+  } else if (isNullOrUndefined(numerator)) {
+    rtn.message = "Numerator missing";
+    rtn.type = ValidationFailTypes.NumeratorMissing;
+  } else if (chart_type_props.numerator_non_negative && numerator < 0) {
+    rtn.message = "Numerator negative";
+    rtn.type = ValidationFailTypes.NumeratorNegative;
+  } else if (chart_type_props.needs_denominator || chart_type_props.denominator_optional) {
+    if (isNullOrUndefined(denominator)) {
+      rtn.message = "Denominator missing";
+      rtn.type = ValidationFailTypes.DenominatorMissing;
+    } else if (denominator < 0) {
+      rtn.message = "Denominator negative";
+      rtn.type = ValidationFailTypes.DenominatorNegative;
+    } else if (chart_type_props.numerator_leq_denominator && denominator < numerator) {
+      rtn.message = "Denominator < numerator";
+      rtn.type = ValidationFailTypes.DenominatorLessThanNumerator;
+    }
+  } else if (chart_type_props.needs_sd) {
+    if (isNullOrUndefined(xbar_sd)) {
+      rtn.message = "SD missing";
+      rtn.type = ValidationFailTypes.SDMissing;
+    } else if (xbar_sd < 0) {
+      rtn.message = "SD negative";
+      rtn.type = ValidationFailTypes.SDNegative;
+    }
+  }
+  return rtn;
+}
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 /* eslint-disable */
@@ -11,100 +63,64 @@ export default function validateInputData(keys: string[],
                                           denominators: number[],
                                           xbar_sds: number[],
                                           groupings: string[],
-                                          chart_type_props: derivedSettingsClass["chart_type_props"]): { status: number, messages: string[], error?: string } {
-
-  const check_optional: boolean = chart_type_props.denominator_optional && !isNullOrUndefined(denominators);
-
-  const validationRtn: ValidationT = { status: 0, messages: rep("", keys.length) };
-
-  if (!isNullOrUndefined(groupings)) {
-    groupings.forEach((d, idx) => {
-      validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? (!isNullOrUndefined(d) ? "" : "Grouping missing")
-                                    : validationRtn.messages[idx]
-    });
-  }
-  keys.forEach((d, idx) => {
-    validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                  ? (!isNullOrUndefined(d) ? "" : "Date missing")
-                                  : validationRtn.messages[idx]});
-  if (!validationRtn.messages.some(d => d == "")) {
-    validationRtn.status = 1;
-    validationRtn.error = "All dates/IDs are missing or null!";
-    return validationRtn;
+                                          chart_type_props: derivedSettingsClass["chart_type_props"],
+                                          first_idx: number, last_idx: number): { status: number, messages: string[], error?: string } {
+  let allSameType: boolean = false;
+  let messages: string[] = new Array<string>();
+  let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
+  for (let i = first_idx; i <= last_idx; i++) {
+    const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], groupings?.[i], chart_type_props);
+    messages.push(validation.message);
+    all_status.push(validation.type);
   }
 
-  numerators.forEach((d, idx) => {
-    validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                  ? (!isNullOrUndefined(d) ? "" : "Numerator missing")
-                                  : validationRtn.messages[idx]});
-  if (!validationRtn.messages.some(d => d == "")) {
-    validationRtn.status = 1;
-    validationRtn.error = "All numerators are missing or null!";
-    return validationRtn;
-  }
-  if (chart_type_props.numerator_non_negative) {
-    numerators.forEach((d, idx) => {
-      validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d >= 0) ? "" : "Numerator negative")
-                                    : validationRtn.messages[idx]});
-    if (!validationRtn.messages.some(d => d == "")) {
-      validationRtn.status = 1;
-      validationRtn.error = "All numerators are negative!";
-      return validationRtn;
-    }
-  }
+  let allSameTypeSet = new Set(all_status);
+  allSameType = allSameTypeSet.size === 1;
+  let commonType = Array.from(allSameTypeSet)[0];
 
-  if (chart_type_props.needs_denominator || check_optional) {
-    denominators.forEach((d, idx) => {
-      validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? (!isNullOrUndefined(d) ? "" : "Denominator missing")
-                                    : validationRtn.messages[idx]});
-    if (!validationRtn.messages.some(d => d == "")) {
-      validationRtn.status = 1;
-      validationRtn.error = "All denominators missing or null!";
-      return validationRtn;
-    }
-    denominators.forEach((d, idx) => {
-      validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d >= 0) ? "" : "Denominator negative")
-                                    : validationRtn.messages[idx]});
-    if (!validationRtn.messages.some(d => d == "")) {
-      validationRtn.status = 1;
-      validationRtn.error = "All denominators are negative!";
-      return validationRtn;
-    }
-    if (chart_type_props.numerator_leq_denominator) {
-      denominators.forEach((d, idx) => {
-        validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                      ? ((d >= numerators[idx]) ? "" : "Denominator < numerator")
-                                      : validationRtn.messages[idx]});
-      if (!validationRtn.messages.some(d => d == "")) {
-        validationRtn.status = 1;
-        validationRtn.error = "All denominators are smaller than numerators!";
-        return validationRtn;
+  let validationRtn: ValidationT = {
+    status: (allSameType && commonType === ValidationFailTypes.Valid) ? 0 : 1,
+    messages: messages
+  };
+
+  if (allSameType && commonType !== ValidationFailTypes.Valid) {
+    switch(commonType) {
+      case 1: {
+        validationRtn.error = "Grouping missing"
+        break;
       }
-    }
-  }
-
-  if (chart_type_props.needs_sd) {
-    xbar_sds.forEach((d, idx) => {
-      validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? (!isNullOrUndefined(d) ? "" : "SD missing")
-                                    : validationRtn.messages[idx]});
-    if (!validationRtn.messages.some(d => d == "")) {
-      validationRtn.status = 1;
-      validationRtn.error = "All SDs missing or null!";
-      return validationRtn;
-    }
-    xbar_sds.forEach((d, idx) => {
-      validationRtn.messages[idx] = validationRtn.messages[idx] === ""
-                                    ? ((d >=0) ? "" : "SD negative")
-                                    : validationRtn.messages[idx]});
-    if (!validationRtn.messages.some(d => d == "")) {
-      validationRtn.status = 1;
-      validationRtn.error = "All SDs are negative!";
-      return validationRtn;
+      case 2: {
+        validationRtn.error = "All dates/IDs are missing or null!"
+        break;
+      }
+      case 3: {
+        validationRtn.error = "All numerators are missing or null!"
+        break;
+      }
+      case 4: {
+        validationRtn.error = "All numerators are negative!"
+        break;
+      }
+      case 5: {
+        validationRtn.error = "All denominators missing or null!"
+        break;
+      }
+      case 6: {
+        validationRtn.error = "All denominators are negative!"
+        break;
+      }
+      case 7: {
+        validationRtn.error = "All denominators are smaller than numerators!";
+        break;
+      }
+      case 8: {
+        validationRtn.error = "All SDs missing or null!";
+        break;
+      }
+      case 9: {
+        validationRtn.error = "All SDs are negative!";
+        break;
+      }
     }
   }
   return validationRtn;

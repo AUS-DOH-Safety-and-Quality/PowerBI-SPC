@@ -56,14 +56,15 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
   if (tickLeftofPadding < 0) {
     if (!refresh) {
       visualObj.viewModel.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
-      visualObj.viewModel.plotProperties.initialiseScale();
+      visualObj.viewModel.plotProperties.initialiseScale(visualObj.viewModel.svgWidth,
+                                                          visualObj.viewModel.svgHeight);
       selection.call(drawYAxis, visualObj, true).call(drawXAxis, visualObj, true);
       return;
     }
   }
 
   const leftMidpoint: number = yAxisCoordinates.x * 0.7;
-  const y: number = visualObj.viewModel.plotProperties.height / 2;
+  const y: number = visualObj.viewModel.svgHeight / 2;
 
   selection.select(".yaxislabel")
       .attr("x",leftMidpoint)
