@@ -1,11 +1,13 @@
-import type { controlLimitsObject, settingsClass } from "../Classes";
+import type { controlLimitsObject, defaultSettingsType, derivedSettingsClass } from "../Classes";
 import { isNullOrUndefined } from "../Functions";
 
-export default function assuranceIconToDraw(controlLimits: controlLimitsObject, inputSettings: settingsClass): string {
-  if (!(inputSettings.derivedSettings.chart_type_props.has_control_limits)) {
+export default function assuranceIconToDraw(controlLimits: controlLimitsObject,
+                                            inputSettings: defaultSettingsType,
+                                            derivedSettings: derivedSettingsClass): string {
+  if (!(derivedSettings.chart_type_props.has_control_limits)) {
     return "none";
   }
-  const imp_direction: string = inputSettings.settings.outliers.improvement_direction;
+  const imp_direction: string = inputSettings.outliers.improvement_direction;
   const N: number = controlLimits.ll99.length - 1;
   const alt_target: number = controlLimits?.alt_targets?.[N];
 

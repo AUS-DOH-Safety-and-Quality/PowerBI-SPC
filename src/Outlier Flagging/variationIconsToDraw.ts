@@ -1,7 +1,7 @@
-import type { outliersObject, settingsClass } from "../Classes";
+import type { defaultSettingsType, outliersObject } from "../Classes";
 
-export default function variationIconsToDraw(outliers: outliersObject, inputSettings: settingsClass): string[] {
-  const imp_direction: string = inputSettings.settings.outliers.improvement_direction;
+export default function variationIconsToDraw(outliers: outliersObject, inputSettings: defaultSettingsType): string[] {
+  const imp_direction: string = inputSettings.outliers.improvement_direction;
   const suffix_map: Record<string, string> = {
     "increase" : "High",
     "decrease" : "Low",
@@ -13,7 +13,7 @@ export default function variationIconsToDraw(outliers: outliersObject, inputSett
     "" : ""
   }
   const suffix: string = suffix_map[imp_direction];
-  const flag_last: boolean = inputSettings.settings.nhs_icons.flag_last_point;
+  const flag_last: boolean = inputSettings.nhs_icons.flag_last_point;
   let allFlags: string[];
   if (flag_last) {
     const N: number = outliers.astpoint.length - 1;

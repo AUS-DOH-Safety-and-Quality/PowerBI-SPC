@@ -6,7 +6,7 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
 export type lineData = {
@@ -42,8 +42,12 @@ export type summaryTableRowDataGrouped = {
   value: number;
   target: number;
   alt_target: number;
-  upl: number;
-  lpl: number;
+  ucl99: number;
+  ucl95: number;
+  ucl68: number;
+  lcl68: number;
+  lcl95: number;
+  lcl99: number;
   variation: string;
   assurance: string;
 }
@@ -285,21 +289,57 @@ export default class viewModelClass {
     this.plotPointsGrouped = new Array<plotDataGrouped>();
     this.tableColumnsGrouped = [
       { name: "indicator", label: "Indicator" },
-      { name: "latest_date", label: "Latest Date" },
-      { name: "value", label: "Value" },
-      { name: "target", label: "Target" },
-      { name: "alt_target", label: "Alt. Target" },
+      { name: "latest_date", label: "Latest Date" }
+    ];
+    const lineSettings = this.inputSettings.settings.lines;
+    if (lineSettings.show_main) {
+      this.tableColumnsGrouped.push({ name: "value", label: this.inputSettings.derivedSettings.chart_type_props.value_name });
+    }
+    if (lineSettings.show_target) {
+      this.tableColumnsGrouped.push({ name: "target", label: lineSettings.ttip_label_target });
+    }
+    if (lineSettings.show_alt_target) {
+      this.tableColumnsGrouped.push({ name: "alt_target", label: lineSettings.ttip_label_alt_target });
+    }
+    ["99", "95", "68"].forEach(limit => {
+      if (lineSettings[`show_${limit}`]) {
+        this.tableColumnsGrouped.push({
+          name: `ucl${limit}`,
+          label: `Upper ${lineSettings[`ttip_label_${limit}`]}`
+        })
+      }
+    });
+    ["68", "95", "99"].forEach(limit => {
+      if (lineSettings[`show_${limit}`]) {
+        this.tableColumnsGrouped.push({
+          name: `lcl${limit}`,
+          label: `Lower ${lineSettings[`ttip_label_${limit}`]}`
+        })
+      }
+    })
+    const nhsIconSettings: defaultSettingsType["nhs_icons"] = this.inputSettings.settings.nhs_icons;
+    if (nhsIconSettings.show_variation_icons) {
+      this.tableColumnsGrouped.push({ name: "variation", label: "Variation" });
+    }
+    if (nhsIconSettings.show_assurance_icons) {
+      this.tableColumnsGrouped.push({ name: "assurance", label: "Assurance" });
+    }
+
+    /*
       { name: "upl", label: "UPL" },
       { name: "lpl", label: "LPL" },
       { name: "variation", label: "Variation" },
       { name: "assurance", label: "Assurance" }
     ];
-
+    */
     for (let i: number = 0; i < this.groupNames.length; i++) {
       //const inputData: dataObject = this.inputDataGrouped[i];
       const limits: controlLimitsObject = this.controlLimitsGrouped[i];
-      //const outliers: outliersObject = this.outliersGrouped[i];
+      const outliers: outliersObject = this.outliersGrouped[i];
       const lastIndex: number = limits.keys.length - 1;
+      const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settingsGrouped[i]);
+      const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settingsGrouped[i],
+                                                      this.inputSettings.derivedSettingsGrouped[i]);
 
       const table_row: summaryTableRowDataGrouped = {
         indicator: this.groupNames[i],
@@ -307,10 +347,14 @@ export default class viewModelClass {
         value: limits.values[lastIndex],
         target: limits.targets[lastIndex],
         alt_target: limits.alt_targets[lastIndex],
-        upl: limits.ul99[lastIndex],
-        lpl: limits.ll99[lastIndex],
-        variation: i === 0 ? "commonCause" : "concernHigh",
-        assurance: "inconsistent"
+        ucl99: limits.ul99[lastIndex],
+        ucl95: limits.ul95[lastIndex],
+        ucl68: limits.ul68[lastIndex],
+        lcl68: limits.ll68[lastIndex],
+        lcl95: limits.ll95[lastIndex],
+        lcl99: limits.ll99[lastIndex],
+        variation: varIcons[0],
+        assurance: assIcon
       }
 
       this.plotPointsGrouped.push({

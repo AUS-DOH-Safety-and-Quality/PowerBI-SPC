@@ -7,7 +7,7 @@ import * as d3 from "./D3 Modules";
 export default function drawSummaryTable(selection: divBaseType, visualObj: Visual) {
   selection.style("height", "100%").style("width", "100%");
   selection.selectAll(".iconrow").remove();
-  selection.selectAll(".rowsvg").remove();
+  selection.selectAll(".cell-text").remove();
 
   if (selection.select(".table-group").empty()) {
     const table = selection.append("table")
@@ -32,6 +32,8 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
     cols = visualObj.viewModel.tableColumns;
   }
 
+  let maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
+
   selection.select(".table-header")
             .selectAll("th")
             .data(cols)
@@ -41,7 +43,10 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .style("padding", "5px")
             .style("background-color", "lightgray")
             .style("font-weight", "bold")
-            .style("text-transform", "uppercase");
+            .style("text-transform", "uppercase")
+            .style("overflow", "hidden")
+            .style("text-overflow", "ellipsis")
+            .style("max-width", `${maxWidth}px`);
 
   const tableSelect = selection.select(".table-body")
             .selectAll('tr')
@@ -60,7 +65,9 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             })
               */
             .selectAll('td')
-            .data((d) => cols.map(col => d.table_row[col.name]))
+            .data((d) => cols.map(col => {
+              return {column: col.name, value: d.table_row[col.name]}
+            }))
             .join('td')
             .on("mouseover", (event) => {
               d3.select(event.target).style("background-color", "lightgray");
@@ -70,31 +77,36 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             })
             .style("border", "1px black solid")
             .style("padding", "5px")
-            .style("font-size", "12px")
+            .style("font-size", "12px");
 
-   tableSelect.filter((_, i) => i < (cols.length - 2))
-              .text((d) => {
-      return typeof d === "number" ? d.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs) : d;
-    })
-
-  const varSelection = tableSelect.filter((_, i) => i === (cols.length - 2))
-  const thisSelDims = (varSelection.node() as SVGGElement).getBoundingClientRect()
+  const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
+  const draw_icons: boolean = nhsIconSettings.show_variation_icons || nhsIconSettings.show_assurance_icons;
+  const thisSelDims = (tableSelect.node() as SVGGElement).getBoundingClientRect()
   const scaling = visualObj.viewModel.inputSettings.settings.nhs_icons.variation_icons_scaling
 
   const icon_x: number = (thisSelDims.width * 0.8) / 0.08 / 2 - 189;
   const icon_y: number = (thisSelDims.height * 0.8) / 0.08 / 2 - 189;
-  varSelection.each(function(d) {
-    d3.select(this)
-        .append("svg")
-        .attr("width", thisSelDims.width * 0.8)
-        .attr("height", thisSelDims.height * 0.8)
-        .classed("rowsvg", true)
-        .call(initialiseIconSVG, d)
-        .selectAll(".icongroup")
-        .attr("viewBox", "0 0 378 378")
-        .selectAll(`.${d}`)
-        .attr("transform", `scale(${0.08 * scaling}) translate(${icon_x}, ${icon_y})`)
-        .call(nhsIcons[d])
+
+  tableSelect.each(function(d) {
+    if (draw_icons && (d.column === "variation" || d.column === "assurance")) {
+      d3.select(this)
+          .append("svg")
+          .attr("width", thisSelDims.width * 0.8)
+          .attr("height", thisSelDims.height * 0.8)
+          .classed("rowsvg", true)
+          .call(initialiseIconSVG, d.value)
+          .selectAll(".icongroup")
+          .attr("viewBox", "0 0 378 378")
+          .selectAll(`.${d.value}`)
+          .attr("transform", `scale(${0.08 * scaling}) translate(${icon_x}, ${icon_y})`)
+          .call(nhsIcons[d.value]);
+    } else {
+      let value: string = typeof d.value === "number"
+        ? d.value.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs)
+        : d.value;
+
+      d3.select(this).text(value).classed("cell-text", true);
+    }
   })
 
   selection.on('click', () => {
