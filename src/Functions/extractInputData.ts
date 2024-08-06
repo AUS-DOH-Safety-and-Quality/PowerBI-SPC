@@ -67,7 +67,7 @@ export default function extractInputData(inputView: DataViewCategorical,
                                     .map(d => d.show_specification ? d.specification_upper : null);
   const spcSettings: defaultSettingsType["spc"][] = extractConditionalFormatting<defaultSettingsType["spc"]>(inputView, "spc", inputSettings)?.values
   const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, derivedSettings.chart_type_props, first_idx, last_idx);
-
+  console.log(inputValidStatus)
   if (inputValidStatus.status !== 0) {
     return invalidInputData(inputValidStatus);
   }
@@ -79,7 +79,7 @@ export default function extractInputData(inputView: DataViewCategorical,
   const settingsMessages = validationMessages;
   let valid_x: number = 0;
   for (let i: number = first_idx; i <= last_idx; i++) {
-    if (inputValidStatus.messages[i] === "") {
+    if (inputValidStatus.messages[i - first_idx] === "") {
       valid_ids.push(i);
       valid_keys.push({ x: valid_x, id: i, label: keys[i] })
       valid_x += 1;
@@ -92,7 +92,7 @@ export default function extractInputData(inputView: DataViewCategorical,
         );
       }
     } else {
-      removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus.messages[i]}.`)
+      removalMessages.push(`${groupVarName} ${keys[i]} removed due to: ${inputValidStatus.messages[i - first_idx]}.`)
     }
   }
 
@@ -121,6 +121,9 @@ export default function extractInputData(inputView: DataViewCategorical,
     }
   }
 
+  const curr_highlights = extractValues(highlights, valid_ids);
+
+
   return {
     limitInputArgs: {
       keys: valid_keys,
@@ -131,8 +134,8 @@ export default function extractInputData(inputView: DataViewCategorical,
     },
     spcSettings: spcSettings[first_idx],
     tooltips: extractValues(tooltips, valid_ids),
-    highlights: extractValues(highlights, valid_ids),
-    anyHighlights: !isNullOrUndefined(highlights),
+    highlights: curr_highlights,
+    anyHighlights: curr_highlights.filter(d => !isNullOrUndefined(d)).length > 0,
     categories: inputView.categories[0],
     groupings: valid_groupings,
     groupingIndexes: groupingIndexes,

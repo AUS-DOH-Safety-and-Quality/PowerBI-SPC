@@ -62,6 +62,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       this.viewModel.update(options, this.host);
+      console.log(this.viewModel)
 
       if (this.viewModel.showGrouped) {
         if (this.viewModel.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
@@ -99,15 +100,14 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(drawIcons, this)
                 .call(addContextMenu, this)
                 .call(drawDownloadButton, this)
-
       }
-      this.updateHighlighting();
 
       if (this.viewModel.inputData.warningMessage !== "") {
         this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
                                      this.viewModel.inputData.warningMessage);
       }
     }
+      this.updateHighlighting();
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
       this.tableDiv.style("width", "0%").style("height", "0%");
@@ -133,7 +133,11 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   updateHighlighting(): void {
     const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
+    const anyHighlightsGrouped: boolean = this.viewModel.inputDataGrouped ? this.viewModel.inputDataGrouped.some(d => d.anyHighlights) : false;
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+    console.log("ids", allSelectionIDs)
+    console.log("anyHighlights", anyHighlights)
+    console.log("anyHighlightsGrouped", anyHighlightsGrouped)
     const opacityFull: number = this.viewModel.inputSettings.settings.scatter.opacity;
     const opacityReduced: number = this.viewModel.inputSettings.settings.scatter.opacity_unselected;
 
@@ -147,7 +151,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     dotsSelection.style("fill-opacity", defaultOpacity);
     tableSelection.style("opacity", defaultOpacity);
-    if (anyHighlights || (allSelectionIDs.length > 0)) {
+    if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
       const dotsNodes = dotsSelection.nodes();
       const tableNodes = tableSelection.nodes();
       // If either the table or dots haven't been initialised
@@ -157,7 +161,8 @@ export class Visual implements powerbi.extensibility.IVisual {
       for (let i = 0; i < maxNodes; i++) {
         const currentDotNode = dotsNodes?.[i];
         const currentTableNode = tableNodes?.[i];
-        const dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
+        let dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
+        console.log("dot: ", dot)
         const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });

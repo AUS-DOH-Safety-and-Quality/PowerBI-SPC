@@ -67,6 +67,9 @@ export type plotData = {
 
 export type plotDataGrouped = {
   table_row: summaryTableRowDataGrouped;
+  identity: ISelectionId;
+  aesthetics: defaultSettingsType["scatter"];
+  highlighted: boolean;
 }
 
 export type controlLimitsObject = {
@@ -135,6 +138,7 @@ export default class viewModelClass {
   groupStartEndIndexesGrouped: number[][][];
   tableColumnsGrouped: { name: string; label: string; }[];
   plotPointsGrouped: plotDataGrouped[];
+  identitiesGrouped: ISelectionId[];
 
   constructor() {
     this.inputData = <dataObject>null;
@@ -169,6 +173,7 @@ export default class viewModelClass {
       this.groupStartEndIndexesGrouped = new Array<number[][]>();
       this.controlLimitsGrouped = new Array<controlLimitsObject>();
       this.outliersGrouped = new Array<outliersObject>();
+      this.identitiesGrouped = new Array<ISelectionId>();
 
       options.dataViews[0].categorical.values.grouped().forEach((d, idx) => {
         (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
@@ -179,6 +184,9 @@ export default class viewModelClass {
                                                       this.inputSettings.derivedSettingsGrouped[idx],
                                                       this.inputSettings.validationStatus.messages,
                                                       first_idx, last_idx);
+        //let identities: ISelectionId[] = inpData.limitInputArgs.keys.map(keys => {
+        //  return host.createSelectionIdBuilder().withCategory(inpData.categories, keys.id).createSelectionId()
+        //});
         const invalidData: boolean = inpData.validationStatus.status !== 0;
         const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
         const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
@@ -187,6 +195,7 @@ export default class viewModelClass {
         if (!invalidData) {
           this.scaleAndTruncateLimits(limits, this.inputSettings);
         }
+        this.identitiesGrouped.push(host.createSelectionIdBuilder().withSeries(options.dataViews[0].categorical.values, d).createSelectionId());
         this.groupNames.push(<string>d.name);
         this.inputDataGrouped.push(inpData);
         this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
@@ -358,7 +367,10 @@ export default class viewModelClass {
       }
 
       this.plotPointsGrouped.push({
-        table_row: table_row
+        table_row: table_row,
+        identity: this.identitiesGrouped[i],
+        aesthetics: this.inputSettings.settingsGrouped[i].scatter,
+        highlighted: this.inputDataGrouped[i].anyHighlights
       })
     }
   }
@@ -434,6 +446,11 @@ export default class viewModelClass {
                                   "ast_colour", this.inputSettings.settings) as string;
       }
 
+      let identity: ISelectionId = host.createSelectionIdBuilder()
+      .withCategory(this.inputData.categories,
+                    this.inputData.limitInputArgs.keys[i].id)
+      .createSelectionId();
+
       const table_row: summaryTableRowData = {
         date: this.controlLimits.keys[i].label,
         numerator: this.controlLimits.numerators?.[i],
@@ -460,10 +477,7 @@ export default class viewModelClass {
         value: this.controlLimits.values[i],
         aesthetics: aesthetics,
         table_row: table_row,
-        identity: host.createSelectionIdBuilder()
-                      .withCategory(this.inputData.categories,
-                                    this.inputData.limitInputArgs.keys[i].id)
-                      .createSelectionId(),
+        identity: identity,
         highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
         tooltip: buildTooltip(table_row, this.inputData?.tooltips?.[index],
                               this.inputSettings.settings, this.inputSettings.derivedSettings)

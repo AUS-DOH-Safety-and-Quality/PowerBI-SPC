@@ -52,18 +52,21 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .selectAll('tr')
             .data(<plotData[]>plotPoints)
             .join('tr')
-            /*
             .on("click", (event, d: plotData) => {
-              if (visualObj.host.hostCapabilities.allowInteractions) {
+              //if (visualObj.host.hostCapabilities.allowInteractions) {
                 visualObj.selectionManager
                           .select(d.identity, event.ctrlKey || event.metaKey)
-                          .then(() => {
+                          .then((d2) => {
+                            console.log("Selection made")
+                            console.log(d2)
                             visualObj.updateHighlighting();
+                          }, (d2) => {
+                            console.log("Selection failed")
+                            console.log(d2)
                           });
                 event.stopPropagation();
-              }
+              //}
             })
-              */
             .selectAll('td')
             .data((d) => cols.map(col => {
               return {column: col.name, value: d.table_row[col.name]}
