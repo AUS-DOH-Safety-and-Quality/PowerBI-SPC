@@ -228,16 +228,16 @@ export default class viewModelClass {
           this.initialiseGroupedLines();
         }
       }
-      this.plotProperties.update(
-        options,
-        this.plotPoints,
-        this.controlLimits,
-        this.inputData,
-        this.inputSettings.settings,
-        this.inputSettings.derivedSettings,
-        this.colourPalette
-      )
     }
+    this.plotProperties.update(
+      options,
+      this.plotPoints,
+      this.controlLimits,
+      this.inputData,
+      this.inputSettings.settings,
+      this.inputSettings.derivedSettings,
+      this.colourPalette
+    )
     this.firstRun = false;
   }
 
