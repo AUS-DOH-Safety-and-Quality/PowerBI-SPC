@@ -160,9 +160,10 @@ export class Visual implements powerbi.extensibility.IVisual {
           return currentSelectionId.includes(dot.identity);
         });
         const currentPointHighlighted: boolean = dot.highlighted;
-        const newOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
-        d3.select(currentDotNode).style("fill-opacity", newOpacity);
-        d3.select(currentTableNode).style("opacity", newOpacity);
+        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
+        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity"] : dot.aesthetics["table_opacity_unselected"];
+        d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
+        d3.select(currentTableNode).style("opacity", newTableOpacity);
       }
     }
   }

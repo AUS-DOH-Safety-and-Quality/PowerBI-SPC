@@ -122,10 +122,10 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   }
 
   const tableSelect = tableRows.selectAll('td')
-            .data((d) => cols.map(col => {
-              return {column: col.name, value: d.table_row[col.name]}
-            }))
-            .join('td');
+                              .data((d) => cols.map(col => {
+                                return { column: col.name, value: d.table_row[col.name] }
+                              }))
+                              .join('td');
 
   const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
   const draw_icons: boolean = nhsIconSettings.show_variation_icons || nhsIconSettings.show_assurance_icons;
