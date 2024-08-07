@@ -5,7 +5,7 @@ type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
-import { settingsClass, type defaultSettingsType, plotPropertiesClass } from "../Classes";
+import { settingsClass, type defaultSettingsType, plotPropertiesClass, type derivedSettingsClass } from "../Classes";
 import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
@@ -188,11 +188,14 @@ export default class viewModelClass {
                                                         first_idx, last_idx);
           const invalidData: boolean = inpData.validationStatus.status !== 0;
           const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
-          const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings);
-          const outliers: outliersObject = invalidData ? null : this.flagOutliers(limits, groupStartEndIndexes, this.inputSettings);
+          const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings.settingsGrouped[idx]);
+          const outliers: outliersObject = invalidData ? null : this.flagOutliers(limits, groupStartEndIndexes,
+                                                                                  this.inputSettings.settingsGrouped[idx],
+                                                                                  this.inputSettings.derivedSettingsGrouped[idx]);
 
           if (!invalidData) {
-            this.scaleAndTruncateLimits(limits, this.inputSettings);
+            this.scaleAndTruncateLimits(limits, this.inputSettings.settingsGrouped[idx],
+                                        this.inputSettings.derivedSettingsGrouped[idx]);
           }
           this.identitiesGrouped.push(host.createSelectionIdBuilder().withSeries(options.dataViews[0].categorical.values, d).createSelectionId());
           this.groupNames.push(<string>d.name);
@@ -219,9 +222,12 @@ export default class viewModelClass {
 
         if (this.inputData.validationStatus.status === 0) {
           this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
-          this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings);
-          this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings);
-          this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes, this.inputSettings);
+          this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings.settings);
+          this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings.settings,
+                                      this.inputSettings.derivedSettings);
+          this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes,
+                                            this.inputSettings.settings,
+                                            this.inputSettings.derivedSettings);
 
           // Structure the data and calculated limits to the format needed for plotting
           this.initialisePlotData(host);
@@ -256,11 +262,11 @@ export default class viewModelClass {
     return groupStartEndIndexes;
   }
 
-  calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsClass): controlLimitsObject {
+  calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: defaultSettingsType): controlLimitsObject {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
-      = limitFunctions[inputSettings.settings.spc.chart_type];
+      = limitFunctions[inputSettings.spc.chart_type];
 
-    inputData.limitInputArgs.outliers_in_limits = inputSettings.settings.spc.outliers_in_limits;
+    inputData.limitInputArgs.outliers_in_limits = inputSettings.spc.outliers_in_limits;
     let controlLimits: controlLimitsObject;
     if (groupStartEndIndexes.length > 1) {
       const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
@@ -533,32 +539,34 @@ export default class viewModelClass {
     this.groupedLines = d3.groups(formattedLines, d => d.group);
   }
 
-  scaleAndTruncateLimits(controlLimits: controlLimitsObject, inputSettings: settingsClass): void {
+  scaleAndTruncateLimits(controlLimits: controlLimitsObject,
+                          inputSettings: defaultSettingsType,
+                          derivedSettings: derivedSettingsClass): void {
     // Scale limits using provided multiplier
-    const multiplier: number = inputSettings.derivedSettings.multiplier;
+    const multiplier: number = derivedSettings.multiplier;
     let lines_to_scale: string[] = ["values", "targets"];
 
-    if (inputSettings.derivedSettings.chart_type_props.has_control_limits) {
+    if (derivedSettings.chart_type_props.has_control_limits) {
       lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
     let lines_to_truncate: string[] = lines_to_scale;
-    if (inputSettings.settings.lines.show_alt_target) {
+    if (inputSettings.lines.show_alt_target) {
       lines_to_truncate = lines_to_truncate.concat(["alt_targets"]);
-      if (inputSettings.settings.lines.multiplier_alt_target) {
+      if (inputSettings.lines.multiplier_alt_target) {
         lines_to_scale = lines_to_scale.concat(["alt_targets"]);
       }
     }
-    if (inputSettings.settings.lines.show_specification) {
+    if (inputSettings.lines.show_specification) {
       lines_to_truncate = lines_to_truncate.concat(["speclimits_lower", "speclimits_upper"]);
-      if (inputSettings.settings.lines.multiplier_specification) {
+      if (inputSettings.lines.multiplier_specification) {
         lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
       }
     }
 
     const limits: truncateInputs = {
-      lower: inputSettings.settings.spc.ll_truncate,
-      upper: inputSettings.settings.spc.ul_truncate
+      lower: inputSettings.spc.ll_truncate,
+      upper: inputSettings.spc.ul_truncate
     };
 
     lines_to_scale.forEach(limit => {
@@ -570,13 +578,14 @@ export default class viewModelClass {
     })
   }
 
-  flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][], inputSettings: settingsClass): outliersObject {
-    const process_flag_type: string = inputSettings.settings.outliers.process_flag_type;
-    const improvement_direction: string = inputSettings.settings.outliers.improvement_direction;
-    const trend_n: number = inputSettings.settings.outliers.trend_n;
-    const shift_n: number = inputSettings.settings.outliers.shift_n;
-    const ast_specification: boolean = inputSettings.settings.outliers.astronomical_limit === "Specification";
-    const two_in_three_specification: boolean = inputSettings.settings.outliers.two_in_three_limit === "Specification";
+  flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][],
+                inputSettings: defaultSettingsType, derivedSettings: derivedSettingsClass): outliersObject {
+    const process_flag_type: string = inputSettings.outliers.process_flag_type;
+    const improvement_direction: string = inputSettings.outliers.improvement_direction;
+    const trend_n: number = inputSettings.outliers.trend_n;
+    const shift_n: number = inputSettings.outliers.shift_n;
+    const ast_specification: boolean = inputSettings.outliers.astronomical_limit === "Specification";
+    const two_in_three_specification: boolean = inputSettings.outliers.two_in_three_limit === "Specification";
     const outliers = {
       astpoint: rep("none", controlLimits.values.length),
       two_in_three: rep("none", controlLimits.values.length),
@@ -589,15 +598,15 @@ export default class viewModelClass {
       const group_values: number[] = controlLimits.values.slice(start, end);
       const group_targets: number[] = controlLimits.targets.slice(start, end);
 
-      if (inputSettings.derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
+      if (derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
         const limit_map: Record<string, string> = {
           "1 Sigma": "68",
           "2 Sigma": "95",
           "3 Sigma": "99",
           "Specification": "",
         };
-        if (inputSettings.settings.outliers.astronomical) {
-          const ast_limit: string = limit_map[inputSettings.settings.outliers.astronomical_limit];
+        if (inputSettings.outliers.astronomical) {
+          const ast_limit: string = limit_map[inputSettings.outliers.astronomical_limit];
           const ll_prefix: string = ast_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = ast_specification ? "speclimits_upper" : "ul";
           const lower_limits: number[] = controlLimits?.[`${ll_prefix}${ast_limit}`]?.slice(start, end);
@@ -605,9 +614,9 @@ export default class viewModelClass {
           astronomical(group_values, lower_limits, upper_limits)
             .forEach((flag, idx) => outliers.astpoint[start + idx] = flag)
         }
-        if (inputSettings.settings.outliers.two_in_three) {
-          const highlight_series: boolean = inputSettings.settings.outliers.two_in_three_highlight_series;
-          const two_in_three_limit: string = limit_map[inputSettings.settings.outliers.two_in_three_limit];
+        if (inputSettings.outliers.two_in_three) {
+          const highlight_series: boolean = inputSettings.outliers.two_in_three_highlight_series;
+          const two_in_three_limit: string = limit_map[inputSettings.outliers.two_in_three_limit];
           const ll_prefix: string = two_in_three_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = two_in_three_specification ? "speclimits_upper" : "ul";
           const lower_warn_limits: number[] = controlLimits?.[`${ll_prefix}${two_in_three_limit}`]?.slice(start, end);
@@ -616,11 +625,11 @@ export default class viewModelClass {
             .forEach((flag, idx) => outliers.two_in_three[start + idx] = flag)
         }
       }
-      if (inputSettings.settings.outliers.trend) {
+      if (inputSettings.outliers.trend) {
         trend(group_values, trend_n)
           .forEach((flag, idx) => outliers.trend[start + idx] = flag)
       }
-      if (inputSettings.settings.outliers.shift) {
+      if (inputSettings.outliers.shift) {
         shift(group_values, group_targets, shift_n)
           .forEach((flag, idx) => outliers.shift[start + idx] = flag)
       }
