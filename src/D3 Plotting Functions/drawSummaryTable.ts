@@ -3,8 +3,11 @@ import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
+import type { defaultSettingsType } from "../Classes";
+import { isNullOrUndefined } from "../Functions";
 
-// ESLint errors due to number of lines in function, but would reduce readability to separate further
+// ESLint errors due to number of lines in function
+// Will refactor in future
 /* eslint-disable */
 export default function drawSummaryTable(selection: divBaseType, visualObj: Visual) {
   selection.style("height", "100%").style("width", "100%");
@@ -36,16 +39,54 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   const maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
   const tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
 
+  selection.select(".table-group")
+            .style("border-width", `${tableSettings.table_outer_border_width}px`)
+            .style("border-style", tableSettings.table_outer_border_style)
+            .style("border-color", tableSettings.table_outer_border_colour);
+
+  ["top", "right", "bottom", "left"].forEach((side) => {
+    if (!tableSettings[`table_outer_border_${side}`]) {
+      selection.select(".table-group").style(`border-${side}`, "none");
+    }
+  });
+
   const tableHeaders = selection.select(".table-header")
             .selectAll("th")
             .data(cols)
-            .join("th")
-            .style("border", "1px black solid")
-            .style("padding", "1px")
+            .join("th");
+
+  tableHeaders.selectAll("text")
+              .data(d => [d.label])
+              .join("text")
+              .text(d => d)
+              .style("font-size", `${tableSettings.table_header_size}px`)
+              .style("font-family", tableSettings.table_header_font)
+              .style("color", tableSettings.table_header_colour)
+
+  tableHeaders.style("padding", `${tableSettings.table_header_text_padding}px`)
             .style("background-color", tableSettings.table_header_bg_colour)
             .style("font-weight", tableSettings.table_header_font_weight)
             .style("text-transform", tableSettings.table_header_text_transform)
             .style("text-align", tableSettings.table_header_text_align)
+            .style("border-width", `${tableSettings.table_header_border_width}px`)
+            .style("border-style", tableSettings.table_header_border_style)
+            .style("border-color", tableSettings.table_header_border_colour)
+            // Top border of header controlled by outer border
+            .style("border-top", "inherit");
+
+  selection.selectAll("first-child")
+            .style("border-left", "inherit");
+  selection.selectAll("th:last-child")
+            .style("border-right", "inherit");
+
+  if (!tableSettings.table_header_border_bottom) {
+    tableHeaders.style("border-bottom", "none");
+  }
+
+  if (!tableSettings.table_header_border_inner) {
+    tableHeaders.style("border-left", "none")
+                .style("border-right", "none");
+  }
 
   if (tableSettings.table_text_overflow !== "none") {
     tableHeaders.style("overflow", "hidden")
@@ -55,14 +96,6 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
     tableHeaders.style("overflow", "auto")
                 .style("max-width", "none")
   }
-
-  tableHeaders.selectAll("text")
-              .data(d => [d.label])
-              .join("text")
-              .text(d => d)
-              .style("font-size", `${tableSettings.table_header_size}px`)
-              .style("font-family", tableSettings.table_header_font)
-              .style("color", tableSettings.table_header_colour)
 
   const tableRows = selection.select(".table-body")
             .selectAll('tr')
@@ -77,34 +110,6 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
                           });
                 event.stopPropagation();
               }
-            })
-            .style("background-color", (d) => {
-              const groupBGColour: string = d.aesthetics?.["table_body_bg_colour"] ?? tableSettings.table_body_bg_colour;
-              return groupBGColour;
-            })
-            .style("font-weight", (d) => {
-              const groupWeight: string = d.aesthetics?.["table_body_font_weight"] ?? tableSettings.table_body_font_weight;
-              return groupWeight;
-            })
-            .style("text-transform", (d) => {
-              const groupTransform: string = d.aesthetics?.["table_body_text_transform"] ?? tableSettings.table_body_text_transform;
-              return groupTransform;
-            })
-            .style("text-align", (d) => {
-              const groupAlign: string = d.aesthetics?.["table_body_text_align"] ?? tableSettings.table_body_text_align;
-              return groupAlign;
-            })
-            .style("font-size", (d) => {
-              const groupSize: number = d.aesthetics?.["table_body_size"] ?? tableSettings.table_body_size;
-              return `${groupSize}px`;
-            })
-            .style("font-family", (d) => {
-              const groupFont: string = d.aesthetics?.["table_body_font"] ?? tableSettings.table_body_font;
-              return groupFont;
-            })
-            .style("color", (d) => {
-              const groupColour: string = d.aesthetics?.["table_body_colour"] ?? tableSettings.table_body_colour;
-              return groupColour;
             });
 
   if (tableSettings.table_text_overflow !== "none") {
@@ -122,19 +127,6 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             }))
             .join('td');
 
-  tableSelect.on("mouseover", (event) => {
-              d3.select(event.target).select(function(){
-                return this.closest("td");
-              }).style("background-color", "lightgray");
-            })
-            .on("mouseout", (event) => {
-              d3.select(event.target).select(function(){
-                return this.closest("td");
-              }).style("background-color", "inherit");
-            })
-            .style("border", "1px black solid")
-            .style("padding", "1px")
-
   const nhsIconSettings = visualObj.viewModel.inputSettings.settings.nhs_icons;
   const draw_icons: boolean = nhsIconSettings.show_variation_icons || nhsIconSettings.show_assurance_icons;
   const showGrouped: boolean = visualObj.viewModel.showGrouped;
@@ -144,9 +136,12 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   const icon_x: number = (thisSelDims.width * 0.8) / 0.08 / 2 - 189;
   const icon_y: number = (thisSelDims.height * 0.8) / 0.08 / 2 - 189;
 
-  tableSelect.each(function(d) {
+  tableSelect.each(function(d, idx) {
+    const currNode = d3.select(this);
+    const parentNode = d3.select(currNode.property("parentNode"));
+    const rowData = parentNode.datum() as plotData;
     if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
-      d3.select(this)
+      currNode
           .append("svg")
           .attr("width", thisSelDims.width * 0.8)
           .attr("height", thisSelDims.height * 0.8)
@@ -162,9 +157,49 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
         ? d.value.toFixed(visualObj.viewModel.inputSettings.settings.spc.sig_figs)
         : d.value;
 
-      d3.select(this).text(value).classed("cell-text", true);
+      currNode.text(value).classed("cell-text", true);
     }
-  })
+    const tableAesthetics: defaultSettingsType["summary_table"]
+      = rowData.aesthetics?.["table_body_bg_colour"]
+                              ? rowData.aesthetics as any
+                              : tableSettings;
+
+    currNode.style("background-color", tableAesthetics.table_body_bg_colour)
+            .style("font-weight", tableAesthetics.table_body_font_weight)
+            .style("text-transform", tableAesthetics.table_body_text_transform)
+            .style("text-align", tableAesthetics.table_body_text_align)
+            .style("font-size", `${tableAesthetics.table_body_size}px`)
+            .style("font-family", tableAesthetics.table_body_font)
+            .style("color", tableAesthetics.table_body_colour)
+            .style("border-width", `${tableAesthetics.table_body_border_width}px`)
+            .style("border-style", tableAesthetics.table_body_border_style)
+            .style("border-color", tableAesthetics.table_body_border_colour)
+            .style("padding", `${tableAesthetics.table_body_text_padding}px`);
+
+    if (idx === 0) {
+      currNode.style("border-left", "inherit");
+    } else if (idx === cols.length - 1) {
+      currNode.style("border-right", "inherit");
+    }
+
+    if (isNullOrUndefined(parentNode.property("nextElementSibling"))) {
+      currNode.style("border-bottom", "inherit");
+    }
+    if (isNullOrUndefined(parentNode.property("previousElementSibling"))) {
+      currNode.style("border-top", "inherit");
+    }
+
+    currNode.on("mouseover", (event) => {
+      d3.select(event.target).select(function(){
+        return this.closest("td");
+      }).style("background-color", "lightgray");
+    })
+    .on("mouseout", (event) => {
+      d3.select(event.target).select(function(){
+        return this.closest("td");
+      }).style("background-color", "inherit");
+    });
+  });
 
   selection.on('click', () => {
     visualObj.selectionManager.clear();

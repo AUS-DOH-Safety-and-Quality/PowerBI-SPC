@@ -760,6 +760,63 @@
           "displayName": "Show Summary Table",
           "type" : { "bool" : true }
         },
+        "table_opacity": {
+          "displayName": "Opacity",
+          "type": { "numeric": true }
+        },
+        "table_opacity_unselected": {
+          "displayName": "Opacity if Unselected",
+          "type": { "numeric": true }
+        },
+        "table_text_overflow": {
+          "displayName": "Text Overflow Handling",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Ellipsis", "value" : "ellipsis" },
+              { "displayName" : "Truncate",     "value" : "clip" },
+              { "displayName" : "None",     "value" : "none" }
+            ]
+          }
+        },
+        "table_outer_border_colour":{
+          "displayName": "Outer Border Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_outer_border_width": {
+          "displayName": "Outer Border Width",
+          "type": { "numeric": true }
+        },
+        "table_outer_border_style": {
+          "displayName": "Outer Border Style",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Solid",  "value" : "solid" },
+              { "displayName" : "Dashed", "value" : "dashed" },
+              { "displayName" : "Dotted", "value" : "dotted" },
+              { "displayName" : "Double", "value" : "double" },
+              { "displayName" : "Groove", "value" : "groove" },
+              { "displayName" : "Ridge",  "value" : "ridge" },
+              { "displayName" : "Inset",  "value" : "inset" },
+              { "displayName" : "Outset", "value" : "outset" }
+            ]
+          }
+        },
+        "table_outer_border_top": {
+          "displayName": "Outer Border Top",
+          "type": { "bool": true }
+        },
+        "table_outer_border_bottom": {
+          "displayName": "Outer Border Bottom",
+          "type": { "bool": true }
+        },
+        "table_outer_border_left": {
+          "displayName": "Outer Border Left",
+          "type": { "bool": true }
+        },
+        "table_outer_border_right": {
+          "displayName": "Outer Border Right",
+          "type": { "bool": true }
+        },
         "table_header_font": {
           "displayName": "Header Font",
           "type": { "formatting": { "fontFamily": true } }
@@ -799,6 +856,41 @@
         "table_header_text_align": {
           "displayName": "Text Alignment",
           "type": { "formatting": { "alignment": true } }
+        },
+        "table_header_text_padding": {
+          "displayName": "Padding Around Text",
+          "type": { "numeric": true }
+        },
+        "table_header_border_colour":{
+          "displayName": "Header Border Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_header_border_width": {
+          "displayName": "Header Border Width",
+          "type": { "numeric": true }
+        },
+        "table_header_border_style": {
+          "displayName": "Header Border Style",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Solid",  "value" : "solid" },
+              { "displayName" : "Dashed", "value" : "dashed" },
+              { "displayName" : "Dotted", "value" : "dotted" },
+              { "displayName" : "Double", "value" : "double" },
+              { "displayName" : "Groove", "value" : "groove" },
+              { "displayName" : "Ridge",  "value" : "ridge" },
+              { "displayName" : "Inset",  "value" : "inset" },
+              { "displayName" : "Outset", "value" : "outset" }
+            ]
+          }
+        },
+        "table_header_border_bottom": {
+          "displayName": "Bottom Border",
+          "type": { "bool": true }
+        },
+        "table_header_border_inner": {
+          "displayName": "Inner Borders",
+          "type": { "bool": true }
         },
         "table_body_font": {
           "displayName": "Body Font",
@@ -840,23 +932,40 @@
           "displayName": "Text Alignment",
           "type": { "formatting": { "alignment": true } }
         },
-        "table_opacity": {
-          "displayName": "Opacity",
+        "table_body_text_padding": {
+          "displayName": "Padding Around Text",
           "type": { "numeric": true }
         },
-        "table_opacity_unselected": {
-          "displayName": "Opacity if Unselected",
+        "table_body_border_colour":{
+          "displayName": "Body Border Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "table_body_border_width": {
+          "displayName": "Body Border Width",
           "type": { "numeric": true }
         },
-        "table_text_overflow": {
-          "displayName": "Text Overflow Handling",
+        "table_body_border_style": {
+          "displayName": "Body Border Style",
           "type": {
             "enumeration" : [
-              { "displayName" : "Ellipsis", "value" : "ellipsis" },
-              { "displayName" : "Truncate",     "value" : "clip" },
-              { "displayName" : "None",     "value" : "none" }
+              { "displayName" : "Solid",  "value" : "solid" },
+              { "displayName" : "Dashed", "value" : "dashed" },
+              { "displayName" : "Dotted", "value" : "dotted" },
+              { "displayName" : "Double", "value" : "double" },
+              { "displayName" : "Groove", "value" : "groove" },
+              { "displayName" : "Ridge",  "value" : "ridge" },
+              { "displayName" : "Inset",  "value" : "inset" },
+              { "displayName" : "Outset", "value" : "outset" }
             ]
           }
+        },
+        "table_body_border_top_bottom": {
+          "displayName": "Top/Bottom Borders",
+          "type": { "bool": true }
+        },
+        "table_body_border_left_right": {
+          "displayName": "Left/Right Borders",
+          "type": { "bool": true }
         }
       }
     },

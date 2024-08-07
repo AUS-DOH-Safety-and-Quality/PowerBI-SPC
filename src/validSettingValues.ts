@@ -82,9 +82,24 @@ const colourOptions = {
   standard: { default: "#000000" }
 }
 
+const borderOptions = {
+  width: {
+    default: 1,
+    valid: { numberRange: { min: 0 } }
+  },
+  style: {
+    default: "solid",
+    valid: ["solid", "dotted", "dashed", "double", "groove", "ridge", "inset", "outset", "none"]
+  },
+  colour: {
+    default: "#000000"
+  }
+}
+
 export {
   textOptions,
   lineOptions,
   iconOptions,
-  colourOptions
+  colourOptions,
+  borderOptions
 }

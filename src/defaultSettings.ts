@@ -1,4 +1,4 @@
-import { textOptions, lineOptions, iconOptions, colourOptions } from "./validSettingValues";
+import { textOptions, lineOptions, iconOptions, colourOptions, borderOptions } from "./validSettingValues";
 
 const defaultSettings = {
   canvas: {
@@ -156,23 +156,42 @@ const defaultSettings = {
   },
   summary_table: {
     show_table: { default: false },
+    table_text_overflow: textOptions.text_overflow,
+    table_opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    table_opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    table_outer_border_style: borderOptions.style,
+    table_outer_border_width: borderOptions.width,
+    table_outer_border_colour: borderOptions.colour,
+    table_outer_border_top: { default: true },
+    table_outer_border_bottom: { default: true },
+    table_outer_border_left: { default: true },
+    table_outer_border_right: { default: true },
     table_header_font: textOptions.font,
     table_header_font_weight: textOptions.weight,
     table_header_text_transform: textOptions.text_transform,
     table_header_text_align: textOptions.text_align,
+    table_header_text_padding: {default: 1, valid: { numberRange: { min: 0, max: 100 }}},
     table_header_size: textOptions.size,
     table_header_colour: colourOptions.standard,
     table_header_bg_colour: { default: "#D3D3D3" },
+    table_header_border_style: borderOptions.style,
+    table_header_border_width: borderOptions.width,
+    table_header_border_colour: borderOptions.colour,
+    table_header_border_bottom: { default: true },
+    table_header_border_inner: { default: true },
     table_body_font: textOptions.font,
     table_body_font_weight: textOptions.weight,
     table_body_text_transform: textOptions.text_transform,
     table_body_text_align: textOptions.text_align,
+    table_body_text_padding: {default: 1, valid: { numberRange: { min: 0, max: 100 }}},
     table_body_size: textOptions.size,
     table_body_colour: colourOptions.standard,
     table_body_bg_colour: { default: "#FFFFFF" },
-    table_text_overflow: textOptions.text_overflow,
-    table_opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
-    table_opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } }
+    table_body_border_style: borderOptions.style,
+    table_body_border_width: borderOptions.width,
+    table_body_border_colour: borderOptions.colour,
+    table_body_border_top_bottom: { default: true },
+    table_body_border_left_right: { default: true }
   },
   download_options: {
     show_button: { default: false }
@@ -216,9 +235,11 @@ export const settingsPaneGroupings = {
     "Label": ["ylimit_label", "ylimit_label_font", "ylimit_label_size", "ylimit_label_colour"]
   },
   summary_table: {
-    "General": ["show_table", "table_text_overflow", "table_opacity", "table_opacity_unselected"],
-    "Header": ["table_header_font", "table_header_size", "table_header_text_align", "table_header_font_weight", "table_header_text_transform", "table_header_colour", "table_header_bg_colour"],
-    "Body": ["table_body_font", "table_body_size", "table_body_text_align", "table_body_font_weight", "table_body_text_transform", "table_body_colour", "table_body_bg_colour"]
+    "General": ["show_table", "table_text_overflow", "table_opacity", "table_opacity_unselected", "table_outer_border_style", "table_outer_border_width", "table_outer_border_colour", "table_outer_border_top", "table_outer_border_bottom", "table_outer_border_left", "table_outer_border_right"],
+
+    "Header": ["table_header_font", "table_header_size", "table_header_text_align",, "table_header_font_weight", "table_header_text_transform", "table_header_text_padding", "table_header_colour", "table_header_bg_colour", "table_header_border_style", "table_header_border_width", "table_header_border_colour", "table_header_border_bottom", "table_header_border_inner"],
+
+    "Body": ["table_body_font", "table_body_size", "table_body_text_align", "table_body_font_weight", "table_body_text_transform", "table_body_text_padding", "table_body_colour", "table_body_bg_colour", "table_body_border_style", "table_body_border_width", "table_body_border_colour", "table_body_border_top_bottom", "table_body_border_left_right"]
   }
 }
 
