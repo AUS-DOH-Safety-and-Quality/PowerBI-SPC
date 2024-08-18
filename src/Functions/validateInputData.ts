@@ -64,11 +64,11 @@ export default function validateInputData(keys: string[],
                                           xbar_sds: number[],
                                           groupings: string[],
                                           chart_type_props: derivedSettingsClass["chart_type_props"],
-                                          first_idx: number, last_idx: number): { status: number, messages: string[], error?: string } {
+                                          idxs: number[]): { status: number, messages: string[], error?: string } {
   let allSameType: boolean = false;
   let messages: string[] = new Array<string>();
   let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
-  for (let i = first_idx; i <= last_idx; i++) {
+  for (const i of idxs) {
     const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], groupings?.[i], chart_type_props);
     messages.push(validation.message);
     all_status.push(validation.type);

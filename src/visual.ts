@@ -39,12 +39,30 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   public update(options: VisualUpdateOptions): void {
+    const idx_per_indicator = new Array<number[]>();
+    const indicator_names = new Array<string>();
+    const indicator_idx = options.dataViews[0].categorical.categories?.findIndex(d => d.source.roles.indicator);
+
+    if (indicator_idx === -1) {
+      idx_per_indicator.push(options.dataViews[0].categorical.categories[0].values.map((_, i) => i));
+    } else {
+      const indicator_vals = options.dataViews[0].categorical.categories?.[indicator_idx]?.values;
+      for (let i = 0; i < indicator_vals.length; i++) {
+        const indicator_name = indicator_vals[i].toString();
+        if (indicator_names.includes(indicator_name)) {
+          idx_per_indicator[indicator_names.indexOf(indicator_name)].push(i);
+        } else {
+          indicator_names.push(indicator_name);
+          idx_per_indicator.push([i]);
+        }
+      }
+    }
     try {
       this.host.eventService.renderingStarted(options);
       // Remove printed error if refreshing after a previous error run
       this.svg.select(".errormessage").remove();
 
-      this.viewModel.inputSettings.update(options.dataViews[0]);
+      this.viewModel.inputSettings.update(options.dataViews[0], idx_per_indicator);
       if (this.viewModel.inputSettings.validationStatus.error !== "") {
         this.processVisualError(options,
                                 this.viewModel.inputSettings.validationStatus.error,
@@ -59,8 +77,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         return;
       }
 
-      this.viewModel.update(options, this.host);
-
+      this.viewModel.update(options, this.host, idx_per_indicator, indicator_names);
       if (this.viewModel.showGrouped) {
         if (this.viewModel.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
           this.processVisualError(options,
@@ -146,25 +163,25 @@ export class Visual implements powerbi.extensibility.IVisual {
     dotsSelection.style("fill-opacity", defaultOpacity);
     tableSelection.style("opacity", defaultOpacity);
     if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
-      const dotsNodes = dotsSelection.nodes();
-      const tableNodes = tableSelection.nodes();
-      // If either the table or dots haven't been initialised
-      // there will be no nodes to update styling for or iterate over
-      const maxNodes = Math.max(dotsNodes.length, tableNodes.length);
-
-      for (let i = 0; i < maxNodes; i++) {
-        const currentDotNode = dotsNodes?.[i];
-        const currentTableNode = tableNodes?.[i];
-        const dot: plotData = d3.select(currentDotNode ?? currentTableNode).datum() as plotData;
+      dotsSelection.nodes().forEach(currentDotNode => {
+        const dot: plotData = d3.select(currentDotNode).datum() as plotData;
         const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
           return currentSelectionId.includes(dot.identity);
         });
         const currentPointHighlighted: boolean = dot.highlighted;
         const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
-        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity"] : dot.aesthetics["table_opacity_unselected"];
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
+      })
+
+      tableSelection.nodes().forEach(currentTableNode => {
+        const dot: plotData = d3.select(currentTableNode).datum() as plotData;
+        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
+          return currentSelectionId.includes(dot.identity);
+        });
+        const currentPointHighlighted: boolean = dot.highlighted;
+        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity"] : dot.aesthetics["table_opacity_unselected"];
         d3.select(currentTableNode).style("opacity", newTableOpacity);
-      }
+      })
     }
   }
 

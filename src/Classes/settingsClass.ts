@@ -46,27 +46,23 @@ export default class settingsClass {
    *
    * @param inputObjects
    */
-  update(inputView: DataView): void {
+  update(inputView: DataView, groupIdxs: number[][]): void {
     this.validationStatus
       = JSON.parse(JSON.stringify({ status: 0, messages: new Array<string[]>(), error: "" }));
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.keys(this.settings);
 
-    const is_grouped: boolean = inputView.categorical.values?.source?.roles?.indicator;
-    let group_idxs: number[] = new Array<number>();
+    const is_grouped: boolean = inputView.categorical.categories.some(d => d.source.roles.indicator);
     this.settingsGrouped = new Array<defaultSettingsType>();
     if (is_grouped) {
-      group_idxs = inputView.categorical.values.grouped().map(d => {
+      groupIdxs.forEach(() => {
         this.settingsGrouped.push(Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
           return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
             return [settingName, defaultSettings[settingGroupName][settingName]];
           }))];
         })) as settingsValueTypes);
-
-        return d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
-      });
+      })
     }
-
 
     allSettingGroups.forEach((settingGroup: defaultSettingsKey) => {
       const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKey]>
@@ -97,10 +93,10 @@ export default class settingsClass {
             : defaultSettings[settingGroup][settingName]["default"]
 
         if (is_grouped) {
-          group_idxs.forEach((idx, idx_idx) => {
+          groupIdxs.forEach((idx, idx_idx) => {
             this.settingsGrouped[idx_idx][settingGroup][settingName]
               = condFormatting?.values
-                ? condFormatting?.values[idx][settingName]
+                ? condFormatting?.values[idx[0]][settingName]
                 : defaultSettings[settingGroup][settingName]["default"]
           })
         }
@@ -205,7 +201,7 @@ export default class settingsClass {
         objectName: settingGroupName,
         properties: props,
         propertyInstanceKind: Object.fromEntries(propertyKinds),
-        selector: { data: [{ roles: ["key"] }] },
+        selector: { data: [{ dataViewWildcard: { matchingOption: 0 } }] },
         validValues: Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName: defaultSettingsNestedKey) => {
           return [settingName, defaultSettings[settingGroupName][settingName]?.["valid"]]
         }))
