@@ -152,7 +152,8 @@ export default class viewModelClass {
     this.colourPalette = null;
   }
 
-  update(options: VisualUpdateOptions, host: IVisualHost) {
+  update(options: VisualUpdateOptions, host: IVisualHost, groupIdxs: number[][], groupNames: string[]): void {
+    this.groupNames = groupNames;
     if (isNullOrUndefined(this.colourPalette)) {
       this.colourPalette = {
         isHighContrast: host.colorPalette.isHighContrast,
@@ -168,24 +169,20 @@ export default class viewModelClass {
 
     // Only re-construct data and re-calculate limits if they have changed
     if (options.type === 2 || this.firstRun) {
-      if (options.dataViews[0].categorical.values?.source?.roles?.indicator) {
+      if (options.dataViews[0].categorical.categories.some(d => d.source.roles.indicator)) {
         this.showGrouped = true;
-        this.groupNames = new Array<string>();
         this.inputDataGrouped = new Array<dataObject>();
         this.groupStartEndIndexesGrouped = new Array<number[][]>();
         this.controlLimitsGrouped = new Array<controlLimitsObject>();
         this.outliersGrouped = new Array<outliersObject>();
         this.identitiesGrouped = new Array<ISelectionId>();
 
-        options.dataViews[0].categorical.values.grouped().forEach((d, idx) => {
-          (<powerbi.DataViewCategorical>d).categories = options.dataViews[0].categorical.categories;
-          const first_idx: number = d.values[0].values.findIndex(d_in => !isNullOrUndefined(d_in));
-          const last_idx: number = d.values[0].values.map(d_in => !isNullOrUndefined(d_in)).lastIndexOf(true);
-          const inpData: dataObject = extractInputData(<powerbi.DataViewCategorical>d,
+        groupIdxs.forEach((group_idxs, idx) => {
+          const inpData: dataObject = extractInputData(options.dataViews[0].categorical,
                                                         this.inputSettings.settingsGrouped[idx],
                                                         this.inputSettings.derivedSettingsGrouped[idx],
                                                         this.inputSettings.validationStatus.messages,
-                                                        first_idx, last_idx);
+                                                        group_idxs);
           const invalidData: boolean = inpData.validationStatus.status !== 0;
           const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
           const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings.settingsGrouped[idx]);
@@ -197,8 +194,13 @@ export default class viewModelClass {
             this.scaleAndTruncateLimits(limits, this.inputSettings.settingsGrouped[idx],
                                         this.inputSettings.derivedSettingsGrouped[idx]);
           }
-          this.identitiesGrouped.push(host.createSelectionIdBuilder().withSeries(options.dataViews[0].categorical.values, d).createSelectionId());
-          this.groupNames.push(<string>d.name);
+          const idBuilder = host.createSelectionIdBuilder();
+          group_idxs.forEach(i => {
+            options.dataViews[0].categorical.categories.forEach(d => {
+              idBuilder.withCategory(d, i);
+            })
+          })
+          this.identitiesGrouped.push(idBuilder.createSelectionId());
           this.inputDataGrouped.push(inpData);
           this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
           this.controlLimitsGrouped.push(limits);
@@ -218,7 +220,7 @@ export default class viewModelClass {
                                           this.inputSettings.settings,
                                           this.inputSettings.derivedSettings,
                                           this.inputSettings.validationStatus.messages,
-                                          0, options.dataViews[0].categorical.values[0].values.length - 1);
+                                          groupIdxs[0]);
 
         if (this.inputData.validationStatus.status === 0) {
           this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);

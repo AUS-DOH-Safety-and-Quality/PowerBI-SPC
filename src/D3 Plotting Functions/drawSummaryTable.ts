@@ -105,8 +105,8 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
               if (visualObj.host.hostCapabilities.allowInteractions) {
                 visualObj.selectionManager
                           .select(d.identity, event.ctrlKey || event.metaKey)
-                          .then(() => {
-                            visualObj.updateHighlighting();
+                          .then(() =>{
+                            visualObj.updateHighlighting()
                           });
                 event.stopPropagation();
               }
@@ -174,7 +174,8 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .style("border-width", `${tableAesthetics.table_body_border_width}px`)
             .style("border-style", tableAesthetics.table_body_border_style)
             .style("border-color", tableAesthetics.table_body_border_colour)
-            .style("padding", `${tableAesthetics.table_body_text_padding}px`);
+            .style("padding", `${tableAesthetics.table_body_text_padding}px`)
+            .style("opacity", "inherit");
 
     if (idx === 0) {
       currNode.style("border-left", "inherit");
