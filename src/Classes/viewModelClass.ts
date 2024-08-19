@@ -6,8 +6,15 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass, type derivedSettingsClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
+
+export type viewModelValidationT = {
+  status: boolean,
+  error?: string,
+  warning?: string,
+  type?: string
+}
 
 export type lineData = {
   x: number;
@@ -152,7 +159,65 @@ export default class viewModelClass {
     this.colourPalette = null;
   }
 
-  update(options: VisualUpdateOptions, host: IVisualHost, groupIdxs: number[][], groupNames: string[]): void {
+  update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+    let res: viewModelValidationT = { status: true };
+    const idx_per_indicator = new Array<number[]>();
+    const indicator_names = new Array<string>();
+    const indicator_idx = options.dataViews[0]?.categorical?.categories?.findIndex(d => d.source.roles.indicator);
+
+    if ((indicator_idx === -1)) {
+      idx_per_indicator.push(options.dataViews[0].categorical.categories[0].values.map((_, i) => i));
+    } else if (!isNullOrUndefined(indicator_idx)) {
+      const indicator_vals = options.dataViews[0].categorical.categories?.[indicator_idx]?.values;
+      for (let i = 0; i < indicator_vals.length; i++) {
+        const indicator_name = indicator_vals[i].toString();
+        if (indicator_names.includes(indicator_name)) {
+          idx_per_indicator[indicator_names.indexOf(indicator_name)].push(i);
+        } else {
+          indicator_names.push(indicator_name);
+          idx_per_indicator.push([i]);
+        }
+      }
+    }
+
+    this.inputSettings.update(options.dataViews[0], idx_per_indicator);
+    if (this.inputSettings.validationStatus.error !== "") {
+      res.status = false;
+      res.error = this.inputSettings.validationStatus.error;
+      res.type = "settings";
+      return res;
+    }
+    const checkDV: string = validateDataView(options.dataViews, this.inputSettings);
+    if (checkDV !== "valid") {
+      res.status = false;
+      res.error = checkDV;
+      return res;
+    }
+    this.update_impl(options, host, idx_per_indicator, indicator_names);
+    if (this.showGrouped) {
+      if (this.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
+        res.status = false;
+        res.error = this.inputDataGrouped.map(d => d.validationStatus.error).join("\n");
+        return res;
+      }
+      if (this.inputDataGrouped.some(d => d.warningMessage !== "")) {
+       res.warning = this.inputDataGrouped.map(d => d.warningMessage).join("\n");
+      }
+    } else {
+      if (this.inputData.validationStatus.status !== 0) {
+        res.status = false;
+        res.error = this.inputData.validationStatus.error;
+        return res;
+      }
+      if (this.inputData.warningMessage !== "") {
+        res.warning = this.inputData.warningMessage;
+      }
+    }
+
+    return res;
+  }
+
+  update_impl(options: VisualUpdateOptions, host: IVisualHost, groupIdxs: number[][], groupNames: string[]): void {
     this.groupNames = groupNames;
     if (isNullOrUndefined(this.colourPalette)) {
       this.colourPalette = {

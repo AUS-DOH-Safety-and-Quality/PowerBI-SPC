@@ -16,15 +16,15 @@ const enum ValidationFailTypes {
   SDNegative = 9
 }
 
-function validateInputDataImpl(key: string, numerator: number, denominator: number,
-                              xbar_sd: number, grouping: string,
-                              chart_type_props: derivedSettingsClass["chart_type_props"]): { message: string, type: ValidationFailTypes }  {
+function validateInputDataImpl(key: string,
+                              numerator: number,
+                              denominator: number,
+                              xbar_sd: number,
+                              chart_type_props: derivedSettingsClass["chart_type_props"],
+                              check_denom: boolean): { message: string, type: ValidationFailTypes }  {
 
   const rtn = { message: "", type: ValidationFailTypes.Valid };
-  if (isNullOrUndefined(grouping)) {
-    //rtn.message = "Grouping missing";
-    //rtn.type = ValidationFailTypes.GroupingMissing;
-  } else if (isNullOrUndefined(key)) {
+  if (isNullOrUndefined(key)) {
     rtn.message = "Date missing";
     rtn.type = ValidationFailTypes.DateMissing;
   } else if (isNullOrUndefined(numerator)) {
@@ -33,7 +33,7 @@ function validateInputDataImpl(key: string, numerator: number, denominator: numb
   } else if (chart_type_props.numerator_non_negative && numerator < 0) {
     rtn.message = "Numerator negative";
     rtn.type = ValidationFailTypes.NumeratorNegative;
-  } else if (chart_type_props.needs_denominator || chart_type_props.denominator_optional) {
+  } else if (check_denom) {
     if (isNullOrUndefined(denominator)) {
       rtn.message = "Denominator missing";
       rtn.type = ValidationFailTypes.DenominatorMissing;
@@ -62,14 +62,15 @@ export default function validateInputData(keys: string[],
                                           numerators: number[],
                                           denominators: number[],
                                           xbar_sds: number[],
-                                          groupings: string[],
                                           chart_type_props: derivedSettingsClass["chart_type_props"],
                                           idxs: number[]): { status: number, messages: string[], error?: string } {
   let allSameType: boolean = false;
   let messages: string[] = new Array<string>();
   let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
+  const check_denom = chart_type_props.needs_denominator
+                      || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators));
   for (const i of idxs) {
-    const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], groupings?.[i], chart_type_props);
+    const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], chart_type_props,  check_denom);
     messages.push(validation.message);
     all_status.push(validation.type);
   }
@@ -79,45 +80,45 @@ export default function validateInputData(keys: string[],
   let commonType = Array.from(allSameTypeSet)[0];
 
   let validationRtn: ValidationT = {
-    status: (allSameType && commonType === ValidationFailTypes.Valid) ? 0 : 1,
+    status: (allSameType && commonType !== ValidationFailTypes.Valid) ? 1 : 0,
     messages: messages
   };
 
   if (allSameType && commonType !== ValidationFailTypes.Valid) {
     switch(commonType) {
-      case 1: {
+      case ValidationFailTypes.GroupingMissing: {
         validationRtn.error = "Grouping missing"
         break;
       }
-      case 2: {
+      case ValidationFailTypes.DateMissing: {
         validationRtn.error = "All dates/IDs are missing or null!"
         break;
       }
-      case 3: {
+      case ValidationFailTypes.NumeratorMissing: {
         validationRtn.error = "All numerators are missing or null!"
         break;
       }
-      case 4: {
+      case ValidationFailTypes.NumeratorNegative: {
         validationRtn.error = "All numerators are negative!"
         break;
       }
-      case 5: {
+      case ValidationFailTypes.DenominatorMissing: {
         validationRtn.error = "All denominators missing or null!"
         break;
       }
-      case 6: {
+      case ValidationFailTypes.DenominatorNegative: {
         validationRtn.error = "All denominators are negative!"
         break;
       }
-      case 7: {
+      case ValidationFailTypes.DenominatorLessThanNumerator: {
         validationRtn.error = "All denominators are smaller than numerators!";
         break;
       }
-      case 8: {
+      case ValidationFailTypes.SDMissing: {
         validationRtn.error = "All SDs missing or null!";
         break;
       }
-      case 9: {
+      case ValidationFailTypes.SDNegative: {
         validationRtn.error = "All SDs are negative!";
         break;
       }
