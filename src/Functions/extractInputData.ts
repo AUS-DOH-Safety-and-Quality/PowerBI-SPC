@@ -66,7 +66,7 @@ export default function extractInputData(inputView: DataViewCategorical,
                                     ?.values
                                     .map(d => d.show_specification ? d.specification_upper : null);
   const spcSettings: defaultSettingsType["spc"][] = extractConditionalFormatting<defaultSettingsType["spc"]>(inputView, "spc", inputSettings)?.values
-  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, groupings, derivedSettings.chart_type_props, idxs);
+  const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, derivedSettings.chart_type_props, idxs);
   if (inputValidStatus.status !== 0) {
     return invalidInputData(inputValidStatus);
   }

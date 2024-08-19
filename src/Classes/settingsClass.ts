@@ -52,7 +52,7 @@ export default class settingsClass {
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.keys(this.settings);
 
-    const is_grouped: boolean = inputView.categorical.categories.some(d => d.source.roles.indicator);
+    const is_grouped: boolean = inputView.categorical?.categories?.some(d => d.source.roles.indicator);
     this.settingsGrouped = new Array<defaultSettingsType>();
     if (is_grouped) {
       groupIdxs.forEach(() => {
