@@ -74,7 +74,7 @@ export type plotData = {
 
 export type plotDataGrouped = {
   table_row: summaryTableRowDataGrouped;
-  identity: ISelectionId;
+  identity: ISelectionId[];
   aesthetics: defaultSettingsType["summary_table"];
   highlighted: boolean;
 }
@@ -145,7 +145,7 @@ export default class viewModelClass {
   groupStartEndIndexesGrouped: number[][][];
   tableColumnsGrouped: { name: string; label: string; }[];
   plotPointsGrouped: plotDataGrouped[];
-  identitiesGrouped: ISelectionId[];
+  identitiesGrouped: ISelectionId[][];
 
   constructor() {
     this.inputData = <dataObject>null;
@@ -240,7 +240,7 @@ export default class viewModelClass {
         this.groupStartEndIndexesGrouped = new Array<number[][]>();
         this.controlLimitsGrouped = new Array<controlLimitsObject>();
         this.outliersGrouped = new Array<outliersObject>();
-        this.identitiesGrouped = new Array<ISelectionId>();
+        this.identitiesGrouped = new Array<ISelectionId[]>();
 
         groupIdxs.forEach((group_idxs, idx) => {
           const inpData: dataObject = extractInputData(options.dataViews[0].categorical,
@@ -259,13 +259,10 @@ export default class viewModelClass {
             this.scaleAndTruncateLimits(limits, this.inputSettings.settingsGrouped[idx],
                                         this.inputSettings.derivedSettingsGrouped[idx]);
           }
-          const idBuilder = host.createSelectionIdBuilder();
-          group_idxs.forEach(i => {
-            options.dataViews[0].categorical.categories.forEach(d => {
-              idBuilder.withCategory(d, i);
-            })
+          const identities = group_idxs.map(i => {
+            return host.createSelectionIdBuilder().withCategory(options.dataViews[0].categorical.categories[0], i).createSelectionId();
           })
-          this.identitiesGrouped.push(idBuilder.createSelectionId());
+          this.identitiesGrouped.push(identities);
           this.inputDataGrouped.push(inpData);
           this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
           this.controlLimitsGrouped.push(limits);

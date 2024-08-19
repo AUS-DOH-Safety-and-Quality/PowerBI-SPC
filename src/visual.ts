@@ -10,6 +10,8 @@ import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton } from "./D3 Plotting Functions"
 import { defaultSettingsKey, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
+import type { plotDataGrouped } from "./Classes/viewModelClass";
+import { identitySelected } from "./Functions";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
@@ -35,6 +37,14 @@ export class Visual implements powerbi.extensibility.IVisual {
     });
 
     this.svg.call(initialiseSVG);
+    const table = this.tableDiv.append("table")
+                                .classed("table-group", true)
+                                .style("border-collapse", "collapse")
+                                .style("width", "100%")
+                                .style("height", "100%");
+
+    table.append("thead").append("tr").classed("table-header", true);
+    table.append('tbody').classed("table-body", true);
   }
 
   public update(options: VisualUpdateOptions): void {
@@ -49,9 +59,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
 
       if (!update_status.status) {
-        this.tableDiv.style("width", "0%").style("height", "0%");
-        this.svg.attr("width", options.viewport.width)
-                .attr("height", options.viewport.height)
+        this.resizeCanvas(options.viewport.width, options.viewport.height);
         if (this.viewModel?.inputSettings?.settings?.canvas?.show_errors ?? true) {
           this.svg.call(drawErrors, options, update_status?.error, update_status?.type);
         } else {
@@ -68,14 +76,12 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
 
       if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings.summary_table.show_table) {
-        this.svg.attr("width", 0).attr("height", 0);
+        this.resizeCanvas(0, 0);
         this.tableDiv.call(drawSummaryTable, this)
                      .call(addContextMenu, this);
       } else {
-        this.tableDiv.style("width", "0%").style("height", "0%");
-        this.svg.attr("width", options.viewport.width)
-                .attr("height", options.viewport.height)
-                .call(drawXAxis, this)
+        this.resizeCanvas(options.viewport.width, options.viewport.height);
+        this.svg.call(drawXAxis, this)
                 .call(drawYAxis, this)
                 .call(drawTooltipLine, this)
                 .call(drawLines, this)
@@ -88,12 +94,19 @@ export class Visual implements powerbi.extensibility.IVisual {
       this.updateHighlighting();
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
-      this.tableDiv.style("width", "0%").style("height", "0%");
-      this.svg.attr("width", options.viewport.width)
-              .attr("height", options.viewport.height)
-              .call(drawErrors, options, caught_error.message, "internal");
+      this.resizeCanvas(options.viewport.width, options.viewport.height);
+      this.svg.call(drawErrors, options, caught_error.message, "internal");
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
+    }
+  }
+
+  resizeCanvas(width: number, height: number): void {
+    this.svg.attr("width", width).attr("height", height);
+    if (width === 0 && height === 0) {
+      this.tableDiv.style("width", "100%").style("height", "100%");
+    } else {
+      this.tableDiv.style("width", "0%").style("height", "0%");
     }
   }
 
@@ -117,19 +130,15 @@ export class Visual implements powerbi.extensibility.IVisual {
     if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
       dotsSelection.nodes().forEach(currentDotNode => {
         const dot: plotData = d3.select(currentDotNode).datum() as plotData;
-        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
-          return currentSelectionId.includes(dot.identity);
-        });
+        const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
         const currentPointHighlighted: boolean = dot.highlighted;
         const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
       })
 
       tableSelection.nodes().forEach(currentTableNode => {
-        const dot: plotData = d3.select(currentTableNode).datum() as plotData;
-        const currentPointSelected: boolean = allSelectionIDs.some((currentSelectionId: ISelectionId) => {
-          return currentSelectionId.includes(dot.identity);
-        });
+        const dot: plotDataGrouped = d3.select(currentTableNode).datum() as plotDataGrouped;
+        const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
         const currentPointHighlighted: boolean = dot.highlighted;
         const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity"] : dot.aesthetics["table_opacity_unselected"];
         d3.select(currentTableNode).style("opacity", newTableOpacity);

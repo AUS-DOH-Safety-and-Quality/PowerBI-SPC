@@ -47,7 +47,6 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
                 .select(d.identity, (event.ctrlKey || event.metaKey))
                 // Change opacity of non-selected dots
                 .then(() => {
-                  console.log("a")
                   visualObj.updateHighlighting();
                 });
           }
@@ -77,7 +76,6 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       });
 
     selection.on('click', () => {
-      console.log("b")
       visualObj.selectionManager.clear();
       visualObj.updateHighlighting();
     });
