@@ -160,7 +160,7 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
-    let res: viewModelValidationT = { status: true };
+    const res: viewModelValidationT = { status: true };
     const idx_per_indicator = new Array<number[]>();
     const indicator_names = new Array<string>();
     const indicator_idx = options.dataViews[0]?.categorical?.categories?.findIndex(d => d.source.roles.indicator);

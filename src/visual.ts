@@ -46,7 +46,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       // This step handles the updating of both the input data and settings
       // If there are any errors or failures, the update exits early sets the
       // update status to false
-      let update_status: viewModelValidationT = this.viewModel.update(options, this.host);
+      const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
 
       if (!update_status.status) {
         this.tableDiv.style("width", "0%").style("height", "0%");
