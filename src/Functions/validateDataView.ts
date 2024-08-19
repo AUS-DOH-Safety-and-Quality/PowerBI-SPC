@@ -5,7 +5,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   if (!(inputDV?.[0])) {
     return "No data present";
   }
-  if (!(inputDV[0]?.categorical?.categories)) {
+  if (!(inputDV[0]?.categorical?.categories) || !(inputDV[0]?.categorical?.categories.some(d => d.source?.roles?.key))) {
     return "No grouping/ID variable passed!";
   }
 
