@@ -32,9 +32,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.viewModel = new viewModelClass();
 
     this.selectionManager = this.host.createSelectionManager();
-    this.selectionManager.registerOnSelectCallback(() => {
-      this.updateHighlighting();
-    });
+    this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
 
     this.svg.call(initialiseSVG);
     const table = this.tableDiv.append("table")
