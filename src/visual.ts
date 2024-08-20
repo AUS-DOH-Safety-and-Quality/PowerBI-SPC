@@ -32,9 +32,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.viewModel = new viewModelClass();
 
     this.selectionManager = this.host.createSelectionManager();
-    this.selectionManager.registerOnSelectCallback(() => {
-      this.updateHighlighting();
-    });
+    this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
 
     this.svg.call(initialiseSVG);
     const table = this.tableDiv.append("table")
@@ -48,6 +46,7 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   public update(options: VisualUpdateOptions): void {
+    console.log(options)
     try {
       this.host.eventService.renderingStarted(options);
       // Remove printed error if refreshing after a previous error run

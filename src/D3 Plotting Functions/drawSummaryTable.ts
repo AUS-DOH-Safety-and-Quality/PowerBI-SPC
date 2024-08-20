@@ -130,26 +130,22 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
 
   const draw_icons: boolean = inputSettings.nhs_icons.show_variation_icons || inputSettings.nhs_icons.show_assurance_icons;
   const thisSelDims = (tableCells.node() as SVGGElement).getBoundingClientRect()
-  const scaling = inputSettings.nhs_icons.variation_icons_scaling
-
-  const icon_x: number = (thisSelDims.width * 0.8) / 0.08 / 2 - 189;
-  const icon_y: number = (thisSelDims.height * 0.8) / 0.08 / 2 - 189;
 
   tableCells.each(function(d) {
     const currNode = d3.select(this);
     const parentNode = d3.select(currNode.property("parentNode"));
     const rowData = parentNode.datum() as plotData;
     if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
+      const scaling = d.column === "variation" ? inputSettings.nhs_icons.variation_icons_scaling
+                                                : inputSettings.nhs_icons.assurance_icons_scaling;
       currNode
           .append("svg")
-          .attr("width", thisSelDims.width * 0.8)
-          .attr("height", thisSelDims.height * 0.8)
+          .attr("width", `${thisSelDims.width * 0.5 * scaling}px`)
+          .attr("viewBox", `0 0 ${378} ${378}`)
           .classed("rowsvg", true)
           .call(initialiseIconSVG, d.value)
           .selectAll(".icongroup")
-          .attr("viewBox", "0 0 378 378")
           .selectAll(`.${d.value}`)
-          .attr("transform", `scale(${0.08 * scaling}) translate(${icon_x}, ${icon_y})`)
           .call(nhsIcons[d.value]);
     } else {
       const value: string = typeof d.value === "number"
@@ -188,7 +184,7 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
 }
 
 export default function drawSummaryTable(selection: divBaseType, visualObj: Visual) {
-  selection.selectAll(".iconrow").remove();
+  selection.selectAll(".rowsvg").remove();
   selection.selectAll(".cell-text").remove();
 
   let plotPoints: plotData[] | plotDataGrouped[];
