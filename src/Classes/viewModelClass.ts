@@ -44,7 +44,8 @@ export type summaryTableRowData = {
 }
 
 export type summaryTableRowDataGrouped = {
-  indicator: string;
+  [key: string]: any;
+
   latest_date: string;
   value: number;
   target: number;
@@ -138,7 +139,8 @@ export default class viewModelClass {
   svgHeight: number;
 
   showGrouped: boolean;
-  groupNames: string[];
+  indicatorVarNames: string[];
+  groupNames: string[][];
   inputDataGrouped: dataObject[];
   controlLimitsGrouped: controlLimitsObject[];
   outliersGrouped: outliersObject[];
@@ -162,18 +164,20 @@ export default class viewModelClass {
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
     const res: viewModelValidationT = { status: true };
     const idx_per_indicator = new Array<number[]>();
-    const indicator_names = new Array<string>();
-    const indicator_idx = options.dataViews[0]?.categorical?.categories?.findIndex(d => d.source.roles.indicator);
-
-    if ((indicator_idx === -1)) {
+    const indicator_names = new Array<string[]>();
+    const indicator_names_concat = new Array<string>();
+    const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
+    if ((indicator_cols?.length === 0)) {
       idx_per_indicator.push(options.dataViews[0].categorical.categories[0].values.map((_, i) => i));
-    } else if (!isNullOrUndefined(indicator_idx)) {
-      const indicator_vals = options.dataViews[0].categorical.categories?.[indicator_idx]?.values;
-      for (let i = 0; i < indicator_vals.length; i++) {
-        const indicator_name = indicator_vals[i].toString();
-        if (indicator_names.includes(indicator_name)) {
-          idx_per_indicator[indicator_names.indexOf(indicator_name)].push(i);
+    } else if (!isNullOrUndefined(indicator_cols)) {
+      this.indicatorVarNames = indicator_cols.map(d => d.source.displayName);
+      for (let i = 0; i < indicator_cols[0]?.values.length; i++) {
+        const indicator_name: string[] = indicator_cols.map(d => <string>d.values[i]);
+        const indicator_name_concat: string = indicator_name.join(" - ");
+        if (indicator_names_concat.includes(indicator_name_concat)) {
+          idx_per_indicator[indicator_names_concat.indexOf(indicator_name_concat)].push(i);
         } else {
+          indicator_names_concat.push(indicator_name_concat);
           indicator_names.push(indicator_name);
           idx_per_indicator.push([i]);
         }
@@ -217,7 +221,7 @@ export default class viewModelClass {
     return res;
   }
 
-  update_impl(options: VisualUpdateOptions, host: IVisualHost, groupIdxs: number[][], groupNames: string[]): void {
+  update_impl(options: VisualUpdateOptions, host: IVisualHost, groupIdxs: number[][], groupNames: string[][]): void {
     this.groupNames = groupNames;
     if (isNullOrUndefined(this.colourPalette)) {
       this.colourPalette = {
@@ -361,12 +365,14 @@ export default class viewModelClass {
     return controlLimits;
   }
 
-  initialisePlotDataGrouped(/*host: IVisualHost*/): void {
+  initialisePlotDataGrouped(): void {
     this.plotPointsGrouped = new Array<plotDataGrouped>();
-    this.tableColumnsGrouped = [
-      { name: "indicator", label: "Indicator" },
-      { name: "latest_date", label: "Latest Date" }
-    ];
+    this.tableColumnsGrouped = new Array<{ name: string; label: string; }>();
+    this.indicatorVarNames.forEach(indicator_name => {
+      this.tableColumnsGrouped.push({ name: indicator_name, label: indicator_name });
+    })
+    this.tableColumnsGrouped.push({ name: "latest_date", label: "Latest Date" });
+
     const lineSettings = this.inputSettings.settings.lines;
     if (lineSettings.show_main) {
       this.tableColumnsGrouped.push({ name: "value", label: "Value" });
@@ -400,6 +406,12 @@ export default class viewModelClass {
     if (nhsIconSettings.show_assurance_icons) {
       this.tableColumnsGrouped.push({ name: "assurance", label: "Assurance" });
     }
+    const anyTooltips: boolean = this.inputDataGrouped.some(d => d.tooltips.length > 0);
+    if (anyTooltips) {
+      this.inputDataGrouped[0].tooltips[0].forEach(tooltip => {
+        this.tableColumnsGrouped.push({ name: tooltip.displayName, label: tooltip.displayName });
+      })
+    }
     for (let i: number = 0; i < this.groupNames.length; i++) {
       const limits: controlLimitsObject = this.controlLimitsGrouped[i];
       const outliers: outliersObject = this.outliersGrouped[i];
@@ -408,24 +420,31 @@ export default class viewModelClass {
       const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settingsGrouped[i],
                                                       this.inputSettings.derivedSettingsGrouped[i]);
 
-      const table_row: summaryTableRowDataGrouped = {
-        indicator: this.groupNames[i],
-        latest_date: limits.keys[lastIndex].label,
-        value: limits.values[lastIndex],
-        target: limits.targets[lastIndex],
-        alt_target: limits.alt_targets[lastIndex],
-        ucl99: limits.ul99[lastIndex],
-        ucl95: limits.ul95[lastIndex],
-        ucl68: limits.ul68[lastIndex],
-        lcl68: limits.ll68[lastIndex],
-        lcl95: limits.ll95[lastIndex],
-        lcl99: limits.ll99[lastIndex],
-        variation: varIcons[0],
-        assurance: assIcon
+      const table_row_entries: [string, string | number][] = new Array<[string, string | number]>();
+      this.indicatorVarNames.forEach((indicator_name, idx) => {
+        table_row_entries.push([indicator_name, this.groupNames[i][idx]]);
+      })
+      table_row_entries.push(["latest_date", limits.keys[lastIndex].label]);
+      table_row_entries.push(["value", limits.values[lastIndex]]);
+      table_row_entries.push(["target", limits.targets[lastIndex]]);
+      table_row_entries.push(["alt_target", limits.alt_targets[lastIndex]]);
+      table_row_entries.push(["ucl99", limits.ul99[lastIndex]]);
+      table_row_entries.push(["ucl95", limits.ul95[lastIndex]]);
+      table_row_entries.push(["ucl68", limits.ul68[lastIndex]]);
+      table_row_entries.push(["lcl68", limits.ll68[lastIndex]]);
+      table_row_entries.push(["lcl95", limits.ll95[lastIndex]]);
+      table_row_entries.push(["lcl99", limits.ll99[lastIndex]]);
+      table_row_entries.push(["variation", varIcons[0]]);
+      table_row_entries.push(["assurance", assIcon]);
+
+      if (anyTooltips) {
+        this.inputDataGrouped[i].tooltips[lastIndex].forEach(tooltip => {
+          table_row_entries.push([tooltip.displayName, tooltip.value]);
+        })
       }
 
       this.plotPointsGrouped.push({
-        table_row: table_row,
+        table_row: Object.fromEntries(table_row_entries) as summaryTableRowDataGrouped,
         identity: this.identitiesGrouped[i],
         aesthetics: this.inputSettings.settingsGrouped[i].summary_table,
         highlighted: this.inputDataGrouped[i].anyHighlights

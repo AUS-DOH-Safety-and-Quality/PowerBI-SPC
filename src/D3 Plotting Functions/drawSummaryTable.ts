@@ -136,12 +136,11 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
     const parentNode = d3.select(currNode.property("parentNode"));
     const rowData = parentNode.datum() as plotData;
     if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
-      const scaling = d.column === "variation" ? inputSettings.nhs_icons.variation_icons_scaling
-                                                : inputSettings.nhs_icons.assurance_icons_scaling;
+      const scaling = inputSettings.nhs_icons[`${d.column}_icons_scaling`];
       currNode
           .append("svg")
           .attr("width", `${thisSelDims.width * 0.5 * scaling}px`)
-          .attr("viewBox", `0 0 ${378} ${378}`)
+          .attr("viewBox", "0 0 378 378")
           .classed("rowsvg", true)
           .call(initialiseIconSVG, d.value)
           .selectAll(".icongroup")
