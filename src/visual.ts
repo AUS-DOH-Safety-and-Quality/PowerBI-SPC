@@ -88,7 +88,6 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(addContextMenu, this)
                 .call(drawDownloadButton, this)
       }
-
       this.updateHighlighting();
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
