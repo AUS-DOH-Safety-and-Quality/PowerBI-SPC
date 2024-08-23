@@ -5,18 +5,13 @@ type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanc
 type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { extractConditionalFormatting, isNullOrUndefined } from "../Functions";
-import { default as defaultSettings, type settingsValueTypes, settingsPaneGroupings, settingsPaneToggles } from "../defaultSettings";
+import { default as defaultSettings, type defaultSettingsType, settingsPaneGroupings,
+  type defaultSettingsKeys, type defaultSettingsNestedKeys, type NestedKeysOf
+ } from "../defaultSettings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
 
-type NestedKeysOf<T>
-  = T extends object
-    ? { [K in keyof T]: K extends string ? K : never; }[keyof T]
-    : never;
-
-export type defaultSettingsType = settingsValueTypes;
-export type defaultSettingsKey = keyof defaultSettingsType;
-export type defaultSettingsNestedKey = NestedKeysOf<defaultSettingsType[defaultSettingsKey]>;
+export { type defaultSettingsType, type defaultSettingsKeys };
 export type settingsScalarTypes = number | string | boolean;
 
 export type optionalSettingsTypes = Partial<{
@@ -24,7 +19,6 @@ export type optionalSettingsTypes = Partial<{
 }>;
 
 export type paneGroupingsNestedKey = "all" | NestedKeysOf<typeof settingsPaneGroupings[keyof typeof settingsPaneGroupings]>;
-export type paneTogglesNestedKey = "all" | NestedKeysOf<typeof settingsPaneToggles[keyof typeof settingsPaneToggles]>;
 
 /**
  * This is the core class which controls the initialisation and
@@ -60,12 +54,12 @@ export default class settingsClass {
           return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
             return [settingName, defaultSettings[settingGroupName][settingName]];
           }))];
-        })) as settingsValueTypes);
+        })) as defaultSettingsType);
       })
     }
 
-    allSettingGroups.forEach((settingGroup: defaultSettingsKey) => {
-      const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKey]>
+    allSettingGroups.forEach((settingGroup: defaultSettingsKeys) => {
+      const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKeys]>
         = extractConditionalFormatting(inputView?.categorical, settingGroup, this.settings);
 
       if (condFormatting.validation.status !== 0) {
@@ -86,7 +80,7 @@ export default class settingsClass {
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
       const settingNames: string[] = Object.keys(this.settings[settingGroup]);
-      settingNames.forEach((settingName: defaultSettingsNestedKey) => {
+      settingNames.forEach((settingName: defaultSettingsNestedKeys) => {
         this.settings[settingGroup][settingName]
           = condFormatting?.values
             ? condFormatting?.values[0][settingName]
@@ -138,31 +132,13 @@ export default class settingsClass {
    * @param settingGroupName
    * @returns
    */
-  getSettingNames(settingGroupName: defaultSettingsKey): Record<paneGroupingsNestedKey, defaultSettingsNestedKey[]> {
+  getSettingNames(settingGroupName: defaultSettingsKeys): Record<paneGroupingsNestedKey, defaultSettingsNestedKeys[]> {
     const settingsGrouped: boolean = Object.keys(settingsPaneGroupings)
                                            .includes(settingGroupName);
-    const paneGroupings: Record<paneGroupingsNestedKey, defaultSettingsNestedKey[]>
-      = settingsGrouped
+
+    return settingsGrouped
         ? JSON.parse(JSON.stringify(settingsPaneGroupings[settingGroupName]))
         : { "all": Object.keys(this.settings[settingGroupName]) };
-
-    if (Object.keys(settingsPaneToggles).includes(settingGroupName)) {
-      const toggledSettings: Record<paneGroupingsNestedKey, typeof settingsPaneToggles[keyof typeof settingsPaneToggles]>
-        = settingsGrouped
-          ? settingsPaneToggles[settingGroupName]
-          : { "all": settingsPaneToggles[settingGroupName]};
-
-      Object.keys(toggledSettings).forEach((toggleGroup: paneGroupingsNestedKey) => {
-        let settingsToRemove: string[] = new Array<string>();
-        Object.keys(toggledSettings[toggleGroup]).forEach((settingToggle: paneTogglesNestedKey) => {
-          if (this.settings[settingGroupName][settingToggle] !== true) {
-            settingsToRemove = settingsToRemove.concat(toggledSettings[toggleGroup][settingToggle])
-          }
-        })
-        paneGroupings[toggleGroup] = paneGroupings[toggleGroup].filter(setting => !settingsToRemove.includes(setting))
-      })
-    }
-    return paneGroupings;
   }
 
   /**
@@ -173,8 +149,8 @@ export default class settingsClass {
    * @param inputData
    * @returns An object where each element is the value for a given setting in the named group
    */
-  createSettingsEntry(settingGroupName: defaultSettingsKey): VisualObjectInstanceEnumerationObject {
-    const paneGroupings: Record<paneGroupingsNestedKey, defaultSettingsNestedKey[]>
+  createSettingsEntry(settingGroupName: defaultSettingsKeys): VisualObjectInstanceEnumerationObject {
+    const paneGroupings: Record<paneGroupingsNestedKey, defaultSettingsNestedKeys[]>
       = this.getSettingNames(settingGroupName);
 
     const rtnInstances = new Array<VisualObjectInstance>();
@@ -202,7 +178,7 @@ export default class settingsClass {
         properties: props,
         propertyInstanceKind: Object.fromEntries(propertyKinds),
         selector: { data: [{ dataViewWildcard: { matchingOption: 0 } }] },
-        validValues: Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName: defaultSettingsNestedKey) => {
+        validValues: Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName: defaultSettingsNestedKeys) => {
           return [settingName, defaultSettings[settingGroupName][settingName]?.["valid"]]
         }))
       })
@@ -221,7 +197,7 @@ export default class settingsClass {
       return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
         return [settingName, defaultSettings[settingGroupName][settingName]];
       }))];
-    })) as settingsValueTypes;
+    })) as defaultSettingsType;
     this.derivedSettings = new derivedSettingsClass();
   }
 }

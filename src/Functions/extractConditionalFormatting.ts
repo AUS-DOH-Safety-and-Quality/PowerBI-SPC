@@ -3,13 +3,13 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
-import type { defaultSettingsType, defaultSettingsKey } from "../Classes";
+import type { defaultSettingsType, defaultSettingsKeys } from "../Classes";
 import defaultSettings from "../defaultSettings";
 import rep from "./rep";
 import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";
 
-type SettingsTypes = defaultSettingsType[defaultSettingsKey];
+type SettingsTypes = defaultSettingsType[defaultSettingsKeys];
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
 export type ConditionalReturnT<T extends SettingsTypes> = { values: T[], validation: SettingsValidationT }
 
