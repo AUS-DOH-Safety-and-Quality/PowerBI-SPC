@@ -200,14 +200,20 @@ const defaultSettings = {
 
 
 type DefaultTypes<T> = T[Extract<keyof T, "default">];
+export type NestedKeysOf<T>
+  = T extends object
+    ? { [K in keyof T]: K extends string ? K : never; }[keyof T]
+    : never;
 
-export type settingsValueTypes = {
+export type defaultSettingsType = {
   [K in keyof typeof defaultSettings]: {
     [L in keyof typeof defaultSettings[K]]: DefaultTypes<typeof defaultSettings[K][L]>
   }
 }
+export type defaultSettingsKeys = keyof defaultSettingsType;
+export type defaultSettingsNestedKeys = NestedKeysOf<defaultSettingsType[defaultSettingsKeys]>;
 
-export const settingsPaneGroupings = {
+export const settingsPaneGroupings: Partial<Record<defaultSettingsKeys, Record<string, defaultSettingsNestedKeys[]>>> = {
   outliers: {
     "General": ["process_flag_type", "improvement_direction"],
     "Astronomical Points": ["astronomical", "astronomical_limit", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"],
@@ -236,65 +242,8 @@ export const settingsPaneGroupings = {
   },
   summary_table: {
     "General": ["show_table", "table_text_overflow", "table_opacity", "table_opacity_unselected", "table_outer_border_style", "table_outer_border_width", "table_outer_border_colour", "table_outer_border_top", "table_outer_border_bottom", "table_outer_border_left", "table_outer_border_right"],
-
     "Header": ["table_header_font", "table_header_size", "table_header_text_align", "table_header_font_weight", "table_header_text_transform", "table_header_text_padding", "table_header_colour", "table_header_bg_colour", "table_header_border_style", "table_header_border_width", "table_header_border_colour", "table_header_border_bottom", "table_header_border_inner"],
-
     "Body": ["table_body_font", "table_body_size", "table_body_text_align", "table_body_font_weight", "table_body_text_transform", "table_body_text_padding", "table_body_colour", "table_body_bg_colour", "table_body_border_style", "table_body_border_width", "table_body_border_colour", "table_body_border_top_bottom", "table_body_border_left_right"]
-  }
-}
-
-export const settingsPaneToggles = {
-  spc: {
-    "ttip_show_numerator": ["ttip_label_numerator"],
-    "ttip_show_denominator": ["ttip_label_denominator"],
-    "ttip_show_value": ["ttip_label_value"]
-  },
-  outliers: {
-    "Astronomical Points": {
-      "astronomical": ["astronomical_limit", "ast_colour_improvement", "ast_colour_deterioration", "ast_colour_neutral_low", "ast_colour_neutral_high"]
-    },
-    "Shifts": {
-      "shift": ["shift_n", "shift_colour_improvement", "shift_colour_deterioration", "shift_colour_neutral_low", "shift_colour_neutral_high"]
-    },
-    "Trends": {
-      "trend": ["trend_n", "trend_colour_improvement", "trend_colour_deterioration", "trend_colour_neutral_low", "trend_colour_neutral_high"]
-    },
-    "Two-In-Three": {
-      "two_in_three": ["two_in_three_limit", "two_in_three_highlight_series", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
-    }
-  },
-  nhs_icons: {
-    "show_variation_icons": ["variation_icons_locations", "variation_icons_scaling"],
-    "show_assurance_icons": ["assurance_icons_locations", "assurance_icons_scaling"]
-  },
-  lines: {
-    "Main": {
-      "show_main": ["width_main", "type_main", "colour_main"]
-    },
-    "Target": {
-      "show_target": ["width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target"],
-      "ttip_show_target": ["ttip_label_target"]
-    },
-    "Alt. Target": {
-      "show_alt_target": ["alt_target", "multiplier_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target"],
-      "ttip_show_alt_target": ["ttip_label_alt_target"]
-    },
-    "68% Limits": {
-      "show_68": ["width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68"],
-      "ttip_show_68": ["ttip_label_68"]
-    },
-    "95% Limits": {
-      "show_95": ["width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95"],
-      "ttip_show_95": ["ttip_label_95"]
-    },
-    "99% Limits": {
-      "show_99": ["width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99"],
-      "ttip_show_99": ["ttip_label_99"]
-    },
-    "Specification Limits": {
-      "show_specification": ["specification_upper", "specification_lower", "multiplier_specification", "width_specification", "type_specification", "colour_specification", "ttip_show_specification", "ttip_label_specification"],
-      "ttip_show_specification": ["ttip_label_specification"]
-    }
   }
 }
 
