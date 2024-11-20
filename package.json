@@ -4,7 +4,7 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
-    "eslint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
+    "eslint": "npx eslint .",
     "test": "vitest run"
   },
   "dependencies": {
