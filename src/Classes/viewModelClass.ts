@@ -162,29 +162,32 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+    const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
+    this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
+
+    const n_indicators: number = indicator_cols?.length - 1;
+    const n_values: number = options.dataViews[0]?.categorical?.categories?.[0]?.values?.length ?? 1;
     const res: viewModelValidationT = { status: true };
     const idx_per_indicator = new Array<number[]>();
-    const indicator_names = new Array<string[]>();
-    const indicator_names_concat = new Array<string>();
-    const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
-    if ((indicator_cols?.length === 0)) {
-      idx_per_indicator.push(options.dataViews[0].categorical.categories[0].values.map((_, i) => i));
-    } else if (!isNullOrUndefined(indicator_cols)) {
-      this.indicatorVarNames = indicator_cols.map(d => d.source.displayName);
-      for (let i = 0; i < indicator_cols[0]?.values.length; i++) {
-        const indicator_name: string[] = indicator_cols.map(d => <string>d.values[i]);
-        const indicator_name_concat: string = indicator_name.join(" - ");
-        if (indicator_names_concat.includes(indicator_name_concat)) {
-          idx_per_indicator[indicator_names_concat.indexOf(indicator_name_concat)].push(i);
-        } else {
-          indicator_names_concat.push(indicator_name_concat);
-          indicator_names.push(indicator_name);
-          idx_per_indicator.push([i]);
-        }
+    idx_per_indicator.push([0]);
+    this.groupNames = new Array<string[]>();
+    this.groupNames.push(indicator_cols?.map(d => <string>d.values[0]) ?? []);
+    let curr_grp: number = 0;
+
+    for (let i = 1; i < n_values; i++) {
+      if (indicator_cols?.[n_indicators]?.values[i] === indicator_cols?.[n_indicators]?.values[i - 1]) {
+        idx_per_indicator[curr_grp].push(i);
+      } else {
+        idx_per_indicator.push([i]);
+        this.groupNames.push(indicator_cols?.map(d => <string>d.values[i]) ?? []);
+        curr_grp += 1;
+
       }
     }
 
-    this.inputSettings.update(options.dataViews[0], idx_per_indicator);
+    if (options.type === 2 || this.firstRun) {
+      this.inputSettings.update(options.dataViews[0], idx_per_indicator);
+    }
     if (this.inputSettings.validationStatus.error !== "") {
       res.status = false;
       res.error = this.inputSettings.validationStatus.error;
@@ -197,32 +200,6 @@ export default class viewModelClass {
       res.error = checkDV;
       return res;
     }
-    this.update_impl(options, host, idx_per_indicator, indicator_names);
-    if (this.showGrouped) {
-      if (this.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
-        res.status = false;
-        res.error = this.inputDataGrouped.map(d => d.validationStatus.error).join("\n");
-        return res;
-      }
-      if (this.inputDataGrouped.some(d => d.warningMessage !== "")) {
-       res.warning = this.inputDataGrouped.map(d => d.warningMessage).join("\n");
-      }
-    } else {
-      if (this.inputData.validationStatus.status !== 0) {
-        res.status = false;
-        res.error = this.inputData.validationStatus.error;
-        return res;
-      }
-      if (this.inputData.warningMessage !== "") {
-        res.warning = this.inputData.warningMessage;
-      }
-    }
-
-    return res;
-  }
-
-  update_impl(options: VisualUpdateOptions, host: IVisualHost, groupIdxs: number[][], groupNames: string[][]): void {
-    this.groupNames = groupNames;
     if (isNullOrUndefined(this.colourPalette)) {
       this.colourPalette = {
         isHighContrast: host.colorPalette.isHighContrast,
@@ -246,7 +223,7 @@ export default class viewModelClass {
         this.outliersGrouped = new Array<outliersObject>();
         this.identitiesGrouped = new Array<ISelectionId[]>();
 
-        groupIdxs.forEach((group_idxs, idx) => {
+        idx_per_indicator.forEach((group_idxs, idx) => {
           const inpData: dataObject = extractInputData(options.dataViews[0].categorical,
                                                         this.inputSettings.settingsGrouped[idx],
                                                         this.inputSettings.derivedSettingsGrouped[idx],
@@ -286,7 +263,7 @@ export default class viewModelClass {
                                           this.inputSettings.settings,
                                           this.inputSettings.derivedSettings,
                                           this.inputSettings.validationStatus.messages,
-                                          groupIdxs[0]);
+                                          idx_per_indicator[0]);
 
         if (this.inputData.validationStatus.status === 0) {
           this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
@@ -313,6 +290,27 @@ export default class viewModelClass {
       this.colourPalette
     )
     this.firstRun = false;
+    if (this.showGrouped) {
+      if (this.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
+        res.status = false;
+        res.error = this.inputDataGrouped.map(d => d.validationStatus.error).join("\n");
+        return res;
+      }
+      if (this.inputDataGrouped.some(d => d.warningMessage !== "")) {
+       res.warning = this.inputDataGrouped.map(d => d.warningMessage).join("\n");
+      }
+    } else {
+      if (this.inputData.validationStatus.status !== 0) {
+        res.status = false;
+        res.error = this.inputData.validationStatus.error;
+        return res;
+      }
+      if (this.inputData.warningMessage !== "") {
+        res.warning = this.inputData.warningMessage;
+      }
+    }
+
+    return res;
   }
 
   getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {
@@ -419,21 +417,20 @@ export default class viewModelClass {
       const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settingsGrouped[i]);
       const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settingsGrouped[i],
                                                       this.inputSettings.derivedSettingsGrouped[i]);
-
       const table_row_entries: [string, string | number][] = new Array<[string, string | number]>();
       this.indicatorVarNames.forEach((indicator_name, idx) => {
         table_row_entries.push([indicator_name, this.groupNames[i][idx]]);
       })
-      table_row_entries.push(["latest_date", limits.keys[lastIndex].label]);
-      table_row_entries.push(["value", limits.values[lastIndex]]);
-      table_row_entries.push(["target", limits.targets[lastIndex]]);
-      table_row_entries.push(["alt_target", limits.alt_targets[lastIndex]]);
-      table_row_entries.push(["ucl99", limits.ul99[lastIndex]]);
-      table_row_entries.push(["ucl95", limits.ul95[lastIndex]]);
-      table_row_entries.push(["ucl68", limits.ul68[lastIndex]]);
-      table_row_entries.push(["lcl68", limits.ll68[lastIndex]]);
-      table_row_entries.push(["lcl95", limits.ll95[lastIndex]]);
-      table_row_entries.push(["lcl99", limits.ll99[lastIndex]]);
+      table_row_entries.push(["latest_date", limits.keys?.[lastIndex].label]);
+      table_row_entries.push(["value", limits.values?.[lastIndex]]);
+      table_row_entries.push(["target", limits.targets?.[lastIndex]]);
+      table_row_entries.push(["alt_target", limits.alt_targets?.[lastIndex]]);
+      table_row_entries.push(["ucl99", limits.ul99?.[lastIndex]]);
+      table_row_entries.push(["ucl95", limits.ul95?.[lastIndex]]);
+      table_row_entries.push(["ucl68", limits.ul68?.[lastIndex]]);
+      table_row_entries.push(["lcl68", limits.ll68?.[lastIndex]]);
+      table_row_entries.push(["lcl95", limits.ll95?.[lastIndex]]);
+      table_row_entries.push(["lcl99", limits.ll99?.[lastIndex]]);
       table_row_entries.push(["variation", varIcons[0]]);
       table_row_entries.push(["assurance", assIcon]);
 

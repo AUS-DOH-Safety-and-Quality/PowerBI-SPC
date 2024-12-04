@@ -40,24 +40,27 @@ type datePartsType = {
   year?: number
 }
 
-export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[]) {
-  let inputDates: Date[];
-  const inputQuarters: string[] = new Array<string>();
+export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[], idxs: number[]) {
+  const n_keys: number = idxs.length;
+  let inputDates: Date[] = new Array<Date>(n_keys);
+  const inputQuarters: string[] = new Array<string>(n_keys);
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
-    inputDates = inputs[0].values.map((_, idx) => {
+    for (let i = 0; i < n_keys; i++) {
       const datePartsArray: (string | number)[][] = [];
-      for (let i = 0; i < inputs.length; i++) {
-        datePartsArray.push(temporalTypeToKey(inputs[i].source.type, inputs[i].values[idx]));
+      for (let j = 0; j < inputs.length; j++) {
+        datePartsArray.push(temporalTypeToKey(inputs[j].source.type, inputs[j].values[idxs[i]]));
       }
       const datePartsObj: datePartsType = Object.fromEntries(datePartsArray);
       if (datePartsObj?.quarter) {
         inputQuarters.push(datePartsObj.quarter)
       }
-      return new Date(datePartsObj?.year ?? 1970, datePartsObj?.month ?? 0, datePartsObj?.day ?? 1)
-    });
+      inputDates[i] = new Date(datePartsObj?.year ?? 1970, datePartsObj?.month ?? 0, datePartsObj?.day ?? 1)
+    }
   } else {
-    inputDates = <Date[]>inputs?.[0]?.values
+    for (let i = 0; i < n_keys; i++) {
+      inputDates[i] = <Date>inputs?.[0]?.values[idxs[i]]
+    }
   }
   return { dates: inputDates, quarters: inputQuarters }
 }

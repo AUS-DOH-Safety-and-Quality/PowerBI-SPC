@@ -68,8 +68,9 @@ export default function validateInputData(keys: string[],
   let messages: string[] = new Array<string>();
   let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
   const check_denom = chart_type_props.needs_denominator
-                      || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators));
-  for (const i of idxs) {
+                      || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators) && denominators.length > 0);
+  const n: number = idxs.length;
+  for (let i = 0; i < n; i++) {
     const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], chart_type_props,  check_denom);
     messages.push(validation.message);
     all_status.push(validation.type);

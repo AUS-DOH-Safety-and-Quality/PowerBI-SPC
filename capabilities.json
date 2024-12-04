@@ -3,7 +3,12 @@
   "supportsKeyboardFocus": true,
   "supportsMultiVisualSelection": true,
   "sorting": {
-    "implicit": { "clauses": [{ "role": "key", "direction": 1 }] }
+    "implicit": {
+      "clauses": [
+        { "role": "indicator", "direction": 1 },
+        { "role": "key", "direction": 1 }
+      ]
+    }
   },
   "tooltips": {
     "supportedTypes": { "default": true, "canvas": true },
