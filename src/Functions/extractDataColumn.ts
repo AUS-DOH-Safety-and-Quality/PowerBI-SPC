@@ -38,7 +38,6 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
     return ret;
   }
   const inputDates = parseInputDates(col, idxs)
-  console.log(inputDates)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
