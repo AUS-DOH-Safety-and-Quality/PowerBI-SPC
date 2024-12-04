@@ -24,3 +24,4 @@ export { default as dateSettingsToFormatOptions } from "./dateSettingsToFormatOp
 export { default as parseInputDates } from "./parseInputDates"
 export { default as isNullOrUndefined } from "./isNullOrUndefined"
 export { default as identitySelected } from "./identitySelected"
+export { default as seq } from "./seq"

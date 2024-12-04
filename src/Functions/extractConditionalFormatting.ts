@@ -25,7 +25,8 @@ function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string
 export default function
   extractConditionalFormatting<T extends SettingsTypes>(categoricalView: DataViewCategorical,
                                                         settingGroupName: string,
-                                                        inputSettings: defaultSettingsType): ConditionalReturnT<T> {
+                                                        inputSettings: defaultSettingsType,
+                                                        idxs: number[]): ConditionalReturnT<T> {
   if (isNullOrUndefined(categoricalView)) {
     return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
@@ -38,10 +39,11 @@ export default function
   // Force a deep copy to avoid JS's absurd pass-by-reference handling
   const validationRtn: SettingsValidationT
     = JSON.parse(JSON.stringify({ status: 0, messages: rep([], inputCategories.values.length) }));
-
-  const rtn = inputCategories.values.map((_, idx) => {
-    const inpObjects = (inputCategories.objects ? inputCategories.objects[idx] : null) as powerbi.DataViewObjects;
-    return Object.fromEntries(
+  const n: number = idxs.length;
+  let rtn: T[] = new Array<T>(n);
+  for (let i = 0; i < n; i++) {
+    const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
+    rtn[i] = Object.fromEntries(
       settingNames.map(settingName => {
         const defaultSetting = defaultSettings[settingGroupName][settingName]["default"];
 
@@ -60,13 +62,13 @@ export default function
           }
           if (message !== "") {
             extractedSetting = defaultSettings[settingGroupName][settingName]["default"];
-            validationRtn.messages[idx].push(message);
+            validationRtn.messages[i].push(message);
           }
         }
         return [ settingName, extractedSetting ];
       })
-    ) as SettingsTypes
-  }) as T[];
+    ) as T
+  }
 
   const validationMessages = validationRtn.messages.filter(d => d.length > 0);
   if (!validationRtn.messages.some(d => d.length === 0)) {
