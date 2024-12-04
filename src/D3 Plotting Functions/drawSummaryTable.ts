@@ -75,9 +75,11 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
                           }).style("background-color", "lightgray");
                         })
                         .on("mouseout", (event) => {
-                          d3.select(event.target).select(function(){
+                          let currentTD = d3.select(event.target).select(function(){
                             return this.closest("td");
-                          }).style("background-color", "inherit");
+                          })
+                          let rowData = d3.select(currentTD.node().parentNode).datum() as plotData;
+                          currentTD.style("background-color", rowData.aesthetics?.["table_body_bg_colour"] ?? "inherit");
                         });
 
   if (tableSettings.table_text_overflow !== "none") {
@@ -157,7 +159,6 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
       = rowData.aesthetics?.["table_body_bg_colour"]
                               ? rowData.aesthetics as any
                               : inputSettings.summary_table;
-
     currNode.style("background-color", tableAesthetics.table_body_bg_colour)
             .style("font-weight", tableAesthetics.table_body_font_weight)
             .style("text-transform", tableAesthetics.table_body_text_transform)
