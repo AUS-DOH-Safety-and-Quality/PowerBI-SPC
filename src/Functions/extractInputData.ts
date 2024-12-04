@@ -71,6 +71,8 @@ export default function extractInputData(inputView: DataViewCategorical,
     return invalidInputData(inputValidStatus);
   }
 
+  console.log(keys)
+
   const valid_ids: number[] = new Array<number>();
   const valid_keys: { x: number, id: number, label: string }[] = new Array<{ x: number, id: number, label: string }>();
   const removalMessages: string[] = new Array<string>();

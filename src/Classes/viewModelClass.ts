@@ -417,21 +417,20 @@ export default class viewModelClass {
       const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settingsGrouped[i]);
       const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settingsGrouped[i],
                                                       this.inputSettings.derivedSettingsGrouped[i]);
-
       const table_row_entries: [string, string | number][] = new Array<[string, string | number]>();
       this.indicatorVarNames.forEach((indicator_name, idx) => {
         table_row_entries.push([indicator_name, this.groupNames[i][idx]]);
       })
-      table_row_entries.push(["latest_date", limits.keys[lastIndex].label]);
-      table_row_entries.push(["value", limits.values[lastIndex]]);
-      table_row_entries.push(["target", limits.targets[lastIndex]]);
-      table_row_entries.push(["alt_target", limits.alt_targets[lastIndex]]);
-      table_row_entries.push(["ucl99", limits.ul99[lastIndex]]);
-      table_row_entries.push(["ucl95", limits.ul95[lastIndex]]);
-      table_row_entries.push(["ucl68", limits.ul68[lastIndex]]);
-      table_row_entries.push(["lcl68", limits.ll68[lastIndex]]);
-      table_row_entries.push(["lcl95", limits.ll95[lastIndex]]);
-      table_row_entries.push(["lcl99", limits.ll99[lastIndex]]);
+      table_row_entries.push(["latest_date", limits.keys?.[lastIndex].label]);
+      table_row_entries.push(["value", limits.values?.[lastIndex]]);
+      table_row_entries.push(["target", limits.targets?.[lastIndex]]);
+      table_row_entries.push(["alt_target", limits.alt_targets?.[lastIndex]]);
+      table_row_entries.push(["ucl99", limits.ul99?.[lastIndex]]);
+      table_row_entries.push(["ucl95", limits.ul95?.[lastIndex]]);
+      table_row_entries.push(["ucl68", limits.ul68?.[lastIndex]]);
+      table_row_entries.push(["lcl68", limits.ll68?.[lastIndex]]);
+      table_row_entries.push(["lcl95", limits.ll95?.[lastIndex]]);
+      table_row_entries.push(["lcl99", limits.ll99?.[lastIndex]]);
       table_row_entries.push(["variation", varIcons[0]]);
       table_row_entries.push(["assurance", assIcon]);
 

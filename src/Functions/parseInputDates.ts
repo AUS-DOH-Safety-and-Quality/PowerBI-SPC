@@ -58,7 +58,9 @@ export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[]
       inputDates[i] = new Date(datePartsObj?.year ?? 1970, datePartsObj?.month ?? 0, datePartsObj?.day ?? 1)
     }
   } else {
-    inputDates = <Date[]>inputs?.[0]?.values
+    for (let i = 0; i < n_keys; i++) {
+      inputDates[i] = <Date>inputs?.[0]?.values[idxs[i]]
+    }
   }
   return { dates: inputDates, quarters: inputQuarters }
 }

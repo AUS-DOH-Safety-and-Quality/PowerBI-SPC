@@ -60,8 +60,6 @@ export default class settingsClass {
 
     const all_idxs: number[] = groupIdxs.flat();
 
-
-
     allSettingGroups.forEach((settingGroup: defaultSettingsKeys) => {
       const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKeys]>
         = extractConditionalFormatting(inputView?.categorical, settingGroup, this.settings, all_idxs);

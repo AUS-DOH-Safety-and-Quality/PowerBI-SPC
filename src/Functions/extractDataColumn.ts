@@ -35,8 +35,10 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
       const currKey: string = col.map(keyCol => keyCol.values[idxs[i]]).join(delim)
       ret[i] = currKey === blankKey ? null : currKey
     }
+    return ret;
   }
   const inputDates = parseInputDates(col, idxs)
+  console.log(inputDates)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
