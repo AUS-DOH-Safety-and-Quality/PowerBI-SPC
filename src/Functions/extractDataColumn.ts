@@ -89,7 +89,7 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     return null
   }
   const n_keys: number = idxs.length;
-  if (name === "groupings") {
+  if (name === "groupings" || name === "labels") {
     let ret = new Array<string>(n_keys);
     for (let i = 0; i < n_keys; i++) {
       ret[i] = isNullOrUndefined(columnRaw?.[0]?.values?.[idxs[i]]) ? null : String(columnRaw[0].values[idxs[i]]);

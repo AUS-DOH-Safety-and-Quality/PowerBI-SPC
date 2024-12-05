@@ -71,6 +71,11 @@ export type plotData = {
   highlighted: boolean;
   // Tooltip data to print
   tooltip: VisualTooltipDataItem[];
+  label: {
+    text_value: string,
+    x: number,
+    y: number
+  };
 }
 
 export type plotDataGrouped = {
@@ -582,7 +587,12 @@ export default class viewModelClass {
                       .createSelectionId(),
         highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
         tooltip: buildTooltip(table_row, this.inputData?.tooltips?.[index],
-                              this.inputSettings.settings, this.inputSettings.derivedSettings)
+                              this.inputSettings.settings, this.inputSettings.derivedSettings),
+        label: {
+          text_value: this.inputData.labels?.[index],
+          x: null,
+          y: null
+        }
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
     }

@@ -13,4 +13,5 @@ export default function initialiseSVG(selection: svgBaseType,
   selection.append('text').classed("yaxislabel", true)
   selection.append('g').classed("linesgroup", true)
   selection.append('g').classed("dotsgroup", true)
+  selection.append("g").classed("text-labels", true)
 }

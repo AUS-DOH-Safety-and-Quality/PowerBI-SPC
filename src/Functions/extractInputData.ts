@@ -17,6 +17,7 @@ export type dataObject = {
   groupingIndexes: number[];
   scatter_formatting: defaultSettingsType["scatter"][];
   tooltips: VisualTooltipDataItem[][];
+  labels: string[];
   warningMessage: string;
   alt_targets: number[];
   speclimits_lower: number[];
@@ -35,6 +36,7 @@ function invalidInputData(inputValidStatus: ValidationT): dataObject {
     groupingIndexes: null,
     scatter_formatting: null,
     tooltips: null,
+    labels: null,
     warningMessage: inputValidStatus.error,
     alt_targets: null,
     speclimits_lower: null,
@@ -54,6 +56,7 @@ export default function extractInputData(inputView: DataViewCategorical,
   const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings, idxs);
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings, idxs);
   const groupings: string[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings, idxs);
+  const labels: string[] = extractDataColumn<string[]>(inputView, "labels", inputSettings, idxs);
   const highlights: powerbi.PrimitiveValue[] = idxs.map(d => inputView?.values?.[0]?.highlights?.[d]);
   let scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings, idxs)?.values;
   let alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings, idxs)
@@ -143,6 +146,7 @@ export default function extractInputData(inputView: DataViewCategorical,
     },
     spcSettings: spcSettings[0],
     tooltips: extractValues(tooltips, valid_ids),
+    labels: extractValues(labels, valid_ids),
     highlights: curr_highlights,
     anyHighlights: curr_highlights.filter(d => !isNullOrUndefined(d)).length > 0,
     categories: inputView.categories[0],
