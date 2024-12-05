@@ -786,6 +786,31 @@
           "displayName": "Opacity if Unselected",
           "type": { "numeric": true }
         },
+        "table_variation_filter": {
+          "displayName": "Filter by Variation Type",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "All",                           "value" : "all" },
+              { "displayName" : "Common Cause",                  "value" : "common" },
+              { "displayName" : "Special Cause - Any",           "value" : "special" },
+              { "displayName" : "Special Cause - Improvement",   "value" : "improvement" },
+              { "displayName" : "Special Cause - Deterioration", "value" : "deterioration" },
+              { "displayName" : "Special Cause - Neutral",       "value" : "neutral" }
+            ]
+          }
+        },
+        "table_assurance_filter": {
+          "displayName": "Filter by Assurance Type",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "All",                           "value" : "all" },
+              { "displayName" : "Consistent - Any",               "value" : "any" },
+              { "displayName" : "Consistent Pass",               "value" : "pass" },
+              { "displayName" : "Consistent Fail",               "value" : "fail" },
+              { "displayName" : "Inconsistent",                  "value" : "inconsistent" }
+            ]
+          }
+        },
         "table_text_overflow": {
           "displayName": "Text Overflow Handling",
           "type": {

@@ -202,9 +202,13 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   const tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
 
   selection.call(drawTableHeaders, cols, tableSettings, maxWidth)
-            .call(drawTableRows, visualObj, plotPoints, tableSettings, maxWidth)
-            .call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings, visualObj.viewModel.showGrouped)
-            .call(drawOuterBorder, tableSettings);
+            .call(drawTableRows, visualObj, plotPoints, tableSettings, maxWidth);
+
+  if (plotPoints.length > 0) {
+    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings, visualObj.viewModel.showGrouped)
+  }
+
+  selection.call(drawOuterBorder, tableSettings);
 
   selection.on('click', () => {
     visualObj.selectionManager.clear();

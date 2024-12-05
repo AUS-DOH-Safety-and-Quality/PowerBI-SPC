@@ -412,12 +412,45 @@ export default class viewModelClass {
       })
     }
     for (let i: number = 0; i < this.groupNames.length; i++) {
+      const varIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_variation_filter;
+      const assIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_assurance_filter;
       const limits: controlLimitsObject = this.controlLimitsGrouped[i];
       const outliers: outliersObject = this.outliersGrouped[i];
       const lastIndex: number = limits.keys.length - 1;
       const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settingsGrouped[i]);
+      if (varIconFilter !== "all") {
+        if (varIconFilter === "improvement" && !(["improvementHigh", "improvementLow"].includes(varIcons[0]))) {
+          continue;
+        }
+        if (varIconFilter === "deterioration" && !(["concernHigh", "concernLow"].includes(varIcons[0]))) {
+          continue;
+        }
+        if (varIconFilter === "neutral" && !(["neutralHigh", "neutralLow"].includes(varIcons[0]))) {
+          continue;
+        }
+        if (varIconFilter === "common" && varIcons[0] !== "commonCause") {
+          continue;
+        }
+        if (varIconFilter === "special" && varIcons[0] === "commonCause") {
+          continue;
+        }
+      }
       const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settingsGrouped[i],
                                                       this.inputSettings.derivedSettingsGrouped[i]);
+      if (assIconFilter !== "all") {
+        if (assIconFilter === "any" && assIcon === "inconsistent") {
+          continue;
+        }
+        if (assIconFilter === "pass" && assIcon !== "consistentPass") {
+          continue;
+        }
+        if (assIconFilter === "fail" && assIcon !== "consistentFail") {
+          continue;
+        }
+        if (assIconFilter === "inconsistent" && assIcon !== "inconsistent") {
+          continue;
+        }
+      }
       const table_row_entries: [string, string | number][] = new Array<[string, string | number]>();
       this.indicatorVarNames.forEach((indicator_name, idx) => {
         table_row_entries.push([indicator_name, this.groupNames[i][idx]]);
@@ -448,6 +481,7 @@ export default class viewModelClass {
         highlighted: this.inputDataGrouped[i].anyHighlights
       })
     }
+    console.log(this.plotPointsGrouped)
   }
 
   initialisePlotData(host: IVisualHost): void {
