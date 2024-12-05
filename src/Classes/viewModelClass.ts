@@ -386,7 +386,7 @@ export default class viewModelClass {
       if (lineSettings[`show_${limit}`]) {
         this.tableColumnsGrouped.push({
           name: `ucl${limit}`,
-          label: `Upper ${lineSettings[`ttip_label_${limit}`]}`
+          label: `${lineSettings[`ttip_label_${limit}_prefix_upper`]}${lineSettings[`ttip_label_${limit}`]}`
         })
       }
     });
@@ -394,7 +394,7 @@ export default class viewModelClass {
       if (lineSettings[`show_${limit}`]) {
         this.tableColumnsGrouped.push({
           name: `lcl${limit}`,
-          label: `Lower ${lineSettings[`ttip_label_${limit}`]}`
+          label: `${lineSettings[`ttip_label_${limit}_prefix_lower`]}${lineSettings[`ttip_label_${limit}`]}`
         })
       }
     })
