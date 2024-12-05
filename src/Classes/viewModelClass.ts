@@ -481,7 +481,6 @@ export default class viewModelClass {
         highlighted: this.inputDataGrouped[i].anyHighlights
       })
     }
-    console.log(this.plotPointsGrouped)
   }
 
   initialisePlotData(host: IVisualHost): void {
