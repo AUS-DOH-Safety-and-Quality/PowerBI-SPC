@@ -1053,6 +1053,27 @@
           "type" : { "bool" : true }
         }
       }
+    },
+    "label_options" : {
+      "displayName" : "Value Label Options",
+      "properties" : {
+        "show_labels": {
+          "displayName": "Show Value Labels",
+          "type" : { "bool" : true }
+        },
+        "label_font": {
+          "displayName": "Label Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "label_size": {
+          "displayName": "Label Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "label_colour":{
+          "displayName": "Label Font Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
     }
   },
   "dataViewMappings": [{

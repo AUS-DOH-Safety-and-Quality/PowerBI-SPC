@@ -207,6 +207,12 @@ const defaultSettings = {
   },
   download_options: {
     show_button: { default: false }
+  },
+  label_options: {
+    show_labels: { default: true },
+    label_font: textOptions.font,
+    label_size: textOptions.size,
+    label_colour: colourOptions.standard
   }
 };
 
