@@ -8,7 +8,8 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
-          drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton } from "./D3 Plotting Functions"
+          drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
+          drawLabels} from "./D3 Plotting Functions"
 import { defaultSettingsKeys, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
 import type { plotDataGrouped } from "./Classes/viewModelClass";
 import { identitySelected } from "./Functions";
@@ -87,7 +88,9 @@ export class Visual implements powerbi.extensibility.IVisual {
                 .call(drawIcons, this)
                 .call(addContextMenu, this)
                 .call(drawDownloadButton, this)
+                .call(drawLabels, this);
       }
+
       this.updateHighlighting();
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {

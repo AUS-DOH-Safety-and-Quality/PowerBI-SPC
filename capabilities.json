@@ -25,7 +25,8 @@
     { "displayName": "Grouping (Summary Table)",         "name": "indicator",          "kind": "Grouping" },
     { "displayName": "Rebaseline Groupings",  "name": "groupings",    "kind": "Measure" },
     { "displayName": "SD (for xbar)",         "name": "xbar_sds",     "kind": "Measure" },
-    { "displayName": "Tooltips",              "name": "tooltips",     "kind": "Measure" }
+    { "displayName": "Tooltips",              "name": "tooltips",     "kind": "Measure" },
+    { "displayName": "Value Labels",          "name": "labels",     "kind": "Measure" }
   ],
   "objects": {
     "split_indexes_storage" : {
@@ -1052,6 +1053,27 @@
           "type" : { "bool" : true }
         }
       }
+    },
+    "label_options" : {
+      "displayName" : "Value Label Options",
+      "properties" : {
+        "show_labels": {
+          "displayName": "Show Value Labels",
+          "type" : { "bool" : true }
+        },
+        "label_font": {
+          "displayName": "Label Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "label_size": {
+          "displayName": "Label Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "label_colour":{
+          "displayName": "Label Font Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
     }
   },
   "dataViewMappings": [{
@@ -1059,7 +1081,8 @@
       "key": { "max": 5 },
       "numerators": { "max": 1 },
       "denominators": { "max": 1 },
-      "xbar_sds": { "max": 1 }
+      "xbar_sds": { "max": 1 },
+      "labels": { "max": 1 }
     }],
     "categorical": {
       "categories": {
@@ -1075,7 +1098,8 @@
           { "bind": { "to": "denominators" } },
           { "bind": { "to": "groupings" } },
           { "bind": { "to": "xbar_sds" } },
-          { "bind": { "to": "tooltips" } }
+          { "bind": { "to": "tooltips" } },
+          { "bind": { "to": "labels" } }
         ]
       }
     }
