@@ -1,4 +1,4 @@
-import { truncate, rep, mean } from "../Functions";
+import { truncate, rep, mean, extractValues } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 /**
@@ -18,7 +18,7 @@ import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
  * and the lower and upper control limits for both 95% and 99% confidence intervals.
  */
 export default function cLimits(args: controlLimitsArgs): controlLimitsObject {
-  const cl: number = mean(args.numerators);
+  const cl: number = mean(extractValues(args.numerators, args.subset_points));
   const sigma: number = Math.sqrt(cl);
 
   return {

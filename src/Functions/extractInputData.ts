@@ -3,7 +3,7 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData, isNullOrUndefined } from "../Functions"
+import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData, isNullOrUndefined, seq, between } from "../Functions"
 import { type defaultSettingsType, type controlLimitsArgs, type derivedSettingsClass } from "../Classes";
 import type { ValidationT } from "./validateInputData";
 
@@ -121,14 +121,25 @@ export default function extractInputData(inputView: DataViewCategorical,
   }
 
   const curr_highlights = extractValues(highlights, valid_ids);
-
+  const num_points_subset: number = spcSettings[0].num_points_subset;
+  let subset_points: number[];
+  if (isNullOrUndefined(num_points_subset) || !between(num_points_subset, 1, valid_ids.length)) {
+    subset_points = seq(0, valid_ids.length - 1);
+  } else {
+    if (spcSettings[0].subset_points_from === "Start") {
+      subset_points = seq(0, spcSettings[0].num_points_subset - 1);
+    } else {
+      subset_points = seq(valid_ids.length - spcSettings[0].num_points_subset, valid_ids.length - 1);
+    }
+  }
   return {
     limitInputArgs: {
       keys: valid_keys,
       numerators: extractValues(numerators, valid_ids),
       denominators: extractValues(denominators, valid_ids),
       xbar_sds: extractValues(xbar_sds, valid_ids),
-      outliers_in_limits: false,
+      outliers_in_limits: spcSettings[0].outliers_in_limits,
+      subset_points: subset_points
     },
     spcSettings: spcSettings[0],
     tooltips: extractValues(tooltips, valid_ids),

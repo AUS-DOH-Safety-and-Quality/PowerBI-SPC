@@ -1,11 +1,12 @@
-import { subtract, add, divide, multiply, truncate, sqrt, abs, diff, rep, sum, mean } from "../Functions";
+import { subtract, add, divide, multiply, truncate, sqrt, abs, diff, rep, sum, mean, extractValues } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function pprimeLimits(args: controlLimitsArgs): controlLimitsObject {
   const val: number[] = divide(args.numerators, args.denominators);
-  const cl: number = sum(args.numerators) / sum(args.denominators);
+  const cl: number = sum(extractValues(args.numerators, args.subset_points))
+                      / sum(extractValues(args.denominators, args.subset_points));
   const sd: number[] = sqrt(divide(cl * (1 - cl), args.denominators));
-  const zscore: number[] = divide(subtract(val, cl), sd);
+  const zscore: number[] = extractValues(divide(subtract(val, cl), sd), args.subset_points);
 
   const consec_diff: number[] = abs(diff(zscore));
   const consec_diff_ulim: number = mean(consec_diff) * 3.267;

@@ -1,4 +1,4 @@
-import { sqrt, rep, mean, median } from "../Functions";
+import { sqrt, rep, mean, median, extractValues } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 /**
@@ -21,13 +21,13 @@ import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
  * and the lower and upper control limits for both 95% and 99% confidence intervals.
  */
 export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
-  const cl: number = mean(args.numerators);
+  const cl: number = mean(extractValues(args.numerators, args.subset_points));
   const sigma: number = sqrt(cl * (cl + 1));
 
   return {
     keys: args.keys,
     values: args.numerators,
-    targets: rep(median(args.numerators), args.keys.length),
+    targets: rep(median(extractValues(args.numerators, args.subset_points)), args.keys.length),
     ll99: rep(0, args.keys.length),
     ll95: rep(0, args.keys.length),
     ll68: rep(0, args.keys.length),

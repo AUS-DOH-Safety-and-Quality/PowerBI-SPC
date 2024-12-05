@@ -15,6 +15,8 @@ const defaultSettings = {
     sig_figs: { default: 2, valid: { numberRange: { min: 0, max: 20 } } },
     perc_labels: { default: "Automatic", valid: ["Automatic", "Yes", "No"]},
     split_on_click: { default: false },
+    num_points_subset: {default: <number>null },
+    subset_points_from: { default: "Start", valid: ["Start", "End"] },
     ttip_show_numerator: { default: true },
     ttip_label_numerator: { default: "Numerator"},
     ttip_show_denominator: { default: true },
