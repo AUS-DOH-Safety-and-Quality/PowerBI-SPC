@@ -39,13 +39,16 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   }
   const inputDates = parseInputDates(col, idxs)
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
+  let day_elem: string = inputSettings.dates.date_format_locale === "en-GB" ? "day" : "month";
+  let month_elem: string = inputSettings.dates.date_format_locale === "en-GB" ? "month" : "day";
+
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
       ret[i] = null
     }
     const dateParts = datePartsToRecord(formatter.formatToParts(<Date>inputDates.dates[i]))
-    const datePartStrings: string[] = [dateParts.weekday + " " + dateParts.day,
-                                        dateParts.month,
+    const datePartStrings: string[] = [dateParts.weekday + " " + dateParts[day_elem],
+                                        dateParts[month_elem],
                                         inputDates.quarters?.[i] ?? "",
                                         dateParts.year];
     ret[i] = datePartStrings.filter(d => String(d).trim()).join(delim)
