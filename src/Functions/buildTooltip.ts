@@ -69,7 +69,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
     ["68", "95", "99"].forEach(limit => {
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
-          displayName: `Upper ${inputSettings.lines[`ttip_label_${limit}`]}`,
+          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
           value: (table_row[`ul${limit}`]).toFixed(sig_figs) + suffix
         })
       }
@@ -91,7 +91,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
     ["68", "95", "99"].forEach(limit => {
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
-          displayName: `Lower ${inputSettings.lines[`ttip_label_${limit}`]}`,
+          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
           value: (table_row[`ll${limit}`]).toFixed(sig_figs) + suffix
         })
       }

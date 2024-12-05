@@ -607,12 +607,36 @@
           "displayName": "Tooltip Label",
           "type": { "text": true }
         },
+        "ttip_label_99_prefix_lower": {
+          "displayName": "Tooltip Label - Lower Prefix",
+          "type": { "text": true }
+        },
+        "ttip_label_99_prefix_upper": {
+          "displayName": "Tooltip Label - Upper Prefix",
+          "type": { "text": true }
+        },
         "ttip_label_95": {
           "displayName": "Tooltip Label",
           "type": { "text": true }
         },
+        "ttip_label_95_prefix_lower": {
+          "displayName": "Tooltip Label - Lower Prefix",
+          "type": { "text": true }
+        },
+        "ttip_label_95_prefix_upper": {
+          "displayName": "Tooltip Label - Upper Prefix",
+          "type": { "text": true }
+        },
         "ttip_label_68": {
           "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_label_68_prefix_lower": {
+          "displayName": "Tooltip Label - Lower Prefix",
+          "type": { "text": true }
+        },
+        "ttip_label_68_prefix_upper": {
+          "displayName": "Tooltip Label - Upper Prefix",
           "type": { "text": true }
         },
         "ttip_label_target": {
@@ -625,6 +649,14 @@
         },
         "ttip_label_specification": {
           "displayName": "Tooltip Label",
+          "type": { "text": true }
+        },
+        "ttip_label_specification_prefix_lower": {
+          "displayName": "Tooltip Label - Lower Prefix",
+          "type": { "text": true }
+        },
+        "ttip_label_specification_prefix_upper": {
+          "displayName": "Tooltip Label - Upper Prefix",
           "type": { "text": true }
         },
         "alt_target": {
