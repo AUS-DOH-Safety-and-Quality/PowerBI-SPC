@@ -1,4 +1,4 @@
-import { divide, rep, median } from "../Functions";
+import { divide, rep, median, extractValues } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function runLimits(args: controlLimitsArgs): controlLimitsObject {
@@ -7,7 +7,7 @@ export default function runLimits(args: controlLimitsArgs): controlLimitsObject 
     ? divide(args.numerators, args.denominators)
     : args.numerators;
 
-  const cl: number = median(ratio);
+  const cl: number = median(extractValues(ratio, args.subset_points));
   return {
     keys: args.keys,
     values: ratio.map(d => isNaN(d) ? 0 : d),

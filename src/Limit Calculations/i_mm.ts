@@ -1,4 +1,4 @@
-import { abs, diff, divide, rep, median } from "../Functions";
+import { abs, diff, divide, rep, median, extractValues } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
@@ -7,9 +7,11 @@ export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
     ? divide(args.numerators, args.denominators)
     : args.numerators;
 
-  const cl: number = median(ratio);
+  const ratio_subset: number[] = extractValues(ratio, args.subset_points);
 
-  const consec_diff: number[] = abs(diff(ratio));
+  const cl: number = median(ratio_subset);
+
+  const consec_diff: number[] = abs(diff(ratio_subset));
   const consec_diff_ulim: number = median(consec_diff) * 3.267;
   const outliers_in_limits: boolean = args.outliers_in_limits;
   const consec_diff_valid: number[] = outliers_in_limits ? consec_diff : consec_diff.filter(d => d < consec_diff_ulim);

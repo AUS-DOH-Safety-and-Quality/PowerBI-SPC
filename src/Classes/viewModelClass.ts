@@ -102,8 +102,9 @@ export type controlLimitsArgs = {
   keys: { x: number, id: number, label: string }[];
   numerators: number[];
   denominators?: number[];
-  outliers_in_limits?: boolean;
   xbar_sds?: number[];
+  outliers_in_limits?: boolean;
+  subset_points?: number[];
 }
 
 export type outliersObject = {

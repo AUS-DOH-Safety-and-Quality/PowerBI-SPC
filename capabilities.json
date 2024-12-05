@@ -87,6 +87,19 @@
           "displayName": "Split Limits on Click",
           "type" : { "bool" : true }
         },
+        "num_points_subset": {
+          "displayName": "Subset Number of Points for Limit Calculations",
+          "type": { "numeric": true }
+        },
+        "subset_points_from": {
+          "displayName": "Subset Points From",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Start", "value" : "Start" },
+              { "displayName" : "End",   "value" : "End" }
+            ]
+          }
+        },
         "ll_truncate": {
           "displayName": "Truncate Lower Limits at:",
           "type": { "numeric": true }

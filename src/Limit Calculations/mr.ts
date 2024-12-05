@@ -1,4 +1,4 @@
-import { abs, diff, divide, rep, mean } from "../Functions";
+import { abs, diff, divide, rep, mean, extractValues } from "../Functions";
 import { type controlLimitsObject, type controlLimitsArgs } from "../Classes";
 
 export default function mrLimits(args: controlLimitsArgs): controlLimitsObject {
@@ -8,7 +8,7 @@ export default function mrLimits(args: controlLimitsArgs): controlLimitsObject {
     : args.numerators;
 
   const consec_diff: number[] = abs(diff(ratio));
-  const cl: number = mean(consec_diff);
+  const cl: number = mean(extractValues(consec_diff, args.subset_points));
 
   return {
     keys: args.keys.slice(1),
