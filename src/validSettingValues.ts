@@ -96,10 +96,16 @@ const borderOptions = {
   }
 }
 
+const labelOptions = {
+  limits: { default: "beside", valid: ["outside", "inside", "above", "below", "beside"] },
+  standard: { default: "beside", valid: ["above", "below", "beside"] }
+}
+
 export {
   textOptions,
   lineOptions,
   iconOptions,
   colourOptions,
-  borderOptions
+  borderOptions,
+  labelOptions
 }

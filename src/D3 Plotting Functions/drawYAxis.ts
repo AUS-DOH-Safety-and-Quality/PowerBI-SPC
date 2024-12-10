@@ -1,10 +1,9 @@
 import * as d3 from "./D3 Modules";
-import { abs, isNullOrUndefined } from "../Functions";
-import drawXAxis from "./drawXAxis";
+import { isNullOrUndefined } from "../Functions";
 import type { axisProperties } from "../Classes";
 import type { svgBaseType, Visual } from "../visual";
 
-export default function drawYAxis(selection: svgBaseType, visualObj: Visual, refresh?: boolean) {
+export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
   const yAxisProperties: axisProperties = visualObj.viewModel.plotProperties.yAxis;
   const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.viewModel.plotProperties.yScale);
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.settings.y_axis.ylimit_sig_figs;
@@ -50,19 +49,6 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual, ref
     return;
   }
   const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
-
-  const settingsPadding: number = visualObj.viewModel.inputSettings.settings.canvas.left_padding
-  const tickLeftofPadding: number = yAxisCoordinates.left - settingsPadding;
-  if (tickLeftofPadding < 0) {
-    if (!refresh) {
-      visualObj.viewModel.plotProperties.xAxis.start_padding += abs(tickLeftofPadding)
-      visualObj.viewModel.plotProperties.initialiseScale(visualObj.viewModel.svgWidth,
-                                                          visualObj.viewModel.svgHeight);
-      selection.call(drawYAxis, visualObj, true).call(drawXAxis, visualObj, true);
-      return;
-    }
-  }
-
   const leftMidpoint: number = yAxisCoordinates.x * 0.7;
   const y: number = visualObj.viewModel.svgHeight / 2;
 

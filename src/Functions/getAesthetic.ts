@@ -19,3 +19,5 @@ export default function getAesthetic(type: string, group: string, aesthetic: str
   const settingName: string = aesthetic + "_" + mapName;
   return inputSettings[group][settingName];
 }
+
+export { lineNameMap }

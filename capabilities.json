@@ -679,6 +679,280 @@
         "multiplier_specification": {
           "displayName": "Apply Multiplier to Specification Limits",
           "type" : { "bool" : true }
+        },
+        "plot_label_show_99": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_95": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_68": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_main": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_target": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_alt_target": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_specification": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_position_99": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_95": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_68": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_main": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_target": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_alt_target": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_specification": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_vpad_99": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_95": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_68": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_main": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_target": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_alt_target": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_specification": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_99": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_95": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_68": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_main": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_target": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_alt_target": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_specification": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_font_99": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_95": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_68": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_main": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_target": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_alt_target": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_specification": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_size_99": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_95": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_68": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_main": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_target": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_alt_target": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_specification": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_colour_99":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_95":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_68":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_main":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_target":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_alt_target":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_specification":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_prefix_99": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_95": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_68": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_main": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_target": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_alt_target": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_specification": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
         }
       }
     },
