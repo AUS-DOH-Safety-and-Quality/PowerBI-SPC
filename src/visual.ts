@@ -9,7 +9,7 @@ import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
-          drawLabels} from "./D3 Plotting Functions"
+          drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
 import { defaultSettingsKeys, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
 import type { plotDataGrouped } from "./Classes/viewModelClass";
 import { identitySelected } from "./Functions";
@@ -80,15 +80,9 @@ export class Visual implements powerbi.extensibility.IVisual {
                      .call(addContextMenu, this);
       } else {
         this.resizeCanvas(options.viewport.width, options.viewport.height);
-        this.svg.call(drawXAxis, this)
-                .call(drawYAxis, this)
-                .call(drawTooltipLine, this)
-                .call(drawLines, this)
-                .call(drawDots, this)
-                .call(drawIcons, this)
-                .call(addContextMenu, this)
-                .call(drawDownloadButton, this)
-                .call(drawLabels, this);
+        this.drawVisual();
+        this.adjustPaddingForOverflow();
+        this.drawVisual();
       }
 
       this.updateHighlighting();
@@ -99,6 +93,41 @@ export class Visual implements powerbi.extensibility.IVisual {
       console.error(caught_error)
       this.host.eventService.renderingFailed(options);
     }
+  }
+
+  drawVisual(): void {
+    this.svg.call(drawXAxis, this)
+            .call(drawYAxis, this)
+            .call(drawTooltipLine, this)
+            .call(drawLines, this)
+            .call(drawLineLabels, this)
+            .call(drawDots, this)
+            .call(drawIcons, this)
+            .call(addContextMenu, this)
+            .call(drawDownloadButton, this)
+            .call(drawValueLabels, this);
+  }
+
+  adjustPaddingForOverflow(): void {
+    let xLeftOverflow: number = 0;
+    let xRightOverflow: number = 0;
+    let yBottomOverflow: number = 0;
+    let yTopOverflow: number = 0;
+    const svgWidth: number = this.viewModel.svgWidth;
+    const svgHeight: number = this.viewModel.svgHeight;
+    this.svg.selectAll("*").each(function() {
+      const bbox = (this as SVGGraphicsElement).getBoundingClientRect();
+      xLeftOverflow = Math.min(xLeftOverflow, bbox.left);
+      xRightOverflow = Math.max(xRightOverflow, bbox.right - svgWidth);
+      yBottomOverflow = Math.max(yBottomOverflow, bbox.bottom - svgHeight);
+      yTopOverflow = Math.min(yTopOverflow, bbox.top);
+    });
+
+    this.viewModel.plotProperties.xAxis.start_padding += Math.abs(xLeftOverflow - this.viewModel.plotProperties.xAxis.start_padding);
+    this.viewModel.plotProperties.xAxis.end_padding += Math.abs(xRightOverflow + this.viewModel.plotProperties.xAxis.end_padding);
+    this.viewModel.plotProperties.yAxis.start_padding += Math.abs(yBottomOverflow + this.viewModel.plotProperties.yAxis.start_padding);
+    this.viewModel.plotProperties.yAxis.end_padding += Math.abs(yTopOverflow - this.viewModel.plotProperties.yAxis.end_padding);
+    this.viewModel.plotProperties.initialiseScale(svgWidth, svgHeight);
   }
 
   resizeCanvas(width: number, height: number): void {

@@ -679,6 +679,34 @@
         "multiplier_specification": {
           "displayName": "Apply Multiplier to Specification Limits",
           "type" : { "bool" : true }
+        },
+        "plot_label_show_99": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_95": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_68": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_main": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_target": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_alt_target": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
+        },
+        "plot_label_show_specification": {
+          "displayName": "Show Value on Plot",
+          "type": { "bool": true }
         }
       }
     },
