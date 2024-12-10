@@ -925,6 +925,34 @@
         "plot_label_colour_specification":{
           "displayName": "Value Colour",
           "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_prefix_99": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_95": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_68": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_main": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_target": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_alt_target": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
+        },
+        "plot_label_prefix_specification": {
+          "displayName": "Value Prefix",
+          "type": { "text": true }
         }
       }
     },

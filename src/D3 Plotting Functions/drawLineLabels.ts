@@ -41,7 +41,7 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     .join("text")
     .text(d => {
       return lineSettings[`plot_label_show_${lineNameMap[d[0]]}`]
-              ? formatValue(d[1][d[1].length - 1].line_value, "value")
+              ? lineSettings[`plot_label_prefix_${lineNameMap[d[0]]}`] + formatValue(d[1][d[1].length - 1].line_value, "value")
               : "";
     })
     .attr("x", d => visualObj.viewModel.plotProperties.xScale(d[1][d[1].length - 1].x))

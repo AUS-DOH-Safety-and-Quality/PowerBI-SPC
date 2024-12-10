@@ -172,7 +172,14 @@ const defaultSettings = {
     plot_label_colour_main: colourOptions.standard,
     plot_label_colour_target: colourOptions.standard,
     plot_label_colour_alt_target: colourOptions.standard,
-    plot_label_colour_specification: colourOptions.standard
+    plot_label_colour_specification: colourOptions.standard,
+    plot_label_prefix_99: { default: "" },
+    plot_label_prefix_95: { default: "" },
+    plot_label_prefix_68: { default: "" },
+    plot_label_prefix_main: { default: "" },
+    plot_label_prefix_target: { default: "" },
+    plot_label_prefix_alt_target: { default: "" },
+    plot_label_prefix_specification: { default: "" }
   },
   x_axis: {
     xlimit_colour: colourOptions.standard,
@@ -297,13 +304,13 @@ export const settingsPaneGroupings: Partial<Record<defaultSettingsKeys, Record<s
     "Two-In-Three": ["two_in_three", "two_in_three_highlight_series", "two_in_three_limit", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
   },
   lines: {
-    "Main": ["show_main", "width_main", "type_main", "colour_main", "plot_label_show_main", "plot_label_position_main", "plot_label_vpad_main", "plot_label_hpad_main", "plot_label_font_main", "plot_label_size_main", "plot_label_colour_main"],
-    "Target": ["show_target", "width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target", "plot_label_show_target", "plot_label_position_target", "plot_label_vpad_target", "plot_label_hpad_target", "plot_label_font_target", "plot_label_size_target", "plot_label_colour_target"],
-    "Alt. Target": ["show_alt_target", "alt_target", "multiplier_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target", "plot_label_show_alt_target", "plot_label_position_alt_target", "plot_label_vpad_alt_target", "plot_label_hpad_alt_target", "plot_label_font_alt_target", "plot_label_size_alt_target", "plot_label_colour_alt_target"],
-    "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68", "ttip_label_68_prefix_lower", "ttip_label_68_prefix_upper", "plot_label_show_68", "plot_label_position_68", "plot_label_vpad_68", "plot_label_hpad_68", "plot_label_font_68", "plot_label_size_68", "plot_label_colour_68"],
-    "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95", "ttip_label_95_prefix_lower", "ttip_label_95_prefix_upper", "plot_label_show_95", "plot_label_position_95", "plot_label_vpad_95", "plot_label_hpad_95", "plot_label_font_95", "plot_label_size_95", "plot_label_colour_95"],
-    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99", "ttip_label_99_prefix_lower", "ttip_label_99_prefix_upper", "plot_label_show_99", "plot_label_position_99", "plot_label_vpad_99", "plot_label_hpad_99", "plot_label_font_99", "plot_label_size_99", "plot_label_colour_99"],
-    "Specification Limits": ["show_specification", "specification_upper", "specification_lower", "multiplier_specification", "width_specification", "type_specification", "colour_specification", "ttip_show_specification", "ttip_label_specification", "ttip_label_specification_prefix_lower", "ttip_label_specification_prefix_upper", "plot_label_show_specification", "plot_label_position_specification", "plot_label_vpad_specification", "plot_label_hpad_specification", "plot_label_font_specification", "plot_label_size_specification", "plot_label_colour_specification"]
+    "Main": ["show_main", "width_main", "type_main", "colour_main", "plot_label_show_main", "plot_label_position_main", "plot_label_vpad_main", "plot_label_hpad_main", "plot_label_font_main", "plot_label_size_main", "plot_label_colour_main", "plot_label_prefix_main"],
+    "Target": ["show_target", "width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target", "plot_label_show_target", "plot_label_position_target", "plot_label_vpad_target", "plot_label_hpad_target", "plot_label_font_target", "plot_label_size_target", "plot_label_colour_target", "plot_label_prefix_target"],
+    "Alt. Target": ["show_alt_target", "alt_target", "multiplier_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target", "plot_label_show_alt_target", "plot_label_position_alt_target", "plot_label_vpad_alt_target", "plot_label_hpad_alt_target", "plot_label_font_alt_target", "plot_label_size_alt_target", "plot_label_colour_alt_target", "plot_label_prefix_alt_target"],
+    "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68", "ttip_label_68_prefix_lower", "ttip_label_68_prefix_upper", "plot_label_show_68", "plot_label_position_68", "plot_label_vpad_68", "plot_label_hpad_68", "plot_label_font_68", "plot_label_size_68", "plot_label_colour_68", "plot_label_prefix_68"],
+    "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95", "ttip_label_95_prefix_lower", "ttip_label_95_prefix_upper", "plot_label_show_95", "plot_label_position_95", "plot_label_vpad_95", "plot_label_hpad_95", "plot_label_font_95", "plot_label_size_95", "plot_label_colour_95", "plot_label_prefix_95"],
+    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99", "ttip_label_99_prefix_lower", "ttip_label_99_prefix_upper", "plot_label_show_99", "plot_label_position_99", "plot_label_vpad_99", "plot_label_hpad_99", "plot_label_font_99", "plot_label_size_99", "plot_label_colour_99", "plot_label_prefix_99"],
+    "Specification Limits": ["show_specification", "specification_upper", "specification_lower", "multiplier_specification", "width_specification", "type_specification", "colour_specification", "ttip_show_specification", "ttip_label_specification", "ttip_label_specification_prefix_lower", "ttip_label_specification_prefix_upper", "plot_label_show_specification", "plot_label_position_specification", "plot_label_vpad_specification", "plot_label_hpad_specification", "plot_label_font_specification", "plot_label_size_specification", "plot_label_colour_specification", "plot_label_prefix_specification"]
   },
   x_axis: {
     "Axis": ["xlimit_colour", "xlimit_l", "xlimit_u"],
