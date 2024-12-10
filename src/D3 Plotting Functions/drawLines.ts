@@ -31,18 +31,4 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
       })
       .attr("stroke-width", d => getAesthetic(d[0], "lines", "width", visualObj.viewModel.inputSettings.settings))
       .attr("stroke-dasharray", d => getAesthetic(d[0], "lines", "type", visualObj.viewModel.inputSettings.settings));
-
-    selection
-      .select(".linesgroup")
-      .selectAll("text")
-      .data(visualObj.viewModel.groupedLines)
-      .join("text")
-      .text(d => d[0])
-      .attr("x", d => visualObj.viewModel.plotProperties.xScale(d[1][d[1].length - 1].x))
-      .attr("y", d => visualObj.viewModel.plotProperties.yScale(d[1][d[1].length - 1].line_value))
-      .attr("fill", "black")
-      .attr("font-size", "12px")
-      .attr("font-family", "Arial")
-      .attr("dx", "5px")
-      .attr("dy", "5px");
 }
