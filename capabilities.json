@@ -813,6 +813,118 @@
         "plot_label_vpad_specification": {
           "displayName": "Value Vertical Padding",
           "type": { "numeric": true }
+        },
+        "plot_label_hpad_99": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_95": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_68": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_main": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_target": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_alt_target": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_hpad_specification": {
+          "displayName": "Value Horizontal Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_font_99": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_95": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_68": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_main": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_target": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_alt_target": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_font_specification": {
+          "displayName": "Value Font",
+          "type": { "formatting": { "fontFamily": true } }
+        },
+        "plot_label_size_99": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_95": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_68": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_main": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_target": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_alt_target": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_size_specification": {
+          "displayName": "Value Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "plot_label_colour_99":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_95":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_68":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_main":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_target":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_alt_target":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "plot_label_colour_specification":{
+          "displayName": "Value Colour",
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     },
