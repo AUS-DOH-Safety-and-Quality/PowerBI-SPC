@@ -707,6 +707,112 @@
         "plot_label_show_specification": {
           "displayName": "Show Value on Plot",
           "type": { "bool": true }
+        },
+        "plot_label_position_99": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_95": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_68": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_main": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_target": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_alt_target": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_position_specification": {
+          "displayName": "Position of Value on Line(s)",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Outside",    "value" : "outside" },
+              { "displayName" : "Inside",     "value" : "inside" },
+              { "displayName" : "Above",      "value" : "above" },
+              { "displayName" : "Below",      "value" : "below" },
+              { "displayName" : "Beside",     "value" : "beside" }
+            ]
+          }
+        },
+        "plot_label_vpad_99": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_95": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_68": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_main": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_target": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_alt_target": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
+        },
+        "plot_label_vpad_specification": {
+          "displayName": "Value Vertical Padding",
+          "type": { "numeric": true }
         }
       }
     },

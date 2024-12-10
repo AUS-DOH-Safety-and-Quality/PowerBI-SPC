@@ -1,6 +1,35 @@
 import type { svgBaseType, Visual } from "../visual";
 import { lineNameMap } from "../Functions/getAesthetic";
 import { valueFormatter } from "../Functions";
+import * as d3 from "./D3 Modules";
+
+const positionOffsetMap: Record<string, number> = {
+  "above": -1,
+  "below": 1,
+  "beside": -1
+}
+
+const outsideMap: Record<string, string> = {
+  "ll99" : "below",
+  "ll95" : "below",
+  "ll68" : "below",
+  "ul68" : "above",
+  "ul95" : "above",
+  "ul99" : "above",
+  "speclimits_lower" : "below",
+  "speclimits_upper" : "above"
+}
+
+const insideMap: Record<string, string> = {
+  "ll99" : "above",
+  "ll95" : "above",
+  "ll68" : "above",
+  "ul68" : "below",
+  "ul95" : "below",
+  "ul99" : "below",
+  "speclimits_lower" : "above",
+  "speclimits_upper" : "below"
+}
 
 export default function drawLineLabels(selection: svgBaseType, visualObj: Visual) {
   const lineSettings = visualObj.viewModel.inputSettings.settings.lines;
@@ -20,6 +49,20 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     .attr("fill", "black")
     .attr("font-size", "12px")
     .attr("font-family", "Arial")
+    .attr("text-anchor", d => lineSettings[`plot_label_position_${lineNameMap[d[0]]}`] === "beside" ? "start" : "end")
     .attr("dx", "5px")
-    .attr("dy", "5px");
+    .attr("dy", function(d) {
+      const bounds = (d3.select(this).node() as SVGGraphicsElement).getBoundingClientRect() as DOMRect;
+      let position: string = lineSettings[`plot_label_position_${lineNameMap[d[0]]}`];
+      let vpadding: number = lineSettings[`plot_label_vpad_${lineNameMap[d[0]]}`];
+      if (["outside", "inside"].includes(position)) {
+        position = position === "outside" ? outsideMap[d[0]] : insideMap[d[0]];
+      }
+      const heightMap: Record<string, number> = {
+        "above": -lineSettings[`width_${lineNameMap[d[0]]}`],
+        "below": 12,
+        "beside": bounds.height / 4
+      }
+      return `${positionOffsetMap[position] * vpadding + heightMap[position]}px`;
+    });
 }
