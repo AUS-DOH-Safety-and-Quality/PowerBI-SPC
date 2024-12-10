@@ -1061,6 +1061,27 @@
           "displayName": "Show Value Labels",
           "type" : { "bool" : true }
         },
+        "label_position": {
+          "displayName": "Label Position",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Top",    "value" : "top" },
+              { "displayName" : "Bottom", "value" : "bottom" }
+            ]
+          }
+        },
+        "label_y_offset": {
+          "displayName": "Label Offset from Top/Bottom (px)",
+          "type": { "numeric": true }
+        },
+        "label_line_offset": {
+          "displayName": "Label Offset from Connecting Line (px)",
+          "type": { "numeric": true }
+        },
+        "label_angle_offset": {
+          "displayName": "Label Angle Offset (degrees)",
+          "type": { "numeric": true }
+        },
         "label_font": {
           "displayName": "Label Font",
           "type": { "formatting": { "fontFamily": true } }
@@ -1072,6 +1093,28 @@
         "label_colour":{
           "displayName": "Label Font Colour",
           "type": { "fill": { "solid": { "color": true } } }
+        },
+        "label_line_colour":{
+          "displayName": "Connecting Line Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "label_line_width": {
+          "displayName": "Connecting Line Width",
+          "type": { "numeric": true }
+        },
+        "label_line_type": {
+          "displayName": "Connecting Line Type",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Solid",  "value" : "10 0" },
+              { "displayName" : "Dashed", "value" : "10 10" },
+              { "displayName" : "Dotted", "value" : "2 5" }
+            ]
+          }
+        },
+        "label_line_max_length": {
+          "displayName": "Max Connecting Line Length (px)",
+          "type": { "numeric": true }
         }
       }
     }

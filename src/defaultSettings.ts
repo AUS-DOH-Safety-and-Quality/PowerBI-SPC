@@ -210,9 +210,17 @@ const defaultSettings = {
   },
   label_options: {
     show_labels: { default: true },
+    label_position: { default: "top", valid: ["top", "bottom"] },
+    label_y_offset: { default: 20 },
+    label_line_offset: { default: 5 },
+    label_angle_offset: { default: 0, valid: { numberRange: { min: -90, max: 90 }}},
     label_font: textOptions.font,
     label_size: textOptions.size,
-    label_colour: colourOptions.standard
+    label_colour: colourOptions.standard,
+    label_line_colour: colourOptions.standard,
+    label_line_width: { default: 1, valid: lineOptions.width.valid },
+    label_line_type: { default: "10 0", valid: lineOptions.type.valid },
+    label_line_max_length: { default: 1000, valid: { numberRange: { min: 0, max: 10000 }}}
   }
 };
 
