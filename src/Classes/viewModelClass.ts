@@ -6,7 +6,7 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass, type derivedSettingsClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 
 export type viewModelValidationT = {
@@ -381,6 +381,12 @@ export default class viewModelClass {
     if (lineSettings.show_main) {
       this.tableColumnsGrouped.push({ name: "value", label: "Value" });
     }
+    if (this.inputSettings.settings.spc.ttip_show_numerator) {
+      this.tableColumnsGrouped.push({ name: "numerator", label: "Numerator" });
+    }
+    if (this.inputSettings.settings.spc.ttip_show_denominator) {
+      this.tableColumnsGrouped.push({ name: "denominator", label: "Denominator" });
+    }
     if (lineSettings.show_target) {
       this.tableColumnsGrouped.push({ name: "target", label: lineSettings.ttip_label_target });
     }
@@ -417,6 +423,7 @@ export default class viewModelClass {
       })
     }
     for (let i: number = 0; i < this.groupNames.length; i++) {
+      const formatValues = valueFormatter(this.inputSettings.settingsGrouped[i], this.inputSettings.derivedSettingsGrouped[i]);
       const varIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_variation_filter;
       const assIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_assurance_filter;
       const limits: controlLimitsObject = this.controlLimitsGrouped[i];
@@ -461,15 +468,17 @@ export default class viewModelClass {
         table_row_entries.push([indicator_name, this.groupNames[i][idx]]);
       })
       table_row_entries.push(["latest_date", limits.keys?.[lastIndex].label]);
-      table_row_entries.push(["value", limits.values?.[lastIndex]]);
-      table_row_entries.push(["target", limits.targets?.[lastIndex]]);
-      table_row_entries.push(["alt_target", limits.alt_targets?.[lastIndex]]);
-      table_row_entries.push(["ucl99", limits.ul99?.[lastIndex]]);
-      table_row_entries.push(["ucl95", limits.ul95?.[lastIndex]]);
-      table_row_entries.push(["ucl68", limits.ul68?.[lastIndex]]);
-      table_row_entries.push(["lcl68", limits.ll68?.[lastIndex]]);
-      table_row_entries.push(["lcl95", limits.ll95?.[lastIndex]]);
-      table_row_entries.push(["lcl99", limits.ll99?.[lastIndex]]);
+      table_row_entries.push(["value", formatValues(limits.values?.[lastIndex], "value")]);
+      table_row_entries.push(["numerator", formatValues(limits.numerators?.[lastIndex], "integer")]);
+      table_row_entries.push(["denominator", formatValues(limits.denominators?.[lastIndex], "integer")]);
+      table_row_entries.push(["target", formatValues(limits.targets?.[lastIndex], "value")]);
+      table_row_entries.push(["alt_target", formatValues(limits.alt_targets?.[lastIndex], "value")]);
+      table_row_entries.push(["ucl99", formatValues(limits.ul99?.[lastIndex], "value")]);
+      table_row_entries.push(["ucl95", formatValues(limits.ul95?.[lastIndex], "value")]);
+      table_row_entries.push(["ucl68", formatValues(limits.ul68?.[lastIndex], "value")]);
+      table_row_entries.push(["lcl68", formatValues(limits.ll68?.[lastIndex], "value")]);
+      table_row_entries.push(["lcl95", formatValues(limits.ll95?.[lastIndex], "value")]);
+      table_row_entries.push(["lcl99", formatValues(limits.ll99?.[lastIndex], "value")]);
       table_row_entries.push(["variation", varIcons[0]]);
       table_row_entries.push(["assurance", assIcon]);
 

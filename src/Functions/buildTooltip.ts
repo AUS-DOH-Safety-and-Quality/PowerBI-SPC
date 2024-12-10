@@ -2,6 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { defaultSettingsType, derivedSettingsClass } from "../Classes";
 import isNullOrUndefined from "./isNullOrUndefined";
+import valueFormatter from "./valueFormatter";
 import { summaryTableRowData } from "../Classes/viewModelClass";
 
 /**
@@ -24,8 +25,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
 
   const ast_limit: string = inputSettings.outliers.astronomical_limit;
   const two_in_three_limit: string = inputSettings.outliers.two_in_three_limit;
-  const suffix: string = derivedSettings.percentLabels ? "%" : "";
-  const sig_figs: number = inputSettings.spc.sig_figs;
+  const formatValues = valueFormatter(inputSettings, derivedSettings);
 
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   tooltip.push({
@@ -36,32 +36,32 @@ export default function buildTooltip(table_row: summaryTableRowData,
     const ttip_label_value: string = inputSettings.spc.ttip_label_value;
     tooltip.push({
       displayName: ttip_label_value === "Automatic" ? derivedSettings.chart_type_props.value_name : ttip_label_value,
-      value: (table_row.value).toFixed(sig_figs) + suffix
+      value: formatValues(table_row.value, "value")
     })
   }
   if(inputSettings.spc.ttip_show_numerator && !isNullOrUndefined(table_row.numerator)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_numerator,
-      value: (table_row.numerator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
+      value: formatValues(table_row.numerator, "integer")
     })
   }
   if(inputSettings.spc.ttip_show_denominator && !isNullOrUndefined(table_row.denominator)) {
     tooltip.push({
       displayName: inputSettings.spc.ttip_label_denominator,
-      value: (table_row.denominator).toFixed(derivedSettings.chart_type_props.integer_num_den ? 0 : sig_figs)
+      value: formatValues(table_row.denominator, "integer")
     })
   }
   if (inputSettings.lines.show_specification && inputSettings.lines.ttip_show_specification) {
     if (!isNullOrUndefined(table_row.speclimits_upper)) {
       tooltip.push({
         displayName: `Upper ${inputSettings.lines.ttip_label_specification}`,
-        value: (table_row.speclimits_upper).toFixed(sig_figs) + suffix
+        value: formatValues(table_row.speclimits_upper, "value")
       })
     }
     if (!isNullOrUndefined(table_row.speclimits_lower)) {
       tooltip.push({
         displayName: `Lower ${inputSettings.lines.ttip_label_specification}`,
-        value: (table_row.speclimits_lower).toFixed(sig_figs) + suffix
+        value: formatValues(table_row.speclimits_lower, "value")
       })
     }
   }
@@ -70,7 +70,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: (table_row[`ul${limit}`]).toFixed(sig_figs) + suffix
+          value: formatValues(table_row[`ul${limit}`], "value")
         })
       }
     })
@@ -78,13 +78,13 @@ export default function buildTooltip(table_row: summaryTableRowData,
   if (inputSettings.lines.show_target && inputSettings.lines.ttip_show_target) {
     tooltip.push({
       displayName: inputSettings.lines.ttip_label_target,
-      value: (table_row.target).toFixed(sig_figs) + suffix
+      value: formatValues(table_row.target, "value")
     })
   }
   if (inputSettings.lines.show_alt_target && inputSettings.lines.ttip_show_alt_target && !isNullOrUndefined(table_row.alt_target)) {
     tooltip.push({
       displayName: inputSettings.lines.ttip_label_alt_target,
-      value: (table_row.alt_target).toFixed(sig_figs) + suffix
+      value: formatValues(table_row.alt_target, "value")
     })
   }
   if (derivedSettings.chart_type_props.has_control_limits) {
@@ -92,7 +92,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: (table_row[`ll${limit}`]).toFixed(sig_figs) + suffix
+          value: formatValues(table_row[`ll${limit}`], "value")
         })
       }
     })
