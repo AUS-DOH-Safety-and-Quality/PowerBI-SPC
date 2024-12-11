@@ -82,7 +82,6 @@ export class Visual implements powerbi.extensibility.IVisual {
         this.resizeCanvas(options.viewport.width, options.viewport.height);
         this.drawVisual();
         this.adjustPaddingForOverflow();
-        this.drawVisual();
       }
 
       this.updateHighlighting();
@@ -115,19 +114,29 @@ export class Visual implements powerbi.extensibility.IVisual {
     let yTopOverflow: number = 0;
     const svgWidth: number = this.viewModel.svgWidth;
     const svgHeight: number = this.viewModel.svgHeight;
-    this.svg.selectAll("*").each(function() {
-      const bbox = (this as SVGGraphicsElement).getBoundingClientRect();
-      xLeftOverflow = Math.min(xLeftOverflow, bbox.left);
-      xRightOverflow = Math.max(xRightOverflow, bbox.right - svgWidth);
-      yBottomOverflow = Math.max(yBottomOverflow, bbox.bottom - svgHeight);
-      yTopOverflow = Math.min(yTopOverflow, bbox.top);
+    this.svg.selectChildren().each(function() {
+      const boundRect = (this as SVGGraphicsElement).getBoundingClientRect();
+      const bbox = (this as SVGGraphicsElement).getBBox();
+      xLeftOverflow = Math.min(xLeftOverflow, bbox.x);
+      xRightOverflow = Math.max(xRightOverflow, boundRect.right - svgWidth);
+      yBottomOverflow = Math.max(yBottomOverflow, boundRect.bottom - svgHeight);
+      yTopOverflow = Math.min(yTopOverflow, boundRect.top);
     });
 
-    this.viewModel.plotProperties.xAxis.start_padding += Math.abs(xLeftOverflow - this.viewModel.plotProperties.xAxis.start_padding);
-    this.viewModel.plotProperties.xAxis.end_padding += Math.abs(xRightOverflow + this.viewModel.plotProperties.xAxis.end_padding);
-    this.viewModel.plotProperties.yAxis.start_padding += Math.abs(yBottomOverflow + this.viewModel.plotProperties.yAxis.start_padding);
-    this.viewModel.plotProperties.yAxis.end_padding += Math.abs(yTopOverflow - this.viewModel.plotProperties.yAxis.end_padding);
-    this.viewModel.plotProperties.initialiseScale(svgWidth, svgHeight);
+    xLeftOverflow = Math.abs(xLeftOverflow);
+    xRightOverflow = Math.abs(xRightOverflow);
+    yBottomOverflow = Math.abs(yBottomOverflow);
+    yTopOverflow = Math.abs(yTopOverflow);
+
+    // Only redraw plot if overflow occurred
+    if ((xLeftOverflow + xRightOverflow + yBottomOverflow + yTopOverflow) > 0) {
+      this.viewModel.plotProperties.xAxis.start_padding += xLeftOverflow + this.viewModel.plotProperties.xAxis.start_padding;
+      this.viewModel.plotProperties.xAxis.end_padding += xRightOverflow + this.viewModel.plotProperties.xAxis.end_padding;
+      this.viewModel.plotProperties.yAxis.start_padding += yBottomOverflow + this.viewModel.plotProperties.yAxis.start_padding;
+      this.viewModel.plotProperties.yAxis.end_padding += yTopOverflow + this.viewModel.plotProperties.yAxis.end_padding;
+      this.viewModel.plotProperties.initialiseScale(svgWidth, svgHeight);
+      this.drawVisual();
+    }
   }
 
   resizeCanvas(width: number, height: number): void {
