@@ -264,7 +264,7 @@ const defaultSettings = {
   download_options: {
     show_button: { default: false }
   },
-  label_options: {
+  labels: {
     show_labels: { default: true },
     label_position: { default: "top", valid: ["top", "bottom"] },
     label_y_offset: { default: 20 },
@@ -276,7 +276,12 @@ const defaultSettings = {
     label_line_colour: colourOptions.standard,
     label_line_width: { default: 1, valid: lineOptions.width.valid },
     label_line_type: { default: "10 0", valid: lineOptions.type.valid },
-    label_line_max_length: { default: 1000, valid: { numberRange: { min: 0, max: 10000 }}}
+    label_line_max_length: { default: 1000, valid: { numberRange: { min: 0, max: 10000 }}},
+    label_marker_show: { default: true },
+    label_marker_offset: { default: 5 },
+    label_marker_size: { default: 3, valid: { numberRange: { min: 0, max: 100 }}},
+    label_marker_colour: colourOptions.standard,
+    label_marker_outline_colour: colourOptions.standard
   }
 };
 

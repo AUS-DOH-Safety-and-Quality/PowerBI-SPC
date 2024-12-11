@@ -1328,7 +1328,7 @@
         }
       }
     },
-    "label_options" : {
+    "labels" : {
       "displayName" : "Value Label Options",
       "properties" : {
         "show_labels": {
@@ -1389,6 +1389,26 @@
         "label_line_max_length": {
           "displayName": "Max Connecting Line Length (px)",
           "type": { "numeric": true }
+        },
+        "label_marker_show": {
+          "displayName": "Show Line Markers",
+          "type" : { "bool" : true }
+        },
+        "label_marker_offset": {
+          "displayName": "Marker Offset from Value (px)",
+          "type": { "numeric": true }
+        },
+        "label_marker_size": {
+          "displayName": "Marker Size",
+          "type": { "numeric": true }
+        },
+        "label_marker_colour":{
+          "displayName": "Marker Fill Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "label_marker_outline_colour":{
+          "displayName": "Marker Outline Colour",
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     }

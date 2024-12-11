@@ -16,6 +16,7 @@ export type dataObject = {
   groupings: string[];
   groupingIndexes: number[];
   scatter_formatting: defaultSettingsType["scatter"][];
+  label_formatting: defaultSettingsType["labels"][];
   tooltips: VisualTooltipDataItem[][];
   labels: string[];
   warningMessage: string;
@@ -35,6 +36,7 @@ function invalidInputData(inputValidStatus: ValidationT): dataObject {
     groupings: null,
     groupingIndexes: null,
     scatter_formatting: null,
+    label_formatting: null,
     tooltips: null,
     labels: null,
     warningMessage: inputValidStatus.error,
@@ -59,6 +61,7 @@ export default function extractInputData(inputView: DataViewCategorical,
   const labels: string[] = extractDataColumn<string[]>(inputView, "labels", inputSettings, idxs);
   const highlights: powerbi.PrimitiveValue[] = idxs.map(d => inputView?.values?.[0]?.highlights?.[d]);
   let scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings, idxs)?.values;
+  let labels_cond = extractConditionalFormatting<defaultSettingsType["labels"]>(inputView, "labels", inputSettings, idxs)?.values;
   let alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings, idxs)
                                     ?.values
                                     .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
@@ -153,6 +156,7 @@ export default function extractInputData(inputView: DataViewCategorical,
     groupings: valid_groupings,
     groupingIndexes: groupingIndexes,
     scatter_formatting: extractValues(scatter_cond, valid_ids),
+    label_formatting: extractValues(labels_cond, valid_ids),
     warningMessage: removalMessages.length > 0 ? removalMessages.join("\n") : "",
     alt_targets: valid_alt_targets,
     speclimits_lower: extractValues(speclimits_lower, valid_ids),
