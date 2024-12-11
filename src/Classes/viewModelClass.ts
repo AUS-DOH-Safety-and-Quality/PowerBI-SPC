@@ -73,6 +73,7 @@ export type plotData = {
   tooltip: VisualTooltipDataItem[];
   label: {
     text_value: string,
+    aesthetics: defaultSettingsType["labels"],
     x: number,
     y: number
   };
@@ -599,6 +600,7 @@ export default class viewModelClass {
                               this.inputSettings.settings, this.inputSettings.derivedSettings),
         label: {
           text_value: this.inputData.labels?.[index],
+          aesthetics: this.inputData.label_formatting[index],
           x: null,
           y: null
         }
