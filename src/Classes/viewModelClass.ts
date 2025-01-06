@@ -74,8 +74,10 @@ export type plotData = {
   label: {
     text_value: string,
     aesthetics: defaultSettingsType["labels"],
-    x: number,
-    y: number
+    angle: number,
+    distance: number,
+    line_offset: number,
+    marker_offset: number
   };
 }
 
@@ -587,6 +589,7 @@ export default class viewModelClass {
         two_in_three: this.outliers.two_in_three[i]
       }
 
+
       this.plotPoints.push({
         x: index,
         value: this.controlLimits.values[i],
@@ -601,8 +604,10 @@ export default class viewModelClass {
         label: {
           text_value: this.inputData.labels?.[index],
           aesthetics: this.inputData.label_formatting[index],
-          x: null,
-          y: null
+          angle: null,
+          distance: null,
+          line_offset: null,
+          marker_offset: null
         }
       })
       this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
