@@ -2,15 +2,6 @@ import * as d3 from "./D3 Modules";
 import type { svgBaseType, Visual } from "../visual";
 import type { plotData } from "../Classes";
 
-//const degToRad: number = Math.PI / 180;
-
-/*
-const calcAngleDistance = function(x1: number, y1: number, x2: number, y2: number) {
-  const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-  const distance = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
-  return {angle: angle, distance: distance};
-}
-*/
 const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, d3.BaseType, unknown>, visualObj: Visual) {
   // -90 degrees for vertically above, 90 degrees for vertically below
   const allData = selection.data();
@@ -58,12 +49,12 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
             .attr("y1", (_, i) => initialLabelXY[i].y + initialLabelXY[i].line_offset)
             .attr("x2", (d, i) => {
               const marker_offset: number = initialLabelXY[i].marker_offset;
-              const angle: number = initialLabelXY[i].theta - 180;
+              const angle: number = initialLabelXY[i].theta - (d.label.aesthetics.label_position === "top" ? 180 : 0);
               return visualObj.viewModel.plotProperties.xScale(d.x) + marker_offset * Math.cos(angle * Math.PI / 180);
             })
             .attr("y2", (d, i) => {
               const marker_offset: number = initialLabelXY[i].marker_offset;
-              const angle: number = initialLabelXY[i].theta - 180;
+              const angle: number = initialLabelXY[i].theta -(d.label.aesthetics.label_position === "top" ? 180 : 0);
               return visualObj.viewModel.plotProperties.yScale(d.value) + marker_offset * Math.sin(angle * Math.PI / 180);
             })
             .style("stroke", visualObj.viewModel.inputSettings.settings.labels.label_line_colour)
@@ -81,11 +72,11 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
               //const label_position: string = d.label.aesthetics.label_position;
               const x: number = visualObj.viewModel.plotProperties.xScale(d.x);
               const y: number = visualObj.viewModel.plotProperties.yScale(d.value);
-              const angle: number = initialLabelXY[i].theta - 180;
+              const angle: number = initialLabelXY[i].theta - (d.label.aesthetics.label_position === "top" ? 180 : 0);
               const x_offset: number = marker_offset * Math.cos(angle * Math.PI / 180);
               const y_offset: number = marker_offset * Math.sin(angle * Math.PI / 180);
 
-              return `translate(${x + x_offset}, ${y + y_offset}) rotate(${angle + 90})`;
+              return `translate(${x + x_offset}, ${y + y_offset}) rotate(${angle + (d.label.aesthetics.label_position === "top" ? 90 : 270)})`;
             })
             .style("fill", d => d.label.aesthetics.label_marker_colour)
             .style("stroke", d => d.label.aesthetics.label_marker_outline_colour)
@@ -120,10 +111,13 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
       .attr("x", e.sourceEvent.x)
       .attr("y", e.sourceEvent.y);
 
+    let line_offset: number = d.label.aesthetics.label_line_offset;
+    line_offset = d.label.aesthetics.label_position === "top" ? line_offset : -(line_offset + d.label.aesthetics.label_size / 2);
+
     d3.select(this)
       .select("line")
       .attr("x1", e.sourceEvent.x)
-      .attr("y1", e.sourceEvent.y)
+      .attr("y1", e.sourceEvent.y + line_offset)
       .attr("x2", x_val + x_offset)
       .attr("y2", y_val + y_offset);
 
