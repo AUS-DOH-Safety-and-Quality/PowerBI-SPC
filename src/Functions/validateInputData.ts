@@ -57,7 +57,7 @@ function validateInputDataImpl(key: string,
 }
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
-/* eslint-disable */
+ 
 export default function validateInputData(keys: string[],
                                           numerators: number[],
                                           denominators: number[],
@@ -127,4 +127,4 @@ export default function validateInputData(keys: string[],
   }
   return validationRtn;
 }
-/* eslint-enable */
+ 

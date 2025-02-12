@@ -17,7 +17,7 @@ import { summaryTableRowData } from "../Classes/viewModelClass";
  * @returns An array of VisualTooltipDataItem objects representing the tooltip data.
  */
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
-/* eslint-disable max-lines-per-function */
+ 
 export default function buildTooltip(table_row: summaryTableRowData,
                                       inputTooltips: powerbi.extensibility.VisualTooltipDataItem[],
                                       inputSettings: defaultSettingsType,
@@ -130,4 +130,4 @@ export default function buildTooltip(table_row: summaryTableRowData,
 
   return tooltip;
 }
-/* eslint-enable max-lines-per-function */
+ 

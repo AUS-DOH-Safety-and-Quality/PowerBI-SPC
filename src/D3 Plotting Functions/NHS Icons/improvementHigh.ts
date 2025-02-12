@@ -11,7 +11,7 @@ import type { svgBaseType } from "../../visual"
  */
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
-/* eslint-disable */
+ 
 export default function improvementHigh(selection: svgBaseType): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
@@ -136,4 +136,4 @@ export default function improvementHigh(selection: svgBaseType): void {
             .attr("fill-rule","evenodd")
             .attr("transform","matrix(1 0 0 -1 265.5 200.5)")
 }
-/* eslint-disable */
+ 
