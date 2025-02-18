@@ -1,3 +1,4 @@
+const {document, window} = spc.parseHTML('<html><head></head><body></body></html>');
 
 var options_constructor = {
     element: spc.d3.select('body').node(),
@@ -28,8 +29,6 @@ var options_constructor = {
     }
 };
 
-var visual = new spc.Visual(options_constructor);
-
 var options_update = {
     dataViews: [
         {
@@ -51,6 +50,9 @@ var options_update = {
         "width":500,
         "height":500
     },
-    type: 2
+    type: 2,
+    headless:true
 };
+
+var visual = new spc.Visual(options_constructor);
 visual.update(options_update);
