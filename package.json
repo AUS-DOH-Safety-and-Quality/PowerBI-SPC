@@ -5,7 +5,8 @@
     "start": "pbiviz start",
     "package": "pbiviz package",
     "eslint": "npx eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "bundle": "npx rollup --config rollup.config.js --configPlugin typescript"
   },
   "dependencies": {
     "@stdlib/math-base-special-gammaln": "^0.2.2",
@@ -19,6 +20,10 @@
     "powerbi-visuals-utils-typeutils": "^6.0.3"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@types/d3-array": "^3.2.1",
     "@types/d3-axis": "^3.0.6",
     "@types/d3-drag": "^3.0.7",
@@ -29,7 +34,9 @@
     "@typescript-eslint/parser": "^8.22.0",
     "eslint": "^8.57.0",
     "eslint-plugin-powerbi-visuals": "^1.0.0",
+    "linkedom": "^0.18.9",
     "ts-loader": "9.5.2",
+    "tslib": "^2.8.1",
     "typedoc": "^0.27.6",
     "typescript": "5.7.3",
     "vitest": "^3.0.5"
