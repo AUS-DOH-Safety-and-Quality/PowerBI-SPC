@@ -11,7 +11,10 @@ export default {
     name: 'spc',
     file: './.tmp/build/bundle.js'
   },
-  plugins: [typescript({
-    tsconfig: 'tsconfig.json'
-  }), json(), nodeResolve(), commonjs()]
+  plugins: [
+    typescript({ tsconfig: 'tsconfig.json' }),
+    json(),
+    nodeResolve(),
+    commonjs()
+  ]
 };
