@@ -80,6 +80,7 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
             })
             .style("fill", d => d.label.aesthetics.label_marker_colour)
             .style("stroke", d => d.label.aesthetics.label_marker_outline_colour)
+  return selection;
 }
 
 export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
@@ -134,10 +135,9 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
                 let grp = enter.append("g").classed("text-group-inner", true)
                 grp.append("text");
                 grp.append("line");
-                grp.append("path")
+                grp.append("path");
 
-                grp.call(labelFormatting, visualObj)
-                   .call(dragFun);
+                grp.call(dragFun);
                 return grp
               },
               (update) => {
