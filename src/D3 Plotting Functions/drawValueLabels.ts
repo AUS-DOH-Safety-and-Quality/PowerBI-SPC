@@ -5,7 +5,6 @@ import type { plotData } from "../Classes";
 const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, d3.BaseType, unknown>, visualObj: Visual) {
   // -90 degrees for vertically above, 90 degrees for vertically below
   const allData = selection.data();
-  //console.log(allData)
   const initialLabelXY: {x: number, y: number, theta: number, line_offset: number, marker_offset: number}[] = allData.map(d => {
     const label_direction_mult: number = d.label.aesthetics.label_position === "top" ? -1 : 1;
     const plotHeight: number = visualObj.viewModel.svgHeight;
