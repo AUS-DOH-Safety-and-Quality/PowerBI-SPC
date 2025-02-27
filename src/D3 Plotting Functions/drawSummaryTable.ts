@@ -138,16 +138,19 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
     const parentNode = d3.select(currNode.property("parentNode"));
     const rowData = parentNode.datum() as plotData;
     if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
-      const scaling = inputSettings.nhs_icons[`${d.column}_icons_scaling`];
-      currNode
-          .append("svg")
-          .attr("width", `${thisSelDims.width * 0.5 * scaling}px`)
-          .attr("viewBox", "0 0 378 378")
-          .classed("rowsvg", true)
-          .call(initialiseIconSVG, d.value)
-          .selectAll(".icongroup")
-          .selectAll(`.${d.value}`)
-          .call(nhsIcons[d.value]);
+      // Only attempt to draw icon if one is specified
+      if (d.value !== "none") {
+        const scaling = inputSettings.nhs_icons[`${d.column}_icons_scaling`];
+        currNode
+            .append("svg")
+            .attr("width", `${thisSelDims.width * 0.5 * scaling}px`)
+            .attr("viewBox", "0 0 378 378")
+            .classed("rowsvg", true)
+            .call(initialiseIconSVG, d.value)
+            .selectAll(".icongroup")
+            .selectAll(`.${d.value}`)
+            .call(nhsIcons[d.value]);
+      }
     } else {
       const value: string = typeof d.value === "number"
         ? d.value.toFixed(inputSettings.spc.sig_figs)
