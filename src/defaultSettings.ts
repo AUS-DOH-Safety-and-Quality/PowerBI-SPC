@@ -66,7 +66,7 @@ const defaultSettings = {
   },
   scatter: {
     size: { default: 2.5, valid: { numberRange: { min: 0, max: 100 }}},
-    colour: colourOptions.standard,
+    colour: colourOptions.common_cause,
     opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
     opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } }
   },
@@ -95,7 +95,7 @@ const defaultSettings = {
     colour_99: colourOptions.limits,
     colour_95: colourOptions.limits,
     colour_68: colourOptions.limits,
-    colour_main: colourOptions.standard,
+    colour_main: colourOptions.common_cause,
     colour_target: colourOptions.standard,
     colour_alt_target: colourOptions.standard,
     colour_specification: colourOptions.limits,

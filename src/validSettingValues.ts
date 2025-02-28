@@ -78,6 +78,7 @@ const colourOptions = {
   deterioration: { default: "#E46C0A" },
   neutral_low: { default: "#490092" },
   neutral_high: { default: "#490092" },
+  common_cause: { default: "#A6A6A6" },
   limits: { default: "#6495ED" },
   standard: { default: "#000000" }
 }
