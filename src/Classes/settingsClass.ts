@@ -4,7 +4,7 @@ type DataViewPropertyValue = powerbi.default.DataViewPropertyValue
 type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanceEnumerationObject;
 type VisualObjectInstance = powerbi.default.VisualObjectInstance;
 type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
-import { extractConditionalFormatting, isNullOrUndefined } from "../Functions";
+import { extractConditionalFormatting } from "../Functions";
 import { default as defaultSettings, type defaultSettingsType, settingsPaneGroupings,
   type defaultSettingsKeys, type defaultSettingsNestedKeys, type NestedKeysOf
  } from "../defaultSettings";
@@ -107,7 +107,7 @@ export default class settingsClass {
         this.validationStatus.error = "Variation icons require at least one outlier pattern to be selected";
       }
     }
-
+/*
     if (this.settings.nhs_icons.show_assurance_icons) {
       const altTargetPresent: boolean = !isNullOrUndefined(this.settings.lines.alt_target);
       const improvementDirection: string = this.settings.outliers.improvement_direction;
@@ -116,7 +116,7 @@ export default class settingsClass {
         this.validationStatus.error = "Assurance icons require an alternative target and a non-neutral improvement direction";
       }
     }
-
+*/
     this.derivedSettings.update(this.settings.spc)
     this.derivedSettingsGrouped = new Array<derivedSettingsClass>();
     if (is_grouped) {
