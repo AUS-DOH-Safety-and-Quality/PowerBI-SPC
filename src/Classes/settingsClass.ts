@@ -140,7 +140,7 @@ export default class settingsClass {
 
     return settingsGrouped
         ? JSON.parse(JSON.stringify(settingsPaneGroupings[settingGroupName]))
-        : { "all": Object.keys(this.settings[settingGroupName]) };
+        : { "all" : Object.keys(this.settings[settingGroupName]) as defaultSettingsNestedKeys[] };
   }
 
   /**
