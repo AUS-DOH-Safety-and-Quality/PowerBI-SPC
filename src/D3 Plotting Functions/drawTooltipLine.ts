@@ -4,6 +4,9 @@ import type { plotData, plotPropertiesClass } from "../Classes";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
   const plotProperties: plotPropertiesClass = visualObj.viewModel.plotProperties;
+  const colour: string = visualObj.viewModel.colourPalette.isHighContrast
+    ? visualObj.viewModel.colourPalette.foregroundColour
+    : "black";
   const xAxisLine = selection
             .select(".ttip-line-x")
             .attr("x1", 0)
@@ -11,7 +14,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
             .attr("y1", plotProperties.yAxis.end_padding)
             .attr("y2", visualObj.viewModel.svgHeight - plotProperties.yAxis.start_padding)
             .attr("stroke-width", "1px")
-            .attr("stroke", "black")
+            .attr("stroke", colour)
             .style("stroke-opacity", 0);
   const yAxisLine = selection
             .select(".ttip-line-y")
@@ -20,7 +23,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
             .attr("y1", 0)
             .attr("y2", 0)
             .attr("stroke-width", "1px")
-            .attr("stroke", "black")
+            .attr("stroke", colour)
             .style("stroke-opacity", 0);
 
   selection.on("mousemove", (event) => {
