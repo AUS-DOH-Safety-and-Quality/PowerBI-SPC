@@ -1,12 +1,15 @@
 import type powerbi from "powerbi-visuals-api";
 import { settingsClass } from "../Classes";
+import isNullOrUndefined from "./isNullOrUndefined";
 
 export default function validateDataView(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
-  if (!(inputDV?.[0])) {
-    return "No data present";
+  // Show blank error messages for empty data or categories as settings are
+  // bound to the input categories, and so cannot disable error messages
+  if (isNullOrUndefined(inputDV?.[0]) || (inputDV?.[0]?.categorical?.categories?.[0]?.identity?.length === 0)) {
+    return ""; //"No data present!";
   }
-  if (!(inputDV[0]?.categorical?.categories) || !(inputDV[0]?.categorical?.categories.some(d => d.source?.roles?.key))) {
-    return "No grouping/ID variable passed!";
+  if (isNullOrUndefined(inputDV[0]?.categorical?.categories) || isNullOrUndefined(inputDV[0]?.categorical?.categories.some(d => d.source?.roles?.key))) {
+    return ""; //"No grouping/ID variable passed!";
   }
 
   const numeratorsPresent: boolean

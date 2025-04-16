@@ -2,6 +2,8 @@
   "supportsHighlight": true,
   "supportsKeyboardFocus": true,
   "supportsMultiVisualSelection": true,
+  "supportsLandingPage": true,
+  "supportsEmptyDataView": true,
   "sorting": {
     "implicit": {
       "clauses": [
