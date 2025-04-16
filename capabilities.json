@@ -356,7 +356,11 @@
           "type": { "numeric": true }
         },
         "opacity": {
-          "displayName": "Opacity",
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_selected": {
+          "displayName": "Opacity if Selected",
           "type": { "numeric": true }
         },
         "opacity_unselected": {
@@ -661,6 +665,62 @@
         "ttip_label_specification_prefix_upper": {
           "displayName": "Tooltip Label - Upper Prefix",
           "type": { "text": true }
+        },
+        "opacity_99": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_99": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
+        },
+        "opacity_95": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_95": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
+        },
+        "opacity_68": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_68": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
+        },
+        "opacity_main": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_main": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
+        },
+        "opacity_target": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_target": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
+        },
+        "opacity_alt_target": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_alt_target": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
+        },
+        "opacity_specification": {
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_unselected_specification": {
+          "displayName": "Opacity if Any Selected",
+          "type": { "numeric": true }
         },
         "alt_target": {
           "displayName": "Additional Target Value:",
@@ -1088,7 +1148,11 @@
           "type" : { "bool" : true }
         },
         "table_opacity": {
-          "displayName": "Opacity",
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "table_opacity_selected": {
+          "displayName": "Opacity if Selected",
           "type": { "numeric": true }
         },
         "table_opacity_unselected": {

@@ -68,6 +68,7 @@ const defaultSettings = {
     size: { default: 2.5, valid: { numberRange: { min: 0, max: 100 }}},
     colour: colourOptions.common_cause,
     opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_selected: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
     opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } }
   },
   lines: {
@@ -119,6 +120,20 @@ const defaultSettings = {
     ttip_label_specification: { default: "Specification Limit" },
     ttip_label_specification_prefix_lower: { default: "Lower " },
     ttip_label_specification_prefix_upper: { default: "Upper " },
+    opacity_99: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_99: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_95: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_95: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_68: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_68: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_main: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_main: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_target: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_target: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_alt_target: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_alt_target: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_specification: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    opacity_unselected_specification: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
     alt_target: { default: <number>null },
     specification_upper: { default: <number>null },
     specification_lower: { default: <number>null },
@@ -224,6 +239,7 @@ const defaultSettings = {
     show_table: { default: false },
     table_text_overflow: textOptions.text_overflow,
     table_opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
+    table_opacity_selected: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
     table_opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } },
     table_variation_filter: { default: "all", valid: ["all", "common", "special", "improvement", "deterioration", "neutral"] },
     table_assurance_filter: { default: "all", valid: ["all", "any", "pass", "fail", "inconsistent"] },
@@ -309,13 +325,13 @@ export const settingsPaneGroupings: Partial<Record<defaultSettingsKeys, Record<s
     "Two-In-Three": ["two_in_three", "two_in_three_highlight_series", "two_in_three_limit", "twointhree_colour_improvement", "twointhree_colour_deterioration", "twointhree_colour_neutral_low", "twointhree_colour_neutral_high"]
   },
   lines: {
-    "Main": ["show_main", "width_main", "type_main", "colour_main", "plot_label_show_main", "plot_label_position_main", "plot_label_vpad_main", "plot_label_hpad_main", "plot_label_font_main", "plot_label_size_main", "plot_label_colour_main", "plot_label_prefix_main"],
-    "Target": ["show_target", "width_target", "type_target", "colour_target", "ttip_show_target", "ttip_label_target", "plot_label_show_target", "plot_label_position_target", "plot_label_vpad_target", "plot_label_hpad_target", "plot_label_font_target", "plot_label_size_target", "plot_label_colour_target", "plot_label_prefix_target"],
-    "Alt. Target": ["show_alt_target", "alt_target", "multiplier_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "ttip_show_alt_target", "ttip_label_alt_target", "plot_label_show_alt_target", "plot_label_position_alt_target", "plot_label_vpad_alt_target", "plot_label_hpad_alt_target", "plot_label_font_alt_target", "plot_label_size_alt_target", "plot_label_colour_alt_target", "plot_label_prefix_alt_target"],
-    "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "ttip_show_68", "ttip_label_68", "ttip_label_68_prefix_lower", "ttip_label_68_prefix_upper", "plot_label_show_68", "plot_label_position_68", "plot_label_vpad_68", "plot_label_hpad_68", "plot_label_font_68", "plot_label_size_68", "plot_label_colour_68", "plot_label_prefix_68"],
-    "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "ttip_show_95", "ttip_label_95", "ttip_label_95_prefix_lower", "ttip_label_95_prefix_upper", "plot_label_show_95", "plot_label_position_95", "plot_label_vpad_95", "plot_label_hpad_95", "plot_label_font_95", "plot_label_size_95", "plot_label_colour_95", "plot_label_prefix_95"],
-    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "ttip_show_99", "ttip_label_99", "ttip_label_99_prefix_lower", "ttip_label_99_prefix_upper", "plot_label_show_99", "plot_label_position_99", "plot_label_vpad_99", "plot_label_hpad_99", "plot_label_font_99", "plot_label_size_99", "plot_label_colour_99", "plot_label_prefix_99"],
-    "Specification Limits": ["show_specification", "specification_upper", "specification_lower", "multiplier_specification", "width_specification", "type_specification", "colour_specification", "ttip_show_specification", "ttip_label_specification", "ttip_label_specification_prefix_lower", "ttip_label_specification_prefix_upper", "plot_label_show_specification", "plot_label_position_specification", "plot_label_vpad_specification", "plot_label_hpad_specification", "plot_label_font_specification", "plot_label_size_specification", "plot_label_colour_specification", "plot_label_prefix_specification"]
+    "Main": ["show_main", "width_main", "type_main", "colour_main", "opacity_main", "opacity_unselected_main", "plot_label_show_main", "plot_label_position_main", "plot_label_vpad_main", "plot_label_hpad_main", "plot_label_font_main", "plot_label_size_main", "plot_label_colour_main", "plot_label_prefix_main"],
+    "Target": ["show_target", "width_target", "type_target", "colour_target", "opacity_target", "opacity_unselected_target", "ttip_show_target", "ttip_label_target", "plot_label_show_target", "plot_label_position_target", "plot_label_vpad_target", "plot_label_hpad_target", "plot_label_font_target", "plot_label_size_target", "plot_label_colour_target", "plot_label_prefix_target"],
+    "Alt. Target": ["show_alt_target", "alt_target", "multiplier_alt_target", "width_alt_target", "type_alt_target", "colour_alt_target", "opacity_alt_target", "opacity_unselected_alt_target", "ttip_show_alt_target", "ttip_label_alt_target", "plot_label_show_alt_target", "plot_label_position_alt_target", "plot_label_vpad_alt_target", "plot_label_hpad_alt_target", "plot_label_font_alt_target", "plot_label_size_alt_target", "plot_label_colour_alt_target", "plot_label_prefix_alt_target"],
+    "68% Limits": ["show_68", "width_68", "type_68", "colour_68", "opacity_68", "opacity_unselected_68", "ttip_show_68", "ttip_label_68", "ttip_label_68_prefix_lower", "ttip_label_68_prefix_upper", "plot_label_show_68", "plot_label_position_68", "plot_label_vpad_68", "plot_label_hpad_68", "plot_label_font_68", "plot_label_size_68", "plot_label_colour_68", "plot_label_prefix_68"],
+    "95% Limits": ["show_95", "width_95", "type_95", "colour_95", "opacity_95", "opacity_unselected_95", "ttip_show_95", "ttip_label_95", "ttip_label_95_prefix_lower", "ttip_label_95_prefix_upper", "plot_label_show_95", "plot_label_position_95", "plot_label_vpad_95", "plot_label_hpad_95", "plot_label_font_95", "plot_label_size_95", "plot_label_colour_95", "plot_label_prefix_95"],
+    "99% Limits": ["show_99", "width_99", "type_99", "colour_99", "opacity_99", "opacity_unselected_99", "ttip_show_99", "ttip_label_99", "ttip_label_99_prefix_lower", "ttip_label_99_prefix_upper", "plot_label_show_99", "plot_label_position_99", "plot_label_vpad_99", "plot_label_hpad_99", "plot_label_font_99", "plot_label_size_99", "plot_label_colour_99", "plot_label_prefix_99"],
+    "Specification Limits": ["show_specification", "specification_upper", "specification_lower", "multiplier_specification", "width_specification", "type_specification", "colour_specification", "opacity_specification", "opacity_unselected_specification", "ttip_show_specification", "ttip_label_specification", "ttip_label_specification_prefix_lower", "ttip_label_specification_prefix_upper", "plot_label_show_specification", "plot_label_position_specification", "plot_label_vpad_specification", "plot_label_hpad_specification", "plot_label_font_specification", "plot_label_size_specification", "plot_label_colour_specification", "plot_label_prefix_specification"]
   },
   x_axis: {
     "Axis": ["xlimit_colour", "xlimit_l", "xlimit_u"],
@@ -328,7 +344,7 @@ export const settingsPaneGroupings: Partial<Record<defaultSettingsKeys, Record<s
     "Label": ["ylimit_label", "ylimit_label_font", "ylimit_label_size", "ylimit_label_colour"]
   },
   summary_table: {
-    "General": ["show_table", "table_variation_filter", "table_assurance_filter", "table_text_overflow", "table_opacity", "table_opacity_unselected", "table_outer_border_style", "table_outer_border_width", "table_outer_border_colour", "table_outer_border_top", "table_outer_border_bottom", "table_outer_border_left", "table_outer_border_right"],
+    "General": ["show_table", "table_variation_filter", "table_assurance_filter", "table_text_overflow", "table_opacity", "table_opacity_selected", "table_opacity_unselected", "table_outer_border_style", "table_outer_border_width", "table_outer_border_colour", "table_outer_border_top", "table_outer_border_bottom", "table_outer_border_left", "table_outer_border_right"],
     "Header": ["table_header_font", "table_header_size", "table_header_text_align", "table_header_font_weight", "table_header_text_transform", "table_header_text_padding", "table_header_colour", "table_header_bg_colour", "table_header_border_style", "table_header_border_width", "table_header_border_colour", "table_header_border_bottom", "table_header_border_inner"],
     "Body": ["table_body_font", "table_body_size", "table_body_text_align", "table_body_font_weight", "table_body_text_transform", "table_body_text_padding", "table_body_colour", "table_body_bg_colour", "table_body_border_style", "table_body_border_width", "table_body_border_colour", "table_body_border_top_bottom", "table_body_border_left_right"]
   }

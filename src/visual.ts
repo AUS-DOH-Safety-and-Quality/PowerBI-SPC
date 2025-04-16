@@ -11,8 +11,8 @@ import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
           drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
 import { defaultSettingsKeys, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
-import type { plotDataGrouped } from "./Classes/viewModelClass";
-import { identitySelected } from "./Functions";
+import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
+import { getAesthetic, identitySelected } from "./Functions";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
@@ -159,25 +159,27 @@ export class Visual implements powerbi.extensibility.IVisual {
     const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
     const anyHighlightsGrouped: boolean = this.viewModel.inputDataGrouped ? this.viewModel.inputDataGrouped.some(d => d.anyHighlights) : false;
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
-    const opacityFull: number = this.viewModel.inputSettings.settings.scatter.opacity;
-    const opacityReduced: number = this.viewModel.inputSettings.settings.scatter.opacity_unselected;
-
-    const defaultOpacity: number = (anyHighlights || (allSelectionIDs.length > 0))
-                                      ? opacityReduced
-                                      : opacityFull;
-    this.svg.selectAll(".linesgroup").style("stroke-opacity", defaultOpacity);
 
     const dotsSelection = this.svg.selectAll(".dotsgroup").selectChildren();
+    const linesSelection = this.svg.selectAll(".linesgroup").selectChildren();
     const tableSelection = this.tableDiv.selectAll(".table-body").selectChildren();
 
-    dotsSelection.style("fill-opacity", defaultOpacity);
-    tableSelection.style("opacity", defaultOpacity);
+    // Set all elements to their default opacity before applying highlights
+    linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
+      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings)
+    });
+    dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
+    tableSelection.style("opacity", (d: plotData) => d.aesthetics["table_opacity"]);
+
     if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
+      linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
+        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings)
+      });
       dotsSelection.nodes().forEach(currentDotNode => {
         const dot: plotData = d3.select(currentDotNode).datum() as plotData;
         const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
         const currentPointHighlighted: boolean = dot.highlighted;
-        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
+        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
       })
 
@@ -185,7 +187,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         const dot: plotDataGrouped = d3.select(currentTableNode).datum() as plotDataGrouped;
         const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
         const currentPointHighlighted: boolean = dot.highlighted;
-        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity"] : dot.aesthetics["table_opacity_unselected"];
+        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity_selected"] : dot.aesthetics["table_opacity_unselected"];
         d3.select(currentTableNode).style("opacity", newTableOpacity);
       })
     }
