@@ -171,6 +171,19 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+    if (isNullOrUndefined(this.colourPalette)) {
+      this.colourPalette = {
+        isHighContrast: host.colorPalette.isHighContrast,
+        foregroundColour: host.colorPalette.foreground.value,
+        backgroundColour: host.colorPalette.background.value,
+        foregroundSelectedColour: host.colorPalette.foregroundSelected.value,
+        hyperlinkColour: host.colorPalette.hyperlink.value
+      }
+    }
+
+    this.svgWidth = options.viewport.width;
+    this.svgHeight = options.viewport.height;
+
     const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
     this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
 
@@ -209,18 +222,6 @@ export default class viewModelClass {
       res.error = checkDV;
       return res;
     }
-    if (isNullOrUndefined(this.colourPalette)) {
-      this.colourPalette = {
-        isHighContrast: host.colorPalette.isHighContrast,
-        foregroundColour: host.colorPalette.foreground.value,
-        backgroundColour: host.colorPalette.background.value,
-        foregroundSelectedColour: host.colorPalette.foregroundSelected.value,
-        hyperlinkColour: host.colorPalette.hyperlink.value
-      }
-    }
-
-    this.svgWidth = options.viewport.width;
-    this.svgHeight = options.viewport.height;
 
     // Only re-construct data and re-calculate limits if they have changed
     if (options.type === 2 || this.firstRun) {
