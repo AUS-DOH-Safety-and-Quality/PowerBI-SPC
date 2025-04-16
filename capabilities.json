@@ -356,7 +356,11 @@
           "type": { "numeric": true }
         },
         "opacity": {
-          "displayName": "Opacity",
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "opacity_selected": {
+          "displayName": "Opacity if Selected",
           "type": { "numeric": true }
         },
         "opacity_unselected": {
@@ -1088,7 +1092,11 @@
           "type" : { "bool" : true }
         },
         "table_opacity": {
-          "displayName": "Opacity",
+          "displayName": "Default Opacity",
+          "type": { "numeric": true }
+        },
+        "table_opacity_selected": {
+          "displayName": "Opacity if Selected",
           "type": { "numeric": true }
         },
         "table_opacity_unselected": {

@@ -170,14 +170,14 @@ export class Visual implements powerbi.extensibility.IVisual {
     const dotsSelection = this.svg.selectAll(".dotsgroup").selectChildren();
     const tableSelection = this.tableDiv.selectAll(".table-body").selectChildren();
 
-    dotsSelection.style("fill-opacity", defaultOpacity);
-    tableSelection.style("opacity", defaultOpacity);
+    dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
+    tableSelection.style("opacity", (d: plotData) => d.aesthetics["table_opacity"]);
     if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
       dotsSelection.nodes().forEach(currentDotNode => {
         const dot: plotData = d3.select(currentDotNode).datum() as plotData;
         const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
         const currentPointHighlighted: boolean = dot.highlighted;
-        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity : dot.aesthetics.opacity_unselected;
+        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
       })
 
@@ -185,7 +185,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         const dot: plotDataGrouped = d3.select(currentTableNode).datum() as plotDataGrouped;
         const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
         const currentPointHighlighted: boolean = dot.highlighted;
-        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity"] : dot.aesthetics["table_opacity_unselected"];
+        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity_selected"] : dot.aesthetics["table_opacity_unselected"];
         d3.select(currentTableNode).style("opacity", newTableOpacity);
       })
     }
