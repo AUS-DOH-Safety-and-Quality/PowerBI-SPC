@@ -1,17 +1,24 @@
 import type { plotData } from "../Classes";
 import { between, isNullOrUndefined } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
+import * as d3 from "./D3 Modules"
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
   selection
       .select(".dotsgroup")
-      .selectAll("circle")
+      .selectAll("path")
       .data(visualObj.viewModel.plotPoints)
-      .join("circle")
+      .join("path")
       .filter((d: plotData) => !isNullOrUndefined(d.value))
-      .attr("cy", (d: plotData) => visualObj.viewModel.plotProperties.yScale(d.value))
-      .attr("cx", (d: plotData) => visualObj.viewModel.plotProperties.xScale(d.x))
-      .attr("r", (d: plotData) => d.aesthetics.size)
+      .attr("d", (d: plotData) => {
+        const shape: string = d.aesthetics.shape;
+        const size: number = d.aesthetics.size;
+        // d3.symbol() takes size as area instead of radius
+        return d3.symbol().type(d3[`symbol${shape}`]).size((size*size) * Math.PI)()
+      })
+      .attr("transform", (d: plotData) => {
+        return `translate(${visualObj.viewModel.plotProperties.xScale(d.x)}, ${visualObj.viewModel.plotProperties.yScale(d.value)})`
+      })
       .style("fill", (d: plotData) => {
         const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
         const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
@@ -19,6 +26,14 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
         const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
         return (between(d.value, ylower, yupper) && between(d.x, xlower, xupper)) ? d.aesthetics.colour : "#FFFFFF";
       })
+      .style("stroke", (d: plotData) => {
+        const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+        const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
+        const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
+        const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
+        return (between(d.value, ylower, yupper) && between(d.x, xlower, xupper)) ? d.aesthetics.colour_outline : "#FFFFFF";
+      })
+      .style("stroke-width", (d: plotData) => d.aesthetics.width_outline)
       .on("click", (event, d: plotData) => {
         if (visualObj.host.hostCapabilities.allowInteractions) {
           if (visualObj.viewModel.inputSettings.settings.spc.split_on_click) {
