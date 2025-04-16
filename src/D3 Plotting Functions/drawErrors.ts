@@ -10,7 +10,6 @@ export default function drawErrors(selection: svgBaseType,
                                     message: string,
                                     type: string = null) {
   selection.call(initialiseSVG, true);
-  console.log(colourPalette)
   const errMessageSVG = selection.append("g").classed("errormessage", true);
 
   if (type) {
