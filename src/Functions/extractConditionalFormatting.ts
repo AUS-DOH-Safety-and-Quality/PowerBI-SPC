@@ -27,10 +27,10 @@ export default function
                                                         settingGroupName: string,
                                                         inputSettings: defaultSettingsType,
                                                         idxs: number[]): ConditionalReturnT<T> {
-  if (isNullOrUndefined(categoricalView)) {
+  if (isNullOrUndefined(categoricalView?.categories)) {
     return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
-  if (isNullOrUndefined(categoricalView.categories)) {
+  if (categoricalView?.categories?.[0]?.identity?.length === 0) {
     return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
   const inputCategories: DataViewCategoryColumn = (categoricalView.categories as DataViewCategoryColumn[])[0];
