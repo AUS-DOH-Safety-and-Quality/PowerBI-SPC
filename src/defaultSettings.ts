@@ -65,8 +65,11 @@ const defaultSettings = {
     assurance_icons_scaling: iconOptions.scaling
   },
   scatter: {
+    shape: { default: "Circle", valid: ["Circle", "Cross", "Diamond", "Square", "Star", "Triangle", "Wye"]},
     size: { default: 2.5, valid: { numberRange: { min: 0, max: 100 }}},
     colour: colourOptions.common_cause,
+    colour_outline: colourOptions.common_cause,
+    width_outline: { default: 1, valid: lineOptions.width.valid },
     opacity: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
     opacity_selected: { default: 1, valid: { numberRange: { min: 0, max: 1 } } },
     opacity_unselected: { default: 0.2, valid: { numberRange: { min: 0, max: 1 } } }

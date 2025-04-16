@@ -351,6 +351,20 @@
     "scatter": {
       "displayName": "Scatter Settings",
       "properties": {
+        "shape": {
+          "displayName": "Dot Shape",
+          "type": {
+            "enumeration" : [
+              { "displayName" : "Circle", "value" : "Circle" },
+              { "displayName" : "Cross", "value" : "Cross" },
+              { "displayName" : "Diamond", "value" : "Diamond" },
+              { "displayName" : "Square", "value" : "Square" },
+              { "displayName" : "Star", "value" : "Star" },
+              { "displayName" : "Triangle", "value" : "Triangle" },
+              { "displayName" : "Wye", "value" : "Wye" }
+            ]
+          }
+        },
         "size": {
           "displayName": "Dot Size",
           "type": { "numeric": true }
@@ -368,8 +382,16 @@
           "type": { "numeric": true }
         },
         "colour":{
-          "displayName": "Colour",
+          "displayName": "Fill Colour",
           "type": { "fill": { "solid": { "color": true } } }
+        },
+        "colour_outline": {
+          "displayName": "Outline Colour",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "width_outline": {
+          "displayName": "Outline Width",
+          "type": { "numeric": true }
         }
       }
     },
