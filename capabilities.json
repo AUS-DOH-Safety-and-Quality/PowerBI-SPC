@@ -792,6 +792,62 @@
           "displayName": "Show Value on Plot",
           "type": { "bool": true }
         },
+        "plot_label_show_all_99": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_all_95": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_all_68": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_all_main": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_all_target": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_all_alt_target": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_all_specification": {
+          "displayName": "Show Value at all Re-Baselines",
+          "type": { "bool": true }
+        },
+        "plot_label_show_n_99": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
+        "plot_label_show_n_95": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
+        "plot_label_show_n_68": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
+        "plot_label_show_n_main": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
+        "plot_label_show_n_target": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
+        "plot_label_show_n_alt_target": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
+        "plot_label_show_n_specification": {
+          "displayName": "Show Value at Last N Re-Baselines",
+          "type": { "numeric": true }
+        },
         "plot_label_position_99": {
           "displayName": "Position of Value on Line(s)",
           "type": {
