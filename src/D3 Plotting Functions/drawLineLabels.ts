@@ -50,11 +50,16 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
   });
   const limits: string[] = visualObj.viewModel.groupedLines.map(d => d[0]);
   const labelsToPlot: lineLabelType[] = new Array<lineLabelType>();
-  rebaselinePoints.forEach((d: number) => {
+  rebaselinePoints.forEach((d: number, rb_idx: number) => {
     limits.forEach((limit: string, idx: number) => {
+      const lastIndex: number = rebaselinePoints[rebaselinePoints.length - 1];
+      const showN: number = rebaselinePoints.length - Math.min(rebaselinePoints.length, lineSettings[`plot_label_show_n_${lineNameMap[limit]}`]);
+      console.log("showN", showN);
       const showLabel: boolean = lineSettings[`plot_label_show_all_${lineNameMap[limit]}`]
-        || (d == rebaselinePoints[rebaselinePoints.length - 1]);
-      if (showLabel) {
+        || (d == lastIndex);
+      if (rb_idx >= showN) {
+        labelsToPlot.push({index: d, limit: idx});
+      } else if (showLabel) {
         labelsToPlot.push({index: d, limit: idx});
       }
     });
