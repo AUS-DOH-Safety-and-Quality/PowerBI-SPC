@@ -54,7 +54,6 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     limits.forEach((limit: string, idx: number) => {
       const lastIndex: number = rebaselinePoints[rebaselinePoints.length - 1];
       const showN: number = rebaselinePoints.length - Math.min(rebaselinePoints.length, lineSettings[`plot_label_show_n_${lineNameMap[limit]}`]);
-      console.log("showN", showN);
       const showLabel: boolean = lineSettings[`plot_label_show_all_${lineNameMap[limit]}`]
         || (d == lastIndex);
       if (rb_idx >= showN) {
