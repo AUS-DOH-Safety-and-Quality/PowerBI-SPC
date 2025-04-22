@@ -49,7 +49,16 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     }
   });
   const limits: string[] = visualObj.viewModel.groupedLines.map(d => d[0]);
-  const labelsToPlot: lineLabelType[] = rebaselinePoints.map(d => limits.map((_, idx) => {return {index: d, limit: idx}})).flat();
+  const labelsToPlot: lineLabelType[] = new Array<lineLabelType>();
+  rebaselinePoints.forEach((d: number) => {
+    limits.forEach((limit: string, idx: number) => {
+      const showLabel: boolean = lineSettings[`plot_label_show_all_${lineNameMap[limit]}`]
+        || (d == rebaselinePoints[rebaselinePoints.length - 1]);
+      if (showLabel) {
+        labelsToPlot.push({index: d, limit: idx});
+      }
+    });
+  });
   const formatValue = valueFormatter(visualObj.viewModel.inputSettings.settings, visualObj.viewModel.inputSettings.derivedSettings);
   selection
     .select(".linesgroup")
