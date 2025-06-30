@@ -8,6 +8,7 @@ import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass, type derivedSettingsClass } from "../Classes";
 import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
+import { lineNameMap } from "../Functions/getAesthetic";
 
 export type viewModelValidationT = {
   status: boolean,
@@ -651,12 +652,13 @@ export default class viewModelClass {
         isNewAltTarget = this.controlLimits.alt_targets[i] !== this.controlLimits.alt_targets[i - 1];
       }
       labels.forEach(label => {
+        const join_rebaselines: boolean = this.inputSettings.settings.lines[`join_rebaselines_${lineNameMap[label]}`];
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
         if (isRebaselinePoint || (label === "alt_targets" && isNewAltTarget)) {
           formattedLines.push({
             x: this.controlLimits.keys[i].x,
-            line_value: null,
+            line_value: join_rebaselines ? this.controlLimits[label]?.[i] : null,
             group: label
           })
 
