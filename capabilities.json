@@ -1093,6 +1093,34 @@
         "plot_label_prefix_specification": {
           "displayName": "Value Prefix",
           "type": { "text": true }
+        },
+        "join_rebaselines_99": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
+        },
+        "join_rebaselines_95": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
+        },
+        "join_rebaselines_68": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
+        },
+        "join_rebaselines_main": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
+        },
+        "join_rebaselines_target": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
+        },
+        "join_rebaselines_alt_target": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
+        },
+        "join_rebaselines_specification": {
+          "displayName": "Connect Rebaselined Limits",
+          "type": { "bool": true }
         }
       }
     },
