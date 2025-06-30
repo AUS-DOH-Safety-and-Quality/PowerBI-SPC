@@ -655,19 +655,12 @@ export default class viewModelClass {
         const join_rebaselines: boolean = this.inputSettings.settings.lines[`join_rebaselines_${lineNameMap[label]}`];
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
-        if (label !== "alt_targets" && isRebaselinePoint) {
+        if (isRebaselinePoint || isNewAltTarget) {
+          const is_alt_target: boolean = label === "alt_targets" && isNewAltTarget;
+          const is_rebaseline: boolean = label !== "alt_targets" && isRebaselinePoint;
           formattedLines.push({
             x: this.controlLimits.keys[i].x,
-            line_value: join_rebaselines ? this.controlLimits[label]?.[i] : null,
-            group: label
-          })
-        }
-
-        // Same process for alt_targets, but only if the alt_target is different
-        if (label === "alt_targets" && isNewAltTarget) {
-          formattedLines.push({
-            x: this.controlLimits.keys[i].x,
-            line_value: join_rebaselines ? this.controlLimits[label]?.[i] : null,
+            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : this.controlLimits[label]?.[i],
             group: label
           })
         }
