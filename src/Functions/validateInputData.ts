@@ -53,7 +53,6 @@ function validateInputDataImpl(key: string,
   }
 
   if (chart_type_props.needs_sd) {
-    console.log("Checking SD for chart type");
     if (isNullOrUndefined(xbar_sd)) {
       rtn.message = "SD missing";
       rtn.type = ValidationFailTypes.SDMissing;
