@@ -56,6 +56,7 @@ export default function extractInputData(inputView: DataViewCategorical,
   const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings, idxs);
   const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings, idxs);
   const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings, idxs);
+  console.log(keys);
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings, idxs);
   const groupings: string[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings, idxs);
   const labels: string[] = extractDataColumn<string[]>(inputView, "labels", inputSettings, idxs);

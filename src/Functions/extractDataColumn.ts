@@ -45,13 +45,14 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
       ret[i] = null
+    } else {
+      const dateParts = datePartsToRecord(formatter.formatToParts(<Date>inputDates.dates[i]))
+      const datePartStrings: string[] = [dateParts.weekday + " " + dateParts[day_elem],
+                                          dateParts[month_elem],
+                                          inputDates.quarters?.[i] ?? "",
+                                          dateParts.year];
+      ret[i] = datePartStrings.filter(d => String(d).trim()).join(delim)
     }
-    const dateParts = datePartsToRecord(formatter.formatToParts(<Date>inputDates.dates[i]))
-    const datePartStrings: string[] = [dateParts.weekday + " " + dateParts[day_elem],
-                                        dateParts[month_elem],
-                                        inputDates.quarters?.[i] ?? "",
-                                        dateParts.year];
-    ret[i] = datePartStrings.filter(d => String(d).trim()).join(delim)
   }
   return ret
 }

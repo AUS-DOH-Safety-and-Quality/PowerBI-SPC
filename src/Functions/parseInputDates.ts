@@ -1,5 +1,6 @@
 import powerbi from "powerbi-visuals-api"
 import { valueType } from "powerbi-visuals-utils-typeutils";
+import isNullOrUndefined from "./isNullOrUndefined";
 type ValueType = valueType.ValueType;
 
 const monthNameToNumber: { [key: string]: number } = {
@@ -59,7 +60,7 @@ export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[]
     }
   } else {
     for (let i = 0; i < n_keys; i++) {
-      inputDates[i] = new Date(<Date>(inputs?.[0]?.values[idxs[i]]))
+      inputDates[i] = isNullOrUndefined(inputs?.[0]?.values[idxs[i]]) ? null : new Date(<Date>(inputs?.[0]?.values[idxs[i]]))
     }
   }
   return { dates: inputDates, quarters: inputQuarters }
