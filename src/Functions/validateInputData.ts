@@ -27,13 +27,19 @@ function validateInputDataImpl(key: string,
   if (isNullOrUndefined(key)) {
     rtn.message = "Date missing";
     rtn.type = ValidationFailTypes.DateMissing;
-  } else if (isNullOrUndefined(numerator)) {
+  }
+
+  if (isNullOrUndefined(numerator)) {
     rtn.message = "Numerator missing";
     rtn.type = ValidationFailTypes.NumeratorMissing;
-  } else if (chart_type_props.numerator_non_negative && numerator < 0) {
+  }
+
+  if (chart_type_props.numerator_non_negative && numerator < 0) {
     rtn.message = "Numerator negative";
     rtn.type = ValidationFailTypes.NumeratorNegative;
-  } else if (check_denom) {
+  }
+
+  if (check_denom) {
     if (isNullOrUndefined(denominator)) {
       rtn.message = "Denominator missing";
       rtn.type = ValidationFailTypes.DenominatorMissing;
@@ -44,7 +50,9 @@ function validateInputDataImpl(key: string,
       rtn.message = "Denominator < numerator";
       rtn.type = ValidationFailTypes.DenominatorLessThanNumerator;
     }
-  } else if (chart_type_props.needs_sd) {
+  }
+
+  if (chart_type_props.needs_sd) {
     if (isNullOrUndefined(xbar_sd)) {
       rtn.message = "SD missing";
       rtn.type = ValidationFailTypes.SDMissing;
@@ -57,7 +65,7 @@ function validateInputDataImpl(key: string,
 }
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
- 
+
 export default function validateInputData(keys: string[],
                                           numerators: number[],
                                           denominators: number[],
@@ -127,4 +135,3 @@ export default function validateInputData(keys: string[],
   }
   return validationRtn;
 }
- 
