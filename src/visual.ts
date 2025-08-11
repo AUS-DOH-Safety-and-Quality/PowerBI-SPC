@@ -119,7 +119,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     const svgHeight: number = this.viewModel.svgHeight;
     this.svg.selectChildren().each(function() {
       const currentClass: string = d3.select(this).attr("class");
-      if (currentClass === "yaxislabel" || currentClass === "xaxislabel") {
+      if (!["yaxisgroup", "xaxisgroup"].includes(currentClass)) {
         return;
       }
       const boundRect = (this as SVGGraphicsElement).getBoundingClientRect();
