@@ -1,5 +1,6 @@
 const textOptions = {
   font: {
+    type: "Dropdown",
     default: "'Arial', sans-serif",
     valid: [
       "'Arial', sans-serif",
@@ -32,22 +33,27 @@ const textOptions = {
     ]
   },
   size: {
+    type: "NumUpDown",
     default: 10,
     valid: { numberRange: { min: 0, max: 100 } }
   },
   weight: {
+    type: "Dropdown",
     default: "normal",
     valid: ["normal", "bold", "bolder", "lighter"]
   },
   text_transform: {
+    type: "Dropdown",
     default: "uppercase",
     valid: ["uppercase", "lowercase", "capitalize", "none"]
   },
   text_overflow: {
+    type: "Dropdown",
     default: "ellipsis",
     valid: ["ellipsis", "clip", "none"]
   },
   text_align: {
+    type: "Dropdown",
     default: "center",
     valid: ["center", "left", "right"]
   }
@@ -55,51 +61,58 @@ const textOptions = {
 
 const lineOptions = {
   type: {
+    type: "Dropdown",
     valid: ["10 0", "10 10", "2 5"]
   },
   width: {
+    type: "NumUpDown",
     valid: { numberRange: { min: 0, max: 100 } }
   }
 }
 
 const iconOptions = {
   location: {
+    type: "Dropdown",
     default: "Top Right",
     valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"]
   },
   scaling: {
+    type: "NumUpDown",
     default: 1,
     valid: { numberRange: { min: 0 } }
   }
 }
 
 const colourOptions = {
-  improvement: { default: "#00B0F0" },
-  deterioration: { default: "#E46C0A" },
-  neutral_low: { default: "#490092" },
-  neutral_high: { default: "#490092" },
-  common_cause: { default: "#A6A6A6" },
-  limits: { default: "#6495ED" },
-  standard: { default: "#000000" }
+  improvement: { type: "ColorPicker", default: "#00B0F0" },
+  deterioration: { type: "ColorPicker", default: "#E46C0A" },
+  neutral_low: { type: "ColorPicker", default: "#490092" },
+  neutral_high: { type: "ColorPicker", default: "#490092" },
+  common_cause: { type: "ColorPicker", default: "#A6A6A6" },
+  limits: { type: "ColorPicker", default: "#6495ED" },
+  standard: { type: "ColorPicker", default: "#000000" }
 }
 
 const borderOptions = {
   width: {
+    type: "NumUpDown",
     default: 1,
     valid: { numberRange: { min: 0 } }
   },
   style: {
+    type: "Dropdown",
     default: "solid",
     valid: ["solid", "dotted", "dashed", "double", "groove", "ridge", "inset", "outset", "none"]
   },
   colour: {
+    type: "ColorPicker",
     default: "#000000"
   }
 }
 
 const labelOptions = {
-  limits: { default: "beside", valid: ["outside", "inside", "above", "below", "beside"] },
-  standard: { default: "beside", valid: ["above", "below", "beside"] }
+  limits: { type: "Dropdown", default: "beside", valid: ["outside", "inside", "above", "below", "beside"] },
+  standard: { type: "Dropdown", default: "beside", valid: ["above", "below", "beside"] }
 }
 
 export {

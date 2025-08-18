@@ -1,12 +1,9 @@
 import * as powerbi from "powerbi-visuals-api"
 type DataView = powerbi.default.DataView;
-type DataViewPropertyValue = powerbi.default.DataViewPropertyValue
-type VisualObjectInstanceEnumerationObject = powerbi.default.VisualObjectInstanceEnumerationObject;
-type VisualObjectInstance = powerbi.default.VisualObjectInstance;
-type VisualObjectInstanceContainer = powerbi.default.VisualObjectInstanceContainer;
 import { extractConditionalFormatting } from "../Functions";
 import { default as defaultSettings, type defaultSettingsType, settingsPaneGroupings,
-  type defaultSettingsKeys, type defaultSettingsNestedKeys, type NestedKeysOf
+  type defaultSettingsKeys, type defaultSettingsNestedKeys, type NestedKeysOf,
+  formattingPaneTesting
  } from "../defaultSettings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
@@ -128,70 +125,66 @@ export default class settingsClass {
     }
   }
 
-  /**
-   * Get the names of all settings in a given group, and remove any which are toggled off.
-   *
-   * @param settingGroupName
-   * @returns
-   */
-  getSettingNames(settingGroupName: defaultSettingsKeys): Record<paneGroupingsNestedKey, defaultSettingsNestedKeys[]> {
-    const settingsGrouped: boolean = Object.keys(settingsPaneGroupings)
-                                           .includes(settingGroupName);
+  public getFormattingModel(): powerbi.default.visuals.FormattingModel {
+    const formattingModel: powerbi.default.visuals.FormattingModel = {
+      cards: []
+    };
 
-    return settingsGrouped
-        ? JSON.parse(JSON.stringify(settingsPaneGroupings[settingGroupName]))
-        : { "all" : Object.keys(this.settings[settingGroupName]) as defaultSettingsNestedKeys[] };
-  }
+    for (const curr_card_name of Object.keys(this.settings)) {
+      let curr_card: powerbi.default.visuals.FormattingCard = {
+        description: formattingPaneTesting[curr_card_name].description,
+        displayName: formattingPaneTesting[curr_card_name].displayName,
+        uid: curr_card_name + "_card_uid",
+        groups: [],
+        revertToDefaultDescriptors: []
+      };
 
-  /**
-   * Function to extract all values for a given settings group, which are then
-   * rendered to the Settings pane in PowerBI
-   *
-   * @param settingGroupName
-   * @param inputData
-   * @returns An object where each element is the value for a given setting in the named group
-   */
-  createSettingsEntry(settingGroupName: defaultSettingsKeys): VisualObjectInstanceEnumerationObject {
-    const paneGroupings: Record<paneGroupingsNestedKey, defaultSettingsNestedKeys[]>
-      = this.getSettingNames(settingGroupName);
-
-    const rtnInstances = new Array<VisualObjectInstance>();
-    const rtnContainers = new Array<VisualObjectInstanceContainer>();
-
-    Object.keys(paneGroupings).forEach((currKey: paneGroupingsNestedKey, idx) => {
-      const props = Object.fromEntries(
-        paneGroupings[currKey].map(currSetting => {
-          const settingValue: DataViewPropertyValue = this.settings[settingGroupName][currSetting]
-          return [currSetting, settingValue]
-        })
-      );
-
-      type propArray = Array<string | powerbi.default.VisualEnumerationInstanceKinds>;
-      const propertyKinds: propArray[] = new Array<propArray>();
-
-      (paneGroupings[currKey]).forEach(setting => {
-        if ((typeof this.settings[settingGroupName][setting]) != "boolean") {
-          propertyKinds.push([setting, powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule])
-        }
-      })
-
-      rtnInstances.push({
-        objectName: settingGroupName,
-        properties: props,
-        propertyInstanceKind: Object.fromEntries(propertyKinds),
-        selector: { data: [{ dataViewWildcard: { matchingOption: 0 } }] },
-        validValues: Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName: defaultSettingsNestedKeys) => {
-          return [settingName, defaultSettings[settingGroupName][settingName]?.["valid"]]
-        }))
-      })
-
-      if (currKey !== "all") {
-        rtnInstances[idx].containerIdx = idx
-        rtnContainers.push({ displayName: currKey })
+      let settingsgroups: Record<string, string[]>;
+      if (Object.keys(settingsPaneGroupings).includes(curr_card_name)) {
+        settingsgroups = settingsPaneGroupings[curr_card_name] as Record<string, string[]>;
+      } else {
+        settingsgroups = { "all": Object.keys(this.settings[curr_card_name]) as string[] };
       }
-    });
 
-    return { instances: rtnInstances, containers: rtnContainers };
+      for (const card_group in settingsgroups) {
+        let curr_group: powerbi.default.visuals.FormattingGroup = {
+          displayName: card_group === "all" ? formattingPaneTesting[curr_card_name].displayName : card_group,
+          uid: curr_card_name + "_" + card_group + "_uid",
+          slices: []
+        };
+
+        for (const setting of settingsgroups[card_group]) {
+          curr_card.revertToDefaultDescriptors.push({
+            objectName: curr_card_name,
+            propertyName: setting
+          });
+
+          let curr_slice: powerbi.default.visuals.FormattingSlice = {
+            uid: curr_card_name + "_" + card_group + "_" + setting + "_slice_uid",
+            control: {
+              type: defaultSettings[curr_card_name][setting].type,
+              properties: {
+                descriptor: {
+                  objectName: curr_card_name,
+                  propertyName: setting,
+                  selector: { data: [{ dataViewWildcard: { matchingOption: 0 } }] },
+                  instanceKind: (typeof this.settings[curr_card_name][setting]) != "boolean" ? powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule : null
+                },
+                value: setting.includes("colour") ? { value: this.settings[curr_card_name][setting] } : this.settings[curr_card_name][setting]
+              }
+            }
+          };
+
+          curr_group.slices.push(curr_slice);
+        }
+
+        curr_card.groups.push(curr_group);
+      }
+
+      formattingModel.cards.push(curr_card);
+    }
+
+    return formattingModel;
   }
 
   constructor() {
