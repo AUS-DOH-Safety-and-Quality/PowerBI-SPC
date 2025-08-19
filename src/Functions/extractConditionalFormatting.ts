@@ -4,7 +4,7 @@ type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
 import type { defaultSettingsType, defaultSettingsKeys } from "../Classes";
-import defaultSettings from "../defaultSettings";
+import { defaultSettings } from "../settings";
 import rep from "./rep";
 import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";

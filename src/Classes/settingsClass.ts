@@ -1,13 +1,12 @@
 import * as powerbi from "powerbi-visuals-api"
 type DataView = powerbi.default.DataView;
 import { extractConditionalFormatting } from "../Functions";
-import { default as defaultSettings, type defaultSettingsType, settingsPaneGroupings,
-  type defaultSettingsKeys, type defaultSettingsNestedKeys, type NestedKeysOf,
-  formattingPaneTesting
- } from "../defaultSettings";
+import { default as settingsModel, defaultSettings, type defaultSettingsType,
+  type defaultSettingsKeys, type defaultSettingsNestedKeys
+ } from "../settings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
-import settingsModel from "../settings";
+//import { default as settingsModel, defaultSettings2 } from "../settings";
 
 export { type defaultSettingsType, type defaultSettingsKeys };
 export type settingsScalarTypes = number | string | boolean;
@@ -15,8 +14,6 @@ export type settingsScalarTypes = number | string | boolean;
 export type optionalSettingsTypes = Partial<{
   [K in keyof typeof defaultSettings]: Partial<defaultSettingsType[K]>;
 }>;
-
-export type paneGroupingsNestedKey = "all" | NestedKeysOf<typeof settingsPaneGroupings[keyof typeof settingsPaneGroupings]>;
 
 /**
  * This is the core class which controls the initialisation and
@@ -142,7 +139,7 @@ export default class settingsClass {
 
       for (const card_group in settingsModel[curr_card_name].settingsGroups) {
         let curr_group: powerbi.default.visuals.FormattingGroup = {
-          displayName: card_group === "all" ? formattingPaneTesting[curr_card_name].displayName : card_group,
+          displayName: card_group === "all" ? settingsModel[curr_card_name].displayName : card_group,
           uid: curr_card_name + "_" + card_group + "_uid",
           slices: []
         };
@@ -174,8 +171,6 @@ export default class settingsClass {
 
         curr_card.groups.push(curr_group);
       }
-
-      console.log(curr_card)
 
       formattingModel.cards.push(curr_card);
     }

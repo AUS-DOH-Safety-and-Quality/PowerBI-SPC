@@ -118,7 +118,7 @@ const settingsModel = {
   spc: {
     description: "SPC Settings",
     displayName: "Data Settings",
-    settingGroups: {
+    settingsGroups: {
       "all": {
         chart_type: {
           displayName: "Chart Type",
@@ -1015,6 +1015,18 @@ const settingsModel = {
           type: powerbi.visuals.FormattingComponent.ToggleSwitch,
           default: false
         },
+        specification_upper: {
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: <number>null
+        },
+        specification_lower: {
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: <number>null
+        },
+        multiplier_specification: {
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: false
+        },
         width_specification: {
           type: powerbi.visuals.FormattingComponent.NumUpDown,
           default: 2,
@@ -1580,6 +1592,44 @@ const settingsModel = {
       }
     }
   }
+};
+
+type settingsModelType = typeof settingsModel;
+type settingsModelKeys = keyof settingsModelType;
+
+type MergeUnions<T> = (T extends any ? (x: T) => void : never) extends (x: infer R) => void
+  ? { [K in keyof R]: R[K] }
+  : never;
+
+type settingsGroups<T> = Extract<keyof T, "settingsGroups">;
+type settingsGroupMembers<T> = MergeUnions<T[settingsGroups<T>][keyof T[settingsGroups<T>]]>;
+type DefaultTypes<T> = T[Extract<keyof T, "default">];
+
+export type NestedKeysOf<T>
+  = T extends object
+    ? { [K in keyof T]: K extends string ? K : never; }[keyof T]
+    : never;
+
+export type defaultSettingsType = {
+  [K in settingsModelKeys]: {
+    [L in keyof settingsGroupMembers<settingsModelType[K]>]: DefaultTypes<settingsGroupMembers<settingsModelType[K]>[L]>
+  }
+}
+export type defaultSettingsKeys = keyof defaultSettingsType;
+export type defaultSettingsNestedKeys = NestedKeysOf<defaultSettingsType[defaultSettingsKeys]>;
+
+const defaultSettingsArray = [];
+for (const key in settingsModel) {
+  const curr_card = [];
+  for (const group in settingsModel[key].settingsGroups) {
+    for (const setting in settingsModel[key].settingsGroups[group]) {
+      curr_card.push([setting, settingsModel[key].settingsGroups[group][setting]]);
+    }
+  }
+  defaultSettingsArray.push([key, Object.fromEntries(curr_card)]);
 }
 
+const defaultSettings = Object.fromEntries(defaultSettingsArray) as defaultSettingsType;
+
+export { defaultSettings }
 export default settingsModel;
