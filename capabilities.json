@@ -35,14 +35,14 @@
       "displayName" : "Hidden",
       "properties": {
         "split_indexes": {
-                    "type": { "text": true }
+          "type": { "text": true }
         }
       }
     },
     "spc" : {
-            "properties": {
+      "properties": {
         "chart_type": {
-                    "type" : {
+          "type" : {
             "enumeration" : [
               { "displayName" : "run - Run Chart",                                   "value" : "run" },
               { "displayName" : "i - Individual Measurements",                       "value" : "i" },
@@ -62,16 +62,16 @@
           }
         },
         "outliers_in_limits": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "multiplier": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "sig_figs": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "perc_labels": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Automatic",  "value" : "Automatic" },
               { "displayName" : "Yes",        "value" : "Yes" },
@@ -80,13 +80,13 @@
           }
         },
         "split_on_click": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "num_points_subset": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "subset_points_from": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Start", "value" : "Start" },
               { "displayName" : "End",   "value" : "End" }
@@ -94,35 +94,35 @@
           }
         },
         "ll_truncate": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ul_truncate": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ttip_show_numerator": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_label_numerator": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_show_denominator": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_label_denominator": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_show_value": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_label_value": {
-                    "type": { "text": true }
+          "type": { "text": true }
         }
       }
     },
     "outliers" : {
-            "properties": {
+      "properties": {
         "process_flag_type": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Both",                 "value" : "both" },
               { "displayName" : "Improvement (Imp.)",   "value" : "improvement" },
@@ -131,7 +131,7 @@
           }
         },
         "improvement_direction": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Increase", "value" : "increase" },
               { "displayName" : "Neutral",  "value" : "neutral" },
@@ -140,10 +140,10 @@
           }
         },
         "astronomical": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "astronomical_limit": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "1 Sigma", "value" : "1 Sigma" },
               { "displayName" : "2 Sigma", "value" : "2 Sigma" },
@@ -153,61 +153,61 @@
           }
         },
         "ast_colour_improvement":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "ast_colour_deterioration":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "ast_colour_neutral_low":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "ast_colour_neutral_high":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "shift": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "shift_n": {
-                    "type" : { "numeric": true }
+          "type" : { "numeric": true }
         },
         "shift_colour_improvement":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "shift_colour_deterioration":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "shift_colour_neutral_low":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "shift_colour_neutral_high":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "trend": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "trend_n": {
-                    "type" : { "numeric": true }
+          "type" : { "numeric": true }
         },
         "trend_colour_improvement":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "trend_colour_deterioration":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "trend_colour_neutral_low":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "trend_colour_neutral_high":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "two_in_three": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "two_in_three_highlight_series": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "two_in_three_limit": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "1 Sigma", "value" : "1 Sigma" },
               { "displayName" : "2 Sigma", "value" : "2 Sigma" },
@@ -217,29 +217,29 @@
           }
         },
         "twointhree_colour_improvement":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "twointhree_colour_deterioration":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "twointhree_colour_neutral_low":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "twointhree_colour_neutral_high":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     },
     "nhs_icons" : {
-            "properties": {
+      "properties": {
         "show_variation_icons": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "flag_last_point": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "variation_icons_locations": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Top Right",    "value" : "Top Right" },
               { "displayName" : "Bottom Right", "value" : "Bottom Right" },
@@ -249,13 +249,13 @@
           }
         },
         "variation_icons_scaling":{
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "show_assurance_icons": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "assurance_icons_locations": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Top Right",    "value" : "Top Right" },
               { "displayName" : "Bottom Right", "value" : "Bottom Right" },
@@ -265,33 +265,33 @@
           }
         },
         "assurance_icons_scaling":{
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         }
       }
     },
     "canvas": {
-            "properties": {
+      "properties": {
         "show_errors": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "lower_padding":{
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "upper_padding":{
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "left_padding":{
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "right_padding":{
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         }
       }
     },
     "scatter": {
-            "properties": {
+      "properties": {
         "shape": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Circle", "value" : "Circle" },
               { "displayName" : "Cross", "value" : "Cross" },
@@ -304,32 +304,32 @@
           }
         },
         "size": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_selected": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_outline": {
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "width_outline": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         }
       }
     },
     "dates": {
-            "properties": {
+      "properties": {
         "date_format_locale": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "en-GB", "value" : "en-GB" },
               { "displayName" : "en-US", "value" : "en-US" }
@@ -337,7 +337,7 @@
           }
         },
         "date_format_day": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "DD",          "value" : "DD" },
               { "displayName" : "Thurs DD",    "value" : "Thurs DD" },
@@ -347,7 +347,7 @@
           }
         },
         "date_format_month": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "MM",    "value" : "MM" },
               { "displayName" : "Mon",   "value" : "Mon" },
@@ -357,7 +357,7 @@
           }
         },
         "date_format_year": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "YYYY", "value" : "YYYY" },
               { "displayName" : "YY",   "value" : "YY" },
@@ -366,7 +366,7 @@
           }
         },
         "date_format_delim": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "/", "value" : "/" },
               { "displayName" : "-", "value" : "-" },
@@ -377,51 +377,51 @@
       }
     },
     "lines": {
-            "properties": {
+      "properties": {
         "show_99": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "show_95": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "show_68": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "show_main": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "show_target": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "show_alt_target": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "show_specification": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "width_99": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "width_95": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "width_68": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "width_main": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "width_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "width_alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "width_specification": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "type_99": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -430,7 +430,7 @@
           }
         },
         "type_95": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -439,7 +439,7 @@
           }
         },
         "type_68": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -448,7 +448,7 @@
           }
         },
         "type_main": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -457,7 +457,7 @@
           }
         },
         "type_target": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -466,7 +466,7 @@
           }
         },
         "type_alt_target": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -475,7 +475,7 @@
           }
         },
         "type_specification": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -484,208 +484,208 @@
           }
         },
         "colour_99":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_95":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_68":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_main":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_target":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_alt_target":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "colour_specification":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "ttip_show_99": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_show_95": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_show_68": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_show_target": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_show_alt_target": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_show_specification": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ttip_label_99": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_99_prefix_lower": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_99_prefix_upper": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_95": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_95_prefix_lower": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_95_prefix_upper": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_68": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_68_prefix_lower": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_68_prefix_upper": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_target": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_alt_target": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_specification": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_specification_prefix_lower": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ttip_label_specification_prefix_upper": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "opacity_99": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_99": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_95": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_95": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_68": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_68": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_main": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_main": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_specification": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "opacity_unselected_specification": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "specification_upper": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "specification_lower": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "multiplier_alt_target": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "multiplier_specification": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "plot_label_show_99": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_95": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_68": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_main": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_target": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_alt_target": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_specification": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_99": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_95": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_68": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_main": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_target": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_alt_target": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_all_specification": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "plot_label_show_n_99": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_show_n_95": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_show_n_68": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_show_n_main": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_show_n_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_show_n_alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_show_n_specification": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_position_99": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Outside",    "value" : "outside" },
               { "displayName" : "Inside",     "value" : "inside" },
@@ -696,7 +696,7 @@
           }
         },
         "plot_label_position_95": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Outside",    "value" : "outside" },
               { "displayName" : "Inside",     "value" : "inside" },
@@ -707,7 +707,7 @@
           }
         },
         "plot_label_position_68": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Outside",    "value" : "outside" },
               { "displayName" : "Inside",     "value" : "inside" },
@@ -718,7 +718,7 @@
           }
         },
         "plot_label_position_main": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Above",      "value" : "above" },
               { "displayName" : "Below",      "value" : "below" },
@@ -727,7 +727,7 @@
           }
         },
         "plot_label_position_target": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Above",      "value" : "above" },
               { "displayName" : "Below",      "value" : "below" },
@@ -736,7 +736,7 @@
           }
         },
         "plot_label_position_alt_target": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Above",      "value" : "above" },
               { "displayName" : "Below",      "value" : "below" },
@@ -745,7 +745,7 @@
           }
         },
         "plot_label_position_specification": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Outside",    "value" : "outside" },
               { "displayName" : "Inside",     "value" : "inside" },
@@ -756,262 +756,262 @@
           }
         },
         "plot_label_vpad_99": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_vpad_95": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_vpad_68": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_vpad_main": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_vpad_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_vpad_alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_vpad_specification": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_99": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_95": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_68": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_main": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_alt_target": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_hpad_specification": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "plot_label_font_99": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_font_95": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_font_68": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_font_main": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_font_target": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_font_alt_target": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_font_specification": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "plot_label_size_99": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_size_95": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_size_68": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_size_main": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_size_target": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_size_alt_target": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_size_specification": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "plot_label_colour_99":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_colour_95":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_colour_68":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_colour_main":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_colour_target":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_colour_alt_target":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_colour_specification":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "plot_label_prefix_99": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "plot_label_prefix_95": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "plot_label_prefix_68": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "plot_label_prefix_main": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "plot_label_prefix_target": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "plot_label_prefix_alt_target": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "plot_label_prefix_specification": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "join_rebaselines_99": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "join_rebaselines_95": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "join_rebaselines_68": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "join_rebaselines_main": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "join_rebaselines_target": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "join_rebaselines_alt_target": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "join_rebaselines_specification": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         }
       }
     },
     "x_axis": {
-            "properties": {
+      "properties": {
         "xlimit_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "xlimit_ticks": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "xlimit_tick_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "xlimit_tick_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "xlimit_tick_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "xlimit_tick_rotation": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "xlimit_tick_count": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "xlimit_label": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "xlimit_label_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "xlimit_label_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "xlimit_label_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "xlimit_l": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "xlimit_u": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         }
       }
     },
     "y_axis": {
-            "properties": {
+      "properties": {
         "ylimit_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "ylimit_ticks": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "ylimit_sig_figs": {
-                        "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ylimit_tick_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "ylimit_tick_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "ylimit_tick_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "ylimit_tick_rotation": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ylimit_tick_count": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ylimit_label": {
-                    "type": { "text": true }
+          "type": { "text": true }
         },
         "ylimit_label_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "ylimit_label_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "ylimit_label_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "limit_multiplier": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ylimit_l": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "ylimit_u": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         }
       }
     },
     "summary_table": {
-            "properties": {
+      "properties": {
         "show_table": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "table_opacity": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_opacity_selected": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_opacity_unselected": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_variation_filter": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "All",                           "value" : "all" },
               { "displayName" : "Common Cause",                  "value" : "common" },
@@ -1023,7 +1023,7 @@
           }
         },
         "table_assurance_filter": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "All",                           "value" : "all" },
               { "displayName" : "Consistent - Any",               "value" : "any" },
@@ -1034,7 +1034,7 @@
           }
         },
         "table_text_overflow": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Ellipsis", "value" : "ellipsis" },
               { "displayName" : "Truncate",     "value" : "clip" },
@@ -1043,13 +1043,13 @@
           }
         },
         "table_outer_border_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_outer_border_width": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_outer_border_style": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "solid" },
               { "displayName" : "Dashed", "value" : "dashed" },
@@ -1063,31 +1063,31 @@
           }
         },
         "table_outer_border_top": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_outer_border_bottom": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_outer_border_left": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_outer_border_right": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_header_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "table_header_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "table_header_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_header_bg_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_header_font_weight": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Normal", "value" : "normal" },
               { "displayName" : "Bold",   "value" : "bold" }
@@ -1095,7 +1095,7 @@
           }
         },
         "table_header_text_transform": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Uppercase",   "value" : "uppercase" },
               { "displayName" : "Lowercase",   "value" : "lowercase" },
@@ -1105,19 +1105,19 @@
           }
         },
         "table_header_text_align": {
-                    "type": { "formatting": { "alignment": true } }
+          "type": { "formatting": { "alignment": true } }
         },
         "table_header_text_padding": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_header_border_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_header_border_width": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_header_border_style": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "solid" },
               { "displayName" : "Dashed", "value" : "dashed" },
@@ -1131,25 +1131,25 @@
           }
         },
         "table_header_border_bottom": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_header_border_inner": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_body_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "table_body_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "table_body_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_body_bg_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_body_font_weight": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Normal", "value" : "normal" },
               { "displayName" : "Bold",   "value" : "bold" }
@@ -1157,7 +1157,7 @@
           }
         },
         "table_body_text_transform": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Uppercase",   "value" : "uppercase" },
               { "displayName" : "Lowercase",   "value" : "lowercase" },
@@ -1167,19 +1167,19 @@
           }
         },
         "table_body_text_align": {
-                    "type": { "formatting": { "alignment": true } }
+          "type": { "formatting": { "alignment": true } }
         },
         "table_body_text_padding": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_body_border_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "table_body_border_width": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "table_body_border_style": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "solid" },
               { "displayName" : "Dashed", "value" : "dashed" },
@@ -1193,10 +1193,10 @@
           }
         },
         "table_body_border_top_bottom": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         },
         "table_body_border_left_right": {
-                    "type": { "bool": true }
+          "type": { "bool": true }
         }
       }
     },
@@ -1204,7 +1204,7 @@
       "displayName" : "Download Options",
       "properties": {
         "show_button": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         }
       }
     },
@@ -1212,10 +1212,10 @@
       "displayName" : "Value Label Options",
       "properties" : {
         "show_labels": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "label_position": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Top",    "value" : "top" },
               { "displayName" : "Bottom", "value" : "bottom" }
@@ -1223,31 +1223,31 @@
           }
         },
         "label_y_offset": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_line_offset": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_angle_offset": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_font": {
-                    "type": { "formatting": { "fontFamily": true } }
+          "type": { "formatting": { "fontFamily": true } }
         },
         "label_size": {
-                    "type": { "formatting": { "fontSize": true } }
+          "type": { "formatting": { "fontSize": true } }
         },
         "label_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "label_line_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "label_line_width": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_line_type": {
-                    "type": {
+          "type": {
             "enumeration" : [
               { "displayName" : "Solid",  "value" : "10 0" },
               { "displayName" : "Dashed", "value" : "10 10" },
@@ -1256,22 +1256,22 @@
           }
         },
         "label_line_max_length": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_marker_show": {
-                    "type" : { "bool" : true }
+          "type" : { "bool" : true }
         },
         "label_marker_offset": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_marker_size": {
-                    "type": { "numeric": true }
+          "type": { "numeric": true }
         },
         "label_marker_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "label_marker_outline_colour":{
-                    "type": { "fill": { "solid": { "color": true } } }
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     }
