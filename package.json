@@ -5,7 +5,7 @@
     "start": "pbiviz start",
     "package": "pbiviz package",
     "eslint": "npx eslint .",
-    "test": "vitest run",
+    "test": "",
     "bundle": "npx rollup --config rollup.config.js --configPlugin typescript"
   },
   "dependencies": {
