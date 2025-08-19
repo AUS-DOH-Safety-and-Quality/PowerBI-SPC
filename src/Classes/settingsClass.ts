@@ -6,7 +6,6 @@ import { default as settingsModel, defaultSettings, type defaultSettingsType,
  } from "../settings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
-//import { default as settingsModel, defaultSettings2 } from "../settings";
 
 export { type defaultSettingsType, type defaultSettingsKeys };
 export type settingsScalarTypes = number | string | boolean;

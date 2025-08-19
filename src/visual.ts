@@ -8,8 +8,7 @@ import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
           drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
-import { //defaultSettingsKeys,
-  viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
+import { viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
 import { getAesthetic, identitySelected } from "./Functions";
 

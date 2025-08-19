@@ -1,14 +1,6 @@
 export * as d3 from "./D3 Plotting Functions/D3 Modules";
 
 export { defaultSettings } from './settings';
-export {
-  textOptions,
-  lineOptions,
-  iconOptions,
-  colourOptions,
-  borderOptions,
-  labelOptions
-} from './validSettingValues';
 export * from './Classes';
 export * from './Functions';
 export * from './D3 Plotting Functions';
