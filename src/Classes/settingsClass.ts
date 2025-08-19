@@ -7,6 +7,7 @@ import { default as defaultSettings, type defaultSettingsType, settingsPaneGroup
  } from "../defaultSettings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
+import settingsModel from "../settings";
 
 export { type defaultSettingsType, type defaultSettingsKeys };
 export type settingsScalarTypes = number | string | boolean;
@@ -130,30 +131,23 @@ export default class settingsClass {
       cards: []
     };
 
-    for (const curr_card_name of Object.keys(this.settings)) {
+    for (const curr_card_name in settingsModel) {
       let curr_card: powerbi.default.visuals.FormattingCard = {
-        description: formattingPaneTesting[curr_card_name].description,
-        displayName: formattingPaneTesting[curr_card_name].displayName,
+        description: settingsModel[curr_card_name].description,
+        displayName: settingsModel[curr_card_name].displayName,
         uid: curr_card_name + "_card_uid",
         groups: [],
         revertToDefaultDescriptors: []
       };
 
-      let settingsgroups: Record<string, string[]>;
-      if (Object.keys(settingsPaneGroupings).includes(curr_card_name)) {
-        settingsgroups = settingsPaneGroupings[curr_card_name] as Record<string, string[]>;
-      } else {
-        settingsgroups = { "all": Object.keys(this.settings[curr_card_name]) as string[] };
-      }
-
-      for (const card_group in settingsgroups) {
+      for (const card_group in settingsModel[curr_card_name].settingsGroups) {
         let curr_group: powerbi.default.visuals.FormattingGroup = {
           displayName: card_group === "all" ? formattingPaneTesting[curr_card_name].displayName : card_group,
           uid: curr_card_name + "_" + card_group + "_uid",
           slices: []
         };
 
-        for (const setting of settingsgroups[card_group]) {
+        for (const setting in settingsModel[curr_card_name].settingsGroups[card_group]) {
           curr_card.revertToDefaultDescriptors.push({
             objectName: curr_card_name,
             propertyName: setting
@@ -180,6 +174,8 @@ export default class settingsClass {
 
         curr_card.groups.push(curr_group);
       }
+
+      console.log(curr_card)
 
       formattingModel.cards.push(curr_card);
     }
