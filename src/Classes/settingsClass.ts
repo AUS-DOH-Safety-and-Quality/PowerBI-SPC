@@ -151,6 +151,7 @@ export default class settingsClass {
 
           let curr_slice: powerbi.default.visuals.FormattingSlice = {
             uid: curr_card_name + "_" + card_group + "_" + setting + "_slice_uid",
+            displayName: settingsModel[curr_card_name].settingsGroups[card_group][setting].displayName,
             control: {
               type: settingsModel[curr_card_name].settingsGroups[card_group][setting].type,
               properties: {
