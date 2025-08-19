@@ -1239,7 +1239,7 @@ const settingsModel = {
           default: <string>null
         },
         ylimit_label_font: {
-          type: powerbi.visuals.FormattingComponent.Dropdown,
+          type: powerbi.visuals.FormattingComponent.FontPicker,
           default: textOptions.font.default,
           valid: textOptions.font.valid
         },
@@ -1370,7 +1370,7 @@ const settingsModel = {
           valid: textOptions.size.valid
         },
         table_header_text_align: {
-          type: powerbi.visuals.FormattingComponent.Dropdown,
+          type: powerbi.visuals.FormattingComponent.AlignmentGroup,
           default: textOptions.text_align.default,
           valid: textOptions.text_align.valid
         },
@@ -1432,7 +1432,7 @@ const settingsModel = {
           valid: textOptions.size.valid
         },
         table_body_text_align: {
-          type: powerbi.visuals.FormattingComponent.Dropdown,
+          type: powerbi.visuals.FormattingComponent.AlignmentGroup,
           default: textOptions.text_align.default,
           valid: textOptions.text_align.valid
         },
