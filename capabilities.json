@@ -42,24 +42,7 @@
     "spc" : {
       "properties": {
         "chart_type": {
-          "type" : {
-            "enumeration" : [
-              { "displayName" : "run - Run Chart",                                   "value" : "run" },
-              { "displayName" : "i - Individual Measurements",                       "value" : "i" },
-              { "displayName" : "i_m - Individual Measurements: Median centerline",  "value" : "i_m" },
-              { "displayName" : "i_mm - Individual Measurements: Median centerline, Median MR Limits",  "value" : "i_mm" },
-              { "displayName" : "mr - Moving Range of Individual Measurements",       "value" : "mr" },
-              { "displayName" : "p - Proportions",                                    "value" : "p" },
-              { "displayName" : "p prime - Proportions: Large-Sample Corrected",      "value" : "pp" },
-              { "displayName" : "u - Rates",                                          "value" : "u" },
-              { "displayName" : "u prime - Rates: Large-Sample Correction",           "value" : "up" },
-              { "displayName" : "c - Counts",                                         "value" : "c" },
-              { "displayName" : "xbar - Sample Means",                                "value" : "xbar" },
-              { "displayName" : "s - Sample SDs",                                     "value" : "s" },
-              { "displayName" : "g - Number of Non-Events Between Events",            "value" : "g" },
-              { "displayName" : "t - Time Between Events",                            "value" : "t" }
-            ]
-          }
+          "type" : { "enumeration" : [ ] }
         },
         "outliers_in_limits": {
           "type": { "bool": true }
@@ -71,13 +54,7 @@
           "type": { "numeric": true }
         },
         "perc_labels": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Automatic",  "value" : "Automatic" },
-              { "displayName" : "Yes",        "value" : "Yes" },
-              { "displayName" : "No",         "value" : "No" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "split_on_click": {
           "type" : { "bool" : true }
@@ -86,12 +63,7 @@
           "type": { "numeric": true }
         },
         "subset_points_from": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Start", "value" : "Start" },
-              { "displayName" : "End",   "value" : "End" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "ll_truncate": {
           "type": { "numeric": true }
@@ -122,34 +94,17 @@
     "outliers" : {
       "properties": {
         "process_flag_type": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Both",                 "value" : "both" },
-              { "displayName" : "Improvement (Imp.)",   "value" : "improvement" },
-              { "displayName" : "Deterioration (Det.)", "value" : "deterioration" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "improvement_direction": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Increase", "value" : "increase" },
-              { "displayName" : "Neutral",  "value" : "neutral" },
-              { "displayName" : "Decrease", "value" : "decrease" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "astronomical": {
           "type" : { "bool" : true }
         },
         "astronomical_limit": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "1 Sigma", "value" : "1 Sigma" },
-              { "displayName" : "2 Sigma", "value" : "2 Sigma" },
-              { "displayName" : "3 Sigma", "value" : "3 Sigma" },
-              { "displayName" : "Specification", "value" : "Specification" }
-            ]
+            "enumeration" : [ ]
           }
         },
         "ast_colour_improvement":{
@@ -208,12 +163,7 @@
         },
         "two_in_three_limit": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "1 Sigma", "value" : "1 Sigma" },
-              { "displayName" : "2 Sigma", "value" : "2 Sigma" },
-              { "displayName" : "3 Sigma", "value" : "3 Sigma" },
-              { "displayName" : "Specification", "value" : "Specification" }
-            ]
+            "enumeration" : [ ]
           }
         },
         "twointhree_colour_improvement":{
@@ -240,12 +190,7 @@
         },
         "variation_icons_locations": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "Top Right",    "value" : "Top Right" },
-              { "displayName" : "Bottom Right", "value" : "Bottom Right" },
-              { "displayName" : "Top Left",     "value" : "Top Left" },
-              { "displayName" : "Bottom Left",  "value" : "Bottom Left" }
-            ]
+            "enumeration" : [ ]
           }
         },
         "variation_icons_scaling":{
@@ -256,12 +201,7 @@
         },
         "assurance_icons_locations": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "Top Right",    "value" : "Top Right" },
-              { "displayName" : "Bottom Right", "value" : "Bottom Right" },
-              { "displayName" : "Top Left",     "value" : "Top Left" },
-              { "displayName" : "Bottom Left",  "value" : "Bottom Left" }
-            ]
+            "enumeration" : [ ]
           }
         },
         "assurance_icons_scaling":{
@@ -291,17 +231,7 @@
     "scatter": {
       "properties": {
         "shape": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Circle", "value" : "Circle" },
-              { "displayName" : "Cross", "value" : "Cross" },
-              { "displayName" : "Diamond", "value" : "Diamond" },
-              { "displayName" : "Square", "value" : "Square" },
-              { "displayName" : "Star", "value" : "Star" },
-              { "displayName" : "Triangle", "value" : "Triangle" },
-              { "displayName" : "Wye", "value" : "Wye" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "size": {
           "type": { "numeric": true }
@@ -330,49 +260,21 @@
       "properties": {
         "date_format_locale": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "en-GB", "value" : "en-GB" },
-              { "displayName" : "en-US", "value" : "en-US" }
-            ]
-          }
+            "enumeration" : [ ] }
         },
         "date_format_day": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "DD",          "value" : "DD" },
-              { "displayName" : "Thurs DD",    "value" : "Thurs DD" },
-              { "displayName" : "Thursday DD", "value" : "Thursday DD"  },
-              { "displayName" : "(blank)",    "value" : "(blank)" }
-            ]
-          }
+            "enumeration" : [ ] }
         },
         "date_format_month": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "MM",    "value" : "MM" },
-              { "displayName" : "Mon",   "value" : "Mon" },
-              { "displayName" : "Month", "value" : "Month" },
-              { "displayName" : "(blank)",    "value" : "(blank)" }
-            ]
-          }
+            "enumeration" : [ ] }
         },
         "date_format_year": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "YYYY", "value" : "YYYY" },
-              { "displayName" : "YY",   "value" : "YY" },
-              { "displayName" : "(blank)",    "value" : "(blank)" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "date_format_delim": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "/", "value" : "/" },
-              { "displayName" : "-", "value" : "-" },
-              { "displayName" : " ", "value" : " " }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         }
       }
     },
@@ -421,67 +323,25 @@
           "type": { "numeric": true }
         },
         "type_99": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "type_95": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "type_68": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "type_main": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "type_target": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "type_alt_target": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "type_specification": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "colour_99":{
           "type": { "fill": { "solid": { "color": true } } }
@@ -685,75 +545,25 @@
           "type": { "numeric": true }
         },
         "plot_label_position_99": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Outside",    "value" : "outside" },
-              { "displayName" : "Inside",     "value" : "inside" },
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_position_95": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Outside",    "value" : "outside" },
-              { "displayName" : "Inside",     "value" : "inside" },
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_position_68": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Outside",    "value" : "outside" },
-              { "displayName" : "Inside",     "value" : "inside" },
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_position_main": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_position_target": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_position_alt_target": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_position_specification": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Outside",    "value" : "outside" },
-              { "displayName" : "Inside",     "value" : "inside" },
-              { "displayName" : "Above",      "value" : "above" },
-              { "displayName" : "Below",      "value" : "below" },
-              { "displayName" : "Beside",     "value" : "beside" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "plot_label_vpad_99": {
           "type": { "numeric": true }
@@ -1011,36 +821,15 @@
           "type": { "numeric": true }
         },
         "table_variation_filter": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "All",                           "value" : "all" },
-              { "displayName" : "Common Cause",                  "value" : "common" },
-              { "displayName" : "Special Cause - Any",           "value" : "special" },
-              { "displayName" : "Special Cause - Improvement",   "value" : "improvement" },
-              { "displayName" : "Special Cause - Deterioration", "value" : "deterioration" },
-              { "displayName" : "Special Cause - Neutral",       "value" : "neutral" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_assurance_filter": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "All",                           "value" : "all" },
-              { "displayName" : "Consistent - Any",               "value" : "any" },
-              { "displayName" : "Consistent Pass",               "value" : "pass" },
-              { "displayName" : "Consistent Fail",               "value" : "fail" },
-              { "displayName" : "Inconsistent",                  "value" : "inconsistent" }
-            ]
+            "enumeration" : [ ]
           }
         },
         "table_text_overflow": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Ellipsis", "value" : "ellipsis" },
-              { "displayName" : "Truncate",     "value" : "clip" },
-              { "displayName" : "None",     "value" : "none" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_outer_border_colour":{
           "type": { "fill": { "solid": { "color": true } } }
@@ -1049,18 +838,7 @@
           "type": { "numeric": true }
         },
         "table_outer_border_style": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "solid" },
-              { "displayName" : "Dashed", "value" : "dashed" },
-              { "displayName" : "Dotted", "value" : "dotted" },
-              { "displayName" : "Double", "value" : "double" },
-              { "displayName" : "Groove", "value" : "groove" },
-              { "displayName" : "Ridge",  "value" : "ridge" },
-              { "displayName" : "Inset",  "value" : "inset" },
-              { "displayName" : "Outset", "value" : "outset" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_outer_border_top": {
           "type": { "bool": true }
@@ -1087,22 +865,10 @@
           "type": { "fill": { "solid": { "color": true } } }
         },
         "table_header_font_weight": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Normal", "value" : "normal" },
-              { "displayName" : "Bold",   "value" : "bold" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_header_text_transform": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Uppercase",   "value" : "uppercase" },
-              { "displayName" : "Lowercase",   "value" : "lowercase" },
-              { "displayName" : "Capitalise",  "value" : "capitalize" },
-              { "displayName" : "None",        "value" : "none" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_header_text_align": {
           "type": { "formatting": { "alignment": true } }
@@ -1117,18 +883,7 @@
           "type": { "numeric": true }
         },
         "table_header_border_style": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "solid" },
-              { "displayName" : "Dashed", "value" : "dashed" },
-              { "displayName" : "Dotted", "value" : "dotted" },
-              { "displayName" : "Double", "value" : "double" },
-              { "displayName" : "Groove", "value" : "groove" },
-              { "displayName" : "Ridge",  "value" : "ridge" },
-              { "displayName" : "Inset",  "value" : "inset" },
-              { "displayName" : "Outset", "value" : "outset" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_header_border_bottom": {
           "type": { "bool": true }
@@ -1149,22 +904,10 @@
           "type": { "fill": { "solid": { "color": true } } }
         },
         "table_body_font_weight": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Normal", "value" : "normal" },
-              { "displayName" : "Bold",   "value" : "bold" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_body_text_transform": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Uppercase",   "value" : "uppercase" },
-              { "displayName" : "Lowercase",   "value" : "lowercase" },
-              { "displayName" : "Capitalise",  "value" : "capitalize" },
-              { "displayName" : "None",        "value" : "none" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "table_body_text_align": {
           "type": { "formatting": { "alignment": true } }
@@ -1180,16 +923,7 @@
         },
         "table_body_border_style": {
           "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "solid" },
-              { "displayName" : "Dashed", "value" : "dashed" },
-              { "displayName" : "Dotted", "value" : "dotted" },
-              { "displayName" : "Double", "value" : "double" },
-              { "displayName" : "Groove", "value" : "groove" },
-              { "displayName" : "Ridge",  "value" : "ridge" },
-              { "displayName" : "Inset",  "value" : "inset" },
-              { "displayName" : "Outset", "value" : "outset" }
-            ]
+            "enumeration" : [ ]
           }
         },
         "table_body_border_top_bottom": {
@@ -1215,12 +949,7 @@
           "type" : { "bool" : true }
         },
         "label_position": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Top",    "value" : "top" },
-              { "displayName" : "Bottom", "value" : "bottom" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "label_y_offset": {
           "type": { "numeric": true }
@@ -1247,13 +976,7 @@
           "type": { "numeric": true }
         },
         "label_line_type": {
-          "type": {
-            "enumeration" : [
-              { "displayName" : "Solid",  "value" : "10 0" },
-              { "displayName" : "Dashed", "value" : "10 10" },
-              { "displayName" : "Dotted", "value" : "2 5" }
-            ]
-          }
+          "type": { "enumeration" : [ ] }
         },
         "label_line_max_length": {
           "type": { "numeric": true }

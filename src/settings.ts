@@ -124,7 +124,23 @@ const settingsModel = {
           displayName: "Chart Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "i",
-          valid: ["run", "i", "i_m", "i_mm", "mr", "p", "pp", "u", "up", "c", "xbar", "s", "g", "t"]
+          valid: ["run", "i", "i_m", "i_mm", "mr", "p", "pp", "u", "up", "c", "xbar", "s", "g", "t"],
+          items: [
+            { displayName : "run - Run Chart",                                   value : "run" },
+            { displayName : "i - Individual Measurements",                       value : "i" },
+            { displayName : "i_m - Individual Measurements: Median centerline",  value : "i_m" },
+            { displayName : "i_mm - Individual Measurements: Median centerline, Median MR Limits",  value : "i_mm" },
+            { displayName : "mr - Moving Range of Individual Measurements",       value : "mr" },
+            { displayName : "p - Proportions",                                    value : "p" },
+            { displayName : "p prime - Proportions: Large-Sample Corrected",      value : "pp" },
+            { displayName : "u - Rates",                                          value : "u" },
+            { displayName : "u prime - Rates: Large-Sample Correction",           value : "up" },
+            { displayName : "c - Counts",                                         value : "c" },
+            { displayName : "xbar - Sample Means",                                value : "xbar" },
+            { displayName : "s - Sample SDs",                                     value : "s" },
+            { displayName : "g - Number of Non-Events Between Events",            value : "g" },
+            { displayName : "t - Time Between Events",                            value : "t" }
+          ]
         },
         outliers_in_limits: {
           displayName: "Keep Outliers in Limit Calcs.",
@@ -147,7 +163,12 @@ const settingsModel = {
           displayName: "Report as percentage",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "Automatic",
-          valid: ["Automatic", "Yes", "No"]
+          valid: ["Automatic", "Yes", "No"],
+          items: [
+            { displayName : "Automatic",  value : "Automatic" },
+            { displayName : "Yes",        value : "Yes" },
+            { displayName : "No",         value : "No" }
+          ]
         },
         split_on_click: {
           displayName: "Split Limits on Click",
@@ -163,7 +184,11 @@ const settingsModel = {
           displayName: "Subset Points From",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "Start",
-          valid: ["Start", "End"]
+          valid: ["Start", "End"],
+          items: [
+            { displayName : "Start", value : "Start" },
+            { displayName : "End",   value : "End" }
+          ]
         },
         ttip_show_numerator: {
           displayName: "Show Numerator in Tooltip",
@@ -217,13 +242,23 @@ const settingsModel = {
           displayName: "Type of Change to Flag",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "both",
-          valid: ["both", "improvement", "deterioration"]
+          valid: ["both", "improvement", "deterioration"],
+          items: [
+            { displayName : "Both",                 value : "both" },
+            { displayName : "Improvement (Imp.)",   value : "improvement" },
+            { displayName : "Deterioration (Det.)", value : "deterioration" }
+          ]
         },
         improvement_direction: {
           displayName: "Improvement Direction",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "increase",
-          valid: ["increase", "neutral", "decrease"]
+          valid: ["increase", "neutral", "decrease"],
+          items: [
+            { displayName : "Increase", value : "increase" },
+            { displayName : "Neutral",  value : "neutral" },
+            { displayName : "Decrease", value : "decrease" }
+          ]
         }
       },
       "Astronomical Points" : {
@@ -236,7 +271,13 @@ const settingsModel = {
           displayName: "Limit for Astronomical Points",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "3 Sigma",
-          valid: ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"]
+          valid: ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"],
+          items: [
+            { displayName : "1 Sigma", value : "1 Sigma" },
+            { displayName : "2 Sigma", value : "2 Sigma" },
+            { displayName : "3 Sigma", value : "3 Sigma" },
+            { displayName : "Specification", value : "Specification" }
+          ]
         },
         ast_colour_improvement: {
           displayName: "Imp. Ast. Colour",
@@ -340,7 +381,13 @@ const settingsModel = {
           displayName: "Warning Limit for Two-in-Three",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "2 Sigma",
-          valid: ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"]
+          valid: ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"],
+          items: [
+            { displayName : "1 Sigma", value : "1 Sigma" },
+            { displayName : "2 Sigma", value : "2 Sigma" },
+            { displayName : "3 Sigma", value : "3 Sigma" },
+            { displayName : "Specification", value : "Specification" }
+          ]
         },
         twointhree_colour_improvement: {
           displayName: "Imp. Two-in-Three Colour",
@@ -384,7 +431,13 @@ const settingsModel = {
           displayName: "Variation Icon Locations",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "Top Right",
-          valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"]
+          valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"],
+          items: [
+            { displayName : "Top Right",    value : "Top Right" },
+            { displayName : "Bottom Right", value : "Bottom Right" },
+            { displayName : "Top Left",     value : "Top Left" },
+            { displayName : "Bottom Left",  value : "Bottom Left" }
+          ]
         },
         variation_icons_scaling: {
           displayName: "Scale Variation Icon Size",
@@ -401,7 +454,13 @@ const settingsModel = {
           displayName: "Assurance Icon Locations",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "Top Right",
-          valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"]
+          valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"],
+          items: [
+            { displayName : "Top Right",    value : "Top Right" },
+            { displayName : "Bottom Right", value : "Bottom Right" },
+            { displayName : "Top Left",     value : "Top Left" },
+            { displayName : "Bottom Left",  value : "Bottom Left" }
+          ]
         },
         assurance_icons_scaling: {
           displayName: "Scale Assurance Icon Size",
@@ -421,7 +480,16 @@ const settingsModel = {
           displayName: "Shape",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "Circle",
-          valid: ["Circle", "Cross", "Diamond", "Square", "Star", "Triangle", "Wye"]
+          valid: ["Circle", "Cross", "Diamond", "Square", "Star", "Triangle", "Wye"],
+          items: [
+            { displayName : "Circle", value : "Circle" },
+            { displayName : "Cross", value : "Cross" },
+            { displayName : "Diamond", value : "Diamond" },
+            { displayName : "Square", value : "Square" },
+            { displayName : "Star", value : "Star" },
+            { displayName : "Triangle", value : "Triangle" },
+            { displayName : "Wye", value : "Wye" }
+          ]
         },
         size: {
           displayName: "Size",
@@ -486,7 +554,12 @@ const settingsModel = {
           displayName: "Main Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "10 0",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_main: {
           displayName: "Main Line Colour",
@@ -530,7 +603,12 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["above", "below", "beside"]
+          valid: ["above", "below", "beside"],
+          items: [
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_main: {
           displayName: "Value Vertical Padding",
@@ -581,7 +659,12 @@ const settingsModel = {
           displayName: "Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "10 0",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_target: {
           displayName: "Line Colour",
@@ -635,7 +718,12 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["above", "below", "beside"]
+          valid: ["above", "below", "beside"],
+          items: [
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_target: {
           displayName: "Value Vertical Padding",
@@ -696,7 +784,12 @@ const settingsModel = {
           displayName: "Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "10 0",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_alt_target: {
           displayName: "Line Colour",
@@ -750,7 +843,12 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["above", "below", "beside"]
+          valid: ["above", "below", "beside"],
+          items: [
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_alt_target: {
           displayName: "Value Vertical Padding",
@@ -801,7 +899,12 @@ const settingsModel = {
           displayName: "Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "2 5",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_68: {
           displayName: "Line Colour",
@@ -865,7 +968,14 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"]
+          valid: ["outside", "inside", "above", "below", "beside"],
+          items: [
+            { displayName : "Outside",    value : "outside" },
+            { displayName : "Inside",     value : "inside" },
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_68: {
           displayName: "Value Vertical Padding",
@@ -916,7 +1026,12 @@ const settingsModel = {
           displayName: "Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "2 5",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_95: {
           displayName: "Line Colour",
@@ -980,7 +1095,14 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"]
+          valid: ["outside", "inside", "above", "below", "beside"],
+          items: [
+            { displayName : "Outside",    value : "outside" },
+            { displayName : "Inside",     value : "inside" },
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_95: {
           displayName: "Value Vertical Padding",
@@ -1031,7 +1153,12 @@ const settingsModel = {
           displayName: "Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "10 10",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_99: {
           displayName: "Line Colour",
@@ -1095,7 +1222,14 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"]
+          valid: ["outside", "inside", "above", "below", "beside"],
+          items: [
+            { displayName : "Outside",    value : "outside" },
+            { displayName : "Inside",     value : "inside" },
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_99: {
           displayName: "Value Vertical Padding",
@@ -1161,7 +1295,12 @@ const settingsModel = {
           displayName: "Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "10 10",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         colour_specification: {
           displayName: "Line Colour",
@@ -1225,7 +1364,14 @@ const settingsModel = {
           displayName: "Position of Value on Line(s)",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"]
+          valid: ["outside", "inside", "above", "below", "beside"],
+          items: [
+            { displayName : "Outside",    value : "outside" },
+            { displayName : "Inside",     value : "inside" },
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
         },
         plot_label_vpad_specification: {
           displayName: "Value Vertical Padding",
@@ -1448,31 +1594,57 @@ const settingsModel = {
           displayName: "Day Format",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "DD",
-          valid: ["DD", "Thurs DD", "Thursday DD", "(blank)"]
+          valid: ["DD", "Thurs DD", "Thursday DD", "(blank)"],
+          items: [
+            { displayName : "DD",          value : "DD" },
+            { displayName : "Thurs DD",    value : "Thurs DD" },
+            { displayName : "Thursday DD", value : "Thursday DD"  },
+            { displayName : "(blank)",    value : "(blank)" }
+          ]
         },
         date_format_month: {
           displayName: "Month Format",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "MM",
-          valid: ["MM", "Mon", "Month", "(blank)"]
+          valid: ["MM", "Mon", "Month", "(blank)"],
+          items: [
+            { displayName : "MM",    value : "MM" },
+            { displayName : "Mon",   value : "Mon" },
+            { displayName : "Month", value : "Month" },
+            { displayName : "(blank)",    value : "(blank)" }
+          ]
         },
         date_format_year: {
           displayName: "Year Format",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "YYYY",
-          valid: ["YYYY", "YY", "(blank)"]
+          valid: ["YYYY", "YY", "(blank)"],
+          items: [
+              { displayName : "YYYY", value : "YYYY" },
+              { displayName : "YY",   value : "YY" },
+              { displayName : "(blank)",    value : "(blank)" }
+            ]
         },
         date_format_delim: {
           displayName: "Delimiter",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "/",
-          valid: ["/", "-", " "]
+          valid: ["/", "-", " "],
+          items: [
+            { displayName : "/", value : "/" },
+            { displayName : "-", value : "-" },
+            { displayName : " ", value : " " }
+          ]
         },
         date_format_locale: {
           displayName: "Locale",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "en-GB",
-          valid: ["en-GB", "en-US"]
+          valid: ["en-GB", "en-US"],
+          items: [
+            { displayName : "en-GB", value : "en-GB" },
+            { displayName : "en-US", value : "en-US" }
+          ]
         }
       }
     }
@@ -1491,19 +1663,39 @@ const settingsModel = {
           displayName: "Filter by Variation Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "all",
-          valid: ["all", "common", "special", "improvement", "deterioration", "neutral"]
+          valid: ["all", "common", "special", "improvement", "deterioration", "neutral"],
+          items: [
+            { displayName : "All",                           value : "all" },
+            { displayName : "Common Cause",                  value : "common" },
+            { displayName : "Special Cause - Any",           value : "special" },
+            { displayName : "Special Cause - Improvement",   value : "improvement" },
+            { displayName : "Special Cause - Deterioration", value : "deterioration" },
+            { displayName : "Special Cause - Neutral",       value : "neutral" }
+          ]
         },
         table_assurance_filter: {
           displayName: "Filter by Assurance Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "all",
-          valid: ["all", "any", "pass", "fail", "inconsistent"]
+          valid: ["all", "any", "pass", "fail", "inconsistent"],
+          items: [
+            { displayName : "All",                           value : "all" },
+            { displayName : "Consistent - Any",               value : "any" },
+            { displayName : "Consistent Pass",               value : "pass" },
+            { displayName : "Consistent Fail",               value : "fail" },
+            { displayName : "Inconsistent",                  value : "inconsistent" }
+          ]
         },
         table_text_overflow: {
           displayName: "Text Overflow Handling",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: textOptions.text_overflow.default,
-          valid: textOptions.text_overflow.valid
+          valid: textOptions.text_overflow.valid,
+          items: [
+            { displayName : "Ellipsis", value : "ellipsis" },
+            { displayName : "Truncate",     value : "clip" },
+            { displayName : "None",     value : "none" }
+          ]
         },
         table_opacity: {
           displayName: "Default Opacity",
@@ -1527,7 +1719,17 @@ const settingsModel = {
           displayName: "Outer Border Style",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: borderOptions.style.default,
-          valid: borderOptions.style.valid
+          valid: borderOptions.style.valid,
+          items: [
+            { displayName : "Solid",  value : "solid" },
+            { displayName : "Dashed", value : "dashed" },
+            { displayName : "Dotted", value : "dotted" },
+            { displayName : "Double", value : "double" },
+            { displayName : "Groove", value : "groove" },
+            { displayName : "Ridge",  value : "ridge" },
+            { displayName : "Inset",  value : "inset" },
+            { displayName : "Outset", value : "outset" }
+          ]
         },
         table_outer_border_width: {
           displayName: "Outer Border Width",
@@ -1584,13 +1786,23 @@ const settingsModel = {
           displayName: "Header Font Weight",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: textOptions.weight.default,
-          valid: textOptions.weight.valid
+          valid: textOptions.weight.valid,
+          items: [
+            { displayName : "Normal", value : "normal" },
+            { displayName : "Bold",   value : "bold" }
+          ]
         },
         table_header_text_transform: {
           displayName: "Header Text Transform",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: textOptions.text_transform.default,
-          valid: textOptions.text_transform.valid
+          valid: textOptions.text_transform.valid,
+          items: [
+            { displayName : "Uppercase",   value : "uppercase" },
+            { displayName : "Lowercase",   value : "lowercase" },
+            { displayName : "Capitalise",  value : "capitalize" },
+            { displayName : "None",        value : "none" }
+          ]
         },
         table_header_text_padding: {
           displayName: "Padding Around Text",
@@ -1612,7 +1824,17 @@ const settingsModel = {
           displayName: "Header Border Style",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: borderOptions.style.default,
-          valid: borderOptions.style.valid
+          valid: borderOptions.style.valid,
+          items: [
+            { displayName : "Solid",  value : "solid" },
+            { displayName : "Dashed", value : "dashed" },
+            { displayName : "Dotted", value : "dotted" },
+            { displayName : "Double", value : "double" },
+            { displayName : "Groove", value : "groove" },
+            { displayName : "Ridge",  value : "ridge" },
+            { displayName : "Inset",  value : "inset" },
+            { displayName : "Outset", value : "outset" }
+          ]
         },
         table_header_border_width: {
           displayName: "Header Border Width",
@@ -1659,13 +1881,23 @@ const settingsModel = {
           displayName: "Font Weight",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: textOptions.weight.default,
-          valid: textOptions.weight.valid
+          valid: textOptions.weight.valid,
+          items: [
+            { displayName : "Normal", value : "normal" },
+            { displayName : "Bold",   value : "bold" }
+          ]
         },
         table_body_text_transform: {
           displayName: "Text Transform",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: textOptions.text_transform.default,
-          valid: textOptions.text_transform.valid
+          valid: textOptions.text_transform.valid,
+          items: [
+            { displayName : "Uppercase",   value : "uppercase" },
+            { displayName : "Lowercase",   value : "lowercase" },
+            { displayName : "Capitalise",  value : "capitalize" },
+            { displayName : "None",        value : "none" }
+          ]
         },
         table_body_text_padding: {
           displayName: "Padding Around Text",
@@ -1687,7 +1919,17 @@ const settingsModel = {
           displayName: "Body Border Style",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: borderOptions.style.default,
-          valid: borderOptions.style.valid
+          valid: borderOptions.style.valid,
+          items: [
+            { displayName : "Solid",  value : "solid" },
+            { displayName : "Dashed", value : "dashed" },
+            { displayName : "Dotted", value : "dotted" },
+            { displayName : "Double", value : "double" },
+            { displayName : "Groove", value : "groove" },
+            { displayName : "Ridge",  value : "ridge" },
+            { displayName : "Inset",  value : "inset" },
+            { displayName : "Outset", value : "outset" }
+          ]
         },
         table_body_border_width: {
           displayName: "Body Border Width",
@@ -1740,7 +1982,11 @@ const settingsModel = {
           displayName: "Label Position",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "top",
-          valid: ["top", "bottom"]
+          valid: ["top", "bottom"],
+          items: [
+            { displayName : "Top",    value : "top" },
+            { displayName : "Bottom", value : "bottom" }
+          ]
         },
         label_y_offset: {
           displayName: "Label Offset from Top/Bottom (px)",
@@ -1790,7 +2036,12 @@ const settingsModel = {
           displayName: "Connecting Line Type",
           type: powerbi.visuals.FormattingComponent.Dropdown,
           default: "10 0",
-          valid: ["10 0", "10 10", "2 5"]
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
         },
         label_line_max_length: {
           displayName: "Max Connecting Line Length (px)",

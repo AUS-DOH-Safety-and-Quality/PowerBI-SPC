@@ -1,6 +1,6 @@
 import * as powerbi from "powerbi-visuals-api"
 type DataView = powerbi.default.DataView;
-import { extractConditionalFormatting } from "../Functions";
+import { extractConditionalFormatting, isNullOrUndefined } from "../Functions";
 import { default as settingsModel, defaultSettings, type defaultSettingsType,
   type defaultSettingsKeys, type defaultSettingsNestedKeys
  } from "../settings";
@@ -161,7 +161,8 @@ export default class settingsClass {
                   selector: { data: [{ dataViewWildcard: { matchingOption: 0 } }] },
                   instanceKind: (typeof this.settings[curr_card_name][setting]) != "boolean" ? powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule : null
                 },
-                value: setting.includes("colour") ? { value: this.settings[curr_card_name][setting] } : this.settings[curr_card_name][setting]
+                value: this.valueLookup(curr_card_name, card_group, setting),
+                items: settingsModel[curr_card_name].settingsGroups[card_group][setting]?.items ?? undefined
               }
             }
           };
@@ -176,6 +177,18 @@ export default class settingsClass {
     }
 
     return formattingModel;
+  }
+
+  valueLookup(settingCardName: string, settingGroupName: string, settingName: string) {
+    if (settingName.includes("colour")) {
+      return { value: this.settings[settingCardName][settingName] }
+    }
+    if (!isNullOrUndefined(settingsModel[settingCardName].settingsGroups[settingGroupName][settingName]?.items)) {
+      const allItems: powerbi.default.IEnumMember[] = settingsModel[settingCardName].settingsGroups[settingGroupName][settingName].items;
+      const currValue: string = this.settings[settingCardName][settingName];
+      return allItems.find(item => item.value === currValue);
+    }
+    return this.settings[settingCardName][settingName];
   }
 
   constructor() {
