@@ -25,7 +25,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   let needs_sd: boolean;
   let chart_type: string;
 
-  if (inputSettingsClass?.derivedSettingsGrouped) {
+  if (inputSettingsClass?.derivedSettingsGrouped.length > 0) {
     inputSettingsClass?.derivedSettingsGrouped.forEach((d) => {
       if (d.chart_type_props.needs_denominator) {
         chart_type = d.chart_type_props.name;

@@ -13,7 +13,10 @@ const enum ValidationFailTypes {
   DenominatorNegative = 6,
   DenominatorLessThanNumerator = 7,
   SDMissing = 8,
-  SDNegative = 9
+  SDNegative = 9,
+  NumeratorNaN = 10,
+  DenominatorNaN = 11,
+  SDNaN = 12
 }
 
 function validateInputDataImpl(key: string,
@@ -34,6 +37,11 @@ function validateInputDataImpl(key: string,
     rtn.type = ValidationFailTypes.NumeratorMissing;
   }
 
+  if (isNaN(numerator)) {
+    rtn.message = "Numerator is not a number";
+    rtn.type = ValidationFailTypes.NumeratorNaN;
+  }
+
   if (chart_type_props.numerator_non_negative && numerator < 0) {
     rtn.message = "Numerator negative";
     rtn.type = ValidationFailTypes.NumeratorNegative;
@@ -43,6 +51,9 @@ function validateInputDataImpl(key: string,
     if (isNullOrUndefined(denominator)) {
       rtn.message = "Denominator missing";
       rtn.type = ValidationFailTypes.DenominatorMissing;
+    } else if (isNaN(denominator)) {
+      rtn.message = "Denominator is not a number";
+      rtn.type = ValidationFailTypes.DenominatorNaN;
     } else if (denominator < 0) {
       rtn.message = "Denominator negative";
       rtn.type = ValidationFailTypes.DenominatorNegative;
@@ -56,6 +67,9 @@ function validateInputDataImpl(key: string,
     if (isNullOrUndefined(xbar_sd)) {
       rtn.message = "SD missing";
       rtn.type = ValidationFailTypes.SDMissing;
+    } else if (isNaN(xbar_sd)) {
+      rtn.message = "SD is not a number";
+      rtn.type = ValidationFailTypes.SDNaN;
     } else if (xbar_sd < 0) {
       rtn.message = "SD negative";
       rtn.type = ValidationFailTypes.SDNegative;
@@ -107,12 +121,20 @@ export default function validateInputData(keys: string[],
         validationRtn.error = "All numerators are missing or null!"
         break;
       }
+      case ValidationFailTypes.NumeratorNaN: {
+        validationRtn.error = "All numerators are not numbers!"
+        break;
+      }
       case ValidationFailTypes.NumeratorNegative: {
         validationRtn.error = "All numerators are negative!"
         break;
       }
       case ValidationFailTypes.DenominatorMissing: {
         validationRtn.error = "All denominators missing or null!"
+        break;
+      }
+      case ValidationFailTypes.DenominatorNaN: {
+        validationRtn.error = "All denominators are not numbers!"
         break;
       }
       case ValidationFailTypes.DenominatorNegative: {
@@ -125,6 +147,10 @@ export default function validateInputData(keys: string[],
       }
       case ValidationFailTypes.SDMissing: {
         validationRtn.error = "All SDs missing or null!";
+        break;
+      }
+      case ValidationFailTypes.SDNaN: {
+        validationRtn.error = "All SDs are not numbers!";
         break;
       }
       case ValidationFailTypes.SDNegative: {
