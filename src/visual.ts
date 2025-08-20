@@ -1,8 +1,6 @@
 "use strict";
 
 import type powerbi from "powerbi-visuals-api";
-type EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-type VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
@@ -10,7 +8,7 @@ import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
           drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
-import { defaultSettingsKeys, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
+import { viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
 import { getAesthetic, identitySelected } from "./Functions";
 
@@ -193,8 +191,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     }
   }
 
-  // Function to render the properties specified in capabilities.json to the properties pane
-  public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumerationObject {
-    return this.viewModel.inputSettings.createSettingsEntry(options.objectName as defaultSettingsKeys);
+  public getFormattingModel(): powerbi.visuals.FormattingModel {
+    return this.viewModel.inputSettings.getFormattingModel();
   }
 }

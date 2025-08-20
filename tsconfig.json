@@ -37,7 +37,6 @@
             "./src/Functions/index.ts",
             "./src/Limit Calculations/index.ts",
             "./src/Outlier Flagging/index.ts",
-            "./src/defaultSettings.ts",
             "./src/validSettingValues.ts",
             "./src/visual.ts"
         ],
