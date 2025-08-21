@@ -3,11 +3,9 @@ import powerbi from "powerbi-visuals-api";
 import { ChartBuilder } from "./visualBuilder";
 import { ChartDataBuilder } from "./visualData";
 
-import DataView = powerbi.DataView;
-
 describe("BarChart", () => {
   let visualBuilder: ChartBuilder;
-  let dataView: DataView;
+  let dataView: powerbi.DataView;
   let defaultDataViewBuilder: ChartDataBuilder;
 
   beforeEach(() => {
@@ -17,8 +15,8 @@ describe("BarChart", () => {
   });
 
   it("root DOM element is created", () => {
-    visualBuilder.updateRenderTimeout(dataView, () => {
-       expect(document.body.contains(visualBuilder.mainElement)).toBeTruthy();
-    });
+    visualBuilder.update(dataView);
+    const visualClassElement = document.body.querySelector('.visual');
+    expect(visualClassElement).toBeTruthy();
   });
 });
