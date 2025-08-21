@@ -15,6 +15,7 @@ module.exports = (config) => {
         mode: "development",
         browserNoActivityTimeout: 100000,
         browsers: ["ChromeHeadless"], // or specify Chrome to use the locally installed Chrome browser
+        flags: ["--no-sandbox"],
         colors: true,
         frameworks: ["jasmine", "webpack"],
         reporters: [
