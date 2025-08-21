@@ -5,6 +5,8 @@ on:
     branches: [ main ]
     paths-ignore:
       - PowerBI-SPC-Docs/** # Don't run on docs folder
+  push:
+    branches: [unit-tests]
 
 jobs:
   build:
