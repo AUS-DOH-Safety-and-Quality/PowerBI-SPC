@@ -3,7 +3,7 @@ import powerbi from "powerbi-visuals-api";
 import { ChartBuilder } from "./visualBuilder";
 import { ChartDataBuilder } from "./visualData";
 
-describe("BarChart", () => {
+describe("Chart", () => {
   let visualBuilder: ChartBuilder;
   let dataView: powerbi.DataView;
   let defaultDataViewBuilder: ChartDataBuilder;
