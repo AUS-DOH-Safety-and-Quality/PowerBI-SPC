@@ -15,3 +15,6 @@ webpack.statistics*
 
 # Typedoc generated docs
 docs
+
+# Coverage reports
+coverage
