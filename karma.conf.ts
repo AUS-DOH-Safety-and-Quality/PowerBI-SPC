@@ -14,8 +14,13 @@ module.exports = (config) => {
     config.set({
         mode: "development",
         browserNoActivityTimeout: 100000,
-        browsers: ["ChromeHeadless"], // or specify Chrome to use the locally installed Chrome browser
-        flags: ["--no-sandbox"],
+        browsers: ["ChromeHeadless", "ChromeHeadlessCI"], // or specify Chrome to use the locally installed Chrome browser
+        customLaunchers: {
+            ChromeHeadlessCI: {
+                base: "ChromeHeadless",
+                flags: ["--no-sandbox"],
+            },
+        },
         colors: true,
         frameworks: ["jasmine", "webpack"],
         reporters: [
