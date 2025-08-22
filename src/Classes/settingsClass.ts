@@ -162,7 +162,8 @@ export default class settingsClass {
                   instanceKind: (typeof this.settings[curr_card_name][setting]) != "boolean" ? powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule : null
                 },
                 value: this.valueLookup(curr_card_name, card_group, setting),
-                items: settingsModel[curr_card_name].settingsGroups[card_group][setting]?.items ?? undefined
+                items: settingsModel[curr_card_name].settingsGroups[card_group][setting]?.items,
+                options: settingsModel[curr_card_name].settingsGroups[card_group][setting]?.options
               }
             }
           };
