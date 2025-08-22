@@ -28,18 +28,5 @@
     "files": [
         "./src/visual.ts"
     ],
-    "include": ["src/**/*"],
-    "typedocOptions": {
-        "entryPoints": [
-            "./src/Classes/index.ts",
-            "./src/D3 Plotting Functions/NHS Icons/index.ts",
-            "./src/D3 Plotting Functions/index.ts",
-            "./src/Functions/index.ts",
-            "./src/Limit Calculations/index.ts",
-            "./src/Outlier Flagging/index.ts",
-            "./src/validSettingValues.ts",
-            "./src/visual.ts"
-        ],
-        "readme": "./README.md"
-    }
+    "include": ["src/**/*"]
 }

@@ -9,6 +9,8 @@ name: Deploy Jekyll site to Pages
 on:
   push:
     branches: ["main"]
+    paths:
+      - PowerBI-SPC-Docs/** # Push events to docs folder
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -28,14 +30,14 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: PowerBI-SPC-Docs/docs
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-
-      - uses: actions/setup-node@v4
-      - name: Install Dependencies
-        run: npm install
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -52,12 +54,8 @@ jobs:
       - name: Build Site Page with Jekyll
         # Outputs to the './_site' directory by default
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        working-directory: '${{ github.workspace }}/PowerBI-SPC-Docs/docs'
         env:
           JEKYLL_ENV: production
-
-      - name: Build API doc
-        run: npx typedoc --out PowerBI-SPC-Docs/docs/_site/API
 
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
