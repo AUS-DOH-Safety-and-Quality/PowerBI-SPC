@@ -52,13 +52,15 @@ export default function
         // for dropdown setting using the eraser button, so just reset to default
         extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
 
-        const valid = defaultSettings[settingGroupName][settingName]?.["valid"];
+        // New API has numeric min/max under 'options' member
+        const valid = defaultSettings[settingGroupName][settingName]?.["valid"] ?? defaultSettings[settingGroupName][settingName]?.["options"];
+        const isNumericRange: boolean = !isNullOrUndefined(valid?.minValue) || !isNullOrUndefined(valid?.maxValue)
         if (valid) {
           let message: string = "";
           if (valid instanceof Array && !valid.includes(extractedSetting)) {
             message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`
-          } else if (valid.numberRange && !between(extractedSetting, valid.numberRange.min, valid.numberRange.max)) {
-            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid.numberRange.min} and ${valid.numberRange.max}`
+          } else if (isNumericRange && !between(extractedSetting, valid?.minValue?.value, valid?.maxValue?.value)) {
+            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid?.minValue?.value} and ${valid?.maxValue?.value}`
           }
           if (message !== "") {
             extractedSetting = defaultSettings[settingGroupName][settingName]["default"];
