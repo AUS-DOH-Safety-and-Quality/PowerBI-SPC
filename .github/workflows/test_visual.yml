@@ -1,6 +1,8 @@
 name: Test Build PowerBI visual
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
     paths-ignore:
@@ -17,10 +19,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Create .tmp directory
-      run: |
-        mkdir -p .tmp/test
-
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
@@ -35,13 +33,17 @@ jobs:
       run: |
         pbiviz lint
 
+    - name: Test if package can be built
+      run: |
+        pbiviz package
+
     - name: Run unit tests
       run: |
         npm run test
 
-    - name: Test if package can be built
+    - name: Build frontend bundle
       run: |
-        pbiviz package
+        npm run bundle
 
     - name: Attach built visual
       if: success()
@@ -49,3 +51,10 @@ jobs:
       with:
         name: powerbi-visual-${{ github.sha }}
         path: dist/*.pbiviz
+
+    - name: Attach built frontend bundle
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-bundle-${{ github.sha }}
+        path: .tmp/build/frontend.js
