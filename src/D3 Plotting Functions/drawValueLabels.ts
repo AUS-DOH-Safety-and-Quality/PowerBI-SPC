@@ -136,8 +136,10 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
                 grp.append("text");
                 grp.append("line");
                 grp.append("path");
-
-                grp.call(dragFun);
+                // Drag functionality not available in headless mode
+                if (!visualObj.viewModel.headless) {
+                  grp.call(dragFun);
+                }
                 return grp
               },
               (update) => {

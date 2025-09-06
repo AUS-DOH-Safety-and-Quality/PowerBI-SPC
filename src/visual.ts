@@ -54,10 +54,6 @@ export class Visual implements powerbi.extensibility.IVisual {
       // If there are any errors or failures, the update exits early sets the
       // update status to false
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
-      // If running headless just return without attempting to render
-      if (options?.["headless"]) {
-        return;
-      }
       if (!update_status.status) {
         this.resizeCanvas(options.viewport.width, options.viewport.height);
         if (this.viewModel?.inputSettings?.settings?.canvas?.show_errors ?? true) {
@@ -115,13 +111,15 @@ export class Visual implements powerbi.extensibility.IVisual {
     let yTopOverflow: number = 0;
     const svgWidth: number = this.viewModel.svgWidth;
     const svgHeight: number = this.viewModel.svgHeight;
+    const headless: boolean = this.viewModel.headless;
     this.svg.selectChildren().each(function() {
       const currentClass: string = d3.select(this).attr("class");
       if (currentClass === "yaxislabel" || currentClass === "xaxislabel") {
         return;
       }
       const boundRect = (this as SVGGraphicsElement).getBoundingClientRect();
-      const bbox = (this as SVGGraphicsElement).getBBox();
+      // getBBox not available in headless mode
+      const bbox = headless ? { x: 0 } : (this as SVGGraphicsElement).getBBox();
       xLeftOverflow = Math.min(xLeftOverflow, bbox.x);
       xRightOverflow = Math.max(xRightOverflow, boundRect.right - svgWidth);
       yBottomOverflow = Math.max(yBottomOverflow, boundRect.bottom - svgHeight);

@@ -147,6 +147,7 @@ export default class viewModelClass {
   tableColumns: { name: string; label: string; }[];
   svgWidth: number;
   svgHeight: number;
+  headless: boolean;
 
   showGrouped: boolean;
   indicatorVarNames: string[];
@@ -169,6 +170,7 @@ export default class viewModelClass {
     this.firstRun = true
     this.splitIndexes = new Array<number>();
     this.colourPalette = null;
+    this.headless = false;
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
@@ -184,6 +186,7 @@ export default class viewModelClass {
 
     this.svgWidth = options.viewport.width;
     this.svgHeight = options.viewport.height;
+    this.headless = options?.["headless"] ?? false;
 
     const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
     this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
