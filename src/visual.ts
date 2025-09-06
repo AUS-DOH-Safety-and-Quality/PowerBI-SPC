@@ -121,7 +121,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       // getBBox not available in headless mode
       const bbox = headless ? { x: 0 } : (this as SVGGraphicsElement).getBBox();
       xLeftOverflow = Math.min(xLeftOverflow, bbox.x);
-      xRightOverflow = Math.max(xRightOverflow, boundRect.right - svgWidth);
+      xRightOverflow = Math.max(xRightOverflow, boundRect.right - (svgWidth + boundRect.left - bbox.x));
       yBottomOverflow = Math.max(yBottomOverflow, boundRect.bottom - svgHeight);
       yTopOverflow = Math.min(yTopOverflow, boundRect.top);
     });
