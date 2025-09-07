@@ -9,7 +9,7 @@ export default {
   output: {
     format: 'umd',
     name: 'spc',
-    file: './.tmp/build/frontend.js'
+    file: './.tmp/build/PBISPC.js'
   },
   plugins: [
     typescript({ tsconfig: 'tsconfig.json' }),
