@@ -14,10 +14,10 @@ function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
   return datePartsRecord
 }
 
-function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType, idxs: number[]): string[] {
-  const col: powerbi.DataViewCategoryColumn[] = inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]);
+function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: defaultSettingsType, idxs: number[]): string[] {
   const n_keys: number = idxs.length;
   let ret = new Array<string>(n_keys);
+  // If only one input is passed and it is not a date type then just return the string values
   if (col.length === 1 && !(col[0].source.type?.temporal)) {
     for (let i = 0; i < n_keys; i++) {
       ret[i] = isNullOrUndefined(col[0].values[idxs[i]]) ? null : String(col[0].values[idxs[i]]);
@@ -27,8 +27,6 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   const delim: string = inputSettings.dates.date_format_delim;
   // If multiple inputs are passed but not as a 'Date Hierarchy' type then
   // just concatenate and do not attempt to format
-  // TODO(Andrew): Support formatting individual date parts
-  //  - e.g., Mixing Date Hierarchy and string inputs
   if (!(col.every(d => d.source?.type?.temporal))) {
     const blankKey: string = rep("", col.length).join(delim)
     for (let i = 0; i < n_keys; i++) {
@@ -37,7 +35,7 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
     }
     return ret;
   }
-  const inputDates = parseInputDates(col, idxs)
+  const inputDates = parseInputDates(col, idxs);
   const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
   let day_elem: string = inputSettings.dates.date_format_locale === "en-GB" ? "day" : "month";
   let month_elem: string = inputSettings.dates.date_format_locale === "en-GB" ? "month" : "day";
@@ -55,6 +53,40 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
     }
   }
   return ret
+}
+
+
+function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType, idxs: number[]): string[] {
+  const col: powerbi.DataViewCategoryColumn[] = inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]);
+
+  // To handle separately formatting multiple 'key' columns that may come from different
+  // queries (e.g., Date Hierarchy + string) we first group the columns by their query name
+  // then format each group separately before combining the results
+  // Group the columns by their query name
+  const groupedCols: { [key: string]: powerbi.DataViewCategoryColumn[] } = {};
+  col.forEach((d) => {
+    const queryName = (d.source?.queryName ?? "").split(" ")[0];
+    if (!groupedCols[queryName]) {
+      groupedCols[queryName] = [];
+    }
+    groupedCols[queryName].push(d);
+  });
+
+  // Format the keys for each query group
+  const formattedKeys: string[][] = [];
+  for (const queryName in groupedCols) {
+    const group = groupedCols[queryName];
+    const groupKeys = formatKeys(group, inputSettings, idxs);
+    formattedKeys.push(groupKeys);
+  }
+  // Combine the formatted keys from all groups
+  const combinedKeys: string[] = [];
+  const n_keys: number = idxs.length;
+  for (let i = 0; i < n_keys; i++) {
+    const keyParts = formattedKeys.map(keys => keys[i]).filter(k => k !== null && k !== undefined);
+    combinedKeys.push(keyParts.join(" "));
+  }
+  return combinedKeys;
 }
 
 function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultSettingsType, idxs: number[]): VisualTooltipDataItem[][] {
