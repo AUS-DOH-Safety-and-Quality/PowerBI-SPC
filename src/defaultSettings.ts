@@ -250,7 +250,7 @@ const defaultSettings = {
     ylimit_l: { default: <number>null },
     ylimit_u: { default: <number>null },
     limit_multiplier: { default: 1.5, valid: { numberRange: { min: 0} } },
-    ylimit_sig_figs: { default: <number>null }
+    ylimit_sig_figs: { default: <number>null, valid: { numberRange: { min: 0, max: 100 }}}
   },
   dates: {
     date_format_day: { default: "DD", valid: ["DD", "Thurs DD", "Thursday DD", "(blank)"]},
