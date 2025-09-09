@@ -17,6 +17,8 @@ const defaultSettings = {
     split_on_click: { default: false },
     num_points_subset: {default: <number>null },
     subset_points_from: { default: "Start", valid: ["Start", "End"] },
+    ttip_show_date: { default: true },
+    ttip_label_date: { default: "Date"},
     ttip_show_numerator: { default: true },
     ttip_label_numerator: { default: "Numerator"},
     ttip_show_denominator: { default: true },

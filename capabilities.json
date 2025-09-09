@@ -111,6 +111,14 @@
           "displayName": "Truncate Upper Limits at:",
           "type": { "numeric": true }
         },
+        "ttip_show_date": {
+          "displayName": "Show Date in Tooltip",
+          "type" : { "bool" : true }
+        },
+        "ttip_label_date": {
+          "displayName": "Date Tooltip Label",
+          "type": { "text": true }
+        },
         "ttip_show_numerator": {
           "displayName": "Show Numerator in Tooltip",
           "type" : { "bool" : true }
