@@ -166,6 +166,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings)
     });
     dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
+    dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
     tableSelection.style("opacity", (d: plotData) => d.aesthetics["table_opacity"]);
 
     if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
@@ -178,6 +179,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         const currentPointHighlighted: boolean = dot.highlighted;
         const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
+        d3.select(currentDotNode).style("stroke-opacity", newDotOpacity);
       })
 
       tableSelection.nodes().forEach(currentTableNode => {

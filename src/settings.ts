@@ -1510,7 +1510,8 @@ const settingsModel = {
         ylimit_sig_figs: {
           displayName: "Tick Decimal Places",
           type: powerbi.visuals.FormattingComponent.NumUpDown,
-          default:<number>null
+          default:<number>null,
+          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
         },
         ylimit_l: {
           displayName: "Lower Limit",

@@ -43,8 +43,8 @@ type datePartsType = {
 
 export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[], idxs: number[]) {
   const n_keys: number = idxs.length;
-  let inputDates: Date[] = new Array<Date>(n_keys);
-  const inputQuarters: string[] = new Array<string>(n_keys);
+  let inputDates: Date[] = [];
+  const inputQuarters: string[] = [];
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
     for (let i = 0; i < n_keys; i++) {

@@ -1001,7 +1001,7 @@
   },
   "dataViewMappings": [{
     "conditions": [{
-      "key": { "max": 5 },
+      "key": { "max": 10 },
       "numerators": { "max": 1 },
       "denominators": { "max": 1 },
       "xbar_sds": { "max": 1 },
