@@ -105,39 +105,30 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   adjustPaddingForOverflow(): void {
-    let xLeftOverflow: number = 0;
-    let xRightOverflow: number = 0;
-    let yBottomOverflow: number = 0;
-    let yTopOverflow: number = 0;
+    // Headless mode does not render to screen so do not attempt to adjust for overflow
+    if (this.viewModel.headless) {
+      return;
+    }
     const svgWidth: number = this.viewModel.svgWidth;
     const svgHeight: number = this.viewModel.svgHeight;
-    const headless: boolean = this.viewModel.headless;
-    const svgRect = this.svg.node().getBoundingClientRect();
-    this.svg.selectChildren().each(function() {
-      const currentClass: string = d3.select(this).attr("class");
-      if (currentClass === "yaxislabel" || currentClass === "xaxislabel") {
-        return;
-      }
-      const boundRect = (this as SVGGraphicsElement).getBoundingClientRect();
-      // getBBox not available in headless mode
-      const bbox = headless ? { x: 0 } : (this as SVGGraphicsElement).getBBox();
-      xLeftOverflow = Math.min(xLeftOverflow, bbox.x);
-      xRightOverflow = Math.max(xRightOverflow, boundRect.right - (svgWidth + boundRect.left - bbox.x));
-      yBottomOverflow = Math.max(yBottomOverflow, boundRect.bottom - svgRect.bottom);
-      yTopOverflow = Math.min(yTopOverflow, boundRect.top - svgRect.top);
-    });
-
-    xLeftOverflow = Math.abs(xLeftOverflow);
-    xRightOverflow = Math.abs(xRightOverflow);
-    yBottomOverflow = Math.abs(yBottomOverflow);
-    yTopOverflow = Math.abs(yTopOverflow);
-
-    // Only redraw plot if overflow occurred
-    if ((xLeftOverflow + xRightOverflow + yBottomOverflow + yTopOverflow) > 0) {
-      this.viewModel.plotProperties.xAxis.start_padding += xLeftOverflow + this.viewModel.plotProperties.xAxis.start_padding;
-      this.viewModel.plotProperties.xAxis.end_padding += xRightOverflow + this.viewModel.plotProperties.xAxis.end_padding;
-      this.viewModel.plotProperties.yAxis.start_padding += yBottomOverflow + this.viewModel.plotProperties.yAxis.start_padding;
-      this.viewModel.plotProperties.yAxis.end_padding += yTopOverflow + this.viewModel.plotProperties.yAxis.end_padding;
+    const svgBBox: DOMRect = this.svg.node().getBBox();
+    const overflowLeft: number = Math.abs(Math.min(0, svgBBox.x));
+    const overflowRight: number = Math.max(0, svgBBox.width + svgBBox.x - svgWidth);
+    const overflowTop: number = Math.abs(Math.min(0, svgBBox.y));
+    const overflowBottom: number = Math.max(0, svgBBox.height + svgBBox.y - svgHeight);
+    if (overflowLeft > 0) {
+      this.viewModel.plotProperties.xAxis.start_padding += overflowLeft + this.viewModel.plotProperties.xAxis.start_padding;
+    }
+    if (overflowRight > 0) {
+      this.viewModel.plotProperties.xAxis.end_padding += overflowRight + this.viewModel.plotProperties.xAxis.end_padding;
+    }
+    if (overflowTop > 0) {
+      this.viewModel.plotProperties.yAxis.end_padding += overflowTop + this.viewModel.plotProperties.yAxis.end_padding;
+    }
+    if (overflowBottom > 0) {
+      this.viewModel.plotProperties.yAxis.start_padding += overflowBottom + this.viewModel.plotProperties.yAxis.start_padding;
+    }
+    if (overflowLeft > 0 || overflowRight > 0 || overflowTop > 0 || overflowBottom > 0) {
       this.viewModel.plotProperties.initialiseScale(svgWidth, svgHeight);
       this.drawVisual();
     }
@@ -166,6 +157,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings)
     });
     dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
+    dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
     tableSelection.style("opacity", (d: plotData) => d.aesthetics["table_opacity"]);
 
     if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
@@ -178,6 +170,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         const currentPointHighlighted: boolean = dot.highlighted;
         const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
+        d3.select(currentDotNode).style("stroke-opacity", newDotOpacity);
       })
 
       tableSelection.nodes().forEach(currentTableNode => {
