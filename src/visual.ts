@@ -111,36 +111,26 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   adjustPaddingForOverflow(): void {
-    let xLeftOverflow: number = 0;
-    let xRightOverflow: number = 0;
-    let yBottomOverflow: number = 0;
-    let yTopOverflow: number = 0;
     const svgWidth: number = this.viewModel.svgWidth;
     const svgHeight: number = this.viewModel.svgHeight;
-    this.svg.selectChildren().each(function() {
-      const currentClass: string = d3.select(this).attr("class");
-      if (currentClass === "yaxislabel" || currentClass === "xaxislabel") {
-        return;
-      }
-      const boundRect = (this as SVGGraphicsElement).getBoundingClientRect();
-      const bbox = (this as SVGGraphicsElement).getBBox();
-      xLeftOverflow = Math.min(xLeftOverflow, bbox.x);
-      xRightOverflow = Math.max(xRightOverflow, boundRect.right - svgWidth);
-      yBottomOverflow = Math.max(yBottomOverflow, boundRect.bottom - svgHeight);
-      yTopOverflow = Math.min(yTopOverflow, boundRect.top);
-    });
-
-    xLeftOverflow = Math.abs(xLeftOverflow);
-    xRightOverflow = Math.abs(xRightOverflow);
-    yBottomOverflow = Math.abs(yBottomOverflow);
-    yTopOverflow = Math.abs(yTopOverflow);
-
-    // Only redraw plot if overflow occurred
-    if ((xLeftOverflow + xRightOverflow + yBottomOverflow + yTopOverflow) > 0) {
-      this.viewModel.plotProperties.xAxis.start_padding += xLeftOverflow + this.viewModel.plotProperties.xAxis.start_padding;
-      this.viewModel.plotProperties.xAxis.end_padding += xRightOverflow + this.viewModel.plotProperties.xAxis.end_padding;
-      this.viewModel.plotProperties.yAxis.start_padding += yBottomOverflow + this.viewModel.plotProperties.yAxis.start_padding;
-      this.viewModel.plotProperties.yAxis.end_padding += yTopOverflow + this.viewModel.plotProperties.yAxis.end_padding;
+    const svgBBox: DOMRect = this.svg.node().getBBox();
+    const overflowLeft: number = Math.abs(Math.min(0, svgBBox.x));
+    const overflowRight: number = Math.max(0, svgBBox.width + svgBBox.x - svgWidth);
+    const overflowTop: number = Math.abs(Math.min(0, svgBBox.y));
+    const overflowBottom: number = Math.max(0, svgBBox.height + svgBBox.y - svgHeight);
+    if (overflowLeft > 0) {
+      this.viewModel.plotProperties.xAxis.start_padding += overflowLeft + this.viewModel.plotProperties.xAxis.start_padding;
+    }
+    if (overflowRight > 0) {
+      this.viewModel.plotProperties.xAxis.end_padding += overflowRight + this.viewModel.plotProperties.xAxis.end_padding;
+    }
+    if (overflowTop > 0) {
+      this.viewModel.plotProperties.yAxis.end_padding += overflowTop + this.viewModel.plotProperties.yAxis.end_padding;
+    }
+    if (overflowBottom > 0) {
+      this.viewModel.plotProperties.yAxis.start_padding += overflowBottom + this.viewModel.plotProperties.yAxis.start_padding;
+    }
+    if (overflowLeft > 0 || overflowRight > 0 || overflowTop > 0 || overflowBottom > 0) {
       this.viewModel.plotProperties.initialiseScale(svgWidth, svgHeight);
       this.drawVisual();
     }
