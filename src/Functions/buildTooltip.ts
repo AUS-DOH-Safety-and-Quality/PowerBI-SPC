@@ -17,7 +17,7 @@ import { summaryTableRowData } from "../Classes/viewModelClass";
  * @returns An array of VisualTooltipDataItem objects representing the tooltip data.
  */
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
- 
+
 export default function buildTooltip(table_row: summaryTableRowData,
                                       inputTooltips: powerbi.extensibility.VisualTooltipDataItem[],
                                       inputSettings: defaultSettingsType,
@@ -28,10 +28,12 @@ export default function buildTooltip(table_row: summaryTableRowData,
   const formatValues = valueFormatter(inputSettings, derivedSettings);
 
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
-  tooltip.push({
-    displayName: "Date",
-    value: table_row.date
-  });
+  if (inputSettings.spc.ttip_show_date) {
+    tooltip.push({
+      displayName: inputSettings.spc.ttip_label_date,
+      value: table_row.date
+    });
+  }
   if (inputSettings.spc.ttip_show_value) {
     const ttip_label_value: string = inputSettings.spc.ttip_label_value;
     tooltip.push({
@@ -130,4 +132,3 @@ export default function buildTooltip(table_row: summaryTableRowData,
 
   return tooltip;
 }
- 

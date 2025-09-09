@@ -190,6 +190,16 @@ const settingsModel = {
             { displayName : "End",   value : "End" }
           ]
         },
+        ttip_show_date: {
+          displayName: "Show Date in Tooltip",
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: true
+        },
+        ttip_label_date: {
+          displayName: "Date Tooltip Label",
+          type: powerbi.visuals.FormattingComponent.TextInput,
+          default: "Date"
+        },
         ttip_show_numerator: {
           displayName: "Show Numerator in Tooltip",
           type: powerbi.visuals.FormattingComponent.ToggleSwitch,

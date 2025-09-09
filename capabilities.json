@@ -71,6 +71,12 @@
         "ul_truncate": {
           "type": { "numeric": true }
         },
+        "ttip_show_date": {
+          "type" : { "bool" : true }
+        },
+        "ttip_label_date": {
+          "type": { "text": true }
+        },
         "ttip_show_numerator": {
           "type" : { "bool" : true }
         },
