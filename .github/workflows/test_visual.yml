@@ -8,6 +8,9 @@ on:
     paths-ignore:
       - PowerBI-SPC-Docs/** # Don't run on docs folder
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -57,4 +60,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-bundle-${{ github.sha }}
-        path: .tmp/build/frontend.js
+        path: .tmp/build/PBISPC.js

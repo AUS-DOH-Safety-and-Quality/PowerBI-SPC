@@ -1,40 +1,40 @@
----
-  name: "Build release"
+name: "Build release"
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
 
-  on:
-    workflow_dispatch:
+jobs:
+  build-pbiviz-packages:
+    name: "Pre Release"
+    runs-on: "ubuntu-latest"
 
-  jobs:
-    build-pbiviz-packages:
-      name: "Pre Release"
-      runs-on: "ubuntu-latest"
+    steps:
+    - uses: actions/checkout@v5
 
-      steps:
-      - uses: actions/checkout@v5
+    - name: Use Node.js 10.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
 
-      - name: Use Node.js 10.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
+    - name: Label visuals as 'Development'
+      run: |
+        sed -i 's/"name":"PBISPC"/"name":"PBISPC_DEV"/g' pbiviz.json
+        sed -i 's/"displayName":"SPC Charts"/"displayName":"SPC Charts (Dev)"/g' pbiviz.json
+        sed -i 's/"guid":"PBISPC"/"guid":"PBISPC_DEV"/g' pbiviz.json
+      shell: bash
 
-      - name: Label visuals as 'Development'
-        run: |
-          sed -i 's/"name":"PBISPC"/"name":"PBISPC_DEV"/g' pbiviz.json
-          sed -i 's/"displayName":"SPC Charts"/"displayName":"SPC Charts (Dev)"/g' pbiviz.json
-          sed -i 's/"guid":"PBISPC"/"guid":"PBISPC_DEV"/g' pbiviz.json
-        shell: bash
+    - name: Build
+      run: |
+        npm install
+        npm install -g powerbi-visuals-tools
+        pbiviz package
 
-      - name: Build
-        run: |
-          npm install
-          npm install -g powerbi-visuals-tools
-          pbiviz package
-
-      - name : "Create Release"
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: false
-          title: "Development Build"
-          files: dist/*.pbiviz
+    - name : "Create Release"
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "Development Build"
+        files: dist/*.pbiviz
