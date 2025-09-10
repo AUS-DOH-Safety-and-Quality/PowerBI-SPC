@@ -2,11 +2,14 @@ name: Test Build PowerBI visual
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, permissions-test ]
   pull_request:
     branches: [ main ]
     paths-ignore:
       - PowerBI-SPC-Docs/** # Don't run on docs folder
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -57,4 +60,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-bundle-${{ github.sha }}
-        path: .tmp/build/frontend.js
+        path: .tmp/build/PBISPC.js
