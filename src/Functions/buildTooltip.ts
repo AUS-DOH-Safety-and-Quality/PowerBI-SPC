@@ -53,6 +53,12 @@ export default function buildTooltip(table_row: summaryTableRowData,
       value: formatValues(table_row.denominator, "integer")
     })
   }
+  if (inputSettings.lines.ttip_show_trend && inputSettings.lines.show_trend) {
+    tooltip.push({
+      displayName: inputSettings.lines.ttip_label_trend,
+      value: formatValues(table_row.trend_line, "value")
+    })
+  }
   if (inputSettings.lines.show_specification && inputSettings.lines.ttip_show_specification) {
     if (!isNullOrUndefined(table_row.speclimits_upper)) {
       tooltip.push({
