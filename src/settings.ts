@@ -1415,6 +1415,121 @@ const settingsModel = {
           type: powerbi.visuals.FormattingComponent.TextInput,
           default: ""
         }
+      },
+      "Trend": {
+        show_trend: {
+          displayName: "Show Trend",
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: false
+        },
+        width_trend: {
+          displayName: "Line Width",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: 1.5,
+          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
+        },
+        type_trend: {
+          displayName: "Line Type",
+          type: powerbi.visuals.FormattingComponent.Dropdown,
+          default: "10 0",
+          valid: ["10 0", "10 10", "2 5"],
+          items: [
+            { displayName : "Solid",  value : "10 0" },
+            { displayName : "Dashed", value : "10 10" },
+            { displayName : "Dotted", value : "2 5" }
+          ]
+        },
+        colour_trend: {
+          displayName: "Line Colour",
+          type: powerbi.visuals.FormattingComponent.ColorPicker,
+          default: defaultColours.common_cause
+        },
+        opacity_trend: {
+          displayName: "Default Opacity",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: 1,
+          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
+        },
+        opacity_unselected_trend: {
+          displayName: "Opacity if Any Selected",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: 0.2,
+          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
+        },
+        join_rebaselines_trend: {
+          displayName: "Connect Rebaselined Limits",
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: false
+        },
+        ttip_show_trend: {
+          displayName: "Show value in tooltip",
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: true
+        },
+        ttip_label_trend: {
+          displayName: "Tooltip Label",
+          type: powerbi.visuals.FormattingComponent.TextInput,
+          default: "Centerline"
+        },
+        plot_label_show_trend: {
+          displayName: "Show Value on Plot",
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: false
+        },
+        plot_label_show_all_trend: {
+          displayName: "Show Value at all Re-Baselines",
+          type: powerbi.visuals.FormattingComponent.ToggleSwitch,
+          default: false
+        },
+        plot_label_show_n_trend: {
+          displayName: "Show Value at Last N Re-Baselines",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: 1,
+          options: { minValue: { value: 1 } }
+        },
+        plot_label_position_trend: {
+          displayName: "Position of Value on Line(s)",
+          type: powerbi.visuals.FormattingComponent.Dropdown,
+          default: "beside",
+          valid: ["above", "below", "beside"],
+          items: [
+            { displayName : "Above",      value : "above" },
+            { displayName : "Below",      value : "below" },
+            { displayName : "Beside",     value : "beside" }
+          ]
+        },
+        plot_label_vpad_trend: {
+          displayName: "Value Vertical Padding",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: 0
+        },
+        plot_label_hpad_trend: {
+          displayName: "Value Horizontal Padding",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: 10
+        },
+        plot_label_font_trend: {
+          displayName: "Value Font",
+          type: powerbi.visuals.FormattingComponent.FontPicker,
+          default: textOptions.font.default,
+          valid: textOptions.font.valid
+        },
+        plot_label_size_trend: {
+          displayName: "Value Font Size",
+          type: powerbi.visuals.FormattingComponent.NumUpDown,
+          default: textOptions.size.default,
+          options: textOptions.size.options
+        },
+        plot_label_colour_trend: {
+          displayName: "Value Colour",
+          type: powerbi.visuals.FormattingComponent.ColorPicker,
+          default: defaultColours.standard
+        },
+        plot_label_prefix_trend: {
+          displayName: "Value Prefix",
+          type: powerbi.visuals.FormattingComponent.TextInput,
+          default: ""
+        }
       }
     }
   },

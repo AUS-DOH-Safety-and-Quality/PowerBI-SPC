@@ -6,7 +6,7 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, plotPropertiesClass, type derivedSettingsClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter, calculateTrendLine } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 import { lineNameMap } from "../Functions/getAesthetic";
 
@@ -38,6 +38,7 @@ export type summaryTableRowData = {
   ul99: number;
   speclimits_lower: number;
   speclimits_upper: number;
+  trend_line: number;
   astpoint: string;
   trend: string;
   shift: string;
@@ -105,6 +106,7 @@ export type controlLimitsObject = {
   alt_targets?: number[];
   speclimits_lower?: number[];
   speclimits_upper?: number[];
+  trend_line?: number[];
 };
 
 export type controlLimitsArgs = {
@@ -358,7 +360,11 @@ export default class viewModelClass {
         return data;
       })
 
-      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => limitFunction(d.limitInputArgs));
+      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => {
+        const currLimits = limitFunction(d.limitInputArgs);
+        currLimits.trend_line = calculateTrendLine(currLimits.values);
+        return currLimits;
+      });
       controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
@@ -369,6 +375,7 @@ export default class viewModelClass {
     } else {
       // Calculate control limits using user-specified type
       controlLimits = limitFunction(inputData.limitInputArgs);
+      controlLimits.trend_line = calculateTrendLine(controlLimits.values);
     }
 
     controlLimits.alt_targets = inputData.alt_targets;
@@ -528,6 +535,9 @@ export default class viewModelClass {
       this.tableColumns.push({ name: "speclimits_lower", label: "Spec. Lower" },
                              { name: "speclimits_upper", label: "Spec. Upper" });
     }
+    if (this.inputSettings.settings.lines.show_trend) {
+      this.tableColumns.push({ name: "trend_line", label: "Trend Line" });
+    }
     if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
       if (this.inputSettings.settings.lines.show_99) {
         this.tableColumns.push({ name: "ll99", label: "LL 99%" },
@@ -596,6 +606,7 @@ export default class viewModelClass {
         ul99: this.controlLimits?.ul99?.[i],
         speclimits_lower: this.controlLimits?.speclimits_lower?.[i],
         speclimits_upper: this.controlLimits?.speclimits_upper?.[i],
+        trend_line: this.controlLimits?.trend_line?.[i],
         astpoint: this.outliers.astpoint[i],
         trend: this.outliers.trend[i],
         shift: this.outliers.shift[i],
@@ -640,6 +651,9 @@ export default class viewModelClass {
     }
     if (this.inputSettings.settings.lines.show_specification) {
       labels.push("speclimits_lower", "speclimits_upper");
+    }
+    if (this.inputSettings.settings.lines.show_trend) {
+      labels.push("trend_line");
     }
     if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
       if (this.inputSettings.settings.lines.show_99) {
