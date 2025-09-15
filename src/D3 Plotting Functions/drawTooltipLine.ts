@@ -34,14 +34,17 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
 
     const boundRect = visualObj.svg.node().getBoundingClientRect();
     const xValue: number = plotProperties.xScale.invert(event.pageX - boundRect.left);
-    const xRange: number[] = plotPoints.map(d => d.x).map(d => Math.abs(d - xValue));
-    const nearestDenominator: number = d3.leastIndex(xRange,(a,b) => a-b);
-    const x_coord: number = plotProperties.xScale(plotPoints[nearestDenominator].x)
-    const y_coord: number = plotProperties.yScale(plotPoints[nearestDenominator].value)
+    const yValue: number = plotProperties.yScale.invert(event.pageY - boundRect.top);
+    const distances: number[] = plotPoints.map(d => Math.sqrt(
+      Math.pow(d.x - xValue, 2) + Math.pow(d.value - yValue, 2)
+    ));
+    const indexNearestValue: number = d3.leastIndex(distances,(a,b) => a-b);
+    const x_coord: number = plotProperties.xScale(plotPoints[indexNearestValue].x)
+    const y_coord: number = plotProperties.yScale(plotPoints[indexNearestValue].value)
 
     visualObj.host.tooltipService.show({
-      dataItems: plotPoints[nearestDenominator].tooltip,
-      identities: [plotPoints[nearestDenominator].identity],
+      dataItems: plotPoints[indexNearestValue].tooltip,
+      identities: [plotPoints[indexNearestValue].identity],
       coordinates: [x_coord, y_coord],
       isTouchEvent: false
     });
