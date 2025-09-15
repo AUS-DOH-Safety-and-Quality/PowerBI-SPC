@@ -4,6 +4,10 @@ import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
+  const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
+  const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
+  const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
+  const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
   selection
       .select(".dotsgroup")
       .selectAll("path")
@@ -17,21 +21,17 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
         return d3.symbol().type(d3[`symbol${shape}`]).size((size*size) * Math.PI)()
       })
       .attr("transform", (d: plotData) => {
+        if (!between(d.value, ylower, yupper) || !between(d.x, xlower, xupper)) {
+          // If the point is outside the limits, don't draw it
+          return "translate(0, 0) scale(0)";
+        }
         return `translate(${visualObj.viewModel.plotProperties.xScale(d.x)}, ${visualObj.viewModel.plotProperties.yScale(d.value)})`
       })
       .style("fill", (d: plotData) => {
-        const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-        const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-        const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
-        const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
-        return (between(d.value, ylower, yupper) && between(d.x, xlower, xupper)) ? d.aesthetics.colour : "#FFFFFF";
+        return d.aesthetics.colour;
       })
       .style("stroke", (d: plotData) => {
-        const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-        const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-        const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
-        const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
-        return (between(d.value, ylower, yupper) && between(d.x, xlower, xupper)) ? d.aesthetics.colour_outline : "#FFFFFF";
+        return d.aesthetics.colour_outline;
       })
       .style("stroke-width", (d: plotData) => d.aesthetics.width_outline)
       .on("click", (event, d: plotData) => {
