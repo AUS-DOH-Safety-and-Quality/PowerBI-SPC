@@ -305,6 +305,7 @@ export default class viewModelClass {
       this.inputSettings.derivedSettings,
       this.colourPalette
     )
+
     this.firstRun = false;
     if (this.showGrouped) {
       if (this.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
@@ -368,7 +369,8 @@ export default class viewModelClass {
       controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
-          allInner[entry[0]] = entry[1]?.concat(Object.entries(curr)[idx][1]);
+          const newValues = Object.entries(curr)[idx][1];
+          allInner[entry[0]] = entry[1].concat(newValues);
         })
         return allInner;
       })
@@ -381,6 +383,14 @@ export default class viewModelClass {
     controlLimits.alt_targets = inputData.alt_targets;
     controlLimits.speclimits_lower = inputData.speclimits_lower;
     controlLimits.speclimits_upper = inputData.speclimits_upper;
+
+    for (const key of Object.keys(controlLimits)) {
+      if (key === "keys") {
+        continue;
+      }
+      controlLimits[key] = controlLimits[key]?.map(d => isNaN(d) ? null : d);
+    }
+
     return controlLimits;
   }
 

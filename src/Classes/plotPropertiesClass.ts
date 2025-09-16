@@ -1,5 +1,5 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import { truncate, min, max, type dataObject, isNullOrUndefined } from "../Functions";
+import { truncate, min, max, type dataObject, isNullOrUndefined, isValidNumber } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import type { defaultSettingsType, plotData, controlLimitsObject, derivedSettingsClass } from "../Classes";
@@ -65,17 +65,19 @@ export default class plotPropertiesClass {
       xUpperLimit = !isNullOrUndefined(xUpperLimit) ? xUpperLimit : max(controlLimits.keys.map(d => d.x))
 
       const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
-      const values: number[] = controlLimits.values;
-      const ul99: number[] = controlLimits?.ul99
-      const speclimits_upper: number[] = controlLimits?.speclimits_upper;
-      const ll99: number[] = controlLimits?.ll99;
-      const speclimits_lower: number[] = controlLimits?.speclimits_lower;
-      const alt_targets: number[] = controlLimits.alt_targets;
+      const values: number[] = controlLimits.values.filter(d => isValidNumber(d));
+      const ul99: number[] = controlLimits?.ul99?.filter(d => isValidNumber(d));
+      const speclimits_upper: number[] = controlLimits?.speclimits_upper?.filter(d => isValidNumber(d));
+      const ll99: number[] = controlLimits?.ll99?.filter(d => isValidNumber(d));
+      const speclimits_lower: number[] = controlLimits?.speclimits_lower?.filter(d => isValidNumber(d));
+      const alt_targets: number[] = controlLimits.alt_targets?.filter(d => isValidNumber(d));
+      const targets: number[] = controlLimits.targets?.filter(d => isValidNumber(d));
+
       const maxValue: number = max(values);
       const maxValueOrLimit: number = max(values.concat(ul99).concat(speclimits_upper).concat(alt_targets));
       const minValueOrLimit: number = min(values.concat(ll99).concat(speclimits_lower).concat(alt_targets));
-      const maxTarget: number = max(controlLimits.targets);
-      const minTarget: number = min(controlLimits.targets);
+      const maxTarget: number = max(targets) ?? 0;
+      const minTarget: number = min(targets) ?? 0;
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
