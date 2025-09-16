@@ -366,11 +366,12 @@ export default class viewModelClass {
         currLimits.trend_line = calculateTrendLine(currLimits.values);
         return currLimits;
       });
+
       controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
           const newValues = Object.entries(curr)[idx][1];
-          allInner[entry[0]] = entry[1].concat(newValues);
+          allInner[entry[0]] = entry[1]?.concat(newValues);
         })
         return allInner;
       })
