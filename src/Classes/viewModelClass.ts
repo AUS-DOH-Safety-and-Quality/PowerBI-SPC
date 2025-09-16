@@ -431,13 +431,18 @@ export default class viewModelClass {
     if (nhsIconSettings.show_assurance_icons) {
       this.tableColumnsGrouped.push({ name: "assurance", label: "Assurance" });
     }
-    const anyTooltips: boolean = this.inputDataGrouped.some(d => d.tooltips.length > 0);
+    const anyTooltips: boolean = this.inputDataGrouped.some(d => d?.tooltips?.some(t => t.length > 0));
+
     if (anyTooltips) {
-      this.inputDataGrouped[0].tooltips[0].forEach(tooltip => {
+      this.inputDataGrouped?.[0].tooltips?.[0].forEach(tooltip => {
         this.tableColumnsGrouped.push({ name: tooltip.displayName, label: tooltip.displayName });
       })
     }
     for (let i: number = 0; i < this.groupNames.length; i++) {
+      // Skip if no data for this group
+      if (isNullOrUndefined(this.inputDataGrouped[i]?.categories)) {
+        continue;
+      }
       const formatValues = valueFormatter(this.inputSettings.settingsGrouped[i], this.inputSettings.derivedSettingsGrouped[i]);
       const varIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_variation_filter;
       const assIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_assurance_filter;
