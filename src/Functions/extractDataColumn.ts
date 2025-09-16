@@ -83,7 +83,7 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   const n_keys: number = idxs.length;
   for (let i = 0; i < n_keys; i++) {
     const keyParts = formattedKeys.map(keys => keys[i]).filter(k => k !== null && k !== undefined);
-    combinedKeys.push(keyParts.join(" "));
+    combinedKeys.push(keyParts.length > 0 ? keyParts.join(" ") : null);
   }
   return combinedKeys;
 }

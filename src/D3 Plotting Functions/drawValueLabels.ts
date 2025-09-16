@@ -1,6 +1,7 @@
 import * as d3 from "./D3 Modules";
 import type { svgBaseType, Visual } from "../visual";
 import type { plotData } from "../Classes";
+import { isValidNumber } from "../Functions";
 
 const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, d3.BaseType, unknown>, visualObj: Visual) {
   // -90 degrees for vertically above, 90 degrees for vertically below
@@ -26,8 +27,21 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
     let marker_offset: number = d.label.aesthetics.label_marker_offset + d.label.aesthetics.label_size / 2;
     marker_offset = label_position === "top" ? -marker_offset : marker_offset;
 
-    return {x: x_val + side_length * Math.cos(theta * Math.PI / 180),
-            y: y_val + side_length * Math.sin(theta * Math.PI / 180),
+    const newX: number = x_val + side_length * Math.cos(theta * Math.PI / 180);
+    const newY: number = y_val + side_length * Math.sin(theta * Math.PI / 180);
+
+    if (!isValidNumber(newX) || !isValidNumber(newY)) {
+      return {
+        x: 0,
+        y: 0,
+        theta: 0,
+        line_offset: 0,
+        marker_offset: 0
+      };
+    }
+
+    return {x: newX,
+            y: newY,
             theta: theta,
             line_offset: line_offset,
             marker_offset: marker_offset
@@ -46,13 +60,24 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
 
   selection.select("line")
             .attr("x1", (_, i) => initialLabelXY[i].x)
-            .attr("y1", (_, i) => initialLabelXY[i].y + initialLabelXY[i].line_offset)
+            .attr("y1", (_, i) => {
+              if (initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) {
+                return 0;
+              }
+              return initialLabelXY[i].y + initialLabelXY[i].line_offset;
+            })
             .attr("x2", (d, i) => {
+              if (initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) {
+                return 0;
+              }
               const marker_offset: number = initialLabelXY[i].marker_offset;
               const angle: number = initialLabelXY[i].theta - (d.label.aesthetics.label_position === "top" ? 180 : 0);
               return visualObj.viewModel.plotProperties.xScale(d.x) + marker_offset * Math.cos(angle * Math.PI / 180);
             })
             .attr("y2", (d, i) => {
+              if (initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) {
+                return 0;
+              }
               const marker_offset: number = initialLabelXY[i].marker_offset;
               const angle: number = initialLabelXY[i].theta -(d.label.aesthetics.label_position === "top" ? 180 : 0);
               return visualObj.viewModel.plotProperties.yScale(d.value) + marker_offset * Math.sin(angle * Math.PI / 180);
@@ -68,6 +93,9 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
               return d3.symbol().type(d3.symbolTriangle).size(marker_size)()
             })
             .attr("transform", (d, i) => {
+              if (initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) {
+                return "translate(0, 0) rotate(0)";
+              }
               const marker_offset: number = initialLabelXY[i].marker_offset;
               //const label_position: string = d.label.aesthetics.label_position;
               const x: number = visualObj.viewModel.plotProperties.xScale(d.x);
