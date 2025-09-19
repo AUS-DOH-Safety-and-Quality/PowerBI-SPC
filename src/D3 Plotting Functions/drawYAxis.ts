@@ -42,23 +42,18 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-  const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
-  if (!yAxisNode) {
-    selection.select(".yaxislabel")
-              .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
-    return;
-  }
-  const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
-  const leftMidpoint: number = yAxisCoordinates.x * 0.7;
-  const y: number = visualObj.viewModel.svgHeight / 2;
-
-  selection.select(".yaxislabel")
-      .attr("x",leftMidpoint)
-      .attr("y", y)
-      .attr("transform",`rotate(-90, ${leftMidpoint}, ${y})`)
-      .text(yAxisProperties.label)
-      .style("text-anchor", "middle")
-      .style("font-size", yAxisProperties.label_size)
-      .style("font-family", yAxisProperties.label_font)
-      .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
+  const textX: number = -(visualObj.viewModel.plotProperties.xAxis.start_padding - visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label_size * 1.5);
+  const textY: number = visualObj.viewModel.svgHeight / 2;
+  yAxisGroup.select(".yaxislabel")
+            .selectAll("text")
+            .data([visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label])
+            .join("text")
+            .attr("x", textX)
+            .attr("y", textY)
+            .attr("transform", `rotate(-90, ${textX}, ${textY})`)
+            .style("text-anchor", "middle")
+            .text(d => d)
+            .style("font-size", yAxisProperties.label_size)
+            .style("font-family", yAxisProperties.label_font)
+            .style("fill", yAxisProperties.label_colour);
 }

@@ -49,14 +49,17 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
               .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
     return;
   }
-  const xAxisCoordinates: DOMRect = xAxisNode.getBoundingClientRect() as DOMRect;
-  const bottomMidpoint: number = plotHeight - ((plotHeight - xAxisCoordinates.bottom) / 2);
+  const textX: number = visualObj.viewModel.svgWidth / 2;
+  const textY: number = visualObj.viewModel.plotProperties.yAxis.start_padding - visualObj.viewModel.inputSettings.settings.x_axis.xlimit_label_size * 0.5;
 
-  selection.select(".xaxislabel")
-            .attr("x",visualObj.viewModel.svgWidth / 2)
-            .attr("y", bottomMidpoint)
+  xAxisGroup.select(".xaxislabel")
+            .selectAll("text")
+            .data([xAxisProperties.label])
+            .join("text")
+            .attr("x", textX)
+            .attr("y", textY)
             .style("text-anchor", "middle")
-            .text(xAxisProperties.label)
+            .text(d => d)
             .style("font-size", xAxisProperties.label_size)
             .style("font-family", xAxisProperties.label_font)
             .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
