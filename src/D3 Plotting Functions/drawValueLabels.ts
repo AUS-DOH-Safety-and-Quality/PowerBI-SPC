@@ -112,7 +112,7 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
 }
 
 export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
-  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels) {
+  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels || !visualObj.viewModel.inputData.anyLabels) {
     selection.select(".text-labels").remove();
     return;
   }
@@ -153,7 +153,7 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
     d3.select(this)
       .select("path")
       .attr("transform", `translate(${x_val + x_offset}, ${y_val + y_offset}) rotate(${angle - 90})`);
-});
+  });
 
   selection.select(".text-labels")
             .selectAll(".text-group-inner")

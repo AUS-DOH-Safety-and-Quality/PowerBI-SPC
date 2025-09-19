@@ -19,6 +19,7 @@ export type dataObject = {
   label_formatting: defaultSettingsType["labels"][];
   tooltips: VisualTooltipDataItem[][];
   labels: string[];
+  anyLabels: boolean;
   warningMessage: string;
   alt_targets: number[];
   speclimits_lower: number[];
@@ -39,6 +40,7 @@ function invalidInputData(inputValidStatus: ValidationT): dataObject {
     label_formatting: null,
     tooltips: null,
     labels: null,
+    anyLabels: false,
     warningMessage: inputValidStatus.error,
     alt_targets: null,
     speclimits_lower: null,
@@ -138,6 +140,7 @@ export default function extractInputData(inputView: DataViewCategorical,
       subset_points = seq(valid_ids.length - spcSettings[0].num_points_subset, valid_ids.length - 1);
     }
   }
+  const valid_labels: string[] = extractValues(labels, valid_ids);
   return {
     limitInputArgs: {
       keys: valid_keys,
@@ -149,7 +152,8 @@ export default function extractInputData(inputView: DataViewCategorical,
     },
     spcSettings: spcSettings[0],
     tooltips: extractValues(tooltips, valid_ids),
-    labels: extractValues(labels, valid_ids),
+    labels: valid_labels,
+    anyLabels: valid_labels.filter(d => !isNullOrUndefined(d) && d !== "").length > 0,
     highlights: curr_highlights,
     anyHighlights: curr_highlights.filter(d => !isNullOrUndefined(d)).length > 0,
     categories: inputView.categories[0],
