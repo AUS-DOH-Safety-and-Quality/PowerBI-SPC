@@ -11,7 +11,7 @@ import type { svgBaseType } from "../../visual"
  */
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
- 
+
 export default function improvementHigh(selection: svgBaseType): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
@@ -43,8 +43,8 @@ export default function improvementHigh(selection: svgBaseType): void {
             .attr("fill", "#00B0F0")
             .attr("font-family", "Arial,Arial_MSFontService,sans-serif")
             .attr("font-weight", "700")
-            .attr("font-size", "117")
-            .attr("transform","translate(106.228 172)")
+            .attr("font-size", "11.7")
+            .attr("transform","translate(106.228 172) scale(10, 10)")
             .text("H")
 
   selection.append("rect")
@@ -136,4 +136,3 @@ export default function improvementHigh(selection: svgBaseType): void {
             .attr("fill-rule","evenodd")
             .attr("transform","matrix(1 0 0 -1 265.5 200.5)")
 }
- 

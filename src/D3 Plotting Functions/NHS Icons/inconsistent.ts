@@ -38,8 +38,8 @@ export default function inconsistent(selection: svgBaseType): void {
             .attr("fill", "#7F7F7F")
             .attr("font-family", "Arial,Arial_MSFontService,sans-serif")
             .attr("font-weight", "700")
-            .attr("font-size", "117")
-            .attr("transform","translate(155.851 158)")
+            .attr("font-size", "11.7")
+            .attr("transform","translate(155.851 158) scale(10, 10)")
             .text("?")
 
   selection.append("path")

@@ -38,8 +38,8 @@ export default function consistentFail(selection: svgBaseType): void {
             .attr("fill", "#FF6600")
             .attr("font-family", "Arial,Arial_MSFontService,sans-serif")
             .attr("font-weight", "700")
-            .attr("font-size", "117")
-            .attr("transform","translate(155.851 158)")
+            .attr("font-size", "11.7")
+            .attr("transform","translate(155.851 158) scale(10, 10)")
             .text("F")
 
   selection.append("path")

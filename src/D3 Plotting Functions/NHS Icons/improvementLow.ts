@@ -38,8 +38,8 @@ export default function improvementLow(selection: svgBaseType): void {
             .attr("fill", "#00B0F0")
             .attr("font-family", "Arial,Arial_MSFontService,sans-serif")
             .attr("font-weight", "700")
-            .attr("font-size", "117")
-            .attr("transform","translate(106.228 292)")
+            .attr("font-size", "11.7")
+            .attr("transform","translate(106.228 292) scale(10, 10)")
             .text("L")
 
   selection.append("path")
