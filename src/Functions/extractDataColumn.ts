@@ -64,10 +64,12 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   // Group the columns by their query name
   const groupedCols: { [key: string]: powerbi.DataViewCategoryColumn[] } = {};
   col.forEach((d) => {
-    let queryName: string = (d.source?.queryName ?? "")
+    let queryName: string = (d.source?.queryName ?? "");
     if (queryName.includes("Date Hierarchy")) {
       // If the query is a 'Date Hierarchy', remove the element after the last '.' (the element of the hierarchy)
       // so that we can group by the base query name
+      // i.e., "source_table.source_column.Variation.Date Hierarchy.Year" becomes "source_table.source_column.Variation.Date Hierarchy"
+      // So that we can capture all the date hierarchy elements in the same group
       const lastDotIndex: number = queryName.lastIndexOf(".");
       if (lastDotIndex !== -1) {
         queryName = queryName.substring(0, lastDotIndex);
