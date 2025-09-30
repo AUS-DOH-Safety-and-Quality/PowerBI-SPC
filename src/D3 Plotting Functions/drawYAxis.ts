@@ -48,14 +48,22 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
                 .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
       return;
     }
-    const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
-    const leftMidpoint: number = yAxisCoordinates.x * 0.7;
-    const y: number = visualObj.viewModel.svgHeight / 2;
+
+    let textX: number;
+    const textY: number = visualObj.viewModel.svgHeight / 2;
+    if (visualObj.viewModel.frontend) {
+      // Non-PBI fronted doesn't have good bbox/boundingClientRect support
+      // so use padding as best approximation
+      textX = -(visualObj.viewModel.plotProperties.xAxis.start_padding - visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label_size * 1.5);
+    } else {
+      const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
+      textX = yAxisCoordinates.x * 0.7;
+    }
 
     selection.select(".yaxislabel")
-        .attr("x",leftMidpoint)
-        .attr("y", y)
-        .attr("transform",`rotate(-90, ${leftMidpoint}, ${y})`)
+        .attr("x", textX)
+        .attr("y", textY)
+        .attr("transform", `rotate(-90, ${textX}, ${textY})`)
         .text(yAxisProperties.label)
         .style("text-anchor", "middle")
         .style("font-size", yAxisProperties.label_size)
