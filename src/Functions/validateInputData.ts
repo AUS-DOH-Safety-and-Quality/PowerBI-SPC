@@ -107,6 +107,16 @@ export default function validateInputData(keys: string[],
     messages: messages
   };
 
+  // If all data has failed, but for different reasons, return a generic error
+  if (validationRtn.status === 0) {
+    const allInvalid: boolean = all_status.every(d => d !== ValidationFailTypes.Valid);
+    if (allInvalid) {
+      validationRtn.status = 1; // All data invalid
+      validationRtn.error = "No valid data found!";
+      return validationRtn;
+    }
+  }
+
   if (allSameType && commonType !== ValidationFailTypes.Valid) {
     switch(commonType) {
       case ValidationFailTypes.GroupingMissing: {

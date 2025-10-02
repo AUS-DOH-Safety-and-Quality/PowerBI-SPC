@@ -63,8 +63,31 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   // then format each group separately before combining the results
   // Group the columns by their query name
   const groupedCols: { [key: string]: powerbi.DataViewCategoryColumn[] } = {};
-  col.forEach((d) => {
-    const queryName = (d.source?.queryName ?? "").split(" ")[0];
+  let queryNames: string[] = col.map(d => d.source?.queryName ?? "");
+  // If any query names are duplicates (i.e., the same column passed multiple times),
+  // prepend the index to the query name to make it unique
+  const uniqueQueryNames: Set<string> = new Set();
+  queryNames = queryNames.map((queryName, idx) => {
+    if (uniqueQueryNames.has(queryName)) {
+      // If the query name is already in the set, prepend the index to make it unique
+      queryName = `${idx}_${queryName}`;
+    }
+    uniqueQueryNames.add(queryName);
+    return queryName;
+  });
+
+  col.forEach((d, idx) => {
+    let queryName: string = queryNames[idx];
+    if (queryName.includes("Date Hierarchy")) {
+      // If the query is a 'Date Hierarchy', remove the element after the last '.' (the element of the hierarchy)
+      // so that we can group by the base query name
+      // i.e., "source_table.source_column.Variation.Date Hierarchy.Year" becomes "source_table.source_column.Variation.Date Hierarchy"
+      // So that we can capture all the date hierarchy elements in the same group
+      const lastDotIndex: number = queryName.lastIndexOf(".");
+      if (lastDotIndex !== -1) {
+        queryName = queryName.substring(0, lastDotIndex);
+      }
+    }
     if (!groupedCols[queryName]) {
       groupedCols[queryName] = [];
     }
@@ -87,7 +110,6 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   }
   return combinedKeys;
 }
-
 
 function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultSettingsType, idxs: number[]): VisualTooltipDataItem[][] {
   const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);

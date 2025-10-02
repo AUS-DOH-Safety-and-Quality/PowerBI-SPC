@@ -42,18 +42,31 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-  const textX: number = -(visualObj.viewModel.plotProperties.xAxis.start_padding - visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label_size * 1.5);
-  const textY: number = visualObj.viewModel.svgHeight / 2;
-  yAxisGroup.select(".yaxislabel")
-            .selectAll("text")
-            .data([visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label])
-            .join("text")
-            .attr("x", textX)
-            .attr("y", textY)
-            .attr("transform", `rotate(-90, ${textX}, ${textY})`)
-            .style("text-anchor", "middle")
-            .text(d => d)
-            .style("font-size", yAxisProperties.label_size)
-            .style("font-family", yAxisProperties.label_font)
-            .style("fill", yAxisProperties.label_colour);
+    const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
+    if (!yAxisNode) {
+      selection.select(".yaxislabel")
+                .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
+      return;
+    }
+
+    let textX: number;
+    const textY: number = visualObj.viewModel.svgHeight / 2;
+    if (visualObj.viewModel.frontend) {
+      // Non-PBI fronted doesn't have good bbox/boundingClientRect support
+      // so use padding as best approximation
+      textX = -(visualObj.viewModel.plotProperties.xAxis.start_padding - visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label_size * 1.5);
+    } else {
+      const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
+      textX = yAxisCoordinates.x * 0.7;
+    }
+
+    selection.select(".yaxislabel")
+        .attr("x", textX)
+        .attr("y", textY)
+        .attr("transform", `rotate(-90, ${textX}, ${textY})`)
+        .text(yAxisProperties.label)
+        .style("text-anchor", "middle")
+        .style("font-size", yAxisProperties.label_size)
+        .style("font-family", yAxisProperties.label_font)
+        .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
 }

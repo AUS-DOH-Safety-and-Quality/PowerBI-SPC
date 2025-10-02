@@ -50,16 +50,22 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
     return;
   }
   const textX: number = visualObj.viewModel.svgWidth / 2;
-  const textY: number = visualObj.viewModel.plotProperties.yAxis.start_padding - visualObj.viewModel.inputSettings.settings.x_axis.xlimit_label_size * 0.5;
+  let textY: number;
 
-  xAxisGroup.select(".xaxislabel")
-            .selectAll("text")
-            .data([xAxisProperties.label])
-            .join("text")
+  if (visualObj.viewModel.frontend) {
+    // Non-PBI fronted doesn't have good bbox/boundingClientRect support
+    // so use padding as best approximation
+    textY = visualObj.viewModel.plotProperties.yAxis.start_padding - visualObj.viewModel.inputSettings.settings.x_axis.xlimit_label_size * 0.5;
+  } else {
+    const xAxisCoordinates: DOMRect = xAxisNode.getBoundingClientRect() as DOMRect;
+    textY = plotHeight - ((plotHeight - xAxisCoordinates.bottom) / 2);
+  }
+
+  selection.select(".xaxislabel")
             .attr("x", textX)
             .attr("y", textY)
             .style("text-anchor", "middle")
-            .text(d => d)
+            .text(xAxisProperties.label)
             .style("font-size", xAxisProperties.label_size)
             .style("font-family", xAxisProperties.label_font)
             .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
