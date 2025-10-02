@@ -63,8 +63,21 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   // then format each group separately before combining the results
   // Group the columns by their query name
   const groupedCols: { [key: string]: powerbi.DataViewCategoryColumn[] } = {};
-  col.forEach((d) => {
-    let queryName: string = (d.source?.queryName ?? "");
+  let queryNames: string[] = col.map(d => d.source?.queryName ?? "");
+  // If any query names are duplicates (i.e., the same column passed multiple times),
+  // prepend the index to the query name to make it unique
+  const uniqueQueryNames: Set<string> = new Set();
+  queryNames = queryNames.map((queryName, idx) => {
+    if (uniqueQueryNames.has(queryName)) {
+      // If the query name is already in the set, prepend the index to make it unique
+      queryName = `${idx}_${queryName}`;
+    }
+    uniqueQueryNames.add(queryName);
+    return queryName;
+  });
+
+  col.forEach((d, idx) => {
+    let queryName: string = queryNames[idx];
     if (queryName.includes("Date Hierarchy")) {
       // If the query is a 'Date Hierarchy', remove the element after the last '.' (the element of the hierarchy)
       // so that we can group by the base query name
