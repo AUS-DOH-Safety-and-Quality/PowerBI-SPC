@@ -42,20 +42,19 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-    const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
-    if (!yAxisNode) {
-      selection.select(".yaxislabel")
-                .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
-      return;
-    }
-
     let textX: number;
     const textY: number = visualObj.viewModel.svgHeight / 2;
     if (visualObj.viewModel.frontend) {
       // Non-PBI fronted doesn't have good bbox/boundingClientRect support
       // so use padding as best approximation
-      textX = -(visualObj.viewModel.plotProperties.xAxis.start_padding - visualObj.viewModel.inputSettings.settings.y_axis.ylimit_label_size * 1.5);
+      textX = visualObj.viewModel.plotProperties.xAxis.start_padding / 2;
     } else {
+      const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
+      if (!yAxisNode) {
+        selection.select(".yaxislabel")
+                  .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
+        return;
+      }
       const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
       textX = yAxisCoordinates.x * 0.7;
     }
