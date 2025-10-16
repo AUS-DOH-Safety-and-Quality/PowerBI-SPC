@@ -587,28 +587,33 @@ export default class viewModelClass {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
       if (this.outliers.shift[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.shift[i], "outliers",
+        const shift_colour: string = getAesthetic(this.outliers.shift[i], "outliers",
                                   "shift_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.shift[i], "outliers",
-                                  "shift_colour", this.inputSettings.settings) as string;
+        const shift_outline_colour: string = shift_colour;
+
+        aesthetics.colour = shift_colour;
+        aesthetics.colour_outline = shift_outline_colour;
       }
       if (this.outliers.trend[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.trend[i], "outliers",
+        const trend_colour: string = getAesthetic(this.outliers.trend[i], "outliers",
                                   "trend_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.trend[i], "outliers",
-                                  "trend_colour", this.inputSettings.settings) as string;
+        const trend_outline_colour: string = trend_colour;
+        aesthetics.colour = trend_colour;
+        aesthetics.colour_outline = trend_outline_colour;
       }
       if (this.outliers.two_in_three[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.two_in_three[i], "outliers",
+        const twointhree_colour: string = getAesthetic(this.outliers.two_in_three[i], "outliers",
                                   "twointhree_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.two_in_three[i], "outliers",
-                                  "twointhree_colour", this.inputSettings.settings) as string;
+        const twointhree_outline_colour: string = twointhree_colour;
+        aesthetics.colour = twointhree_colour;
+        aesthetics.colour_outline = twointhree_outline_colour;
       }
       if (this.outliers.astpoint[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.astpoint[i], "outliers",
+        const ast_colour: string = getAesthetic(this.outliers.astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.astpoint[i], "outliers",
-                                  "ast_colour", this.inputSettings.settings) as string;
+        const ast_outline_colour: string = ast_colour;
+        aesthetics.colour = ast_colour;
+        aesthetics.colour_outline = ast_outline_colour;
       }
       const table_row: summaryTableRowData = {
         date: this.controlLimits.keys[i].label,

@@ -296,6 +296,18 @@ const settingsModel = {
             { displayName : "Neutral",  value : "neutral" },
             { displayName : "Decrease", value : "decrease" }
           ]
+        },
+        overlap_handling: {
+          displayName: "Handling of Overlapping Highlights",
+          type: FormattingComponent.Dropdown,
+          default: "highlight newer",
+          valid: ["highlight newer", "highlight older", "fill newer, outline older", "fill older, outline newer"],
+          items: [
+            { displayName : "Highlight Newer",               value : "highlight newer" },
+            { displayName : "Highlight Older",               value : "highlight older" },
+            { displayName : "Fill Newer, Outline Older",     value : "fill newer, outline older" },
+            { displayName : "Fill Older, Outline Newer",     value : "fill older, outline newer" }
+          ]
         }
       },
       "Astronomical Points" : {

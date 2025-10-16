@@ -105,6 +105,9 @@
         "improvement_direction": {
           "type": { "enumeration" : [ ] }
         },
+        "overlap_handling": {
+          "type": { "enumeration" : [ ] }
+        },
         "astronomical": {
           "type" : { "bool" : true }
         },
