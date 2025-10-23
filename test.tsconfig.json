@@ -15,7 +15,8 @@
   ]
   },
   "files": [
-    "./test/visualTest.ts"
+    "./test/test-initialisation.ts",
+    "./test/test-errors.ts"
   ],
   "include": [
       "src/*.ts"
