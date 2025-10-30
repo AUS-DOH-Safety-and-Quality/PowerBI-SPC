@@ -77,11 +77,11 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     })
     .attr("x", (d: lineLabelType) => {
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return visualObj.viewModel.plotProperties.xScale(lineGroup[1][d.index].x)
+      return visualObj.plotProperties.xScale(lineGroup[1][d.index].x)
     })
     .attr("y", (d: lineLabelType) => {
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return visualObj.viewModel.plotProperties.yScale(lineGroup[1][d.index].line_value)
+      return visualObj.plotProperties.yScale(lineGroup[1][d.index].line_value)
     })
     .attr("fill", (d: lineLabelType) => {
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];

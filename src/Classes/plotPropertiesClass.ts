@@ -2,7 +2,7 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import { truncate, min, max, type dataObject, isNullOrUndefined, isValidNumber } from "../Functions";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import type { defaultSettingsType, plotData, controlLimitsObject, derivedSettingsClass } from "../Classes";
+import type { defaultSettingsType, plotData, controlLimitsObject, derivedSettingsClass, viewModelClass } from "../Classes";
 import { colourPaletteType } from "./viewModelClass";
 
 export type axisProperties = {
@@ -43,13 +43,13 @@ export default class plotPropertiesClass {
                             this.yAxis.end_padding]);
   }
 
-  update(options: VisualUpdateOptions,
-          plotPoints: plotData[],
-          controlLimits: controlLimitsObject,
-          inputData: dataObject,
-          inputSettings: defaultSettingsType,
-          derivedSettings: derivedSettingsClass,
-          colorPalette: colourPaletteType): void {
+  update(options: VisualUpdateOptions, viewModel: viewModelClass): void {
+    const plotPoints: plotData[] = viewModel.plotPoints;
+    const controlLimits: controlLimitsObject = viewModel.controlLimits;
+    const inputData: dataObject = viewModel.inputData;
+    const inputSettings: defaultSettingsType = viewModel.inputSettings.settings;
+    const derivedSettings: derivedSettingsClass = viewModel.inputSettings.derivedSettings;
+    const colorPalette: colourPaletteType = viewModel.colourPalette;
 
     this.displayPlot = plotPoints
       ? plotPoints.length > 1

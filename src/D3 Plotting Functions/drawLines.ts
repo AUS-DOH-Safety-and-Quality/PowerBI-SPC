@@ -10,13 +10,13 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
       .data(visualObj.viewModel.groupedLines)
       .join("path")
       .attr("d", d => {
-        const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-        const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-        const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
-        const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
+        const ylower: number = visualObj.plotProperties.yAxis.lower;
+        const yupper: number = visualObj.plotProperties.yAxis.upper;
+        const xlower: number = visualObj.plotProperties.xAxis.lower;
+        const xupper: number = visualObj.plotProperties.xAxis.upper;
         return d3.line<lineData>()
-                  .x(d => visualObj.viewModel.plotProperties.xScale(d.x))
-                  .y(d => visualObj.viewModel.plotProperties.yScale(d.line_value))
+                  .x(d => visualObj.plotProperties.xScale(d.x))
+                  .y(d => visualObj.plotProperties.yScale(d.line_value))
                   .defined(d => {
                     return !isNullOrUndefined(d.line_value)
                       && between(d.line_value, ylower, yupper)

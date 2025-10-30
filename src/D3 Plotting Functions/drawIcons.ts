@@ -7,7 +7,7 @@ import type { defaultSettingsType } from "../Classes";
 
 export default function drawIcons(selection: svgBaseType, visualObj: Visual): void {
   selection.selectAll(".icongroup").remove()
-  if (!(visualObj.viewModel.plotProperties.displayPlot)) {
+  if (!(visualObj.plotProperties.displayPlot)) {
     return;
   }
   const nhsIconSettings: defaultSettingsType["nhs_icons"] = visualObj.viewModel.inputSettings.settings.nhs_icons;
