@@ -9,14 +9,14 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
   const initialLabelXY: {x: number, y: number, theta: number, line_offset: number, marker_offset: number}[] = allData.map(d => {
     const label_direction_mult: number = d.label.aesthetics.label_position === "top" ? -1 : 1;
     const plotHeight: number = visualObj.viewModel.svgHeight;
-    const xAxisHeight: number = plotHeight - visualObj.viewModel.plotProperties.yAxis.start_padding;
+    const xAxisHeight: number = plotHeight - visualObj.plotProperties.yAxis.start_padding;
     const label_position: string = d.label.aesthetics.label_position;
     let y_offset: number = d.label.aesthetics.label_y_offset;
     const label_initial: number = label_position === "top" ? (0 + y_offset) : (xAxisHeight - y_offset);
-    const y: number = visualObj.viewModel.plotProperties.yScale(d.value);
+    const y: number = visualObj.plotProperties.yScale(d.value);
     let side_length: number = label_position === "top" ? (y - label_initial) : (label_initial - y);
-    const x_val = visualObj.viewModel.plotProperties.xScale(d.x);
-    const y_val = visualObj.viewModel.plotProperties.yScale(d.value);
+    const x_val = visualObj.plotProperties.xScale(d.x);
+    const y_val = visualObj.plotProperties.yScale(d.value);
 
     const theta: number = d.label.angle ?? (d.label.aesthetics.label_angle_offset + label_direction_mult * 90);
     side_length = d.label.distance ?? (Math.min(side_length, d.label.aesthetics.label_line_max_length));
@@ -72,7 +72,7 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
               }
               const marker_offset: number = initialLabelXY[i].marker_offset;
               const angle: number = initialLabelXY[i].theta - (d.label.aesthetics.label_position === "top" ? 180 : 0);
-              return visualObj.viewModel.plotProperties.xScale(d.x) + marker_offset * Math.cos(angle * Math.PI / 180);
+              return visualObj.plotProperties.xScale(d.x) + marker_offset * Math.cos(angle * Math.PI / 180);
             })
             .attr("y2", (d, i) => {
               if (initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) {
@@ -80,7 +80,7 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
               }
               const marker_offset: number = initialLabelXY[i].marker_offset;
               const angle: number = initialLabelXY[i].theta -(d.label.aesthetics.label_position === "top" ? 180 : 0);
-              return visualObj.viewModel.plotProperties.yScale(d.value) + marker_offset * Math.sin(angle * Math.PI / 180);
+              return visualObj.plotProperties.yScale(d.value) + marker_offset * Math.sin(angle * Math.PI / 180);
             })
             .style("stroke", visualObj.viewModel.inputSettings.settings.labels.label_line_colour)
             .style("stroke-width", d => (d.label.text_value ?? "") === "" ? 0 : visualObj.viewModel.inputSettings.settings.labels.label_line_width)
@@ -98,8 +98,8 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
               }
               const marker_offset: number = initialLabelXY[i].marker_offset;
               //const label_position: string = d.label.aesthetics.label_position;
-              const x: number = visualObj.viewModel.plotProperties.xScale(d.x);
-              const y: number = visualObj.viewModel.plotProperties.yScale(d.value);
+              const x: number = visualObj.plotProperties.xScale(d.x);
+              const y: number = visualObj.plotProperties.yScale(d.value);
               const angle: number = initialLabelXY[i].theta - (d.label.aesthetics.label_position === "top" ? 180 : 0);
               const x_offset: number = marker_offset * Math.cos(angle * Math.PI / 180);
               const y_offset: number = marker_offset * Math.sin(angle * Math.PI / 180);
@@ -124,8 +124,8 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   const dragFun = d3.drag().on("drag", function(e) {
     const d = e.subject;
     // Get the angle and distance of label from the point
-    const x_val = visualObj.viewModel.plotProperties.xScale(d.x);
-    const y_val = visualObj.viewModel.plotProperties.yScale(d.value);
+    const x_val = visualObj.plotProperties.xScale(d.x);
+    const y_val = visualObj.plotProperties.yScale(d.value);
     const angle = Math.atan2(e.sourceEvent.y - y_val, e.sourceEvent.x - x_val) * 180 / Math.PI;
     const distance = Math.sqrt(Math.pow(e.sourceEvent.y - y_val, 2) + Math.pow(e.sourceEvent.x - x_val, 2));
 

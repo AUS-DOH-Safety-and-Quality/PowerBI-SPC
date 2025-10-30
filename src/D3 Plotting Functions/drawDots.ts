@@ -4,10 +4,10 @@ import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
-  const ylower: number = visualObj.viewModel.plotProperties.yAxis.lower;
-  const yupper: number = visualObj.viewModel.plotProperties.yAxis.upper;
-  const xlower: number = visualObj.viewModel.plotProperties.xAxis.lower;
-  const xupper: number = visualObj.viewModel.plotProperties.xAxis.upper;
+  const ylower: number = visualObj.plotProperties.yAxis.lower;
+  const yupper: number = visualObj.plotProperties.yAxis.upper;
+  const xlower: number = visualObj.plotProperties.xAxis.lower;
+  const xupper: number = visualObj.plotProperties.xAxis.upper;
   selection
       .select(".dotsgroup")
       .selectAll("path")
@@ -25,7 +25,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
           // If the point is outside the limits, don't draw it
           return "translate(0, 0) scale(0)";
         }
-        return `translate(${visualObj.viewModel.plotProperties.xScale(d.x)}, ${visualObj.viewModel.plotProperties.yScale(d.value)})`
+        return `translate(${visualObj.plotProperties.xScale(d.x)}, ${visualObj.plotProperties.yScale(d.value)})`
       })
       .style("fill", (d: plotData) => {
         return d.aesthetics.colour;

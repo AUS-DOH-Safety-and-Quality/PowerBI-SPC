@@ -8,7 +8,7 @@ import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
           drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
-import { viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
+import { plotPropertiesClass, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
 import { getAesthetic, identitySelected } from "./Functions";
 
@@ -20,6 +20,7 @@ export class Visual implements powerbi.extensibility.IVisual {
   tableDiv: divBaseType;
   svg: svgBaseType;
   viewModel: viewModelClass;
+  plotProperties: plotPropertiesClass;
   selectionManager: powerbi.extensibility.ISelectionManager;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
@@ -29,6 +30,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.svg = d3.select(options.element).append("svg");
     this.host = options.host;
     this.viewModel = new viewModelClass();
+    this.plotProperties = new plotPropertiesClass();
 
     this.selectionManager = this.host.createSelectionManager();
     this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
@@ -65,6 +67,8 @@ export class Visual implements powerbi.extensibility.IVisual {
         this.host.eventService.renderingFailed(options);
         return;
       }
+
+      this.plotProperties.update(options, this.viewModel);
 
       if (update_status.warning) {
         this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
@@ -117,19 +121,19 @@ export class Visual implements powerbi.extensibility.IVisual {
     const overflowTop: number = Math.abs(Math.min(0, svgBBox.y));
     const overflowBottom: number = Math.max(0, svgBBox.height + svgBBox.y - svgHeight);
     if (overflowLeft > 0) {
-      this.viewModel.plotProperties.xAxis.start_padding += overflowLeft + this.viewModel.plotProperties.xAxis.start_padding;
+      this.plotProperties.xAxis.start_padding += overflowLeft + this.plotProperties.xAxis.start_padding;
     }
     if (overflowRight > 0) {
-      this.viewModel.plotProperties.xAxis.end_padding += overflowRight + this.viewModel.plotProperties.xAxis.end_padding;
+      this.plotProperties.xAxis.end_padding += overflowRight + this.plotProperties.xAxis.end_padding;
     }
     if (overflowTop > 0) {
-      this.viewModel.plotProperties.yAxis.end_padding += overflowTop + this.viewModel.plotProperties.yAxis.end_padding;
+      this.plotProperties.yAxis.end_padding += overflowTop + this.plotProperties.yAxis.end_padding;
     }
     if (overflowBottom > 0) {
-      this.viewModel.plotProperties.yAxis.start_padding += overflowBottom + this.viewModel.plotProperties.yAxis.start_padding;
+      this.plotProperties.yAxis.start_padding += overflowBottom + this.plotProperties.yAxis.start_padding;
     }
     if (overflowLeft > 0 || overflowRight > 0 || overflowTop > 0 || overflowBottom > 0) {
-      this.viewModel.plotProperties.initialiseScale(svgWidth, svgHeight);
+      this.plotProperties.initialiseScale(svgWidth, svgHeight);
       this.drawVisual();
     }
   }

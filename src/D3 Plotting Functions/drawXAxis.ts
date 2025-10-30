@@ -3,8 +3,8 @@ import type { axisProperties } from "../Classes";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
-  const xAxisProperties: axisProperties = visualObj.viewModel.plotProperties.xAxis;
-  const xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(visualObj.viewModel.plotProperties.xScale);
+  const xAxisProperties: axisProperties = visualObj.plotProperties.xAxis;
+  const xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(visualObj.plotProperties.xScale);
 
   if (xAxisProperties.ticks) {
     if (xAxisProperties.tick_count) {
@@ -22,8 +22,8 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
   }
 
   const plotHeight: number = visualObj.viewModel.svgHeight;
-  const xAxisHeight: number = plotHeight - visualObj.viewModel.plotProperties.yAxis.start_padding;
-  const displayPlot: boolean = visualObj.viewModel.plotProperties.displayPlot;
+  const xAxisHeight: number = plotHeight - visualObj.plotProperties.yAxis.start_padding;
+  const displayPlot: boolean = visualObj.plotProperties.displayPlot;
   const xAxisGroup = selection.select(".xaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
 
   xAxisGroup
@@ -49,7 +49,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
   if (visualObj.viewModel.frontend) {
     // Non-PBI fronted doesn't have good bbox/boundingClientRect support
     // so use padding as best approximation
-    textY = plotHeight - (visualObj.viewModel.plotProperties.yAxis.start_padding / 3);
+    textY = plotHeight - (visualObj.plotProperties.yAxis.start_padding / 3);
   } else {
     const xAxisNode: SVGGElement = selection.selectAll(".xaxisgroup").node() as SVGGElement;
     if (!xAxisNode) {

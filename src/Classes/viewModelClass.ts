@@ -5,7 +5,7 @@ type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
-import { settingsClass, type defaultSettingsType, plotPropertiesClass, type derivedSettingsClass } from "../Classes";
+import { settingsClass, type defaultSettingsType, type derivedSettingsClass } from "../Classes";
 import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter, calculateTrendLine } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 import { lineNameMap } from "../Functions/getAesthetic";
@@ -141,7 +141,6 @@ export default class viewModelClass {
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
-  plotProperties: plotPropertiesClass;
   splitIndexes: number[];
   groupStartEndIndexes: number[][];
   firstRun: boolean;
@@ -169,7 +168,6 @@ export default class viewModelClass {
     this.controlLimits = null;
     this.plotPoints = new Array<plotData>();
     this.groupedLines = new Array<[string, lineData[]]>();
-    this.plotProperties = new plotPropertiesClass();
     this.firstRun = true
     this.splitIndexes = new Array<number>();
     this.colourPalette = null;
@@ -299,15 +297,6 @@ export default class viewModelClass {
         }
       }
     }
-    this.plotProperties.update(
-      options,
-      this.plotPoints,
-      this.controlLimits,
-      this.inputData,
-      this.inputSettings.settings,
-      this.inputSettings.derivedSettings,
-      this.colourPalette
-    )
 
     this.firstRun = false;
     if (this.showGrouped) {

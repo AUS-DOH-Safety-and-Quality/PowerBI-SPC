@@ -3,7 +3,7 @@ import type { svgBaseType, Visual } from "../visual";
 import type { plotData, plotPropertiesClass } from "../Classes";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
-  const plotProperties: plotPropertiesClass = visualObj.viewModel.plotProperties;
+  const plotProperties: plotPropertiesClass = visualObj.plotProperties;
   const colour: string = visualObj.viewModel.colourPalette.isHighContrast
     ? visualObj.viewModel.colourPalette.foregroundColour
     : "black";
