@@ -158,21 +158,17 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   selection.select(".text-labels")
             .selectAll(".text-group-inner")
             .data(visualObj.viewModel.plotPoints)
-            .join(
-              (enter) => {
-                let grp = enter.append("g").classed("text-group-inner", true)
-                grp.append("text");
-                grp.append("line");
-                grp.append("path");
-                // Drag functionality not available in headless mode
-                if (!visualObj.viewModel.headless) {
-                  grp.call(dragFun);
-                }
-                return grp
-              },
-              (update) => {
-                update.call(labelFormatting, visualObj);
-                return update
+            .join("g")
+            .classed("text-group-inner", true)
+            .each(function(_) {
+              const textGroup = d3.select(this);
+              textGroup.selectAll("*").remove();
+              textGroup.append("text");
+              textGroup.append("line");
+              textGroup.append("path");
+              if (!visualObj.viewModel.headless) {
+                textGroup.call(dragFun);
               }
-            )
+            })
+            .call(labelFormatting, visualObj);
 }
