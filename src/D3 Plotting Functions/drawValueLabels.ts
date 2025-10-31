@@ -93,7 +93,8 @@ const labelFormatting = function(selection: d3.Selection<d3.BaseType, plotData, 
               return d3.symbol().type(d3.symbolTriangle).size(marker_size)()
             })
             .attr("transform", (d, i) => {
-              if (initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) {
+              const show_marker: boolean = d.label.aesthetics.label_marker_show && (d.label.text_value ?? "") !== "";
+              if ((initialLabelXY[i].x === 0 && initialLabelXY[i].y === 0) || !show_marker) {
                 return "translate(0, 0) rotate(0)";
               }
               const marker_offset: number = initialLabelXY[i].marker_offset;
