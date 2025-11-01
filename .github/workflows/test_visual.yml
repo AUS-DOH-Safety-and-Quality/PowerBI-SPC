@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v5
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -50,14 +50,14 @@ jobs:
 
     - name: Attach built visual
       if: success()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: powerbi-visual-${{ github.sha }}
         path: dist/*.pbiviz
 
     - name: Attach built frontend bundle
       if: success()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: frontend-bundle-${{ github.sha }}
         path: .tmp/build/PBISPC.js
