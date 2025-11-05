@@ -1,7 +1,5 @@
-import powerbi from "powerbi-visuals-api"
-import { valueType } from "powerbi-visuals-utils-typeutils";
+import type powerbi from "powerbi-visuals-api"
 import isNullOrUndefined from "./isNullOrUndefined";
-type ValueType = valueType.ValueType;
 
 const monthNameToNumber: { [key: string]: number } = {
   "January": 0,
@@ -20,14 +18,17 @@ const monthNameToNumber: { [key: string]: number } = {
 
 
 function temporalTypeToKey(inputType: powerbi.ValueTypeDescriptor, inputValue: powerbi.PrimitiveValue) {
-  const temporalType: ValueType = valueType.ValueType.fromExtendedType(inputType['underlyingType'])
-  if (temporalType.temporal.day) {
+  if (!inputType.temporal) {
+    return null;
+  }
+
+  if (inputType?.["category"] === "DayOfMonth") {
     return ["day", <number>(inputValue)]
-  } else if (temporalType.temporal.month) {
+  } else if (inputType?.["category"] === "Months") {
     return ["month", monthNameToNumber[<string>(inputValue)]]
-  } else if (temporalType.temporal.quarter) {
+  } else if (inputType?.["category"] === "Quarters") {
     return ["quarter", <string>inputValue]
-  } else if (temporalType.temporal.year) {
+  } else if (inputType?.["category"] === "Years") {
     return ["year", <number>(inputValue)]
   } else {
     return null
