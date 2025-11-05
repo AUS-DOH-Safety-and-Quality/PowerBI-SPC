@@ -1,5 +1,4 @@
 export { select, selectAll, type Selection, type BaseType } from "d3-selection";
-export { groups, leastIndex } from "d3-array";
 export { line, symbol, symbolAsterisk, symbolCircle, symbolCross, symbolDiamond,
           symbolSquare, symbolStar, symbolTriangle, symbolWye } from "d3-shape"
 export { type Axis, axisBottom, axisLeft } from "d3-axis"

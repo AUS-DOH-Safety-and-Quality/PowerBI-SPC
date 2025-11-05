@@ -3,10 +3,9 @@ type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import * as limitFunctions from "../Limit Calculations"
 import { settingsClass, type defaultSettingsType, type derivedSettingsClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter, calculateTrendLine } from "../Functions"
+import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter, calculateTrendLine, groupBy } from "../Functions"
 import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
 import { lineNameMap } from "../Functions/getAesthetic";
 
@@ -705,7 +704,7 @@ export default class viewModelClass {
         })
       })
     }
-    this.groupedLines = d3.groups(formattedLines, d => d.group);
+    this.groupedLines = groupBy(formattedLines, "group");
   }
 
   scaleAndTruncateLimits(controlLimits: controlLimitsObject,

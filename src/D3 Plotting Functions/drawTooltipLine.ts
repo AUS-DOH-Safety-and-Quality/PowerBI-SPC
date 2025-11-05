@@ -1,6 +1,6 @@
-import * as d3 from "./D3 Modules";
 import type { svgBaseType, Visual } from "../visual";
 import type { plotData, plotPropertiesClass } from "../Classes";
+import { leastIndex } from "../Functions";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
   const plotProperties: plotPropertiesClass = visualObj.plotProperties;
@@ -38,7 +38,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
     const distances: number[] = plotPoints.map(d => Math.sqrt(
       Math.pow(d.x - xValue, 2) + Math.pow(d.value - yValue, 2)
     ));
-    const indexNearestValue: number = d3.leastIndex(distances,(a,b) => a-b);
+    const indexNearestValue: number = leastIndex(distances,(a,b) => a-b);
     const x_coord: number = plotProperties.xScale(plotPoints[indexNearestValue].x)
     const y_coord: number = plotProperties.yScale(plotPoints[indexNearestValue].value)
 
