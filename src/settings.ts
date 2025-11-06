@@ -1708,7 +1708,7 @@ const settingsModel = {
         ylimit_tick_rotation: {
           displayName: "Tick Rotation (Degrees)",
           type: FormattingComponent.NumUpDown,
-          default: -35,
+          default: 0,
           options: { minValue: { value: -360 }, maxValue: { value: 360 } }
         }
       },
