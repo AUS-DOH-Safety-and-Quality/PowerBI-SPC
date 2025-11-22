@@ -20,6 +20,24 @@ This document outlines a comprehensive 10-session plan to extend the testing inf
     - Edge case identified in `calculateTrendLine()` with single-point input
     - Special `pow()` handling for negative bases documented
 
+- ✅ **Session 2: Utility Functions Unit Tests - Data Processing & Formatting** - [Detailed Report](TEST_EXTENSION_PLAN_SESSION_2.md)
+  - **Completed:** November 22, 2025
+  - **Tests Added:** 177 new tests (158 → 335 total)
+  - **Coverage Improvement:** 55.56% → 60.54% statements (+4.98%)
+  - **Status:** All 335 tests passing ✅
+  - **Key Deliverables:**
+    - `test/test-functions-validation.ts` (48 tests)
+    - `test/test-functions-extraction.ts` (38 tests)
+    - `test/test-functions-formatting.ts` (16 tests)
+    - `test/test-functions-visual.ts` (13 tests)
+    - `test/test-functions-constants.ts` (58 tests)
+    - `test/test-functions-valueformatter.ts` (52 tests)
+  - **Key Findings:**
+    - Data validation handles all error scenarios correctly
+    - Statistical constants (c4, c5, a3, b3, b4) mathematically validated
+    - Value formatter closure behavior documented
+    - PowerBI integration functions require separate integration test suite
+
 ---
 
 ## Current Test Infrastructure Analysis
@@ -868,8 +886,8 @@ Selection update          | < 10ms   | < 30ms         | User interaction, needs 
 | Session | New Tests | Cumulative Coverage Target | Actual |
 |---------|-----------|----------------------------|--------|
 | Start   | 3         | 54% (baseline)             | 54.06% |
-| 1       | ~20       | 60%                        | 55.56% ✅ |
-| 2       | ~25       | 65%                        | - |
+| 1       | 155       | 60%                        | 55.56% ✅ |
+| 2       | 177       | 65%                        | 60.54% ✅ |
 | 3       | ~20       | 70%                        | - |
 | 4       | ~20       | 75%                        | - |
 | 5       | ~15       | 78%                        | - |
