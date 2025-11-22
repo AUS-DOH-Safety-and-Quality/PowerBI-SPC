@@ -60,6 +60,7 @@ This document outlines a comprehensive 10-session plan to extend the testing inf
     - **3 Test Failures:** Document that invalid values become Infinity (not caught)
     - **1 Test Failure:** All-same-values edge case produces NaN limits
     - **Recommendation:** Replace invalid values with `null`, exclude from calculations
+    - **Tests Aligned:** Tests updated to expect `null` (not `0`) per NaN_HANDLING_ANALYSIS.md guidance
   - **Documentation:** Comprehensive analysis in `NaN_HANDLING_ANALYSIS.md` with implementation plan
 
 ---

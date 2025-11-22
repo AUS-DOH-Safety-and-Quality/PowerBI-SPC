@@ -187,8 +187,8 @@ S-charts track within-subgroup variation using standard deviations.
 **Affected Functions:** `runLimits()`, `iLimits()`
 
 **Test Cases Failing:**
-- `runLimits() - should replace NaN values with 0 in output`
-- `iLimits() - should replace NaN values with 0 in output`
+- `runLimits() - should replace invalid values with null in output`
+- `iLimits() - should replace invalid values with null in output`
 
 **Description:**
 Both functions have code to replace NaN with 0:
@@ -206,7 +206,7 @@ denominators: [1, 0, 1]  // Division by 0 in position 1
 
 **Actual Behavior:**
 ```
-Expected Infinity to be 0.
+Expected Infinity to be null.
 ```
 
 **IMPORTANT FINDING:** After research into SPC best practices and NHS "Making Data Count" guidelines, **replacing invalid values with 0 is itself incorrect**. See `NaN_HANDLING_ANALYSIS.md` for full analysis.
@@ -217,6 +217,9 @@ Invalid values (NaN, Infinity) should be:
 2. Excluded from control limit calculations
 3. Shown as gaps or ghosted points on charts
 4. Never conflated with zero, which is a valid measurement
+
+**Tests Updated to Align with Best Practices:**
+Tests now correctly expect `null` for invalid values (changed from expecting `0`), fully aligning with the guidance in `NaN_HANDLING_ANALYSIS.md`.
 
 **Impact:**
 High - Current design violates SPC best practices by:
@@ -644,7 +647,7 @@ SPC Limit Calculations - Basic Charts
 │   ├── should use subset_points when provided
 │   ├── should handle all same values
 │   ├── should handle single value
-│   ├── should replace NaN values with 0 in output [FAILING - BUG]
+│   ├── should replace invalid values with null in output [FAILING - CODE BUG]
 │   ├── should handle negative values
 │   ├── should handle large dataset
 │   └── should handle decimal values
@@ -655,9 +658,9 @@ SPC Limit Calculations - Basic Charts
 │   ├── should use subset_points when provided
 │   ├── should exclude outliers when outliers_in_limits is false
 │   ├── should include all values when outliers_in_limits is true
-│   ├── should handle all same values [FAILING - BUG]
+│   ├── should handle all same values [FAILING - EDGE CASE BUG]
 │   ├── should calculate correct 95% and 68% limits
-│   ├── should replace NaN values with 0 in output [FAILING - BUG]
+│   ├── should replace invalid values with null in output [FAILING - CODE BUG]
 │   ├── should handle negative values
 │   └── should handle large dataset
 ├── mrLimits() - Moving Range (11 tests)

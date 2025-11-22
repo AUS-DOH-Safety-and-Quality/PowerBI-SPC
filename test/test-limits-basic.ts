@@ -119,7 +119,7 @@ describe("SPC Limit Calculations - Basic Charts", () => {
       expect(result.targets[0]).toBe(42);
     });
 
-    it("should replace NaN values with 0 in output", () => {
+    it("should replace invalid values with null in output", () => {
       const args: controlLimitsArgs = {
         keys: createKeys(3),
         numerators: [1, 2, 3],
@@ -128,8 +128,10 @@ describe("SPC Limit Calculations - Basic Charts", () => {
       };
       const result = runLimits(args);
       
-      // EXPECTED: Division by zero should be handled and replaced with 0
-      expect(result.values[1]).toBe(0);
+      // EXPECTED: Division by zero should be handled and replaced with null
+      // Per NaN_HANDLING_ANALYSIS.md: use null for invalid values (not 0)
+      // null distinguishes from valid zero measurements and follows SPC best practices
+      expect(result.values[1]).toBeNull();
     });
 
     it("should handle negative values", () => {
@@ -292,7 +294,7 @@ describe("SPC Limit Calculations - Basic Charts", () => {
       expectClose(result.ll68![0], cl - 1 * sigma, 0.02);
     });
 
-    it("should replace NaN values with 0 in output", () => {
+    it("should replace invalid values with null in output", () => {
       const args: controlLimitsArgs = {
         keys: createKeys(3),
         numerators: [10, 12, 11],
@@ -302,8 +304,10 @@ describe("SPC Limit Calculations - Basic Charts", () => {
       };
       const result = iLimits(args);
       
-      // EXPECTED: Division by zero should be handled and replaced with 0
-      expect(result.values[1]).toBe(0);
+      // EXPECTED: Division by zero should be handled and replaced with null
+      // Per NaN_HANDLING_ANALYSIS.md: use null for invalid values (not 0)
+      // null distinguishes from valid zero measurements and follows SPC best practices
+      expect(result.values[1]).toBeNull();
     });
 
     it("should handle negative values", () => {
