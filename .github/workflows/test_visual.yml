@@ -30,7 +30,9 @@ jobs:
     - name: Install Dependencies
       run: |
         npm install
-        npm install -g powerbi-visuals-tools
+        # Pin to 6.2.0 because 7.0.0 is broken (missing lib/ directory)
+        # See: https://github.com/microsoft/PowerBI-visuals-tools/issues/559
+        npm install -g powerbi-visuals-tools@6.2.0
 
     - name: Run linter
       run: |
