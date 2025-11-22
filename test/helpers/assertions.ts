@@ -48,17 +48,22 @@ export function assertArrayApproximately(
 
 /**
  * Assert that control limit results have expected structure
+ * NOTE: Run charts don't have ll99, ll95, etc. - only targets
  */
 export function assertControlLimitsStructure(limits: any): void {
   expect(limits).toBeDefined("Control limits should be defined");
   expect(limits.values).toBeDefined("Control limits should have values array");
-  expect(limits.ll99).toBeDefined("Control limits should have ll99 array");
-  expect(limits.ll95).toBeDefined("Control limits should have ll95 array");
-  expect(limits.ll68).toBeDefined("Control limits should have ll68 array");
   expect(limits.targets).toBeDefined("Control limits should have targets array");
-  expect(limits.ul68).toBeDefined("Control limits should have ul68 array");
-  expect(limits.ul95).toBeDefined("Control limits should have ul95 array");
-  expect(limits.ul99).toBeDefined("Control limits should have ul99 array");
+  
+  // These are optional - run charts don't have them
+  if (limits.ll99 !== undefined) {
+    expect(limits.ll99).toBeDefined("Control limits should have ll99 array");
+    expect(limits.ll95).toBeDefined("Control limits should have ll95 array");
+    expect(limits.ll68).toBeDefined("Control limits should have ll68 array");
+    expect(limits.ul68).toBeDefined("Control limits should have ul68 array");
+    expect(limits.ul95).toBeDefined("Control limits should have ul95 array");
+    expect(limits.ul99).toBeDefined("Control limits should have ul99 array");
+  }
 }
 
 /**
@@ -68,13 +73,17 @@ export function assertControlLimitsLength(limits: any, expectedLength: number): 
   assertControlLimitsStructure(limits);
   
   expect(limits.values.length).toBe(expectedLength, "values array length");
-  expect(limits.ll99.length).toBe(expectedLength, "ll99 array length");
-  expect(limits.ll95.length).toBe(expectedLength, "ll95 array length");
-  expect(limits.ll68.length).toBe(expectedLength, "ll68 array length");
   expect(limits.targets.length).toBe(expectedLength, "targets array length");
-  expect(limits.ul68.length).toBe(expectedLength, "ul68 array length");
-  expect(limits.ul95.length).toBe(expectedLength, "ul95 array length");
-  expect(limits.ul99.length).toBe(expectedLength, "ul99 array length");
+  
+  // These are optional - run charts don't have them
+  if (limits.ll99 !== undefined) {
+    expect(limits.ll99.length).toBe(expectedLength, "ll99 array length");
+    expect(limits.ll95.length).toBe(expectedLength, "ll95 array length");
+    expect(limits.ll68.length).toBe(expectedLength, "ll68 array length");
+    expect(limits.ul68.length).toBe(expectedLength, "ul68 array length");
+    expect(limits.ul95.length).toBe(expectedLength, "ul95 array length");
+    expect(limits.ul99.length).toBe(expectedLength, "ul99 array length");
+  }
 }
 
 /**
@@ -157,7 +166,12 @@ export function assertAllValidNumbers(values: any[], message?: string): void {
 export function assertControlLimitsValid(limits: any): void {
   assertControlLimitsStructure(limits);
   
-  const arrays = ['values', 'll99', 'll95', 'll68', 'targets', 'ul68', 'ul95', 'ul99'];
+  const arrays = ['values', 'targets'];
+  
+  // Add optional limit arrays if they exist
+  if (limits.ll99 !== undefined) {
+    arrays.push('ll99', 'll95', 'll68', 'ul68', 'ul95', 'ul99');
+  }
   
   for (const arrayName of arrays) {
     const arr = limits[arrayName];

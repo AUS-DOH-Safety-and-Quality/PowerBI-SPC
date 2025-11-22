@@ -24,7 +24,7 @@ export const nhsAE4Hour = {
   keys: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"],
   numerators: [920, 935, 940, 925, 930, 945, 938, 942, 928, 935, 940, 937],
   denominators: [1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
-  expectedCL: 93.6,  // Approximate centerline
+  expectedCL: 0.936,  // 93.6% as a proportion
   improvementDirection: "increase"
 };
 
@@ -177,7 +177,7 @@ export const patientSatisfaction = {
                86, 88, 90, 87, 89, 91, 88, 90, 92, 89],
   denominators: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
                 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
-  expectedMedian: 87.5,
+  expectedMedian: 87.5,  // Actual median of the numerator values (not divided)
   improvementDirection: "increase"
 };
 
