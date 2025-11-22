@@ -201,6 +201,38 @@ This document outlines a comprehensive 10-session plan to extend the testing inf
     - Viewport resize handling
     - Error rendering without breaking structure
 
+- ✅ **Session 8: Visual Class Integration & End-to-End Tests** - [Detailed Report](TEST_EXTENSION_PLAN_SESSION_8.md)
+  - **Completed:** November 22, 2025
+  - **Tests Added:** 69 new tests (675 → 744 total passing tests)
+  - **Coverage Improvement:** 77.08% → 77.40% statements (+0.32%)
+  - **Status:** All 744 tests passing ✅
+  - **Key Deliverables:**
+    - `test/test-visual-class.ts` (25 tests)
+    - `test/test-visual-lifecycle.ts` (18 tests)
+    - `test/test-visual-interactions.ts` (21 tests)
+    - `test/test-chart-type-switching.ts` (5 tests)
+  - **Key Findings:**
+    - Visual class properly orchestrates all components
+    - Complete lifecycle tested: initialize → update → render → resize → error → recovery
+    - User interactions work correctly: selection, highlighting, context menu, cross-filtering
+    - Chart/table switching based on grouped data works seamlessly
+    - Error states are recoverable with valid data
+    - Settings come from DataView and are read-only after update
+  - **Visual Methods Tested:**
+    - `constructor` - Initialization (6 tests)
+    - `update()` - Data updates, resizes, errors (8 tests)
+    - `drawVisual()` - Complete rendering pipeline (4 tests)
+    - `resizeCanvas()` - Canvas sizing (3 tests)
+    - `updateHighlighting()` - Selection highlighting (2 tests)
+    - `getFormattingModel()` - PowerBI format pane (1 test)
+    - `adjustPaddingForOverflow()` - Padding adjustments (1 test)
+  - **Integration Validated:**
+    - Complete Visual lifecycle (constructor → update → render)
+    - User interaction flows (selection, highlighting, context menu)
+    - Error handling and recovery
+    - Chart/table view switching
+    - Cross-filtering and tooltips
+
 ---
 
 ## Current Test Infrastructure Analysis
@@ -1056,12 +1088,12 @@ Selection update          | < 10ms   | < 30ms         | User interaction, needs 
 | 5       | 105       | 78%                        | 69.64% ✅ |
 | 6       | 52        | 82%                        | 70.87% ✅ |
 | 7       | 71        | 85%                        | 77.08% ✅ |
-| 8       | ~20       | 87%                        | - |
+| 8       | 69        | 87%                        | 77.40% ✅ |
 | 9       | ~15       | 88%                        | - |
 | 10      | ~30       | 90%                        | - |
 
 **Total New Tests:** ~600 tests (from original 3)
-**Current Progress:** 684 new tests added (Sessions 1-7)
+**Current Progress:** 753 new tests added (Sessions 1-8)
 
 *Note on test count: This is an estimate based on comprehensive coverage goals. The actual number may vary as some complex functions may require more test cases for edge cases, while simple functions may need fewer. Focus should be on quality coverage over quantity - each test should validate a distinct behavior or edge case. Test consolidation strategies: (1) Use parameterized tests for similar test cases, (2) Group related assertions in single tests when testing same scenario, (3) Create helper functions to reduce duplication, (4) Prioritize tests for critical paths if time-constrained.*
 
