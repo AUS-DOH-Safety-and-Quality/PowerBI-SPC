@@ -30,52 +30,9 @@ import trend from "../src/Outlier Flagging/trend";
 import twoInThree from "../src/Outlier Flagging/twoInThree";
 
 import { type controlLimitsArgs } from "../src/Classes";
+import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
 
 describe("Performance Testing - Calculation Performance", () => {
-
-  // Helper function to create keys array
-  function createKeys(n: number): { x: number, id: number, label: string }[] {
-    return Array.from({ length: n }, (_, i) => ({
-      x: i,
-      id: i,
-      label: `Point ${i + 1}`
-    }));
-  }
-
-  // Helper to create subset_points array for all indices
-  function allIndices(n: number): number[] {
-    return Array.from({ length: n }, (_, i) => i);
-  }
-
-  // Helper function to generate realistic random data
-  function generateData(n: number, mean: number = 50, stddev: number = 10): number[] {
-    return Array.from({ length: n }, () => {
-      // Box-Muller transform for normal distribution
-      const u1 = Math.random();
-      const u2 = Math.random();
-      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      return mean + z * stddev;
-    });
-  }
-
-  // Helper function to measure execution time
-  function measureTime(fn: () => void, iterations: number = 1): number {
-    const times: number[] = [];
-    
-    for (let i = 0; i < iterations; i++) {
-      const start = performance.now();
-      fn();
-      const end = performance.now();
-      times.push(end - start);
-    }
-    
-    // Return median time to reduce impact of outliers
-    times.sort((a, b) => a - b);
-    const mid = Math.floor(times.length / 2);
-    return times.length % 2 === 0
-      ? (times[mid - 1] + times[mid]) / 2
-      : times[mid];
-  }
 
   describe("Limit Calculation Performance - i chart (XmR)", () => {
 

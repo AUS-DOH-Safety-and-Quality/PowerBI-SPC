@@ -17,42 +17,9 @@ import iLimits from "../src/Limit Calculations/i";
 import pLimits from "../src/Limit Calculations/p";
 import xbarLimits from "../src/Limit Calculations/xbar";
 import { type controlLimitsArgs } from "../src/Classes";
+import { allIndices, createKeys, measureTime, generateData, itFailing, createDayLabels, createGroupedData } from "./helpers/testHelpers";
 
 describe("Performance Testing - Large Dataset Handling", () => {
-
-  // Helper function to generate realistic data
-  function generateData(n: number, mean: number = 50, stddev: number = 10): number[] {
-    return Array.from({ length: n }, () => {
-      const u1 = Math.random();
-      const u2 = Math.random();
-      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      return Math.max(0, mean + z * stddev);
-    });
-  }
-
-  // Helper to create day labels
-  function createDayLabels(n: number): string[] {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return Array.from({ length: n }, (_, i) => {
-      const week = Math.floor(i / 7) + 1;
-      const day = days[i % 7];
-      return `${day} W${week}`;
-    });
-  }
-
-  // Helper to create keys array for limit calculations
-  function createKeys(n: number): { x: number, id: number, label: string }[] {
-    return Array.from({ length: n }, (_, i) => ({
-      x: i,
-      id: i,
-      label: `Point ${i + 1}`
-    }));
-  }
-
-  // Helper to create subset_points array
-  function allIndices(n: number): number[] {
-    return Array.from({ length: n }, (_, i) => i);
-  }
 
   describe("Large Dataset - Visual Rendering", () => {
 

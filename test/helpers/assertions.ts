@@ -55,7 +55,7 @@ export function assertControlLimitsStructure(limits: any): void {
   expect(limits.ll99).toBeDefined("Control limits should have ll99 array");
   expect(limits.ll95).toBeDefined("Control limits should have ll95 array");
   expect(limits.ll68).toBeDefined("Control limits should have ll68 array");
-  expect(limits.cl).toBeDefined("Control limits should have cl array");
+  expect(limits.targets).toBeDefined("Control limits should have targets array");
   expect(limits.ul68).toBeDefined("Control limits should have ul68 array");
   expect(limits.ul95).toBeDefined("Control limits should have ul95 array");
   expect(limits.ul99).toBeDefined("Control limits should have ul99 array");
@@ -71,20 +71,20 @@ export function assertControlLimitsLength(limits: any, expectedLength: number): 
   expect(limits.ll99.length).toBe(expectedLength, "ll99 array length");
   expect(limits.ll95.length).toBe(expectedLength, "ll95 array length");
   expect(limits.ll68.length).toBe(expectedLength, "ll68 array length");
-  expect(limits.cl.length).toBe(expectedLength, "cl array length");
+  expect(limits.targets.length).toBe(expectedLength, "targets array length");
   expect(limits.ul68.length).toBe(expectedLength, "ul68 array length");
   expect(limits.ul95.length).toBe(expectedLength, "ul95 array length");
   expect(limits.ul99.length).toBe(expectedLength, "ul99 array length");
 }
 
 /**
- * Assert that control limits follow expected ordering: ll99 < ll95 < ll68 < cl < ul68 < ul95 < ul99
+ * Assert that control limits follow expected ordering: ll99 < ll95 < ll68 < targets < ul68 < ul95 < ul99
  */
 export function assertControlLimitsOrdering(limits: any, index: number = 0): void {
   const ll99 = limits.ll99[index];
   const ll95 = limits.ll95[index];
   const ll68 = limits.ll68[index];
-  const cl = limits.cl[index];
+  const targets = limits.targets[index];
   const ul68 = limits.ul68[index];
   const ul95 = limits.ul95[index];
   const ul99 = limits.ul99[index];
@@ -96,11 +96,11 @@ export function assertControlLimitsOrdering(limits: any, index: number = 0): voi
   if (ll95 !== null && ll68 !== null) {
     expect(ll95).toBeLessThanOrEqual(ll68, `At index ${index}: ll95 should be <= ll68`);
   }
-  if (ll68 !== null && cl !== null) {
-    expect(ll68).toBeLessThanOrEqual(cl, `At index ${index}: ll68 should be <= cl`);
+  if (ll68 !== null && targets !== null) {
+    expect(ll68).toBeLessThanOrEqual(targets, `At index ${index}: ll68 should be <= targets`);
   }
-  if (cl !== null && ul68 !== null) {
-    expect(cl).toBeLessThanOrEqual(ul68, `At index ${index}: cl should be <= ul68`);
+  if (targets !== null && ul68 !== null) {
+    expect(targets).toBeLessThanOrEqual(ul68, `At index ${index}: targets should be <= ul68`);
   }
   if (ul68 !== null && ul95 !== null) {
     expect(ul68).toBeLessThanOrEqual(ul95, `At index ${index}: ul68 should be <= ul95`);
@@ -120,7 +120,7 @@ export function assertConstantCenterline(
 ): void {
   assertControlLimitsStructure(limits);
   
-  const centerlines = limits.cl;
+  const centerlines = limits.targets;
   const firstCL = centerlines[0];
   
   if (expectedCL !== undefined) {
@@ -157,7 +157,7 @@ export function assertAllValidNumbers(values: any[], message?: string): void {
 export function assertControlLimitsValid(limits: any): void {
   assertControlLimitsStructure(limits);
   
-  const arrays = ['values', 'll99', 'll95', 'll68', 'cl', 'ul68', 'ul95', 'ul99'];
+  const arrays = ['values', 'll99', 'll95', 'll68', 'targets', 'ul68', 'ul95', 'ul99'];
   
   for (const arrayName of arrays) {
     const arr = limits[arrayName];
