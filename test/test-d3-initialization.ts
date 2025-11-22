@@ -15,7 +15,7 @@ import initialiseSVG from "../src/D3 Plotting Functions/initialiseSVG";
 import initialiseIconSVG, { iconTransformSpec } from "../src/D3 Plotting Functions/initialiseIconSVG";
 
 describe("initialiseSVG", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
+  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
 
   beforeEach(() => {
     // Create a fresh SVG element for each test
@@ -210,7 +210,7 @@ describe("iconTransformSpec", () => {
 });
 
 describe("initialiseIconSVG", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
+  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
 
   beforeEach(() => {
     svg = d3.select("body").append("svg");
