@@ -70,6 +70,41 @@ This document outlines a comprehensive 10-session plan to extend the testing inf
     - **Gating Implemented:** Failing tests skipped by default, run with flag when needed
   - **Documentation:** Comprehensive analysis in `NaN_HANDLING_ANALYSIS.md` with implementation plan
 
+- ✅ **Session 4: SPC Limit Calculations Unit Tests - Part 2 (Advanced Charts)** - [Detailed Report](TEST_EXTENSION_PLAN_SESSION_4.md)
+  - **Completed:** November 22, 2025
+  - **Tests Added:** 60 new tests (399 → 459 total)
+  - **Coverage Improvement:** 61.83% → 65.79% statements (+3.96%)
+  - **Status:** ✅ All passing (451 tests, 8 gated behind flag)
+  - **Test Execution:**
+    - `npm test` - 451 tests pass, 8 skipped ✅
+    - `npm run test:failing` - 451 pass, 8 fail (4 from Session 3, 4 from Session 4)
+  - **Key Deliverables:**
+    - `test/test-limits-advanced.ts` (60 tests covering 7 chart types)
+    - `TEST_EXTENSION_PLAN_SESSION_4.md` (comprehensive session report)
+    - 4 new gated failing tests (documenting edge case bugs)
+  - **Charts Tested (100% coverage each):**
+    - P' chart (proportions with large-sample correction)
+    - U' chart (rates with large-sample correction)
+    - X-bar chart (sample means with SD weighting)
+    - G chart (geometric distribution for rare events)
+    - T chart (time between events with transformation)
+    - I_M chart (individual measurements, median variant)
+    - I_MM chart (individual measurements, double-median variant)
+  - **Critical Discoveries:**
+    - **2 New Edge Case Bugs:** All-zeros input causes NaN in pprime and uprime
+      - Root cause: Division by zero in z-score correction factor calculation
+      - Impact: Medium (edge case but should be handled gracefully)
+    - **2 Recurring Bugs:** i_m and i_mm have same Infinity issue as Session 3
+      - Division by zero produces Infinity instead of null
+      - Same root cause: `isNaN(Infinity)` returns false
+    - **Correction Factors Validated:** P' and U' corrections properly reduce over-dispersion
+    - **Weighted Calculations Tested:** X-bar chart properly applies A3 constant and weighted SD
+    - **Transformations Validated:** T-chart power transformation (^1/3.6) and back-transformation work correctly
+    - **Variant Differences Confirmed:** i vs i_m vs i_mm robustness to outliers demonstrated
+  - **Limit Calculations Status:** 14 of 15 files tested (93% complete)
+    - Sessions 3+4 combined: 124 tests for limit calculations
+    - Only index.ts (export aggregator) remains untested
+
 ---
 
 ## Current Test Infrastructure Analysis
@@ -920,8 +955,8 @@ Selection update          | < 10ms   | < 30ms         | User interaction, needs 
 | Start   | 3         | 54% (baseline)             | 54.06% |
 | 1       | 155       | 60%                        | 55.56% ✅ |
 | 2       | 177       | 65%                        | 60.54% ✅ |
-| 3       | ~20       | 70%                        | - |
-| 4       | ~20       | 75%                        | - |
+| 3       | 64        | 70%                        | 61.83% ✅ |
+| 4       | 60        | 75%                        | 65.79% ✅ |
 | 5       | ~15       | 78%                        | - |
 | 6       | ~25       | 82%                        | - |
 | 7       | ~30       | 85%                        | - |
@@ -929,7 +964,8 @@ Selection update          | < 10ms   | < 30ms         | User interaction, needs 
 | 9       | ~15       | 88%                        | - |
 | 10      | ~30       | 90%                        | - |
 
-**Total New Tests:** ~220 tests (from current 3)
+**Total New Tests:** ~500 tests (from original 3)
+**Current Progress:** 456 new tests added (Sessions 1-4)
 
 *Note on test count: This is an estimate based on comprehensive coverage goals. The actual number may vary as some complex functions may require more test cases for edge cases, while simple functions may need fewer. Focus should be on quality coverage over quantity - each test should validate a distinct behavior or edge case. Test consolidation strategies: (1) Use parameterized tests for similar test cases, (2) Group related assertions in single tests when testing same scenario, (3) Create helper functions to reduce duplication, (4) Prioritize tests for critical paths if time-constrained.*
 
