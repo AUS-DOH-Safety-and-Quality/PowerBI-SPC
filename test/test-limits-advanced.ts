@@ -23,22 +23,9 @@ import pLimits from "../src/Limit Calculations/p";
 import uLimits from "../src/Limit Calculations/u";
 import iLimits from "../src/Limit Calculations/i";
 import { type controlLimitsArgs } from "../src/Classes";
+import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
 
 describe("SPC Limit Calculations - Advanced Charts", () => {
-
-  // Helper function to create keys array
-  function createKeys(n: number): { x: number, id: number, label: string }[] {
-    return Array.from({ length: n }, (_, i) => ({
-      x: i,
-      id: i,
-      label: `Point ${i + 1}`
-    }));
-  }
-
-  // Helper to create subset_points array for all indices
-  function allIndices(n: number): number[] {
-    return Array.from({ length: n }, (_, i) => i);
-  }
 
   // Helper to check if value is close to expected (within tolerance)
   function expectClose(actual: number, expected: number, tolerance: number = 0.01) {
@@ -54,10 +41,6 @@ describe("SPC Limit Calculations - Advanced Charts", () => {
       expectClose(actual[i], expected[i], tolerance);
     }
   }
-
-  // Helper to conditionally run tests that document failing code
-  const runFailingTests = (window as any).__karma__?.config?.runFailingTests || false;
-  const itFailing = runFailingTests ? it : xit;
 
   describe("pprimeLimits() - Proportions with Large-Sample Correction", () => {
 

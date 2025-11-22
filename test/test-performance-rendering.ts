@@ -13,37 +13,9 @@ import { Visual } from "../src/visual";
 import powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import buildDataView from "./helpers/buildDataView";
+import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
 
 describe("Performance Testing - Rendering Performance", () => {
-
-  // Helper function to generate realistic data
-  function generateData(n: number, mean: number = 50, stddev: number = 10): number[] {
-    return Array.from({ length: n }, () => {
-      const u1 = Math.random();
-      const u2 = Math.random();
-      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      return Math.max(0, mean + z * stddev);
-    });
-  }
-
-  // Helper function to measure execution time
-  function measureTime(fn: () => void, iterations: number = 1): number {
-    const times: number[] = [];
-    
-    for (let i = 0; i < iterations; i++) {
-      const start = performance.now();
-      fn();
-      const end = performance.now();
-      times.push(end - start);
-    }
-    
-    // Return median time to reduce impact of outliers
-    times.sort((a, b) => a - b);
-    const mid = Math.floor(times.length / 2);
-    return times.length % 2 === 0
-      ? (times[mid - 1] + times[mid]) / 2
-      : times[mid];
-  }
 
   // Helper to create day labels
   function createDayLabels(n: number): string[] {

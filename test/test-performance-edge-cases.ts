@@ -16,40 +16,9 @@ import buildDataView from "./helpers/buildDataView";
 import iLimits from "../src/Limit Calculations/i";
 import xbarLimits from "../src/Limit Calculations/xbar";
 import { type controlLimitsArgs } from "../src/Classes";
+import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
 
 describe("Performance Testing - Edge Cases and Stress Testing", () => {
-
-  // Helper function to generate realistic data
-  function generateData(n: number, mean: number = 50, stddev: number = 10): number[] {
-    return Array.from({ length: n }, () => {
-      const u1 = Math.random();
-      const u2 = Math.random();
-      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-      return Math.max(0, mean + z * stddev);
-    });
-  }
-
-  // Helper to create keys array
-  function createKeys(n: number): { x: number, id: number, label: string }[] {
-    return Array.from({ length: n }, (_, i) => ({
-      x: i,
-      id: i,
-      label: `Point ${i + 1}`
-    }));
-  }
-
-  // Helper to create subset_points array
-  function allIndices(n: number): number[] {
-    return Array.from({ length: n }, (_, i) => i);
-  }
-
-  // Helper function to measure execution time
-  function measureTime(fn: () => void): number {
-    const start = performance.now();
-    fn();
-    const end = performance.now();
-    return end - start;
-  }
 
   describe("Rapid Sequential Updates", () => {
 
