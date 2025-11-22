@@ -4,11 +4,6 @@ import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
 
 describe("Chart Type Switching", () => {
-  const allChartTypes = [
-    "run", "i", "mr", "c", "p", "u", "s",
-    "pprime", "uprime", "xbar", "g", "t", "i_m", "i_mm"
-  ];
-
   describe("Individual chart type rendering", () => {
     it("should render run chart", () => {
       const element = testDom("500", "500");

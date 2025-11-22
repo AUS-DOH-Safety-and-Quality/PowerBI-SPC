@@ -15,7 +15,7 @@ import initialiseSVG from "../src/D3 Plotting Functions/initialiseSVG";
 import initialiseIconSVG, { iconTransformSpec } from "../src/D3 Plotting Functions/initialiseIconSVG";
 
 describe("initialiseSVG", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
+  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
 
   beforeEach(() => {
     // Create a fresh SVG element for each test
@@ -47,8 +47,8 @@ describe("initialiseSVG", () => {
     const ttipLineX = svg.select(".ttip-line-x");
     const ttipLineY = svg.select(".ttip-line-y");
 
-    expect(ttipLineX.node().tagName).toBe("line");
-    expect(ttipLineY.node().tagName).toBe("line");
+    expect((ttipLineX.node() as Element).tagName).toBe("line");
+    expect((ttipLineY.node() as Element).tagName).toBe("line");
   });
 
   it("should create axis groups as g elements", () => {
@@ -57,8 +57,8 @@ describe("initialiseSVG", () => {
     const xAxisGroup = svg.select(".xaxisgroup");
     const yAxisGroup = svg.select(".yaxisgroup");
 
-    expect(xAxisGroup.node().tagName).toBe("g");
-    expect(yAxisGroup.node().tagName).toBe("g");
+    expect((xAxisGroup.node() as Element).tagName).toBe("g");
+    expect((yAxisGroup.node() as Element).tagName).toBe("g");
   });
 
   it("should create axis labels as text elements", () => {
@@ -67,8 +67,8 @@ describe("initialiseSVG", () => {
     const xAxisLabel = svg.select(".xaxislabel");
     const yAxisLabel = svg.select(".yaxislabel");
 
-    expect(xAxisLabel.node().tagName).toBe("text");
-    expect(yAxisLabel.node().tagName).toBe("text");
+    expect((xAxisLabel.node() as Element).tagName).toBe("text");
+    expect((yAxisLabel.node() as Element).tagName).toBe("text");
   });
 
   it("should create lines and dots groups as g elements", () => {
@@ -77,8 +77,8 @@ describe("initialiseSVG", () => {
     const linesGroup = svg.select(".linesgroup");
     const dotsGroup = svg.select(".dotsgroup");
 
-    expect(linesGroup.node().tagName).toBe("g");
-    expect(dotsGroup.node().tagName).toBe("g");
+    expect((linesGroup.node() as Element).tagName).toBe("g");
+    expect((dotsGroup.node() as Element).tagName).toBe("g");
   });
 
   it("should remove all children when removeAll is true", () => {
@@ -210,7 +210,7 @@ describe("iconTransformSpec", () => {
 });
 
 describe("initialiseIconSVG", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
+  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
 
   beforeEach(() => {
     svg = d3.select("body").append("svg");
@@ -225,7 +225,7 @@ describe("initialiseIconSVG", () => {
 
     const iconGroup = svg.select(".icongroup");
     expect(iconGroup.empty()).toBe(false);
-    expect(iconGroup.node().tagName).toBe("g");
+    expect((iconGroup.node() as Element).tagName).toBe("g");
   });
 
   it("should apply transform when transform_spec is provided", () => {
