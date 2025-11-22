@@ -644,15 +644,18 @@ Visualization rendering functions:
 - Use realistic data distributions
 
 **Performance Baselines:**
+
+*Note: These targets are based on standard web application UX guidelines (< 100ms feels instant, < 1s feels responsive) and PowerBI's rendering budget. PowerBI custom visuals should render within 200-500ms for good user experience. Targets will be validated against actual baseline measurements in Session 9.*
+
 ```
-Operation                 | Target   | Max Acceptable
---------------------------|----------|---------------
-Limit calc (100 pts)      | < 50ms   | < 100ms
-Limit calc (1000 pts)     | < 200ms  | < 500ms
-Initial render (100 pts)  | < 100ms  | < 200ms
-Update render (100 pts)   | < 30ms   | < 50ms
-Outlier detection (100)   | < 20ms   | < 50ms
-Selection update          | < 10ms   | < 30ms
+Operation                 | Target   | Max Acceptable | Rationale
+--------------------------|----------|----------------|------------------------------------
+Limit calc (100 pts)      | < 50ms   | < 100ms        | Core calculation, runs on every update
+Limit calc (1000 pts)     | < 200ms  | < 500ms        | Large dataset, infrequent in practice
+Initial render (100 pts)  | < 100ms  | < 200ms        | First impression, feels instant
+Update render (100 pts)   | < 30ms   | < 50ms         | Interaction feedback, 60fps = 16ms
+Outlier detection (100)   | < 20ms   | < 50ms         | Part of calculation pipeline
+Selection update          | < 10ms   | < 30ms         | User interaction, needs to feel immediate
 ```
 
 **Success Criteria:**
@@ -861,6 +864,8 @@ Selection update          | < 10ms   | < 30ms
 | 10      | ~30       | 90%                        |
 
 **Total New Tests:** ~220 tests (from current 3)
+
+*Note on test count: This is an estimate based on comprehensive coverage goals. The actual number may vary as some complex functions may require more test cases for edge cases, while simple functions may need fewer. Focus should be on quality coverage over quantity - each test should validate a distinct behavior or edge case. Test consolidation strategies: (1) Use parameterized tests for similar test cases, (2) Group related assertions in single tests when testing same scenario, (3) Create helper functions to reduce duplication, (4) Prioritize tests for critical paths if time-constrained.*
 
 ### Test Execution Strategy
 
