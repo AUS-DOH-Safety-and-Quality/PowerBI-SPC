@@ -4,6 +4,22 @@
 
 This document outlines a comprehensive 10-session plan to extend the testing infrastructure for the PowerBI-SPC custom visual. The plan will transform the current minimal test coverage (54%) into a robust, production-ready test suite with unit tests, integration tests, performance tests, and regression tests.
 
+### Session Completion Status
+
+- ✅ **Session 1: Utility Functions Unit Tests - Core Mathematical Operations** - [Detailed Report](TEST_EXTENSION_PLAN_SESSION_1.md)
+  - **Completed:** November 22, 2025
+  - **Tests Added:** 155 new tests (3 → 158 total)
+  - **Coverage Improvement:** 54.06% → 55.56% statements (+1.50%)
+  - **Status:** All 158 tests passing ✅
+  - **Key Deliverables:** 
+    - `test/test-functions-math.ts` (71 tests)
+    - `test/test-functions-broadcasting.ts` (56 tests)
+    - `test/test-functions-statistical.ts` (28 tests)
+  - **Key Findings:** 
+    - All core mathematical functions working correctly
+    - Edge case identified in `calculateTrendLine()` with single-point input
+    - Special `pow()` handling for negative bases documented
+
 ---
 
 ## Current Test Infrastructure Analysis
@@ -849,19 +865,19 @@ Selection update          | < 10ms   | < 30ms         | User interaction, needs 
 
 ### Coverage Goals by Session
 
-| Session | New Tests | Cumulative Coverage Target |
-|---------|-----------|----------------------------|
-| Start   | 3         | 54% (baseline)             |
-| 1       | ~20       | 60%                        |
-| 2       | ~25       | 65%                        |
-| 3       | ~20       | 70%                        |
-| 4       | ~20       | 75%                        |
-| 5       | ~15       | 78%                        |
-| 6       | ~25       | 82%                        |
-| 7       | ~30       | 85%                        |
-| 8       | ~20       | 87%                        |
-| 9       | ~15       | 88%                        |
-| 10      | ~30       | 90%                        |
+| Session | New Tests | Cumulative Coverage Target | Actual |
+|---------|-----------|----------------------------|--------|
+| Start   | 3         | 54% (baseline)             | 54.06% |
+| 1       | ~20       | 60%                        | 55.56% ✅ |
+| 2       | ~25       | 65%                        | - |
+| 3       | ~20       | 70%                        | - |
+| 4       | ~20       | 75%                        | - |
+| 5       | ~15       | 78%                        | - |
+| 6       | ~25       | 82%                        | - |
+| 7       | ~30       | 85%                        | - |
+| 8       | ~20       | 87%                        | - |
+| 9       | ~15       | 88%                        | - |
+| 10      | ~30       | 90%                        | - |
 
 **Total New Tests:** ~220 tests (from current 3)
 
