@@ -8,7 +8,11 @@
     "test": "karma start --browsers=ChromeHeadlessCI",
     "test:failing": "RUN_FAILING_TESTS=true karma start --browsers=ChromeHeadlessCI",
     "debug": "karma start --single-run=false --browsers=Chrome",
-    "bundle": "npx rollup --config rollup.config.js --configPlugin typescript"
+    "bundle": "npx rollup --config rollup.config.js --configPlugin typescript",
+    "benchmark": "ts-node test/benchmarks/run-benchmarks.ts",
+    "benchmark:update": "UPDATE_BASELINE=true ts-node test/benchmarks/run-benchmarks.ts",
+    "benchmark:history": "ts-node test/benchmarks/benchmark-history.ts",
+    "benchmark:export": "ts-node test/benchmarks/benchmark-history.ts --export"
   },
   "dependencies": {
     "@stdlib/math-base-special-gammaln": "^0.2.2",
@@ -54,6 +58,7 @@
     "rollup": "^4.52.5",
     "style-loader": "^4.0.0",
     "ts-loader": "9.5.4",
+    "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "typescript": "5.9.3"
   },
