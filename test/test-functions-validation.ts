@@ -1,7 +1,5 @@
-import validateDataView from "../src/Functions/validateDataView";
 import validateInputData from "../src/Functions/validateInputData";
-import { settingsClass, derivedSettingsClass } from "../src/Classes";
-import powerbi from "powerbi-visuals-api";
+import { derivedSettingsClass } from "../src/Classes";
 
 describe("Utility Functions - Data Validation", () => {
   describe("validateInputData()", () => {
@@ -14,6 +12,7 @@ describe("Utility Functions - Data Validation", () => {
       numerator_leq_denominator: false,
       denominator_optional: false,
       has_control_limits: true,
+      integer_num_den: false,
       value_name: "Value",
       ...overrides
     });

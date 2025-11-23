@@ -13,13 +13,14 @@
 import * as d3 from "../src/D3 Plotting Functions/D3 Modules";
 import initialiseSVG from "../src/D3 Plotting Functions/initialiseSVG";
 import initialiseIconSVG, { iconTransformSpec } from "../src/D3 Plotting Functions/initialiseIconSVG";
+import type { svgBaseType } from "../src/visual";
 
 describe("initialiseSVG", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
+  let svg: svgBaseType;
 
   beforeEach(() => {
     // Create a fresh SVG element for each test
-    svg = d3.select("body").append("svg");
+    svg = d3.select("body").append("svg") as svgBaseType;
   });
 
   afterEach(() => {
@@ -210,10 +211,10 @@ describe("iconTransformSpec", () => {
 });
 
 describe("initialiseIconSVG", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, undefined>;
+  let svg: svgBaseType;
 
   beforeEach(() => {
-    svg = d3.select("body").append("svg");
+    svg = d3.select("body").append("svg") as svgBaseType;
   });
 
   afterEach(() => {

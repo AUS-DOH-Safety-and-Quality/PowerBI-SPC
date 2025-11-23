@@ -23,7 +23,7 @@ import pLimits from "../src/Limit Calculations/p";
 import uLimits from "../src/Limit Calculations/u";
 import iLimits from "../src/Limit Calculations/i";
 import { type controlLimitsArgs } from "../src/Classes";
-import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
+import { allIndices, createKeys, itFailing } from "./helpers/testHelpers";
 
 describe("SPC Limit Calculations - Advanced Charts", () => {
 
@@ -32,14 +32,6 @@ describe("SPC Limit Calculations - Advanced Charts", () => {
     const diff = Math.abs(actual - expected);
     const relativeError = expected === 0 ? diff : diff / Math.abs(expected);
     expect(relativeError).toBeLessThanOrEqual(tolerance);
-  }
-
-  // Helper to check if array values are close to expected (within tolerance)
-  function expectArrayClose(actual: number[], expected: number[], tolerance: number = 0.01) {
-    expect(actual.length).toBe(expected.length);
-    for (let i = 0; i < actual.length; i++) {
-      expectClose(actual[i], expected[i], tolerance);
-    }
   }
 
   describe("pprimeLimits() - Proportions with Large-Sample Correction", () => {
@@ -529,7 +521,6 @@ describe("SPC Limit Calculations - Advanced Charts", () => {
       const result = gLimits(args);
       
       // Mean = (3+5+2+4+6)/5 = 4
-      const mean = 4;
       expectClose(result.targets[0], 3.5, 0.2);  // Median should be close to mean for small samples
       
       expect(result.ll99).toBeDefined();

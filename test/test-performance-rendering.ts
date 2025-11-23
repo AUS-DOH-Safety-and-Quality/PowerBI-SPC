@@ -13,7 +13,7 @@ import { Visual } from "../src/visual";
 import powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import buildDataView from "./helpers/buildDataView";
-import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
+import { measureTime, generateData } from "./helpers/testHelpers";
 
 describe("Performance Testing - Rendering Performance", () => {
 

@@ -11,7 +11,6 @@
  * - drawDownloadButton: Download button creation
  */
 
-import * as d3 from "../src/D3 Plotting Functions/D3 Modules";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
@@ -22,10 +21,10 @@ import powerbi from "powerbi-visuals-api";
 
 describe("D3 Rendering Functions", () => {
   let visual: Visual;
-  let element: Element;
+  let element: HTMLElement;
 
   beforeEach(() => {
-    element = testDom("500", "500");
+    element = testDom("500", "500") as HTMLElement;
     const host = createVisualHost({});
     visual = new Visual({
       element: element,
@@ -50,6 +49,8 @@ describe("D3 Rendering Functions", () => {
     const mockColourPalette = {
       foregroundColour: "#000000",
       backgroundColour: "#FFFFFF",
+      foregroundSelectedColour: "#0078D4",
+      hyperlinkColour: "#0078D4",
       isHighContrast: false
     };
 
@@ -271,6 +272,8 @@ describe("D3 Rendering Functions", () => {
       const mockColourPalette = {
         foregroundColour: "#000000",
         backgroundColour: "#FFFFFF",
+        foregroundSelectedColour: "#0078D4",
+        hyperlinkColour: "#0078D4",
         isHighContrast: false
       };
 

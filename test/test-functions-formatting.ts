@@ -3,7 +3,6 @@ import dateSettingsToFormatOptions from "../src/Functions/dateSettingsToFormatOp
 import parseInputDates from "../src/Functions/parseInputDates";
 import { defaultSettingsType } from "../src/Classes";
 import powerbi from "powerbi-visuals-api";
-import DataViewValueColumn = powerbi.DataViewValueColumn;
 
 describe("Utility Functions - Formatting", () => {
   describe("formatPrimitiveValue()", () => {
@@ -133,7 +132,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-US",
         date_format_delim: " ",
-        date_format_weekday: "Thurs DD",
         date_format_day: "Thurs DD",
         date_format_month: "Mon",
         date_format_year: "YYYY"
@@ -151,7 +149,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-US",
         date_format_delim: " ",
-        date_format_weekday: "(blank)",
         date_format_day: "DD",
         date_format_month: "MM",
         date_format_year: "YYYY"
@@ -169,7 +166,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-US",
         date_format_delim: "/",
-        date_format_weekday: "Thursday DD",
         date_format_day: "Thursday DD",
         date_format_month: "Month",
         date_format_year: "YY"
@@ -187,7 +183,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-US",
         date_format_delim: "-",
-        date_format_weekday: "DD",
         date_format_day: "DD",
         date_format_month: "MM",
         date_format_year: "YYYY"
@@ -203,7 +198,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-GB",
         date_format_delim: " ",
-        date_format_weekday: "(blank)",
         date_format_day: "(blank)",
         date_format_month: "(blank)",
         date_format_year: "(blank)"
@@ -218,7 +212,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-US",
         date_format_delim: "/",
-        date_format_weekday: "(blank)",
         date_format_day: "DD",
         date_format_month: "(blank)",
         date_format_year: "YYYY"
@@ -236,7 +229,6 @@ describe("Utility Functions - Formatting", () => {
       const dateSettings: defaultSettingsType["dates"] = {
         date_format_locale: "en-US",
         date_format_delim: "/",
-        date_format_weekday: "Thurs DD",
         date_format_day: "Thurs DD",
         date_format_month: "Mon",
         date_format_year: "YYYY"

@@ -30,7 +30,7 @@ import trend from "../src/Outlier Flagging/trend";
 import twoInThree from "../src/Outlier Flagging/twoInThree";
 
 import { type controlLimitsArgs } from "../src/Classes";
-import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
+import { allIndices, createKeys, measureTime, generateData } from "./helpers/testHelpers";
 
 describe("Performance Testing - Calculation Performance", () => {
 
@@ -147,8 +147,8 @@ describe("Performance Testing - Calculation Performance", () => {
       const args: controlLimitsArgs = {
         keys: createKeys(100),
         numerators: generateData(100, 50, 10),
-        stdev: generateData(100, 5, 1),
-        n: generateData(100, 10, 2).map(v => Math.max(2, Math.round(v))),
+        xbar_sds: generateData(100, 5, 1),
+        denominators: generateData(100, 10, 2).map(v => Math.max(2, Math.round(v))),
         subset_points: allIndices(100)
       };
 
@@ -162,8 +162,8 @@ describe("Performance Testing - Calculation Performance", () => {
       const args: controlLimitsArgs = {
         keys: createKeys(1000),
         numerators: generateData(1000, 50, 10),
-        stdev: generateData(1000, 5, 1),
-        n: generateData(1000, 10, 2).map(v => Math.max(2, Math.round(v))),
+        xbar_sds: generateData(1000, 5, 1),
+        denominators: generateData(1000, 10, 2).map(v => Math.max(2, Math.round(v))),
         subset_points: allIndices(1000)
       };
 
@@ -364,7 +364,7 @@ describe("Performance Testing - Calculation Performance", () => {
 
       // s chart
       results['s chart'] = measureTime(() => {
-        sLimits({ keys, numerators: stdev, n: sampleN, subset_points });
+        sLimits({ keys, numerators: stdev, denominators: sampleN, subset_points });
       }, 5);
 
       // pprime chart
@@ -379,7 +379,7 @@ describe("Performance Testing - Calculation Performance", () => {
 
       // xbar chart
       results['xbar chart'] = measureTime(() => {
-        xbarLimits({ keys, numerators, stdev, n: sampleN, subset_points });
+        xbarLimits({ keys, numerators, xbar_sds: stdev, denominators: sampleN, subset_points });
       }, 5);
 
       // g chart
