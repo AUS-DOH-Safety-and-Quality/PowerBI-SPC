@@ -11,7 +11,7 @@
 
 import plotPropertiesClass from "../src/Classes/plotPropertiesClass";
 import viewModelClass from "../src/Classes/viewModelClass";
-import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
+import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import buildDataView from "./helpers/buildDataView";
 import powerbi from "powerbi-visuals-api";
 

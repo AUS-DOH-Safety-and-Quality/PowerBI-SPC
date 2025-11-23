@@ -11,13 +11,14 @@
 
 import * as d3 from "../src/D3 Plotting Functions/D3 Modules";
 import * as nhsIcons from "../src/D3 Plotting Functions/NHS Icons";
+import type { svgBaseType } from "../src/visual";
 
 describe("NHS Icons", () => {
-  let svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
+  let svg: svgBaseType;
 
   beforeEach(() => {
     // Create a fresh SVG element for each test
-    svg = d3.select("body").append("svg");
+    svg = d3.select("body").append("svg") as svgBaseType;
   });
 
   afterEach(() => {

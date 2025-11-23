@@ -162,9 +162,9 @@ describe("Utility Functions - Data Extraction", () => {
       const result = groupBy(data, "id");
 
       expect(result.length).toBe(2);
-      expect(result[0][0]).toEqual(1);
+      expect(result[0][0] as any).toBe(1);
       expect(result[0][1].length).toBe(2);
-      expect(result[1][0]).toEqual(2);
+      expect(result[1][0] as any).toBe(2);
       expect(result[1][1].length).toBe(1);
     });
 

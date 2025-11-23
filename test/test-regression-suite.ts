@@ -12,10 +12,8 @@ import {
   c as cLimits,
   p as pLimits,
   u as uLimits,
-  s as sLimits,
   pp as pprimeLimits,
   up as uprimeLimits,
-  xbar as xbarLimits,
   g as gLimits,
   t as tLimits,
   i_m as i_mLimits,
@@ -157,7 +155,7 @@ describe("Regression Testing Suite", () => {
         const args: controlLimitsArgs = {
           keys: createKeys(dataset.keys),
           numerators: dataset.numerators,
-          denominators: dataset.denominators || Array(dataset.keys.length).fill(1),
+          denominators: 'denominators' in dataset ? dataset.denominators : Array(dataset.keys.length).fill(1),
           subset_points: allIndices(dataset.keys.length)
         };
         

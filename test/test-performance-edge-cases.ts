@@ -16,7 +16,7 @@ import buildDataView from "./helpers/buildDataView";
 import iLimits from "../src/Limit Calculations/i";
 import xbarLimits from "../src/Limit Calculations/xbar";
 import { type controlLimitsArgs } from "../src/Classes";
-import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
+import { allIndices, createKeys, measureTime, generateData } from "./helpers/testHelpers";
 
 describe("Performance Testing - Edge Cases and Stress Testing", () => {
 
@@ -144,9 +144,9 @@ describe("Performance Testing - Edge Cases and Stress Testing", () => {
       const args: controlLimitsArgs = {
         keys: createKeys(n),
         numerators: generateData(n, 50, 10),
-        stdev: generateData(n, 5, 2),
+        xbar_sds: generateData(n, 5, 2),
         // Highly variable sample sizes from 2 to 50
-        n: generateData(n, 25, 15).map(v => Math.max(2, Math.min(50, Math.round(v)))),
+        denominators: generateData(n, 25, 15).map(v => Math.max(2, Math.min(50, Math.round(v)))),
         subset_points: allIndices(n)
       };
 

@@ -3,7 +3,7 @@ import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
 import { rep } from "../src/Functions";
-import { allIndices, createKeys, measureTime, generateData, itFailing, expectError } from "./helpers/testHelpers";
+import { expectError } from "./helpers/testHelpers";
 
 
 const stringKeys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];

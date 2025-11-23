@@ -17,7 +17,7 @@ import iLimits from "../src/Limit Calculations/i";
 import pLimits from "../src/Limit Calculations/p";
 import xbarLimits from "../src/Limit Calculations/xbar";
 import { type controlLimitsArgs } from "../src/Classes";
-import { allIndices, createKeys, measureTime, generateData, itFailing, createDayLabels, createGroupedData } from "./helpers/testHelpers";
+import { allIndices, createKeys, generateData, createDayLabels } from "./helpers/testHelpers";
 
 describe("Performance Testing - Large Dataset Handling", () => {
 
@@ -213,8 +213,8 @@ describe("Performance Testing - Large Dataset Handling", () => {
       const args: controlLimitsArgs = {
         keys: createKeys(n),
         numerators: generateData(n, 50, 10),
-        stdev: generateData(n, 5, 1),
-        n: generateData(n, 10, 2).map(v => Math.max(2, Math.round(v))),
+        xbar_sds: generateData(n, 5, 1),
+        denominators: generateData(n, 10, 2).map(v => Math.max(2, Math.round(v))),
         subset_points: allIndices(n)
       };
 

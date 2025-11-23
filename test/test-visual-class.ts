@@ -23,7 +23,7 @@ describe("Visual Class", () => {
     it("should create SVG element in the DOM", () => {
       const element = testDom("500", "500");
       const host = createVisualHost({});
-      const visual = new Visual({ element, host });
+      new Visual({ element, host });
 
       const visualElement = document.body.querySelector('.visual');
       const svgElement = visualElement.querySelector('svg');
@@ -36,7 +36,7 @@ describe("Visual Class", () => {
     it("should create table div element in the DOM", () => {
       const element = testDom("500", "500");
       const host = createVisualHost({});
-      const visual = new Visual({ element, host });
+      new Visual({ element, host });
 
       const visualElement = document.body.querySelector('.visual');
       const tableDivElement = visualElement.querySelector('div');
@@ -51,7 +51,7 @@ describe("Visual Class", () => {
     it("should initialize table with header and body", () => {
       const element = testDom("500", "500");
       const host = createVisualHost({});
-      const visual = new Visual({ element, host });
+      new Visual({ element, host });
 
       const visualElement = document.body.querySelector('.visual');
       const tableElement = visualElement.querySelector('table');

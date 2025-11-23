@@ -20,7 +20,7 @@ import pLimits from "../src/Limit Calculations/p";
 import uLimits from "../src/Limit Calculations/u";
 import sLimits from "../src/Limit Calculations/s";
 import { type controlLimitsArgs } from "../src/Classes";
-import { allIndices, createKeys, measureTime, generateData, itFailing } from "./helpers/testHelpers";
+import { allIndices, createKeys, itFailing } from "./helpers/testHelpers";
 
 describe("SPC Limit Calculations - Basic Charts", () => {
 

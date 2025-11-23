@@ -88,9 +88,9 @@ describe("Utility Functions - Visual Helpers", () => {
       });
 
       it("should get style aesthetic", () => {
-        mockSettings.lines.style_99 = "dashed";
+        mockSettings.lines.type_99 = "dashed";
 
-        const result = getAesthetic("ul99", "lines", "style", mockSettings);
+        const result = getAesthetic("ul99", "lines", "type", mockSettings);
 
         expect(result).toBe("dashed");
       });
@@ -98,7 +98,7 @@ describe("Utility Functions - Visual Helpers", () => {
 
     describe("Scatter aesthetics", () => {
       it("should get scatter point color", () => {
-        mockSettings.scatter.colour_values = "#123456";
+        mockSettings.scatter.colour = "#123456";
 
         const result = getAesthetic("values", "scatter", "colour", mockSettings);
 
@@ -106,7 +106,7 @@ describe("Utility Functions - Visual Helpers", () => {
       });
 
       it("should get scatter point size", () => {
-        mockSettings.scatter.size_values = 10;
+        mockSettings.scatter.size = 10;
 
         const result = getAesthetic("values", "scatter", "size", mockSettings);
 
