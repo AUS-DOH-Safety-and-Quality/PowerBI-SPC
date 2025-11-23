@@ -96,27 +96,10 @@ describe("Utility Functions - Visual Helpers", () => {
       });
     });
 
-    describe("Scatter aesthetics", () => {
-      it("should get scatter point color", () => {
-        mockSettings.scatter.colour = "#123456";
-
-        const result = getAesthetic("values", "scatter", "colour", mockSettings);
-
-        expect(result).toBe("#123456");
-      });
-
-      it("should get scatter point size", () => {
-        mockSettings.scatter.size = 10;
-
-        const result = getAesthetic("values", "scatter", "size", mockSettings);
-
-        expect(result).toBe(10);
-      });
-
-      // Note: scatter.shape exists but getAesthetic with "values" type
-      // would look for shape_values which doesn't exist in the settings
-      // The actual scatter settings use just "shape", not "shape_values"
-    });
+    // Note: Scatter aesthetics tests removed because:
+    // 1. getAesthetic() is not used with scatter group in actual code
+    // 2. Scatter properties are accessed directly (aesthetics.colour, aesthetics.size)
+    // 3. Properties colour_values/size_values don't exist in scatter settings schema
 
     describe("Edge cases", () => {
       it("should handle numeric values", () => {
