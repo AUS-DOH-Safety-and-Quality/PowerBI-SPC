@@ -15,7 +15,7 @@ jobs:
     - name: Use Node.js 10.x
       uses: actions/setup-node@v6
       with:
-        node-version: 20.x
+        node-version: 24.x
 
     - name: Label visuals as 'Development'
       run: |
