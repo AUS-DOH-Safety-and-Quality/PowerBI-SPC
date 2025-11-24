@@ -207,7 +207,7 @@ export default class viewModelClass {
       for (let j = 0; j < n_indicators; j++) {
         same_indicator = same_indicator && (indicator_cols?.[j].values[i] === indicator_cols?.[j].values[i-1]);
       }
-      console.log({i, same_indicator});
+
       if (same_indicator) {
         idx_per_indicator[curr_grp].push(i);
       } else {
