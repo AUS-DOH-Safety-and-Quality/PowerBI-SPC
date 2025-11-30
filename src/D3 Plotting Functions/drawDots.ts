@@ -3,6 +3,58 @@ import { between, isNullOrUndefined } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
 
+/**
+ * Symbol path cache - stores pre-computed D3 symbol path strings
+ * Key format: "shape-size" (e.g., "Circle-8")
+ * 
+ * Performance optimization: d3.symbol().type().size()() is expensive because it:
+ * 1. Creates a new symbol generator
+ * 2. Computes the path mathematically
+ * 3. Generates the SVG path string
+ * 
+ * Since the output is deterministic (same shape + size = same path), we cache it.
+ * This reduces repeated D3 symbol generation calls during rendering.
+ */
+const symbolPathCache = new Map<string, string>();
+
+/**
+ * Clear the symbol path cache. Useful for testing and memory management.
+ * In normal operation, the cache is small (limited shape × size combinations)
+ * and does not need to be cleared.
+ */
+export function clearSymbolPathCache(): void {
+  symbolPathCache.clear();
+}
+
+/**
+ * Get the current size of the symbol path cache.
+ * Useful for testing and debugging.
+ */
+export function getSymbolPathCacheSize(): number {
+  return symbolPathCache.size;
+}
+
+/**
+ * Get a cached symbol path string, computing and caching it if not already present.
+ * 
+ * @param shape - The D3 symbol shape name (e.g., "Circle", "Cross", "Diamond")
+ * @param size - The symbol size (visual radius, converted to area for D3)
+ * @returns The SVG path string for the symbol
+ */
+export function getSymbolPath(shape: string, size: number): string {
+  const key = `${shape}-${size}`;
+  let pathString = symbolPathCache.get(key);
+  if (pathString === undefined) {
+    // d3.symbol() takes size as area instead of radius
+    // Get the symbol type, falling back to Circle if not found
+    const symbolType = d3[`symbol${shape}`] ?? d3.symbolCircle;
+    // Generate the path string and cache it
+    pathString = d3.symbol().type(symbolType).size((size * size) * Math.PI)();
+    symbolPathCache.set(key, pathString);
+  }
+  return pathString;
+}
+
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
   const ylower: number = visualObj.plotProperties.yAxis.lower;
   const yupper: number = visualObj.plotProperties.yAxis.upper;
@@ -14,12 +66,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       .data(visualObj.viewModel.plotPoints)
       .join("path")
       .filter((d: plotData) => !isNullOrUndefined(d.value))
-      .attr("d", (d: plotData) => {
-        const shape: string = d.aesthetics.shape;
-        const size: number = d.aesthetics.size;
-        // d3.symbol() takes size as area instead of radius
-        return d3.symbol().type(d3[`symbol${shape}`]).size((size*size) * Math.PI)()
-      })
+      .attr("d", (d: plotData) => getSymbolPath(d.aesthetics.shape, d.aesthetics.size))
       .attr("transform", (d: plotData) => {
         if (!between(d.value, ylower, yupper) || !between(d.x, xlower, xupper)) {
           // If the point is outside the limits, don't draw it

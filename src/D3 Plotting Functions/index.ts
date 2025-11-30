@@ -1,5 +1,5 @@
 export { default as addContextMenu } from "./addContextMenu"
-export { default as drawDots } from "./drawDots"
+export { default as drawDots, getSymbolPath, clearSymbolPathCache, getSymbolPathCacheSize } from "./drawDots"
 export { default as drawIcons } from "./drawIcons"
 export { default as drawLines } from "./drawLines"
 export { default as drawTooltipLine } from "./drawTooltipLine"

@@ -21,6 +21,7 @@
 
 import { BenchmarkRunner } from './benchmark-runner';
 import { parseHTML } from 'linkedom';
+import * as d3 from 'd3-shape';
 
 // Import limit calculation functions
 // Note: sLimits and xbarLimits are imported but skipped in benchmarks due to
@@ -300,6 +301,40 @@ async function runBenchmarks() {
       'i_m chart',
       'Limit Calculations',
       () => imLimits(args),
+    );
+  }
+
+  // 12. t chart benchmarks (Time between events)
+  for (const size of DATA_SIZES) {
+    const args: controlLimitsArgs = {
+      keys: createKeys(size),
+      numerators: generateData(size, 10, 5).map(v => Math.max(0.1, v)),  // Time values
+      subset_points: allIndices(size)
+    };
+
+    runner.benchmark(
+      't chart',
+      'Limit Calculations',
+      () => tLimits(args),
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+  }
+
+  // 14. i-mm chart benchmarks (Individual with Median of Moving Range)
+  // 13. i-m chart benchmarks (Individual with Median)
+  for (const size of DATA_SIZES) {
+    const args: controlLimitsArgs = {
+      keys: createKeys(size),
+      numerators: generateData(size),
+      subset_points: allIndices(size),
+      outliers_in_limits: false
+    };
+
+
+    runner.benchmark(
+      'i_m chart',
+      'Limit Calculations',
+      () => imLimits(args),
       { iterations: STANDARD_ITERATIONS, dataPoints: size }
     );
   }
@@ -376,6 +411,206 @@ async function runBenchmarks() {
       'twoInThree rule',
       'Outlier Detection',
       () => twoInThree(values, ll95, ul95, false),
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+  }
+
+  // ============================================================================
+  // RENDERING BENCHMARKS (using linkedom for headless DOM)
+  // ============================================================================
+
+  console.log('📊 Benchmarking Rendering (DOM operations)...');
+
+  // Create a linkedom document for headless DOM benchmarking
+  const { document } = parseHTML('<!DOCTYPE html><html><body><svg id="chart"></svg></body></html>');
+
+  // DOM Element Creation Benchmark
+  for (const size of DATA_SIZES) {
+    runner.benchmark(
+      'DOM element creation',
+      'Rendering',
+      () => {
+        const svg = document.getElementById('chart');
+        const g = document.createElementNS(SVG_NS, 'g');
+        for (let i = 0; i < size; i++) {
+          const circle = document.createElementNS(SVG_NS, 'circle');
+          circle.setAttribute('cx', String(i * 10));
+          circle.setAttribute('cy', String(Math.random() * 100));
+          circle.setAttribute('r', '5');
+          circle.setAttribute('fill', '#007bff');
+          g.appendChild(circle);
+        }
+        svg?.appendChild(g);
+        // Clean up for next iteration
+        while (svg?.firstChild) {
+          svg.removeChild(svg.firstChild);
+        }
+      },
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+  }
+
+  // SVG Path Generation Benchmark
+  for (const size of DATA_SIZES) {
+    const points = generateData(size).map((y, x) => ({ x: x * 10, y }));
+    
+    runner.benchmark(
+      'SVG path generation',
+      'Rendering',
+      () => {
+        // Generate a line path string similar to D3's line generator
+        let path = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+          path += ` L ${points[i].x} ${points[i].y}`;
+        }
+        return path;
+      },
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+  }
+
+  // Attribute Updates Benchmark (simulating style changes)
+  for (const size of DATA_SIZES) {
+    // Pre-create elements
+    const svg = document.getElementById('chart');
+    const elements: Element[] = [];
+    for (let i = 0; i < size; i++) {
+      const circle = document.createElementNS(SVG_NS, 'circle');
+      circle.setAttribute('cx', String(i * 10));
+      circle.setAttribute('cy', '50');
+      circle.setAttribute('r', '5');
+      svg?.appendChild(circle);
+      elements.push(circle);
+    }
+
+    runner.benchmark(
+      'attribute updates',
+      'Rendering',
+      () => {
+        for (let i = 0; i < elements.length; i++) {
+          elements[i].setAttribute('cy', String(Math.random() * 100));
+          elements[i].setAttribute('fill', i % 2 === 0 ? '#ff0000' : '#00ff00');
+        }
+      },
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+
+    // Clean up
+    while (svg?.firstChild) {
+      svg.removeChild(svg.firstChild);
+    }
+  }
+
+  // Data Binding Simulation (D3-like enter/update/exit pattern)
+  for (const size of DATA_SIZES) {
+    const svg = document.getElementById('chart');
+    let existingElements: Element[] = [];
+
+    runner.benchmark(
+      'data binding simulation',
+      'Rendering',
+      () => {
+        // Simulate D3's data binding pattern
+        const newData = generateData(size);
+        
+        // Update existing elements
+        for (let i = 0; i < Math.min(existingElements.length, newData.length); i++) {
+          existingElements[i].setAttribute('cy', String(newData[i]));
+        }
+        
+        // Enter: create new elements if data is larger
+        if (newData.length > existingElements.length) {
+          for (let i = existingElements.length; i < newData.length; i++) {
+            const circle = document.createElementNS(SVG_NS, 'circle');
+            circle.setAttribute('cx', String(i * 10));
+            circle.setAttribute('cy', String(newData[i]));
+            circle.setAttribute('r', '5');
+            svg?.appendChild(circle);
+            existingElements.push(circle);
+          }
+        }
+        
+        // Exit: remove elements if data is smaller
+        while (existingElements.length > newData.length) {
+          const el = existingElements.pop();
+          el?.parentNode?.removeChild(el);
+        }
+      },
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+
+    // Clean up
+    while (svg?.firstChild) {
+      svg.removeChild(svg.firstChild);
+    }
+    existingElements = [];
+  }
+
+  // ============================================================================
+  // SYMBOL PATH CACHING BENCHMARKS (Session 4 Enhancement)
+  // ============================================================================
+
+  console.log('📊 Benchmarking Symbol Path Caching (Session 4)...');
+
+  // D3 symbol shapes available in the visual
+  const D3_SHAPES = ['Circle', 'Cross', 'Diamond', 'Square', 'Star', 'Triangle', 'Wye', 'Asterisk'];
+  const SYMBOL_SIZES = [6, 8, 10, 12]; // Common sizes used in the visual
+
+  // Symbol path generation without caching (baseline)
+  for (const size of DATA_SIZES) {
+    runner.benchmark(
+      'symbol path (uncached)',
+      'Symbol Caching',
+      () => {
+        // Simulate rendering N dots without caching
+        for (let i = 0; i < size; i++) {
+          const shape = D3_SHAPES[i % D3_SHAPES.length];
+          const symbolSize = SYMBOL_SIZES[i % SYMBOL_SIZES.length];
+          // Create a new symbol generator each time (the old approach)
+          // Use fallback to symbolCircle if shape not found
+          const symbolType = d3[`symbol${shape}`] ?? d3.symbolCircle;
+          const symbolGen = d3.symbol()
+            .type(symbolType)
+            .size((symbolSize * symbolSize) * Math.PI);
+          symbolGen();
+        }
+      },
+      { iterations: STANDARD_ITERATIONS, dataPoints: size }
+    );
+  }
+
+  // Symbol path generation with caching (optimized approach)
+  const symbolCache = new Map<string, string>();
+  function getCachedSymbolPath(shape: string, size: number): string {
+    const key = `${shape}-${size}`;
+    let path = symbolCache.get(key);
+    if (path === undefined) {
+      // Use fallback to symbolCircle if shape not found
+      const symbolType = d3[`symbol${shape}`] ?? d3.symbolCircle;
+      const symbolGen = d3.symbol()
+        .type(symbolType)
+        .size((size * size) * Math.PI);
+      path = symbolGen();
+      symbolCache.set(key, path);
+    }
+    return path;
+  }
+
+  for (const size of DATA_SIZES) {
+    // Clear cache before each size test for fair comparison
+    symbolCache.clear();
+    
+    runner.benchmark(
+      'symbol path (cached)',
+      'Symbol Caching',
+      () => {
+        // Simulate rendering N dots with caching
+        for (let i = 0; i < size; i++) {
+          const shape = D3_SHAPES[i % D3_SHAPES.length];
+          const symbolSize = SYMBOL_SIZES[i % SYMBOL_SIZES.length];
+          getCachedSymbolPath(shape, symbolSize);
+        }
+      },
       { iterations: STANDARD_ITERATIONS, dataPoints: size }
     );
   }
