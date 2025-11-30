@@ -427,7 +427,71 @@ benchmark-results/
 | Fastest outlier | astronomical: ~25μs | O(n) performance |
 | DOM creation | ~1.3ms | High variance |
 
-### Session 2-5: Pending
+### Session 2: Limit Calculation Optimizations ✅ COMPLETED
+
+**Completion Date:** 2025-11-27
+
+**Summary:** Delivered significant performance improvements to limit calculation algorithms, achieving **53-83% speed improvements** across all chart types through algorithmic optimization and elimination of expensive deep copy operations.
+
+**Key Deliverables:**
+- ✅ Optimized `extractValues` function from O(n²) to O(n) using Set for index lookup - **Primary performance driver**
+- ✅ Eliminated `JSON.parse(JSON.stringify())` deep copy in t chart calculations
+- ✅ Optimized `viewModelClass.calculateLimits` to avoid full dataObject deep copies
+- ✅ All existing tests continue to pass
+- ✅ Benchmark baseline updated with new performance targets
+
+**Detailed Documentation:** See [PERFORMANCE_IMPROVEMENT_PLAN_SESSION_2.md](PERFORMANCE_IMPROVEMENT_PLAN_SESSION_2.md)
+
+**Performance Improvements (1000 data points):**
+| Chart Type | Before | After | Improvement |
+|------------|--------|-------|-------------|
+| i chart | ~603μs | ~143μs | **76%** |
+| mr chart | ~546μs | ~93μs | **83%** |
+| p chart | ~1359μs | ~453μs | **67%** |
+| t chart | ~2182μs | ~1015μs | **53%** |
+| pprime chart | ~2019μs | ~653μs | **68%** |
+| uprime chart | ~1955μs | ~596μs | **69%** |
+
+**Target Achievement:**
+| Metric | Target | Achieved | Status |
+|--------|--------|----------|--------|
+| i chart (1000 pts) | <400μs | ~143μs | ✅ Exceeded by 64% |
+| p chart (1000 pts) | <800μs | ~453μs | ✅ Exceeded by 43% |
+
+### Session 3: Outlier Detection Optimizations ✅ COMPLETED
+
+**Completion Date:** 2025-11-27
+
+**Summary:** Delivered significant performance improvements to outlier detection algorithms, achieving **67-91% speed improvements** across the three optimized rules through sliding window algorithm optimization.
+
+**Key Deliverables:**
+- ✅ Optimized `twoInThree` rule from O(n²) to O(n) using running total sliding window - **91% improvement**
+- ✅ Optimized `shift` rule from O(n²) to O(n) using running total sliding window - **67% improvement**
+- ✅ Optimized `trend` rule from O(n²) to O(n) using running total sliding window - **87% improvement**
+- ✅ Fixed edge case bounds checking in backfill loops
+- ✅ All 834 tests continue to pass
+- ✅ Benchmark baseline updated with new performance metrics
+
+**Detailed Documentation:** See [PERFORMANCE_IMPROVEMENT_PLAN_SESSION_3.md](PERFORMANCE_IMPROVEMENT_PLAN_SESSION_3.md)
+
+**Performance Improvements (1000 data points):**
+| Outlier Rule | Before | After | Improvement |
+|--------------|--------|-------|-------------|
+| shift | ~171μs | ~57μs | **67%** |
+| trend | ~139μs | ~18μs | **87%** |
+| twoInThree | ~129μs | ~22μs | **91%** |
+
+**Target Achievement:**
+| Metric | Target | Achieved | Status |
+|--------|--------|----------|--------|
+| shift (1000 pts) | <80μs | ~57μs | ✅ Exceeded by 29% |
+| trend (1000 pts) | <70μs | ~18μs | ✅ Exceeded by 74% |
+| twoInThree (1000 pts) | <150μs | ~22μs | ✅ Exceeded by 85% |
+
+**Scaling Behavior:**
+The algorithms now demonstrate linear O(n) scaling instead of the original O(n²) behavior, which was causing significant slowdowns on larger datasets.
+
+### Session 4-5: Pending
 
 ---
 

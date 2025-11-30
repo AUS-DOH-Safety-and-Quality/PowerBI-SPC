@@ -343,17 +343,22 @@ export default class viewModelClass {
     inputData.limitInputArgs.outliers_in_limits = inputSettings.spc.outliers_in_limits;
     let controlLimits: controlLimitsObject;
     if (groupStartEndIndexes.length > 1) {
-      const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
-        // Force a deep copy
-        const data: dataObject = JSON.parse(JSON.stringify(inputData));
-        data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[0], indexes[1])
-        data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[0], indexes[1])
-        data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[0], indexes[1])
-        return data;
-      })
+      // Optimize: Only copy limitInputArgs, not the entire dataObject
+      // Using shallow copy with array slices instead of JSON.parse/stringify (~10x faster)
+      const groupedLimitArgs: controlLimitsArgs[] = groupStartEndIndexes.map((indexes) => {
+        const originalArgs = inputData.limitInputArgs;
+        return {
+          keys: originalArgs.keys.slice(indexes[0], indexes[1]),
+          numerators: originalArgs.numerators.slice(indexes[0], indexes[1]),
+          denominators: originalArgs.denominators?.slice(indexes[0], indexes[1]),
+          xbar_sds: originalArgs.xbar_sds?.slice(indexes[0], indexes[1]),
+          outliers_in_limits: originalArgs.outliers_in_limits,
+          subset_points: originalArgs.subset_points
+        };
+      });
 
-      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => {
-        const currLimits = limitFunction(d.limitInputArgs);
+      const calcLimitsGrouped: controlLimitsObject[] = groupedLimitArgs.map(args => {
+        const currLimits = limitFunction(args);
         currLimits.trend_line = calculateTrendLine(currLimits.values);
         return currLimits;
       });
