@@ -165,12 +165,13 @@ class BenchmarkHistory {
 
   /**
    * Export history to CSV
+   * Session 1 Enhancement: Added p95, p99, and memoryUsed columns
    */
   exportToCsv(outputPath: string): void {
     const history = this.loadHistory();
 
     const rows = [
-      ['Timestamp', 'Commit', 'Branch', 'Category', 'Benchmark', 'Data Points', 'Median', 'Mean', 'Min', 'Max', 'StdDev']
+      ['Timestamp', 'Commit', 'Branch', 'Category', 'Benchmark', 'Data Points', 'Median', 'Mean', 'Min', 'Max', 'StdDev', 'P95', 'P99', 'MemoryUsed']
     ];
 
     for (const suite of history) {
@@ -186,7 +187,10 @@ class BenchmarkHistory {
           result.mean.toFixed(2),
           result.min.toFixed(2),
           result.max.toFixed(2),
-          result.stdDev.toFixed(2)
+          result.stdDev.toFixed(2),
+          result.p95 !== undefined ? result.p95.toFixed(2) : '',
+          result.p99 !== undefined ? result.p99.toFixed(2) : '',
+          result.memoryUsed !== undefined ? result.memoryUsed.toFixed(0) : ''
         ]);
       }
     }
