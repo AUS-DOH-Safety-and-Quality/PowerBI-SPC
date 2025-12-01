@@ -193,7 +193,7 @@ export default class viewModelClass {
     const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
     this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
 
-    const n_indicators: number = indicator_cols?.length - 1;
+    const n_indicators: number = indicator_cols?.length;
     const n_values: number = options.dataViews[0]?.categorical?.categories?.[0]?.values?.length ?? 1;
     const res: viewModelValidationT = { status: true };
     const idx_per_indicator = new Array<number[]>();
@@ -203,13 +203,17 @@ export default class viewModelClass {
     let curr_grp: number = 0;
 
     for (let i = 1; i < n_values; i++) {
-      if (indicator_cols?.[n_indicators]?.values[i] === indicator_cols?.[n_indicators]?.values[i - 1]) {
+      let same_indicator: boolean = true;
+      for (let j = 0; j < n_indicators; j++) {
+        same_indicator = same_indicator && (indicator_cols?.[j].values[i] === indicator_cols?.[j].values[i-1]);
+      }
+
+      if (same_indicator) {
         idx_per_indicator[curr_grp].push(i);
       } else {
         idx_per_indicator.push([i]);
         this.groupNames.push(indicator_cols?.map(d => <string>d.values[i]) ?? []);
         curr_grp += 1;
-
       }
     }
 
