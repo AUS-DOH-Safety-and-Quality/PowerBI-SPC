@@ -225,7 +225,7 @@ const settingsModel = {
         ttip_label_date: {
           displayName: "Date Tooltip Label",
           type: FormattingComponent.TextInput,
-          default: "Date"
+          default: "Automatic"
         },
         ttip_show_numerator: {
           displayName: "Show Numerator in Tooltip",

@@ -29,8 +29,9 @@ export default function buildTooltip(table_row: summaryTableRowData,
 
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   if (inputSettings.spc.ttip_show_date) {
+    const ttip_label_date: string = inputSettings.spc.ttip_label_date;
     tooltip.push({
-      displayName: inputSettings.spc.ttip_label_date,
+      displayName: ttip_label_date === "Automatic" ? derivedSettings.chart_type_props.date_name : ttip_label_date,
       value: table_row.date
     });
   }
