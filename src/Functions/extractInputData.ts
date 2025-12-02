@@ -85,10 +85,11 @@ export default function extractInputData(inputView: DataViewCategorical,
   const groupVarName: string = inputView.categories[0].source.displayName;
   const settingsMessages = validationMessages;
   let valid_x: number = 0;
+  const x_axis_use_date: boolean = derivedSettings.chart_type_props.x_axis_use_date;
   idxs.forEach((i, idx) => {
     if (inputValidStatus.messages[idx] === "") {
       valid_ids.push(idx);
-      valid_keys.push({ x: valid_x, id: i, label: keys[idx] })
+      valid_keys.push({ x: valid_x, id: i, label: x_axis_use_date ? keys[idx] : valid_x.toString() });
       valid_x += 1;
 
       if (settingsMessages[i].length > 0) {
