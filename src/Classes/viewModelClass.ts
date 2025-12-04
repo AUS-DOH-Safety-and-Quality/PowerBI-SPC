@@ -273,13 +273,13 @@ export default class viewModelClass {
       } else {
         this.showGrouped = false;
         this.groupNames = null;
-        this.inputDataGrouped.push(
+        this.inputDataGrouped = [
           extractInputData(options.dataViews[0].categorical,
                                           this.inputSettings.settings,
                                           this.inputSettings.derivedSettings,
                                           this.inputSettings.validationStatus.messages,
                                           idx_per_indicator[0])
-        );
+        ];
         this.groupStartEndIndexesGrouped = null;
         this.controlLimitsGrouped = null;
         const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
