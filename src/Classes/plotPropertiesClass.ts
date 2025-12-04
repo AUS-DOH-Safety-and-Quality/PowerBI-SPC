@@ -46,7 +46,7 @@ export default class plotPropertiesClass {
   update(options: VisualUpdateOptions, viewModel: viewModelClass): void {
     const plotPoints: plotData[] = viewModel.plotPoints;
     const controlLimits: controlLimitsObject = viewModel.controlLimits;
-    const inputData: dataObject = viewModel.inputData;
+    const inputData: dataObject = viewModel.inputDataGrouped[0];
     const inputSettings: defaultSettingsType = viewModel.inputSettings.settings;
     const derivedSettings: derivedSettingsClass = viewModel.inputSettings.derivedSettings;
     const colorPalette: colourPaletteType = viewModel.colourPalette;

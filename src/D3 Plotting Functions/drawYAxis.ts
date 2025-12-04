@@ -14,7 +14,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
     if (yAxisProperties.tick_count) {
       yAxis.ticks(yAxisProperties.tick_count)
     }
-    if (visualObj.viewModel.inputData) {
+    if (visualObj.viewModel.inputDataGrouped) {
       yAxis.tickFormat(
         (d: number) => {
           return visualObj.viewModel.inputSettings.derivedSettings.percentLabels

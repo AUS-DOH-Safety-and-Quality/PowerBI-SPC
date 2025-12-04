@@ -46,7 +46,7 @@ function getLabelAttributes(d: plotData, visualObj: Visual): {x: number, y: numb
 }
 
 export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
-  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels || !visualObj.viewModel.inputData.anyLabels) {
+  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels || !visualObj.viewModel.inputDataGrouped[0].anyLabels) {
     selection.select(".text-labels").remove();
     return;
   }
