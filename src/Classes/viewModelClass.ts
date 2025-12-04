@@ -44,7 +44,7 @@ export type summaryTableRowData = {
   two_in_three: string;
 }
 
-export type summaryTableRowDataGrouped = {
+type summaryTableRowDataGrouped = {
   [key: string]: any;
 
   latest_date: string;
@@ -133,7 +133,6 @@ export type colourPaletteType = {
 };
 
 export default class viewModelClass {
-  inputData: dataObject;
   inputSettings: settingsClass;
   controlLimits: controlLimitsObject;
   outliers: outliersObject;
@@ -162,7 +161,7 @@ export default class viewModelClass {
   identitiesGrouped: ISelectionId[][];
 
   constructor() {
-    this.inputData = <dataObject>null;
+    this.inputDataGrouped = new Array<dataObject>();
     this.inputSettings = new settingsClass();
     this.controlLimits = null;
     this.plotPoints = new Array<plotData>();
@@ -235,6 +234,7 @@ export default class viewModelClass {
 
     // Only re-construct data and re-calculate limits if they have changed
     if (options.type === 2 || this.firstRun) {
+      this.inputDataGrouped = new Array<dataObject>();
       if (options.dataViews[0].categorical.categories.some(d => d.source.roles.indicator)) {
         this.showGrouped = true;
         this.inputDataGrouped = new Array<dataObject>();
@@ -273,21 +273,22 @@ export default class viewModelClass {
       } else {
         this.showGrouped = false;
         this.groupNames = null;
-        this.inputDataGrouped = null;
+        this.inputDataGrouped.push(
+          extractInputData(options.dataViews[0].categorical,
+                                          this.inputSettings.settings,
+                                          this.inputSettings.derivedSettings,
+                                          this.inputSettings.validationStatus.messages,
+                                          idx_per_indicator[0])
+        );
         this.groupStartEndIndexesGrouped = null;
         this.controlLimitsGrouped = null;
         const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
         const split_indexes: number[] = JSON.parse(split_indexes_str);
         this.splitIndexes = split_indexes;
-        this.inputData = extractInputData(options.dataViews[0].categorical,
-                                          this.inputSettings.settings,
-                                          this.inputSettings.derivedSettings,
-                                          this.inputSettings.validationStatus.messages,
-                                          idx_per_indicator[0]);
 
-        if (this.inputData.validationStatus.status === 0) {
-          this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
-          this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings.settings);
+        if (this.inputDataGrouped[0].validationStatus.status === 0) {
+          this.groupStartEndIndexes = this.getGroupingIndexes(this.inputDataGrouped[0], this.splitIndexes);
+          this.controlLimits = this.calculateLimits(this.inputDataGrouped[0], this.groupStartEndIndexes, this.inputSettings.settings);
           this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings.settings,
                                       this.inputSettings.derivedSettings);
           this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes,
@@ -312,13 +313,13 @@ export default class viewModelClass {
        res.warning = this.inputDataGrouped.map(d => d.warningMessage).join("\n");
       }
     } else {
-      if (this.inputData.validationStatus.status !== 0) {
+      if (this.inputDataGrouped[0].validationStatus.status !== 0) {
         res.status = false;
-        res.error = this.inputData.validationStatus.error;
+        res.error = this.inputDataGrouped[0].validationStatus.error;
         return res;
       }
-      if (this.inputData.warningMessage !== "") {
-        res.warning = this.inputData.warningMessage;
+      if (this.inputDataGrouped[0].warningMessage !== "") {
+        res.warning = this.inputDataGrouped[0].warningMessage;
       }
     }
 
@@ -574,7 +575,7 @@ export default class viewModelClass {
 
     for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
       const index: number = this.controlLimits.keys[i].x;
-      const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i];
+      const aesthetics: defaultSettingsType["scatter"] = this.inputDataGrouped[0].scatter_formatting[i];
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
@@ -631,14 +632,14 @@ export default class viewModelClass {
         aesthetics: aesthetics,
         table_row: table_row,
         identity: host.createSelectionIdBuilder()
-                      .withCategory(this.inputData.categories, this.inputData.limitInputArgs.keys[i].id)
+                      .withCategory(this.inputDataGrouped[0].categories, this.inputDataGrouped[0].limitInputArgs.keys[i].id)
                       .createSelectionId(),
-        highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
-        tooltip: buildTooltip(table_row, this.inputData?.tooltips?.[index],
+        highlighted: !isNullOrUndefined(this.inputDataGrouped[0].highlights?.[index]),
+        tooltip: buildTooltip(table_row, this.inputDataGrouped[0]?.tooltips?.[index],
                               this.inputSettings.settings, this.inputSettings.derivedSettings),
         label: {
-          text_value: this.inputData.labels?.[index],
-          aesthetics: this.inputData.label_formatting[index],
+          text_value: this.inputDataGrouped[0].labels?.[index],
+          aesthetics: this.inputDataGrouped[0].label_formatting[index],
           angle: null,
           distance: null,
           line_offset: null,
@@ -682,7 +683,7 @@ export default class viewModelClass {
     const nLimits = this.controlLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
-      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || this.inputData.groupingIndexes.includes(i - 1);
+      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || this.inputDataGrouped[0].groupingIndexes.includes(i - 1);
       let isNewAltTarget: boolean = false;
       if (i > 0 && this.inputSettings.settings.lines.show_alt_target) {
         isNewAltTarget = this.controlLimits.alt_targets[i] !== this.controlLimits.alt_targets[i - 1];
