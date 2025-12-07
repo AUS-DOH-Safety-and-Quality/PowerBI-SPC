@@ -11,6 +11,8 @@ const coverageFolder = "coverage";
 process.env.CHROME_BIN = require("playwright-chromium").chromium.executablePath();
 
 module.exports = (config) => {
+    const runFailingTests = process.env.RUN_FAILING_TESTS === 'true';
+    
     config.set({
         mode: "development",
         browserNoActivityTimeout: 100000,
@@ -20,6 +22,13 @@ module.exports = (config) => {
                 base: "ChromeHeadless",
                 flags: ["--no-sandbox"],
             },
+        },
+        client: {
+            jasmine: {
+                random: false
+            },
+            // Make RUN_FAILING_TESTS available to browser tests
+            runFailingTests: runFailingTests
         },
         colors: true,
         frameworks: ["jasmine", "webpack"],

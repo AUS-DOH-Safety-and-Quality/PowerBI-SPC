@@ -2,9 +2,7 @@ name: Test Build PowerBI visual
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
     paths-ignore:
       - PowerBI-SPC-Docs/** # Don't run on docs folder
 
@@ -30,7 +28,7 @@ jobs:
     - name: Install Dependencies
       run: |
         npm install
-        npm install -g powerbi-visuals-tools@6.2.0
+        npm install -g powerbi-visuals-tools@7.0.1
 
     - name: Run linter
       run: |
