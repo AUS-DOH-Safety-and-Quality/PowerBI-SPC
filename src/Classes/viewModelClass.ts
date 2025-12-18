@@ -134,7 +134,6 @@ export type colourPaletteType = {
 
 export default class viewModelClass {
   inputSettings: settingsClass;
-  controlLimits: controlLimitsObject;
   outliers: outliersObject;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
@@ -163,7 +162,7 @@ export default class viewModelClass {
   constructor() {
     this.inputDataGrouped = new Array<dataObject>();
     this.inputSettings = new settingsClass();
-    this.controlLimits = null;
+    this.controlLimitsGrouped = new Array<controlLimitsObject>();
     this.plotPoints = new Array<plotData>();
     this.groupedLines = new Array<[string, lineData[]]>();
     this.firstRun = true
@@ -288,10 +287,12 @@ export default class viewModelClass {
 
         if (this.inputDataGrouped[0].validationStatus.status === 0) {
           this.groupStartEndIndexes = this.getGroupingIndexes(this.inputDataGrouped[0], this.splitIndexes);
-          this.controlLimits = this.calculateLimits(this.inputDataGrouped[0], this.groupStartEndIndexes, this.inputSettings.settings);
-          this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings.settings,
+          this.controlLimitsGrouped = [
+            this.calculateLimits(this.inputDataGrouped[0], this.groupStartEndIndexes, this.inputSettings.settings)
+          ];
+          this.scaleAndTruncateLimits(this.controlLimitsGrouped[0], this.inputSettings.settings,
                                       this.inputSettings.derivedSettings);
-          this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes,
+          this.outliers = this.flagOutliers(this.controlLimitsGrouped[0], this.groupStartEndIndexes,
                                             this.inputSettings.settings,
                                             this.inputSettings.derivedSettings);
 
@@ -531,10 +532,10 @@ export default class viewModelClass {
     this.tableColumns = new Array<{ name: string; label: string; }>();
     this.tableColumns.push({ name: "date", label: "Date" });
     this.tableColumns.push({ name: "value", label: "Value" });
-    if (!isNullOrUndefined(this.controlLimits.numerators)) {
+    if (!isNullOrUndefined(this.controlLimitsGrouped[0].numerators)) {
       this.tableColumns.push({ name: "numerator", label: "Numerator" });
     }
-    if (!isNullOrUndefined(this.controlLimits.denominators)) {
+    if (!isNullOrUndefined(this.controlLimitsGrouped[0].denominators)) {
       this.tableColumns.push({ name: "denominator", label: "Denominator" });
     }
     if (this.inputSettings.settings.lines.show_target) {
@@ -573,8 +574,8 @@ export default class viewModelClass {
       this.tableColumns.push({ name: "shift", label: "Shift" });
     }
 
-    for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
-      const index: number = this.controlLimits.keys[i].x;
+    for (let i: number = 0; i < this.controlLimitsGrouped[0].keys.length; i++) {
+      const index: number = this.controlLimitsGrouped[0].keys[i].x;
       const aesthetics: defaultSettingsType["scatter"] = this.inputDataGrouped[0].scatter_formatting[i];
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
@@ -604,21 +605,21 @@ export default class viewModelClass {
                                   "ast_colour", this.inputSettings.settings) as string;
       }
       const table_row: summaryTableRowData = {
-        date: this.controlLimits.keys[i].label,
-        numerator: this.controlLimits.numerators?.[i],
-        denominator: this.controlLimits.denominators?.[i],
-        value: this.controlLimits.values[i],
-        target: this.controlLimits.targets[i],
-        alt_target: this.controlLimits.alt_targets[i],
-        ll99: this.controlLimits?.ll99?.[i],
-        ll95: this.controlLimits?.ll95?.[i],
-        ll68: this.controlLimits?.ll68?.[i],
-        ul68: this.controlLimits?.ul68?.[i],
-        ul95: this.controlLimits?.ul95?.[i],
-        ul99: this.controlLimits?.ul99?.[i],
-        speclimits_lower: this.controlLimits?.speclimits_lower?.[i],
-        speclimits_upper: this.controlLimits?.speclimits_upper?.[i],
-        trend_line: this.controlLimits?.trend_line?.[i],
+        date: this.controlLimitsGrouped[0].keys[i].label,
+        numerator: this.controlLimitsGrouped[0].numerators?.[i],
+        denominator: this.controlLimitsGrouped[0].denominators?.[i],
+        value: this.controlLimitsGrouped[0].values[i],
+        target: this.controlLimitsGrouped[0].targets[i],
+        alt_target: this.controlLimitsGrouped[0].alt_targets[i],
+        ll99: this.controlLimitsGrouped[0]?.ll99?.[i],
+        ll95: this.controlLimitsGrouped[0]?.ll95?.[i],
+        ll68: this.controlLimitsGrouped[0]?.ll68?.[i],
+        ul68: this.controlLimitsGrouped[0]?.ul68?.[i],
+        ul95: this.controlLimitsGrouped[0]?.ul95?.[i],
+        ul99: this.controlLimitsGrouped[0]?.ul99?.[i],
+        speclimits_lower: this.controlLimitsGrouped[0]?.speclimits_lower?.[i],
+        speclimits_upper: this.controlLimitsGrouped[0]?.speclimits_upper?.[i],
+        trend_line: this.controlLimitsGrouped[0]?.trend_line?.[i],
         astpoint: this.outliers.astpoint[i],
         trend: this.outliers.trend[i],
         shift: this.outliers.shift[i],
@@ -628,7 +629,7 @@ export default class viewModelClass {
 
       this.plotPoints.push({
         x: index,
-        value: this.controlLimits.values[i],
+        value: this.controlLimitsGrouped[0].values[i],
         aesthetics: aesthetics,
         table_row: table_row,
         identity: host.createSelectionIdBuilder()
@@ -646,7 +647,7 @@ export default class viewModelClass {
           marker_offset: null
         }
       })
-      this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
+      this.tickLabels.push({x: index, label: this.controlLimitsGrouped[0].keys[i].label});
     }
   }
 
@@ -680,13 +681,13 @@ export default class viewModelClass {
     }
 
     const formattedLines: lineData[] = new Array<lineData>();
-    const nLimits = this.controlLimits.keys.length;
+    const nLimits = this.controlLimitsGrouped[0].keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
       const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || this.inputDataGrouped[0].groupingIndexes.includes(i - 1);
       let isNewAltTarget: boolean = false;
       if (i > 0 && this.inputSettings.settings.lines.show_alt_target) {
-        isNewAltTarget = this.controlLimits.alt_targets[i] !== this.controlLimits.alt_targets[i - 1];
+        isNewAltTarget = this.controlLimitsGrouped[0].alt_targets[i] !== this.controlLimitsGrouped[0].alt_targets[i - 1];
       }
       labels.forEach(label => {
         const join_rebaselines: boolean = this.inputSettings.settings.lines[`join_rebaselines_${lineNameMap[label]}`];
@@ -696,15 +697,15 @@ export default class viewModelClass {
           const is_alt_target: boolean = label === "alt_targets" && isNewAltTarget;
           const is_rebaseline: boolean = label !== "alt_targets" && isRebaselinePoint;
           formattedLines.push({
-            x: this.controlLimits.keys[i].x,
-            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : this.controlLimits[label]?.[i],
+            x: this.controlLimitsGrouped[0].keys[i].x,
+            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : this.controlLimitsGrouped[0][label]?.[i],
             group: label
           })
         }
 
         formattedLines.push({
-          x: this.controlLimits.keys[i].x,
-          line_value: this.controlLimits[label]?.[i],
+          x: this.controlLimitsGrouped[0].keys[i].x,
+          line_value: this.controlLimitsGrouped[0][label]?.[i],
           group: label
         })
       })

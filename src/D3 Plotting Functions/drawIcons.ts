@@ -33,7 +33,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   if (draw_assurance) {
     const assurance_location: string = nhsIconSettings.assurance_icons_locations;
     const assurance_scaling: number = nhsIconSettings.assurance_icons_scaling;
-    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel.controlLimits,
+    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel.controlLimitsGrouped[0],
                                                               visualObj.viewModel.inputSettings.settings,
                                                               visualObj.viewModel.inputSettings.derivedSettings);
     if (assuranceIconPresent === "none") {
