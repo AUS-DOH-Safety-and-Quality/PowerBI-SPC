@@ -134,7 +134,6 @@ export type colourPaletteType = {
 
 export default class viewModelClass {
   inputSettings: settingsClass;
-  outliers: outliersObject;
   plotPoints: plotData[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
@@ -292,9 +291,11 @@ export default class viewModelClass {
           ];
           this.scaleAndTruncateLimits(this.controlLimitsGrouped[0], this.inputSettings.settings,
                                       this.inputSettings.derivedSettings);
-          this.outliers = this.flagOutliers(this.controlLimitsGrouped[0], this.groupStartEndIndexes,
+          this.outliersGrouped = [
+            this.flagOutliers(this.controlLimitsGrouped[0], this.groupStartEndIndexes,
                                             this.inputSettings.settings,
-                                            this.inputSettings.derivedSettings);
+                                            this.inputSettings.derivedSettings)
+          ];
 
           // Structure the data and calculated limits to the format needed for plotting
           this.initialisePlotData(host);
@@ -580,28 +581,28 @@ export default class viewModelClass {
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
-      if (this.outliers.shift[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.shift[i], "outliers",
+      if (this.outliersGrouped[0].shift[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliersGrouped[0].shift[i], "outliers",
                                   "shift_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.shift[i], "outliers",
+        aesthetics.colour_outline = getAesthetic(this.outliersGrouped[0].shift[i], "outliers",
                                   "shift_colour", this.inputSettings.settings) as string;
       }
-      if (this.outliers.trend[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.trend[i], "outliers",
+      if (this.outliersGrouped[0].trend[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliersGrouped[0].trend[i], "outliers",
                                   "trend_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.trend[i], "outliers",
+        aesthetics.colour_outline = getAesthetic(this.outliersGrouped[0].trend[i], "outliers",
                                   "trend_colour", this.inputSettings.settings) as string;
       }
-      if (this.outliers.two_in_three[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.two_in_three[i], "outliers",
+      if (this.outliersGrouped[0].two_in_three[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliersGrouped[0].two_in_three[i], "outliers",
                                   "twointhree_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.two_in_three[i], "outliers",
+        aesthetics.colour_outline = getAesthetic(this.outliersGrouped[0].two_in_three[i], "outliers",
                                   "twointhree_colour", this.inputSettings.settings) as string;
       }
-      if (this.outliers.astpoint[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.astpoint[i], "outliers",
+      if (this.outliersGrouped[0].astpoint[i] !== "none") {
+        aesthetics.colour = getAesthetic(this.outliersGrouped[0].astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.astpoint[i], "outliers",
+        aesthetics.colour_outline = getAesthetic(this.outliersGrouped[0].astpoint[i], "outliers",
                                   "ast_colour", this.inputSettings.settings) as string;
       }
       const table_row: summaryTableRowData = {
@@ -620,10 +621,10 @@ export default class viewModelClass {
         speclimits_lower: this.controlLimitsGrouped[0]?.speclimits_lower?.[i],
         speclimits_upper: this.controlLimitsGrouped[0]?.speclimits_upper?.[i],
         trend_line: this.controlLimitsGrouped[0]?.trend_line?.[i],
-        astpoint: this.outliers.astpoint[i],
-        trend: this.outliers.trend[i],
-        shift: this.outliers.shift[i],
-        two_in_three: this.outliers.two_in_three[i]
+        astpoint: this.outliersGrouped[0].astpoint[i],
+        trend: this.outliersGrouped[0].trend[i],
+        shift: this.outliersGrouped[0].shift[i],
+        two_in_three: this.outliersGrouped[0].two_in_three[i]
       }
 
 

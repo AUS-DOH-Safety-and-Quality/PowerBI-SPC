@@ -19,7 +19,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
 
   if (draw_variation) {
     const variation_scaling: number = nhsIconSettings.variation_icons_scaling;
-    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel.outliers, visualObj.viewModel.inputSettings.settings);
+    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel.outliersGrouped[0], visualObj.viewModel.inputSettings.settings);
     variationIconsPresent.forEach((icon: string, idx: number) => {
       selection
           .call(initialiseIconSVG, icon, iconTransformSpec(svg_width, svg_height, variation_location, variation_scaling, idx))
