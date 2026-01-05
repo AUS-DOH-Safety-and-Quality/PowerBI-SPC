@@ -50,14 +50,14 @@ jobs:
 
     - name: Attach built visual
       if: success()
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: powerbi-visual-${{ github.sha }}
         path: dist/*.pbiviz
 
     - name: Attach built frontend bundle
       if: success()
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: frontend-bundle-${{ github.sha }}
         path: .tmp/build/PBISPC.js
