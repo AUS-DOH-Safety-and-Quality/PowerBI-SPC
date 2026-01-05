@@ -1,16 +1,14 @@
 import { sqrt, exp, lgamma, square, broadcastUnary, broadcastBinary, isNullOrUndefined } from "../Functions";
 
-export const c4 = broadcastUnary(
-  (sampleSize: number): number => {
-    if ((sampleSize <= 1) || isNullOrUndefined(sampleSize)) {
-      return null;
-    }
-    const Nminus1: number = sampleSize - 1;
-
-    return sqrt(2.0 / Nminus1)
-            * exp(lgamma(sampleSize / 2.0) - lgamma(Nminus1 / 2.0));
+export function c4(sampleSize: number): number {
+  if ((sampleSize <= 1) || isNullOrUndefined(sampleSize)) {
+    return null;
   }
-);
+  const Nminus1: number = sampleSize - 1;
+
+  return sqrt(2.0 / Nminus1)
+          * exp(lgamma(sampleSize / 2.0) - lgamma(Nminus1 / 2.0));
+}
 
 export const c5 = broadcastUnary(
   (sampleSize: number): number => {
