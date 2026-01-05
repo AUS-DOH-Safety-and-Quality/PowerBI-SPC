@@ -18,3 +18,6 @@ docs
 
 # Coverage reports
 coverage
+
+# Benchmark results (keep history in git but ignore baseline to allow local updates)
+benchmark-results/benchmark-baseline.json
