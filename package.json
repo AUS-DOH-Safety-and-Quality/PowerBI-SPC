@@ -10,7 +10,6 @@
     "bundle": "npx rollup --config rollup.config.js --configPlugin typescript"
   },
   "dependencies": {
-    "@stdlib/math-base-special-gammaln": "^0.2.2",
     "d3-axis": "^3.0.0",
     "d3-drag": "^3.0.0",
     "d3-scale": "^4.0.2",
