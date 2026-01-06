@@ -1,3 +1,6 @@
+const logPi: number = 1.1447298858494001741434273513530587116472948129153115715136230714;
+const log2Pi: number = 1.8378770664093454835606594728112352797227949472755668256343030809;
+
 /**
  * Calculates the natural logarithm of the Gamma function using the Lanczos
  * approximation.
@@ -29,7 +32,7 @@ export default function lgamma(x: number): number {
 
   // Reflection formula for negative x
   if (x < 0.5) {
-    return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * x)) - lgamma(1 - x);
+    return logPi - Math.log(Math.sin(Math.PI * x)) - lgamma(1 - x);
   }
 
   x -= 1;
@@ -41,7 +44,7 @@ export default function lgamma(x: number): number {
     a += lanczosCoefficients[i] / (x + i);
   }
 
-  return 0.5 * Math.log(2 * Math.PI) +
+  return 0.5 * log2Pi +
           (x + 0.5) * Math.log(t) -
           t +
           Math.log(a);
