@@ -20,6 +20,7 @@ export type lineData = {
   x: number;
   line_value: number;
   group: string;
+  aesthetics: defaultSettingsType["lines"];
 }
 
 export type summaryTableRowData = {
@@ -697,14 +698,16 @@ export default class viewModelClass {
           formattedLines.push({
             x: this.controlLimits.keys[i].x,
             line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : this.controlLimits[label]?.[i],
-            group: label
+            group: label,
+            aesthetics: this.inputData.line_formatting[i]
           })
         }
 
         formattedLines.push({
           x: this.controlLimits.keys[i].x,
           line_value: this.controlLimits[label]?.[i],
-          group: label
+          group: label,
+          aesthetics: this.inputData.line_formatting[i]
         })
       })
     }

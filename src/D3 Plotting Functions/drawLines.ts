@@ -1,6 +1,6 @@
 import * as d3 from "./D3 Modules";
-import type { lineData } from "../Classes";
-import { getAesthetic } from "../Functions";
+import type { defaultSettingsType, lineData } from "../Classes";
+import { getAesthetic, isNullOrUndefined, between } from "../Functions";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {
@@ -11,25 +11,36 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
       .join("g")
       .classed("linegroup", true)
       .each(function(currLineData: [string, lineData[]]) {
+        const currLine: string = currLineData[0];
+        const validLineData: lineData[] = currLineData[1].filter((d: lineData) => {
+          const ylower: number = visualObj.plotProperties.yAxis.lower;
+          const yupper: number = visualObj.plotProperties.yAxis.upper;
+          const xlower: number = visualObj.plotProperties.xAxis.lower;
+          const xupper: number = visualObj.plotProperties.xAxis.upper;
+          return !isNullOrUndefined(d.line_value)
+                      && between(d.line_value, ylower, yupper)
+                      && between(d.x, xlower, xupper)
+        })
         d3.select(this)
           .selectAll("line")
-          .data(currLineData[1].slice(1) as lineData[])
+          .data(validLineData.slice(1) as lineData[])
           .join("line")
-          .attr("x1", (_, idx) => visualObj.plotProperties.xScale(currLineData[1][idx].x))
-          .attr("y1", (_, idx) => visualObj.plotProperties.yScale(currLineData[1][idx].line_value))
-          .attr("x2", (d) => visualObj.plotProperties.xScale(d.x))
-          .attr("y2", (d) => visualObj.plotProperties.yScale(d.line_value))
+          .attr("x1", (_, idx: number) => visualObj.plotProperties.xScale(validLineData[idx].x))
+          .attr("y1", (_, idx: number) => visualObj.plotProperties.yScale(validLineData[idx].line_value))
+          .attr("x2", (d: lineData) => visualObj.plotProperties.xScale(d.x))
+          .attr("y2", (d: lineData) => visualObj.plotProperties.yScale(d.line_value))
           .attr("fill", "none")
-          .attr("stroke", visualObj.viewModel.colourPalette.isHighContrast
+          .attr("stroke", (d: lineData) => {
+            return visualObj.viewModel.colourPalette.isHighContrast
                     ? visualObj.viewModel.colourPalette.foregroundColour
-                    : getAesthetic(currLineData[0], "lines", "colour", visualObj.viewModel.inputSettings.settings))
-          .attr("stroke-width", getAesthetic(currLineData[0], "lines", "width", visualObj.viewModel.inputSettings.settings))
-          .attr("stroke-dasharray", getAesthetic(currLineData[0], "lines", "type", visualObj.viewModel.inputSettings.settings))
-          .attr("stroke-dashoffset", (_, idx) => {
-              const prev_x = visualObj.plotProperties.xScale(currLineData[1][0].x);
-              const curr_x = visualObj.plotProperties.xScale(currLineData[1][idx].x)
-              const px_to_curr = curr_x - prev_x;
-              return px_to_curr
+                    : getAesthetic(currLine, "lines", "colour", {lines: d.aesthetics} as defaultSettingsType)
+          })
+          .attr("stroke-width", (d: lineData) => getAesthetic(currLine, "lines", "width", {lines: d.aesthetics} as defaultSettingsType))
+          .attr("stroke-dasharray", (d: lineData) => getAesthetic(currLine, "lines", "type", {lines: d.aesthetics} as defaultSettingsType))
+          .attr("stroke-dashoffset", (_, idx: number) => {
+              const prev_x: number = visualObj.plotProperties.xScale(validLineData[0].x);
+              const curr_x: number = visualObj.plotProperties.xScale(validLineData[idx].x);
+              return curr_x - prev_x
           })
       })
 }
