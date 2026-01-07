@@ -33,12 +33,6 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
           anyValid = anyValid || yValidStatus[i];
         }
 
-        console.log(currLine);
-        console.log(currLineData);
-        console.log(yValidStatus);
-        console.log(xValues);
-        console.log(yValues);
-
         if (!anyValid) {
           d3.select(this).selectAll("line").remove();
           return;
