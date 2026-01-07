@@ -17,7 +17,7 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
       .classed("linegroup", true)
       .each(function(currLineDataFull: [string, lineData[]]) {
         const currLine: string = currLineDataFull[0];
-        const currLineData: lineData[] = currLineDataFull[1].slice(xlower, xupper + 1);
+        const currLineData: lineData[] = currLineDataFull[1].filter((d: lineData) => between(d.x, xlower, xupper));
         const n: number = currLineData.length;
         let yValidStatus: boolean[] = new Array<boolean>(n);
         let anyValid: boolean = false;
@@ -32,6 +32,12 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
           yValidStatus[i] = !isNullOrUndefined(currPoint.line_value) && between(currPoint.line_value, ylower, yupper);
           anyValid = anyValid || yValidStatus[i];
         }
+
+        console.log(currLine);
+        console.log(currLineData);
+        console.log(yValidStatus);
+        console.log(xValues);
+        console.log(yValues);
 
         if (!anyValid) {
           d3.select(this).selectAll("line").remove();
