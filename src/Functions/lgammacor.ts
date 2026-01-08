@@ -1,4 +1,4 @@
-import chebyshev_eval from "./chebyshev_eval";
+import chebyshev_polynomial from "./chebyshev_polynomial";
 
 export default function lgammacor(x: number): number {
   const algmcs: number[] = [
@@ -23,7 +23,7 @@ export default function lgammacor(x: number): number {
     throw new Error("lgammacor: x must be >= 10");
   } else if (x < 94906265.62425156) {
     const tmp: number = 10 / x;
-    return chebyshev_eval(tmp * tmp * 2 - 1, algmcs, 5) / x;
+    return chebyshev_polynomial(tmp * tmp * 2 - 1, algmcs, 5) / x;
   } else {
     return 1 / (x * 12);
   }

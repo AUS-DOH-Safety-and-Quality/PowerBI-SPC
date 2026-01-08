@@ -1,27 +1,28 @@
 import lgamma from "./lgamma";
 import ldexp from "./ldexp";
 import lgamma1p from "./lgamma1p";
+import { log_2pi, log_sqrt_2pi } from "./Constants";
 
 export default function stirlerr(n: number): number {
-  const S0: number = 0.083333333333333333333;
-  const S1: number = 0.00277777777777777777778;
-  const S2: number = 0.00079365079365079365079365;
-  const S3: number = 0.000595238095238095238095238;
-  const S4: number = 0.0008417508417508417508417508;
-  const S5: number = 0.0019175269175269175269175262;
-  const S6: number = 0.0064102564102564102564102561;
-  const S7: number = 0.029550653594771241830065352;
-  const S8: number = 0.17964437236883057316493850;
-  const S9: number = 1.3924322169059011164274315;
-  const S10: number = 13.402864044168391994478957;
-  const S11: number = 156.84828462600201730636509;
-  const S12: number = 2193.1033333333333333333333;
-  const S13: number = 36108.771253724989357173269;
-  const S14: number = 691472.26885131306710839498;
-  const S15: number = 15238221.539407416192283370;
-  const S16: number = 382900751.39141414141414141;
-  const M_LN_2PI: number = 1.837877066409345483560659472811;
-  const M_LN_SQRT_2PI: number = 0.918938533204672741780329736406;
+  const s_coeffs: number[] = [
+    0.083333333333333333333,
+    0.00277777777777777777778,
+    0.00079365079365079365079365,
+    0.000595238095238095238095238,
+    0.0008417508417508417508417508,
+    0.0019175269175269175269175262,
+    0.0064102564102564102564102561,
+    0.029550653594771241830065352,
+    0.17964437236883057316493850,
+    1.3924322169059011164274315,
+    13.402864044168391994478957,
+    156.84828462600201730636509,
+    2193.1033333333333333333333,
+    36108.771253724989357173269,
+    691472.26885131306710839498,
+    15238221.539407416192283370,
+    382900751.39141414141414141
+  ];
 
   const sferr_halves: number[] = [
     0.0,
@@ -57,59 +58,54 @@ export default function stirlerr(n: number): number {
     0.005554733551962801371038690
   ];
 
-  let nn: number;
-
-  if (n <= 23.5) {
-    nn = n + n;
-    if (n <= 15 && nn === Math.trunc(nn)) {
-      return sferr_halves[nn];
+  if (n <= 5.25) {
+    if (n >= 1) {
+      const l_n: number = Math.log(n);
+      return lgamma(n) + n * (1 - l_n) + ldexp(l_n - log_2pi, -1);
     }
-    if (n <= 5.25) {
-      if (n >= 1) {
-        const l_n: number = Math.log(n);
-        return lgamma(n) + n * (1 - l_n) + ldexp(l_n - M_LN_2PI, -1);
-      } else {
-        return lgamma1p(n) - (n + 0.5) * Math.log(n) + n - M_LN_SQRT_2PI;
-      }
+    else {
+      return lgamma1p(n) - (n + 0.5) * Math.log(n) + n - log_sqrt_2pi;
     }
-    nn = n*n;
-    if (n > 12.8) {
-      return (S0-(S1-(S2-(S3-(S4-(S5 -S6/nn)/nn)/nn)/nn)/nn)/nn)/n;
-    }
-    if (n > 12.3) {
-      return (S0-(S1-(S2-(S3-(S4-(S5-(S6 -S7/nn)/nn)/nn)/nn)/nn)/nn)/nn)/n;
-    }
-    if (n >  8.9) {
-      return (S0-(S1-(S2-(S3-(S4-(S5-(S6-(S7 -S8/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/n;
-    }
-    if (n >  7.3) {
-      return (S0-(S1-(S2-(S3-(S4-(S5-(S6-(S7-(S8-(S9-S10/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/n;
-    }
-    if (n >  6.6)  {
-      return (S0-(S1-(S2-(S3-(S4-(S5-(S6-(S7-(S8-(S9-(S10-(S11-S12/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/n;
-    }
-    if (n >  6.1)  {
-      return (S0-(S1-(S2-(S3-(S4-(S5-(S6-(S7-(S8-(S9-(S10-(S11-(S12-(S13-S14/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/n;
-    }
-    return (S0-(S1-(S2-(S3-(S4-(S5-(S6-(S7-(S8-(S9-(S10-(S11-(S12-(S13-(S14-(S15-S16/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/nn)/n;
-  } else {
-    nn = n * n;
-    if (n > 15.7e6) {
-      return S0/n;
-    }
-    if (n > 6180) {
-      return (S0 -S1/nn)/n;
-    }
-    if (n > 205) {
-      return (S0-(S1 -S2/nn)/nn)/n;
-    }
-    if (n > 86) {
-      return (S0-(S1-(S2 -S3/nn)/nn)/nn)/n;
-    }
-    if (n > 27) {
-      return (S0-(S1-(S2-(S3 -S4/nn)/nn)/nn)/nn)/n;
-    }
-
-    return (S0-(S1-(S2-(S3-(S4 -S5/nn)/nn)/nn)/nn)/nn)/n;
   }
+
+  let nn: number = n + n;
+  if (n <= 15 && nn === Math.trunc(nn)) {
+    return sferr_halves[nn];
+  }
+
+  let start_coeff: number;
+  if (n > 15.7e6) {
+    start_coeff = 0;
+  } else if (n > 6180) {
+    start_coeff = 1;
+  } else if (n > 205) {
+    start_coeff = 2;
+  } else if (n > 86) {
+    start_coeff = 3;
+  } else if (n > 27) {
+    start_coeff = 4;
+  } else if (n > 23.5) {
+    start_coeff = 5;
+  } else if (n > 12.8) {
+    start_coeff = 6;
+  } else if (n > 12.3) {
+    start_coeff = 7;
+  } else if (n > 8.9) {
+    start_coeff = 8;
+  } else if (n > 7.3) {
+    start_coeff = 10;
+  } else if (n > 6.6) {
+    start_coeff = 12;
+  } else if (n > 6.1) {
+    start_coeff = 14;
+  } else {
+    start_coeff = 16;
+  }
+
+  nn = n * n;
+  let sum: number = s_coeffs[start_coeff];
+  for (let i = start_coeff - 1; i >= 0; i--) {
+    sum = s_coeffs[i] - sum / nn;
+  }
+  return sum / n;
 }

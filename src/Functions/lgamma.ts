@@ -1,18 +1,15 @@
 import gamma from "./gamma";
 import lgammacor from "./lgammacor";
 import sinpi from "./sinpi";
+import { log_sqrt_2pi, log_sqrt_pi_div_2 } from "./Constants";
 
 export default function lgamma(x: number): number {
-  const xmax: number = 2.5327372760800758e+305;
-  const M_LN_SQRT_2PI: number = 0.918938533204672741780329736406;
-  const M_LN_SQRT_PId2: number = 0.225791352644727432363097614947;
-
   if (Number.isNaN(x)) {
-    return NaN;
+    return Number.NaN;
   }
 
   if (x <= 0 && x === Math.trunc(x)) {
-    return Infinity;
+    return Number.POSITIVE_INFINITY;
   }
 
   const y: number = Math.abs(x);
@@ -24,19 +21,19 @@ export default function lgamma(x: number): number {
     return Math.log(Math.abs(gamma(x)));
   }
 
-  if (y > xmax) {
-    return Infinity;
+  if (y > Number.MAX_VALUE) {
+    return Number.POSITIVE_INFINITY;
   }
 
   if (x > 0) {
     if (x > 1e17) {
       return x * (Math.log(x) - 1);
-    } else if (x > 4934720) {
-      return M_LN_SQRT_2PI + (x - 0.5) * Math.log(x) - x;
     } else {
-      return M_LN_SQRT_2PI + (x - 0.5) * Math.log(x) - x + lgammacor(x)
+      return log_sqrt_2pi + (x - 0.5) * Math.log(x) - x
+              + ((x > 4934720) ? 0 : lgammacor(x))
     }
   }
 
-  return M_LN_SQRT_PId2 + (x - 0.5) * Math.log(y) - x - Math.log(Math.abs(sinpi(y))) - lgammacor(y);
+  return log_sqrt_pi_div_2 + (x - 0.5) * Math.log(y)
+          - x - Math.log(Math.abs(sinpi(y))) - lgammacor(y);
 }

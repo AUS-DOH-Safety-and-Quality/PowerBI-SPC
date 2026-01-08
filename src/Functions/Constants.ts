@@ -40,3 +40,8 @@ export const b4 = broadcastBinary(
     return 1 + b_helper(sampleSize, sigma);
   }
 );
+
+export const log_2pi: number = 1.837877066409345483560659472811;
+export const log_sqrt_2pi: number = 0.918938533204672741780329736406;
+export const log_sqrt_pi_div_2: number = 0.225791352644727432363097614947;
+export const euler: number = 0.5772156649015328606065120900824024;

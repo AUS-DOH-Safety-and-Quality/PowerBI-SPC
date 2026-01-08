@@ -1,14 +1,13 @@
 import lgamma from "./lgamma";
 import log1pmx from "./log1pmx";
 import logcf from "./logcf";
+import { euler } from "./Constants";
 
 export default function lgamma1p(a: number): number {
   if (Math.abs(a) >= 0.5) {
     return lgamma(a + 1);
   }
 
-  const eulers_const: number = 0.5772156649015328606065120900824024;
-  const N: number = 40;
   const coeffs: number[] = [
     0.3224670334241132182362075833230126e-0,
     0.6735230105319809513324605383715000e-1,
@@ -52,10 +51,11 @@ export default function lgamma1p(a: number): number {
     0.1109139947083452201658320007192334e-13
   ];
 
+  const N: number = coeffs.length;
   const c: number = 0.2273736845824652515226821577978691e-12;
   let lgam: number = c * logcf(-a / 2, N + 2, 1, 1e-14);
   for (let i = N - 1; i >= 0; i--) {
     lgam = coeffs[i] - a * lgam;
   }
-  return (a * lgam - eulers_const) * a - log1pmx(a);
+  return (a * lgam - euler) * a - log1pmx(a);
 }

@@ -1,7 +1,8 @@
-import chebyshev_eval from "./chebyshev_eval";
+import chebyshev_polynomial from "./chebyshev_polynomial";
 import sinpi from "./sinpi";
 import lgammacor from "./lgammacor";
 import stirlerr from "./stirlerr";
+import { log_sqrt_2pi } from "./Constants";
 
 export default function gamma(x: number): number {
   const gamcs: number[] = [
@@ -49,19 +50,14 @@ export default function gamma(x: number): number {
     -.5793070335782135784625493333333e-31
   ];
 
-  const ngam: number = 22;
-  const xmin: number = -170.5674972726612;
-  const xmax: number =  171.61447887182298;
-  const xsml: number = 2.2474362225598545e-308;
   const dxrel: number = 1.490116119384765696e-8;
-  const M_LN_SQRT_2PI = 0.918938533204672741780329736406;
 
   if (Number.isNaN(x)) {
-    return NaN;
+    return Number.NaN;
   }
 
   if (x == 0 || (x < 0 && x === Math.trunc(x))) {
-    return NaN;
+    return Number.NaN;
   }
 
   let y: number = Math.abs(x);
@@ -74,21 +70,21 @@ export default function gamma(x: number): number {
     }
     y = x - n;
     n--;
-    value = chebyshev_eval(y * 2 - 1, gamcs, ngam) + .9375;
+    value = chebyshev_polynomial(y * 2 - 1, gamcs, 22) + .9375;
     if (n == 0) {
       return value;
     }
 
     if (n < 0) {
       if (x < -0.5 && Math.abs(x - Math.trunc(x - 0.5) / x) < dxrel) {
-        return NaN;
+        return Number.NaN;
       }
 
-      if (y < xsml) {
-        return x < 0 ? -Infinity : Infinity;
+      if (y < 2.2474362225598545e-308) {
+        return x < 0 ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
       }
 
-      n = -n;
+      n *= -1;
 
       for (let i: number = 0; i < n; i++) {
         value /= (x + i);
@@ -101,11 +97,11 @@ export default function gamma(x: number): number {
       return value;
     }
   } else {
-    if (x > xmax) {
-      return Infinity;
+    if (x > 171.61447887182298) {
+      return Number.POSITIVE_INFINITY;
     }
 
-    if (x < xmin) {
+    if (x < -170.5674972726612) {
       return 0;
     }
 
@@ -114,9 +110,10 @@ export default function gamma(x: number): number {
       for (let i: number = 2; i < y; i++) {
         value *= i;
       }
-    }
-    else {
-      value = Math.exp((y - 0.5) * Math.log(y) - y + M_LN_SQRT_2PI + ((2*y == Math.trunc(2*y)) ? stirlerr(y) : lgammacor(y)));
+    } else {
+      const two_y: number = 2 * y;
+      value = Math.exp((y - 0.5) * Math.log(y) - y + log_sqrt_2pi
+              + ((two_y == Math.trunc(two_y)) ? stirlerr(y) : lgammacor(y)));
     }
 
     if (x > 0) {
@@ -124,6 +121,6 @@ export default function gamma(x: number): number {
     }
 
     const sinpiy: number = sinpi(y);
-    return (sinpiy === 0) ? Infinity : -Math.PI / (y * sinpiy * value);
+    return (sinpiy === 0) ? Number.POSITIVE_INFINITY : -Math.PI / (y * sinpiy * value);
   }
 }
