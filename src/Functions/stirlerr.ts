@@ -6,6 +6,9 @@ import { LOG_2PI, LOG_SQRT_2PI } from "./Constants";
 /**
  * Computes the (log) Stirling's error term for a given n.
  *
+ * This implementation is a TypeScript adaptation of the stirlerr
+ * function from the R programming language.
+ *
  * @param n The input value for which to compute the Stirling's error term
  * @returns The Stirling's error term for the input n
  */
