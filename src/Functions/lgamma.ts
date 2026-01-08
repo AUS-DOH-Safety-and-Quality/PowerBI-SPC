@@ -3,6 +3,16 @@ import lgammacor from "./lgammacor";
 import sinpi from "./sinpi";
 import { LOG_SQRT_2PI, LOG_SQRT_PI_DIV_2 } from "./Constants";
 
+/**
+ * Computes the natural logarithm of the absolute value of the
+ * gamma function: ln|Γ(x)|
+ *
+ * This implementation is a TypeScript adaptation of the lgamma function
+ * from the R programming language.
+ *
+ * @param x - The input value for which to compute lgamma
+ * @returns The natural logarithm of the absolute value of the gamma function at x
+ */
 export default function lgamma(x: number): number {
   if (Number.isNaN(x)) {
     return Number.NaN;

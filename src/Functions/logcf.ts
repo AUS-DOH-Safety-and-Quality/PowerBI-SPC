@@ -1,3 +1,16 @@
+/**
+ * Computes the continued fraction for the calculation of sum_{k=0}^Inf x^k/(i+k*d)
+ *
+ * This implementation is a TypeScript adaptation of the logcf function
+ * from the R programming language.
+ *
+ *
+ * @param x The value of x in the continued fraction
+ * @param i The initial index i
+ * @param d The increment d
+ * @param eps The desired precision epsilon
+ * @returns The value of the continued fraction
+ */
 export default function logcf(x: number, i: number, d: number, eps: number): number {
   let c1: number = 2 * d;
   let c2: number = i + d;

@@ -1,3 +1,15 @@
+/**
+ * Computes the Chebyshev polynomial approximation at a given point x
+ * using the provided coefficients a and degree n.
+ *
+ * This implementation is a TypeScript adaptation of the chebyshev_eval
+ * function from the R programming language.
+ *
+ * @param x
+ * @param a
+ * @param n
+ * @returns
+ */
 export default function chebyshev_polynomial(x: number, a: number[], n: number): number {
   if (x < -1.1 || x > 1.1) {
     throw new Error("chebyshev_polynomial: x must be in [-1,1]");

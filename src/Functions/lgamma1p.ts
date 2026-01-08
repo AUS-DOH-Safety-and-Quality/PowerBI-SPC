@@ -3,6 +3,19 @@ import log1pmx from "./log1pmx";
 import logcf from "./logcf";
 import { EULER } from "./Constants";
 
+/**
+ * Computes the natural logarithm of the gamma function at (1 + a): ln(Γ(1 + a)),
+ * providing improved accuracy for small values of a.
+ *
+ * This implementation is based on a series expansion and continued fraction
+ * approximation for better numerical stability when a is close to zero.
+ *
+ * The below implementation is a TypeScript adaptation of the lgamma1p function
+ * from the R programming language.
+ *
+ * @param a The input value for which to compute lgamma1p
+ * @returns The natural logarithm of the gamma function at (1 + a): ln(Γ(1 + a))
+ */
 export default function lgamma1p(a: number): number {
   if (Math.abs(a) >= 0.5) {
     return lgamma(a + 1);

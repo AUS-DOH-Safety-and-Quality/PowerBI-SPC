@@ -3,6 +3,12 @@ import ldexp from "./ldexp";
 import lgamma1p from "./lgamma1p";
 import { LOG_2PI, LOG_SQRT_2PI } from "./Constants";
 
+/**
+ * Computes the (log) Stirling's error term for a given n.
+ *
+ * @param n The input value for which to compute the Stirling's error term
+ * @returns The Stirling's error term for the input n
+ */
 export default function stirlerr(n: number): number {
   const s_coeffs: number[] = [
     0.083333333333333333333,

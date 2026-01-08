@@ -1,5 +1,15 @@
 import chebyshev_polynomial from "./chebyshev_polynomial";
 
+/**
+ * Computes the correction term for the logarithm of the gamma function for
+ * large x (x >= 10).
+ *
+ * This implementation is a TypeScript adaptation of the lgammacor function
+ * from the R programming language.
+ *
+ * @param x The input value for which to compute the correction term
+ * @returns The correction term for the logarithm of the gamma function at x
+ */
 export default function lgammacor(x: number): number {
   const algmcs: number[] = [
     .1666389480451863247205729650822e+0,

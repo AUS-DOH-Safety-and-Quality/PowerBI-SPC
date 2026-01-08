@@ -1,5 +1,14 @@
 import logcf from "./logcf";
 
+/**
+ * Computes log(1 + x) - x with improved accuracy for small values of x.
+ *
+ * This implementation is a TypeScript adaptation of the log1pmx function
+ * from the R programming language.
+ *
+ * @param x The input value
+ * @returns The value of log(1 + x) - x
+ */
 export default function log1pmx(x: number): number {
   if (x > 1 || x < -0.79149064) {
     return Math.log(1 + x) - x;

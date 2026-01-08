@@ -1,3 +1,12 @@
+/**
+ * Numerically stable computation of sin(πx)
+ *
+ * This implementation is a TypeScript adaptation of the sinpi function
+ * from the R programming language.
+ *
+ * @param x The input value
+ * @returns The value of sin(πx)
+ */
 export default function sinpi(x: number): number {
   if (Number.isNaN(x) || !Number.isFinite(x)) {
     return NaN;

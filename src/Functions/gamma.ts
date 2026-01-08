@@ -4,6 +4,15 @@ import lgammacor from "./lgammacor";
 import stirlerr from "./stirlerr";
 import { LOG_SQRT_2PI } from "./Constants";
 
+/**
+ * Computes the gamma function Γ(x) for a given input x.
+ *
+ * This implementation is a TypeScript adaptation of the gamma function
+ * from the R programming language.
+ *
+ * @param x - The input value for which to compute the gamma function
+ * @returns The value of the gamma function at x
+ */
 export default function gamma(x: number): number {
   const gamcs: number[] = [
     .8571195590989331421920062399942e-2,
