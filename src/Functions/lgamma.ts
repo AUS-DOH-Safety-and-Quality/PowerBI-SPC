@@ -1,7 +1,7 @@
 import gamma from "./gamma";
 import lgammacor from "./lgammacor";
 import sinpi from "./sinpi";
-import { log_sqrt_2pi, log_sqrt_pi_div_2 } from "./Constants";
+import { LOG_SQRT_2PI, LOG_SQRT_PI_DIV_2 } from "./Constants";
 
 export default function lgamma(x: number): number {
   if (Number.isNaN(x)) {
@@ -29,11 +29,11 @@ export default function lgamma(x: number): number {
     if (x > 1e17) {
       return x * (Math.log(x) - 1);
     } else {
-      return log_sqrt_2pi + (x - 0.5) * Math.log(x) - x
+      return LOG_SQRT_2PI + (x - 0.5) * Math.log(x) - x
               + ((x > 4934720) ? 0 : lgammacor(x))
     }
   }
 
-  return log_sqrt_pi_div_2 + (x - 0.5) * Math.log(y)
+  return LOG_SQRT_PI_DIV_2 + (x - 0.5) * Math.log(y)
           - x - Math.log(Math.abs(sinpi(y))) - lgammacor(y);
 }

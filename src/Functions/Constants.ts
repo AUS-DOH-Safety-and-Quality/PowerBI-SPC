@@ -41,7 +41,7 @@ export const b4 = broadcastBinary(
   }
 );
 
-export const log_2pi: number = 1.837877066409345483560659472811;
-export const log_sqrt_2pi: number = 0.918938533204672741780329736406;
-export const log_sqrt_pi_div_2: number = 0.225791352644727432363097614947;
-export const euler: number = 0.5772156649015328606065120900824024;
+export const LOG_2PI: number = 1.837877066409345483560659472811;
+export const LOG_SQRT_2PI: number = 0.918938533204672741780329736406;
+export const LOG_SQRT_PI_DIV_2: number = 0.225791352644727432363097614947;
+export const EULER: number = 0.5772156649015328606065120900824024;

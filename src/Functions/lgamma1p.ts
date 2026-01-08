@@ -1,7 +1,7 @@
 import lgamma from "./lgamma";
 import log1pmx from "./log1pmx";
 import logcf from "./logcf";
-import { euler } from "./Constants";
+import { EULER } from "./Constants";
 
 export default function lgamma1p(a: number): number {
   if (Math.abs(a) >= 0.5) {
@@ -57,5 +57,5 @@ export default function lgamma1p(a: number): number {
   for (let i = N - 1; i >= 0; i--) {
     lgam = coeffs[i] - a * lgam;
   }
-  return (a * lgam - euler) * a - log1pmx(a);
+  return (a * lgam - EULER) * a - log1pmx(a);
 }

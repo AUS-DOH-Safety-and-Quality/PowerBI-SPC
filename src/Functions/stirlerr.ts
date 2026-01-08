@@ -1,7 +1,7 @@
 import lgamma from "./lgamma";
 import ldexp from "./ldexp";
 import lgamma1p from "./lgamma1p";
-import { log_2pi, log_sqrt_2pi } from "./Constants";
+import { LOG_2PI, LOG_SQRT_2PI } from "./Constants";
 
 export default function stirlerr(n: number): number {
   const s_coeffs: number[] = [
@@ -61,10 +61,10 @@ export default function stirlerr(n: number): number {
   if (n <= 5.25) {
     if (n >= 1) {
       const l_n: number = Math.log(n);
-      return lgamma(n) + n * (1 - l_n) + ldexp(l_n - log_2pi, -1);
+      return lgamma(n) + n * (1 - l_n) + ldexp(l_n - LOG_2PI, -1);
     }
     else {
-      return lgamma1p(n) - (n + 0.5) * Math.log(n) + n - log_sqrt_2pi;
+      return lgamma1p(n) - (n + 0.5) * Math.log(n) + n - LOG_SQRT_2PI;
     }
   }
 
