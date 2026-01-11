@@ -9,7 +9,7 @@
  */
 export default function sinpi(x: number): number {
   if (Number.isNaN(x) || !Number.isFinite(x)) {
-    return NaN;
+    return Number.NaN;
   }
   let r: number = x % 2;
   if (r <= -1) {
