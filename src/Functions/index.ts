@@ -4,7 +4,7 @@ export { default as broadcastBinary, pow, add, subtract, divide, multiply } from
 export { default as broadcastUnary, sqrt, abs, exp, square } from "./broadcastUnary"
 export { default as buildTooltip } from "./buildTooltip"
 export { default as checkFlagDirection } from "../Outlier Flagging/checkFlagDirection"
-export { c4, c5, a3, b3, b4 } from "./Constants"
+export { c4, c5, a3, b3, b4 } from "./sampleConstants"
 export { default as diff } from "./diff"
 export { default as extractConditionalFormatting } from "./extractConditionalFormatting"
 export { default as extractDataColumn } from "./extractDataColumn"

@@ -1,4 +1,4 @@
-import chebyshev_polynomial from "./chebyshev_polynomial";
+import chebyshevPolynomial from "./chebyshevPolynomial";
 
 /**
  * Computes the correction term for the logarithm of the gamma function for
@@ -10,8 +10,8 @@ import chebyshev_polynomial from "./chebyshev_polynomial";
  * @param x The input value for which to compute the correction term
  * @returns The correction term for the logarithm of the gamma function at x
  */
-export default function lgammacor(x: number): number {
-  const algmcs: number[] = [
+export default function lgammaCorrection(x: number): number {
+  const algmcs: readonly number[] = [
     .1666389480451863247205729650822e+0,
     -.1384948176067563840732986059135e-4,
     .9810825646924729426157171547487e-8,
@@ -30,10 +30,10 @@ export default function lgammacor(x: number): number {
   ];
 
   if (x < 10) {
-    throw new Error("lgammacor: x must be >= 10");
+    throw new Error("lgammaCorrection: x must be >= 10");
   } else if (x < 94906265.62425156) {
     const tmp: number = 10 / x;
-    return chebyshev_polynomial(tmp * tmp * 2 - 1, algmcs, 5) / x;
+    return chebyshevPolynomial(tmp * tmp * 2 - 1, algmcs, 5) / x;
   } else {
     return 1 / (x * 12);
   }

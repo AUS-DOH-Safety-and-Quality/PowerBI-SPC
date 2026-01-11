@@ -1,7 +1,7 @@
 import lgamma from "./lgamma";
 import ldexp from "./ldexp";
 import lgamma1p from "./lgamma1p";
-import { LOG_2PI, LOG_SQRT_2PI } from "./Constants";
+import { LOG_TWO_PI, LOG_SQRT_TWO_PI } from "./Constants";
 
 /**
  * Computes the (log) Stirling's error term for a given n.
@@ -12,8 +12,8 @@ import { LOG_2PI, LOG_SQRT_2PI } from "./Constants";
  * @param n The input value for which to compute the Stirling's error term
  * @returns The Stirling's error term for the input n
  */
-export default function stirlerr(n: number): number {
-  const s_coeffs: number[] = [
+export default function stirlingError(n: number): number {
+  const s_coeffs: readonly number[] = [
     0.083333333333333333333,
     0.00277777777777777777778,
     0.00079365079365079365079365,
@@ -33,7 +33,7 @@ export default function stirlerr(n: number): number {
     382900751.39141414141414141
   ];
 
-  const sferr_halves: number[] = [
+  const sferr_halves: readonly number[] = [
     0.0,
     0.1534264097200273452913848,
     0.0810614667953272582196702,
@@ -67,20 +67,21 @@ export default function stirlerr(n: number): number {
     0.005554733551962801371038690
   ];
 
-  if (n <= 5.25) {
-    if (n >= 1) {
-      const l_n: number = Math.log(n);
-      return lgamma(n) + n * (1 - l_n) + ldexp(l_n - LOG_2PI, -1);
-    }
-    else {
-      return lgamma1p(n) - (n + 0.5) * Math.log(n) + n - LOG_SQRT_2PI;
-    }
-  }
-
   let nn: number = n + n;
   if (n <= 15 && nn === Math.trunc(nn)) {
     return sferr_halves[nn];
   }
+
+  if (n <= 5.25) {
+    if (n >= 1) {
+      const l_n: number = Math.log(n);
+      return lgamma(n) + n * (1 - l_n) + ldexp(l_n - LOG_TWO_PI, -1);
+    }
+    else {
+      return lgamma1p(n) - (n + 0.5) * Math.log(n) + n - LOG_SQRT_TWO_PI;
+    }
+  }
+
 
   let start_coeff: number;
   if (n > 15.7e6) {

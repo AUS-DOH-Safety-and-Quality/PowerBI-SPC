@@ -21,7 +21,7 @@ export default function lgamma1p(a: number): number {
     return lgamma(a + 1);
   }
 
-  const coeffs: number[] = [
+  const coeffs: readonly number[] = [
     0.3224670334241132182362075833230126e-0,
     0.6735230105319809513324605383715000e-1,
     0.2058080842778454787900092413529198e-1,
