@@ -467,6 +467,9 @@ export default class viewModelClass {
       const varIconFilter: string = this.inputSettings.settings[i].summary_table.table_variation_filter;
       const assIconFilter: string = this.inputSettings.settings[i].summary_table.table_assurance_filter;
       const limits: controlLimitsObject = this.controlLimits[i];
+      if (!limits) {
+        continue;
+      }
       const outliers: outliersObject = this.outliers[i];
       const lastIndex: number = limits.keys.length - 1;
       const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
@@ -557,6 +560,11 @@ export default class viewModelClass {
 
     this.tableColumns[0].push({ name: "date", label: "Date" });
     this.tableColumns[0].push({ name: "value", label: "Value" });
+
+    if (!controlLimits) {
+      return;
+    }
+
     if (!isNullOrUndefined(controlLimits.numerators)) {
       this.tableColumns[0].push({ name: "numerator", label: "Numerator" });
     }
@@ -711,6 +719,11 @@ export default class viewModelClass {
     }
 
     const formattedLines: lineData[] = new Array<lineData>();
+
+    if (!controlLimits) {
+      return;
+    }
+
     const nLimits = controlLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {

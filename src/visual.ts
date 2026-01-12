@@ -56,7 +56,6 @@ export class Visual implements powerbi.extensibility.IVisual {
       // If there are any errors or failures, the update exits early sets the
       // update status to false
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
-      console.log(this.viewModel)
       if (!update_status.status) {
         this.resizeCanvas(options.viewport.width, options.viewport.height);
         if (this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true) {
