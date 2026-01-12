@@ -7,9 +7,9 @@
 export default function median(values: number[]): number {
   const n: number = values.length;
   if (n === 0) {
-    return NaN;
+    return Number.NaN;
   }
-  const sortedValues: number[] = [...values].sort((a, b) => a - b);
+  const sortedValues: number[] = [...values].sort((a: number, b: number) => a - b);
   const mid: number = Math.floor(n / 2);
   if (n % 2 === 0) {
     return (sortedValues[mid - 1] + sortedValues[mid]) / 2;

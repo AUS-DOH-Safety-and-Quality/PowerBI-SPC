@@ -7,10 +7,10 @@
 export default function mean(values: number[]): number {
   const n: number = values.length;
   if (n === 0) {
-    return NaN;
+    return Number.NaN;
   }
   let sum: number = 0;
-  for (let i = 0; i < n; i++) {
+  for (let i: number = 0; i < n; i++) {
     sum += values[i];
   }
   return sum / n;
