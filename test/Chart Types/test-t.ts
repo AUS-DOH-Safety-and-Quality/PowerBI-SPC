@@ -3,7 +3,7 @@ import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { controlLimitsObject } from "../../src/Classes";
+import { controlLimitsObject } from "../../src/Classes/viewModelClass";
 
 const keys: string[] = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67"];
 const numerators: number[] = [16,20,5,13,1,26,46,12,12,5,19,4,3,15,14,9,8,15,21,6,3,1,56,117,1,33,9,9,19,12,1,16,13,18,1,35,16,5,21,38,3,25,3,11,13,20,9,3,8,21,24,38,8,13,9,1,30,23,3,7,22,19,11,31,6,1,1];

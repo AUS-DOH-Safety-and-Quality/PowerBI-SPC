@@ -3,7 +3,7 @@ import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { controlLimitsObject } from "../../src/Classes";
+import { controlLimitsObject } from "../../src/Classes/viewModelClass";
 
 const keys: string[] = ["2010-01-01","2010-02-01","2010-03-01","2010-04-01","2010-05-01","2010-06-01","2010-07-01","2010-08-01","2010-09-01","2010-10-01","2010-11-01","2010-12-01","2011-01-01","2011-02-01","2011-03-01","2011-04-01","2011-05-01"];
 const numerators: number[] = [5,7,5,7,7,5,4,9,8,13,8,7,8,7,12,11,8];
