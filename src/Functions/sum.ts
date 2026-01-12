@@ -6,7 +6,7 @@
  */
 export default function sum(values: number[]): number {
   let total: number = 0;
-  for (let i = 0; i < values.length; i++) {
+  for (let i: number = 0; i < values.length; i++) {
     total += values[i];
   }
   return total;
