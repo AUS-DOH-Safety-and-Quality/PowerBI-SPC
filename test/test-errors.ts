@@ -2,7 +2,7 @@ import powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
-import { rep } from "../src/Functions";
+import rep from "../src/Functions/rep";
 
 
 const stringKeys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];

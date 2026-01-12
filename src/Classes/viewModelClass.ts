@@ -9,8 +9,6 @@ import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
 import getAesthetic from "../Functions/getAesthetic";
 import checkFlagDirection from "../Outlier Flagging/checkFlagDirection";
-import truncate, { type truncateInputs } from "../Functions/truncate";
-import { multiply } from "../Functions/broadcastBinary";
 import rep from "../Functions/rep";
 import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
@@ -26,6 +24,7 @@ import trend from "../Outlier Flagging/trend";
 import twoInThree from "../Outlier Flagging/twoInThree";
 import shift from "../Outlier Flagging/shift";
 import { lineNameMap } from "../Functions/getAesthetic";
+import isValidNumber from "../Functions/isValidNumber";
 
 export type viewModelValidationT = {
   status: boolean,
@@ -808,17 +807,26 @@ export default class viewModelClass {
       }
     }
 
-    const limits: truncateInputs = {
-      lower: inputSettings.spc.ll_truncate,
-      upper: inputSettings.spc.ul_truncate
-    };
-
     lines_to_scale.forEach(limit => {
-      controlLimits[limit] = multiply(controlLimits[limit], multiplier)
+      for (let i: number = 0; i < controlLimits[limit].length; i++) {
+        if (!isNullOrUndefined(controlLimits[limit][i])) {
+          controlLimits[limit][i] = controlLimits[limit][i] * multiplier;
+        }
+      }
     })
 
     lines_to_truncate.forEach(limit => {
-      controlLimits[limit] = truncate(controlLimits[limit], limits)
+      for (let i: number = 0; i < controlLimits[limit].length; i++) {
+        if (!isNullOrUndefined(controlLimits[limit][i])) {
+          const lower_trunc: number = isValidNumber(inputSettings.spc.ll_truncate)
+            ? Math.max(inputSettings.spc.ll_truncate, controlLimits[limit][i])
+            : controlLimits[limit][i];
+          const upper_trunc: number = isValidNumber(inputSettings.spc.ul_truncate)
+            ? Math.min(inputSettings.spc.ul_truncate, lower_trunc)
+            : lower_trunc;
+          controlLimits[limit][i] = upper_trunc;
+        }
+      }
     })
   }
 
@@ -879,8 +887,10 @@ export default class viewModelClass {
       }
     }
     Object.keys(outliers).forEach(key => {
-      outliers[key] = checkFlagDirection(outliers[key],
+      for (let i = 0; i < outliers[key].length; i++) {
+        outliers[key][i] = checkFlagDirection(outliers[key][i],
                                               { process_flag_type, improvement_direction });
+      }
     })
     return outliers;
   }

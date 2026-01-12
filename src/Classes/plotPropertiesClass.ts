@@ -1,5 +1,4 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import truncate from "../Functions/truncate";
 import min from "../Functions/min";
 import max from "../Functions/max";
 import type { dataObject } from "../Functions/extractInputData";
@@ -93,11 +92,11 @@ export default class plotPropertiesClass {
 
       // Assume that observed values > 100% are intentional, and do not truncate
       yUpperLimit ??= (derivedSettings.percentLabels && !(maxValue > (1 * multiplier)))
-                      ? truncate(upperLimitRaw, {upper: 1 * multiplier})
+                      ? Math.min(upperLimitRaw, 1 * multiplier)
                       : upperLimitRaw;
 
       yLowerLimit ??= derivedSettings.percentLabels
-                      ? truncate(lowerLimitRaw, {lower: 0 * multiplier})
+                      ? Math.max(lowerLimitRaw, 0)
                       : lowerLimitRaw;
 
       const keysToPlot: number[] = controlLimits.keys.map(d => d.x);
