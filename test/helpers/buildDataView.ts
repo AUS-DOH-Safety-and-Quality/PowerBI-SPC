@@ -3,7 +3,7 @@ import DataView = powerbi.DataView;
 
 import { valueType } from "powerbi-visuals-utils-typeutils";
 import ValueType = valueType.ValueType;
-import { isNullOrUndefined } from "../../src/Functions";
+import isNullOrUndefined from "../../src/Functions/isNullOrUndefined";
 import { defaultSettingsType } from "../../src/settings";
 
 function buildColumn(displayName: string, queryName: string, values: any[], settings?: defaultSettingsType): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {

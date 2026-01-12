@@ -1,4 +1,5 @@
-import { abs, sum } from "../Functions";
+import { abs } from "../Functions/broadcastUnary";
+import sum from "../Functions/sum";
 
 export default function trend(val: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {

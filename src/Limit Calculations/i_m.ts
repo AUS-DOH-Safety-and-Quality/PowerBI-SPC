@@ -1,4 +1,4 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes";
+import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for an I-mR chart using the median instead of mean.

@@ -4,9 +4,27 @@ type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as limitFunctions from "../Limit Calculations"
-import { settingsClass, type defaultSettingsType, type derivedSettingsClass } from "../Classes";
-import { buildTooltip, getAesthetic, checkFlagDirection, truncate, type truncateInputs, multiply, rep, type dataObject, extractInputData, isNullOrUndefined, variationIconsToDraw, assuranceIconToDraw, validateDataView, valueFormatter, calculateTrendLine, groupBy } from "../Functions"
-import { astronomical, trend, twoInThree, shift } from "../Outlier Flagging"
+import settingsClass, { type defaultSettingsType } from "./settingsClass";
+import type derivedSettingsClass from "./derivedSettingsClass";
+import buildTooltip from "../Functions/buildTooltip";
+import getAesthetic from "../Functions/getAesthetic";
+import checkFlagDirection from "../Outlier Flagging/checkFlagDirection";
+import truncate, { type truncateInputs } from "../Functions/truncate";
+import { multiply } from "../Functions/broadcastBinary";
+import rep from "../Functions/rep";
+import { type dataObject } from "../Functions/extractInputData";
+import extractInputData from "../Functions/extractInputData";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
+import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
+import validateDataView from "../Functions/validateDataView";
+import valueFormatter from "../Functions/valueFormatter";
+import calculateTrendLine from "../Functions/calculateTrendLine";
+import groupBy from "../Functions/groupBy";
+import astronomical from "../Outlier Flagging/astronomical";
+import trend from "../Outlier Flagging/trend";
+import twoInThree from "../Outlier Flagging/twoInThree";
+import shift from "../Outlier Flagging/shift";
 import { lineNameMap } from "../Functions/getAesthetic";
 
 export type viewModelValidationT = {

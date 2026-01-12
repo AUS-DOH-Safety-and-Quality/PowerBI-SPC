@@ -1,5 +1,5 @@
 import type powerbi from "powerbi-visuals-api";
-import { settingsClass } from "../Classes";
+import settingsClass from "../Classes/settingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 
 export default function validateDataView(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {

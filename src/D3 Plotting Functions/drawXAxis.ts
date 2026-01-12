@@ -1,5 +1,5 @@
 import * as d3 from "./D3 Modules";
-import type { axisProperties } from "../Classes";
+import type { axisProperties } from "../Classes/plotPropertiesClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {

@@ -1,5 +1,5 @@
 import * as d3 from "./D3 Modules";
-import type { plotData } from "../Classes";
+import type { plotData } from "../Classes/viewModelClass";
 import type { divBaseType, svgBaseType, Visual } from "../visual";
 
 export default function addContextMenu(selection: svgBaseType | divBaseType, visualObj: Visual) {

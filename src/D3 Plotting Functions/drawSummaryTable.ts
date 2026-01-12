@@ -3,8 +3,8 @@ import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
-import type { defaultSettingsType } from "../Classes";
-import { identitySelected } from "../Functions";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import identitySelected from "../Functions/identitySelected";
 
 function drawTableHeaders(selection: divBaseType, cols: { name: string; label: string; }[],
                           tableSettings: defaultSettingsType["summary_table"], maxWidth: number) {

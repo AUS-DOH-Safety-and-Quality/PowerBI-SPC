@@ -1,6 +1,7 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { defaultSettingsType, derivedSettingsClass } from "../Classes";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 import valueFormatter from "./valueFormatter";
 import { summaryTableRowData } from "../Classes/viewModelClass";

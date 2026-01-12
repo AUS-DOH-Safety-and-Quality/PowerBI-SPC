@@ -1,4 +1,4 @@
-import type { defaultSettingsType } from "../Classes"
+import type { defaultSettingsType } from "../Classes/settingsClass"
 
 const lineNameMap: Record<string, string> = {
   "ll99" : "99",

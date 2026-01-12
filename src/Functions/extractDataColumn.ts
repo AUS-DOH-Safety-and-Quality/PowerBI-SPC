@@ -2,8 +2,12 @@ import powerbi from "powerbi-visuals-api"
 type DataViewValueColumn = powerbi.DataViewValueColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { defaultSettingsType } from "../Classes/";
-import { formatPrimitiveValue, dateSettingsToFormatOptions, parseInputDates, rep, isNullOrUndefined } from "../Functions";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import formatPrimitiveValue from "../Functions/formatPrimitiveValue";
+import dateSettingsToFormatOptions from "../Functions/dateSettingsToFormatOptions";
+import parseInputDates from "../Functions/parseInputDates";
+import rep from "../Functions/rep";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
 type TargetT = number[] | string[] | VisualTooltipDataItem[][];
 
 function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {

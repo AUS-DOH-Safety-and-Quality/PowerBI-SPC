@@ -1,4 +1,4 @@
-import type { defaultSettingsType } from "../Classes"
+import type { defaultSettingsType } from "../Classes/settingsClass"
 import isNullOrUndefined from "./isNullOrUndefined"
 
 // Mapping from the Visual settings options to the required option for the dateFormat function

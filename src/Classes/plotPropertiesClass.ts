@@ -1,8 +1,16 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import { truncate, min, max, type dataObject, isNullOrUndefined, isValidNumber } from "../Functions";
+import truncate from "../Functions/truncate";
+import min from "../Functions/min";
+import max from "../Functions/max";
+import { type dataObject } from "../Functions/extractInputData";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import isValidNumber from "../Functions/isValidNumber";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import type { defaultSettingsType, plotData, controlLimitsObject, derivedSettingsClass, viewModelClass } from "../Classes";
+import type { defaultSettingsType } from "./settingsClass";
+import type { plotData, controlLimitsObject } from "./viewModelClass";
+import type viewModelClass from "./viewModelClass";
+import type derivedSettingsClass from "./derivedSettingsClass";
 import { colourPaletteType } from "./viewModelClass";
 
 export type axisProperties = {

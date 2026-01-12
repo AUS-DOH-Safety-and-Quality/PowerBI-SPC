@@ -1,4 +1,5 @@
-import { abs, sum } from "../Functions";
+import { abs } from "../Functions/broadcastUnary";
+import sum from "../Functions/sum";
 
 export default function shift(val: number[], targets: number[], n: number): string[] {
   const lagged_sign: number[] = val.map((d, i) => {

@@ -3,7 +3,7 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
-import type { defaultSettingsType, defaultSettingsKeys } from "../Classes";
+import type { defaultSettingsType, defaultSettingsKeys } from "../Classes/settingsClass";
 import { defaultSettings } from "../settings";
 import rep from "./rep";
 import between from "./between";

@@ -1,6 +1,7 @@
 import * as powerbi from "powerbi-visuals-api"
 type DataView = powerbi.default.DataView;
-import { extractConditionalFormatting, isNullOrUndefined } from "../Functions";
+import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import { default as settingsModel, defaultSettings, type defaultSettingsType,
   type defaultSettingsKeys, type defaultSettingsNestedKeys
  } from "../settings";
