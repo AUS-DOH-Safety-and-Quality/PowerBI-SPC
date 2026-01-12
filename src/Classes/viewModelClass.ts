@@ -254,8 +254,8 @@ export default class viewModelClass {
       // Loop through each indicator group
       idx_per_indicator.forEach((group_idxs, idx) => {
         // Determine which settings to use
-        const settings = this.inputSettings.settingsGrouped?.[idx] ?? this.inputSettings.settings;
-        const derivedSettings = this.inputSettings.derivedSettingsGrouped?.[idx] ?? this.inputSettings.derivedSettings;
+        const settings = this.inputSettings.settings[idx];
+        const derivedSettings = this.inputSettings.derivedSettings[idx];
 
         // Extract data for this indicator
         const inpData: dataObject = extractInputData(
@@ -410,14 +410,14 @@ export default class viewModelClass {
     })
     tableColumnsDef.push({ name: "latest_date", label: "Latest Date" });
 
-    const lineSettings = this.inputSettings.settings.lines;
+    const lineSettings = this.inputSettings.settings[0].lines;
     if (lineSettings.show_main) {
       tableColumnsDef.push({ name: "value", label: "Value" });
     }
-    if (this.inputSettings.settings.spc.ttip_show_numerator) {
+    if (this.inputSettings.settings[0].spc.ttip_show_numerator) {
       tableColumnsDef.push({ name: "numerator", label: "Numerator" });
     }
-    if (this.inputSettings.settings.spc.ttip_show_denominator) {
+    if (this.inputSettings.settings[0].spc.ttip_show_denominator) {
       tableColumnsDef.push({ name: "denominator", label: "Denominator" });
     }
     if (lineSettings.show_target) {
@@ -442,7 +442,7 @@ export default class viewModelClass {
         })
       }
     })
-    const nhsIconSettings: defaultSettingsType["nhs_icons"] = this.inputSettings.settings.nhs_icons;
+    const nhsIconSettings: defaultSettingsType["nhs_icons"] = this.inputSettings.settings[0].nhs_icons;
     if (nhsIconSettings.show_variation_icons) {
       tableColumnsDef.push({ name: "variation", label: "Variation" });
     }
@@ -463,13 +463,13 @@ export default class viewModelClass {
       if (isNullOrUndefined(this.inputData[i]?.categories)) {
         continue;
       }
-      const formatValues = valueFormatter(this.inputSettings.settingsGrouped[i], this.inputSettings.derivedSettingsGrouped[i]);
-      const varIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_variation_filter;
-      const assIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_assurance_filter;
+      const formatValues = valueFormatter(this.inputSettings.settings[i], this.inputSettings.derivedSettings[i]);
+      const varIconFilter: string = this.inputSettings.settings[i].summary_table.table_variation_filter;
+      const assIconFilter: string = this.inputSettings.settings[i].summary_table.table_assurance_filter;
       const limits: controlLimitsObject = this.controlLimits[i];
       const outliers: outliersObject = this.outliers[i];
       const lastIndex: number = limits.keys.length - 1;
-      const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settingsGrouped[i]);
+      const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
       if (varIconFilter !== "all") {
         if (varIconFilter === "improvement" && !(["improvementHigh", "improvementLow"].includes(varIcons[0]))) {
           continue;
@@ -487,8 +487,8 @@ export default class viewModelClass {
           continue;
         }
       }
-      const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settingsGrouped[i],
-                                                      this.inputSettings.derivedSettingsGrouped[i]);
+      const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settings[i],
+                                                      this.inputSettings.derivedSettings[i]);
       if (assIconFilter !== "all") {
         if (assIconFilter === "any" && assIcon === "inconsistent") {
           continue;
@@ -535,7 +535,7 @@ export default class viewModelClass {
       (this.plotPoints[i] as plotDataGrouped[]).push({
         table_row: Object.fromEntries(table_row_entries) as summaryTableRowDataGrouped,
         identity: this.identities[i],
-        aesthetics: this.inputSettings.settingsGrouped[i].summary_table,
+        aesthetics: this.inputSettings.settings[i].summary_table,
         highlighted: this.inputData[i].anyHighlights
       })
 
@@ -548,9 +548,8 @@ export default class viewModelClass {
     const inputData = this.inputData[0];
     const controlLimits = this.controlLimits[0];
     const outliers = this.outliers[0];
-    const settings = this.inputSettings.settingsGrouped?.[0] ?? this.inputSettings.settings;
-    const derivedSettings = this.inputSettings.derivedSettingsGrouped?.[0]
-      ?? this.inputSettings.derivedSettings;
+    const settings = this.inputSettings.settings[0];
+    const derivedSettings = this.inputSettings.derivedSettings[0];
 
     this.plotPoints[0] = new Array<plotData>();
     this.tickLabels = new Array<{ x: number; label: string; }>();
@@ -678,9 +677,8 @@ export default class viewModelClass {
   }
 
   initialiseGroupedLines(): void {
-    const settings = this.inputSettings.settingsGrouped?.[0] ?? this.inputSettings.settings;
-    const derivedSettings = this.inputSettings.derivedSettingsGrouped?.[0]
-      ?? this.inputSettings.derivedSettings;
+    const settings = this.inputSettings.settings[0];
+    const derivedSettings = this.inputSettings.derivedSettings[0];
     const controlLimits = this.controlLimits[0];
     const inputData = this.inputData[0];
 

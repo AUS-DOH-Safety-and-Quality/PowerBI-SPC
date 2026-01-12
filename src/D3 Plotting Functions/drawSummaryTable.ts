@@ -203,13 +203,13 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   }
 
   const maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
-  const tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
+  const tableSettings = visualObj.viewModel.inputSettings.settings[0].summary_table;
 
   selection.call(drawTableHeaders, cols, tableSettings, maxWidth)
             .call(drawTableRows, visualObj, plotPoints, tableSettings, maxWidth);
 
   if (plotPoints.length > 0) {
-    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings, visualObj.viewModel.showGrouped)
+    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.showGrouped)
   }
 
   selection.call(drawOuterBorder, tableSettings);

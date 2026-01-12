@@ -22,11 +22,9 @@ export type optionalSettingsTypes = Partial<{
  * These are defined in the settingsGroups.ts file
  */
 export default class settingsClass {
-  settings: defaultSettingsType;
-  derivedSettings: derivedSettingsClass;
+  settings: defaultSettingsType[];
+  derivedSettings: derivedSettingsClass[];
   validationStatus: SettingsValidationT;
-  settingsGrouped: defaultSettingsType[];
-  derivedSettingsGrouped: derivedSettingsClass[];
 
   /**
    * Function to read the values from the settings pane and update the
@@ -37,26 +35,27 @@ export default class settingsClass {
   update(inputView: DataView, groupIdxs: number[][]): void {
     this.validationStatus
       = JSON.parse(JSON.stringify({ status: 0, messages: new Array<string[]>(), error: "" }));
-    // Get the names of all classes in settingsObject which have values to be updated
-    const allSettingGroups: string[] = Object.keys(this.settings);
 
-    const is_grouped: boolean = inputView?.categorical?.categories?.some(d => d.source.roles.indicator) ?? false;
-    this.settingsGrouped = new Array<defaultSettingsType>();
-    if (is_grouped) {
-      groupIdxs.forEach(() => {
-        this.settingsGrouped.push(Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
-          return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
-            return [settingName, defaultSettings[settingGroupName][settingName]];
-          }))];
-        })) as defaultSettingsType);
-      })
-    }
+    // Initialize settings array based on number of groups
+    this.settings = new Array<defaultSettingsType>();
+    this.derivedSettings = new Array<derivedSettingsClass>();
+
+    groupIdxs.forEach(() => {
+      this.settings.push(Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
+        return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
+          return [settingName, defaultSettings[settingGroupName][settingName]];
+        }))];
+      })) as defaultSettingsType);
+      this.derivedSettings.push(new derivedSettingsClass());
+    });
 
     const all_idxs: number[] = groupIdxs.flat();
+    // Get the names of all classes in settingsObject which have values to be updated
+    const allSettingGroups: string[] = Object.keys(this.settings[0]);
 
     allSettingGroups.forEach((settingGroup: defaultSettingsKeys) => {
       const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKeys]>
-        = extractConditionalFormatting(inputView?.categorical, settingGroup, this.settings, all_idxs);
+        = extractConditionalFormatting(inputView?.categorical, settingGroup, this.settings[0], all_idxs);
 
       if (condFormatting.validation.status !== 0) {
         this.validationStatus.status = condFormatting.validation.status;
@@ -75,51 +74,38 @@ export default class settingsClass {
 
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
-      const settingNames: string[] = Object.keys(this.settings[settingGroup]);
+      const settingNames: string[] = Object.keys(this.settings[0][settingGroup]);
       settingNames.forEach((settingName: defaultSettingsNestedKeys) => {
-        this.settings[settingGroup][settingName]
-          = condFormatting?.values
-            ? condFormatting?.values[0][settingName]
-            : defaultSettings[settingGroup][settingName]["default"]
-
-        if (is_grouped) {
-          groupIdxs.forEach((idx, idx_idx) => {
-            this.settingsGrouped[idx_idx][settingGroup][settingName]
-              = condFormatting?.values
-                ? condFormatting?.values[idx[0]][settingName]
-                : defaultSettings[settingGroup][settingName]["default"]
-          })
-        }
+        groupIdxs.forEach((idx, idx_idx) => {
+          this.settings[idx_idx][settingGroup][settingName]
+            = condFormatting?.values
+              ? condFormatting?.values[idx[0]][settingName]
+              : defaultSettings[settingGroup][settingName]["default"]
+        })
       })
     })
 
-    if (this.settings.nhs_icons.show_variation_icons) {
+    if (this.settings[0].nhs_icons.show_variation_icons) {
       const patterns: string[] = ["astronomical", "shift", "trend", "two_in_three"];
-      const anyOutlierPatterns: boolean = patterns.some(d => this.settings.outliers[d]);
+      const anyOutlierPatterns: boolean = patterns.some(d => this.settings[0].outliers[d]);
       if (!anyOutlierPatterns) {
         this.validationStatus.status = 1;
         this.validationStatus.error = "Variation icons require at least one outlier pattern to be selected";
       }
     }
 /*
-    if (this.settings.nhs_icons.show_assurance_icons) {
-      const altTargetPresent: boolean = !isNullOrUndefined(this.settings.lines.alt_target);
-      const improvementDirection: string = this.settings.outliers.improvement_direction;
+    if (this.settings[0].nhs_icons.show_assurance_icons) {
+      const altTargetPresent: boolean = !isNullOrUndefined(this.settings[0].lines.alt_target);
+      const improvementDirection: string = this.settings[0].outliers.improvement_direction;
       if (!altTargetPresent || improvementDirection === "neutral") {
         this.validationStatus.status = 1;
         this.validationStatus.error = "Assurance icons require an alternative target and a non-neutral improvement direction";
       }
     }
 */
-    this.derivedSettings.update(this.settings.spc)
-    this.derivedSettingsGrouped = new Array<derivedSettingsClass>();
-    if (is_grouped) {
-      this.settingsGrouped.forEach((d) => {
-        const newDerived = new derivedSettingsClass();
-        newDerived.update(d.spc);
-        this.derivedSettingsGrouped.push(newDerived);
-      })
-    }
+    this.settings.forEach((settingsItem, idx) => {
+      this.derivedSettings[idx].update(settingsItem.spc);
+    });
   }
 
   public getFormattingModel(): powerbi.default.visuals.FormattingModel {
@@ -159,7 +145,7 @@ export default class settingsClass {
                   objectName: curr_card_name,
                   propertyName: setting,
                   selector: { data: [{ dataViewWildcard: { matchingOption: 0 } }] },
-                  instanceKind: (typeof this.settings[curr_card_name][setting]) != "boolean" ? powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule : null
+                  instanceKind: (typeof this.settings[0][curr_card_name][setting]) != "boolean" ? powerbi.default.VisualEnumerationInstanceKinds.ConstantOrRule : null
                 },
                 value: this.valueLookup(curr_card_name, card_group, setting),
                 items: settingsModel[curr_card_name].settingsGroups[card_group][setting]?.items,
@@ -182,22 +168,22 @@ export default class settingsClass {
 
   valueLookup(settingCardName: string, settingGroupName: string, settingName: string) {
     if (settingName.includes("colour")) {
-      return { value: this.settings[settingCardName][settingName] }
+      return { value: this.settings[0][settingCardName][settingName] }
     }
     if (!isNullOrUndefined(settingsModel[settingCardName].settingsGroups[settingGroupName][settingName]?.items)) {
       const allItems: powerbi.default.IEnumMember[] = settingsModel[settingCardName].settingsGroups[settingGroupName][settingName].items;
-      const currValue: string = this.settings[settingCardName][settingName];
+      const currValue: string = this.settings[0][settingCardName][settingName];
       return allItems.find(item => item.value === currValue);
     }
-    return this.settings[settingCardName][settingName];
+    return this.settings[0][settingCardName][settingName];
   }
 
   constructor() {
-    this.settings = Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
+    this.settings = [Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
       return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
         return [settingName, defaultSettings[settingGroupName][settingName]];
       }))];
-    })) as defaultSettingsType;
-    this.derivedSettings = new derivedSettingsClass();
+    })) as defaultSettingsType];
+    this.derivedSettings = [new derivedSettingsClass()];
   }
 }

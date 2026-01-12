@@ -46,7 +46,7 @@ function getLabelAttributes(d: plotData, visualObj: Visual): {x: number, y: numb
 }
 
 export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
-  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels
+  if (!visualObj.viewModel.inputSettings.settings[0].labels.show_labels
       || !visualObj.viewModel.inputData[0]?.anyLabels) {
     selection.select(".text-labels").remove();
     return;
@@ -134,9 +134,9 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
                 .attr("y1", y + line_offset)
                 .attr("x2", markerX)
                 .attr("y2", markerY)
-                .style("stroke", visualObj.viewModel.inputSettings.settings.labels.label_line_colour)
-                .style("stroke-width", visualObj.viewModel.inputSettings.settings.labels.label_line_width)
-                .style("stroke-dasharray", visualObj.viewModel.inputSettings.settings.labels.label_line_type);
+                .style("stroke", visualObj.viewModel.inputSettings.settings[0].labels.label_line_colour)
+                .style("stroke-width", visualObj.viewModel.inputSettings.settings[0].labels.label_line_width)
+                .style("stroke-dasharray", visualObj.viewModel.inputSettings.settings[0].labels.label_line_type);
 
               const markerRotation = angle + (d.label.aesthetics.label_position === "top" ? 90 : 270);
 

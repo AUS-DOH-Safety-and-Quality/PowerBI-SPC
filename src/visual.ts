@@ -56,9 +56,10 @@ export class Visual implements powerbi.extensibility.IVisual {
       // If there are any errors or failures, the update exits early sets the
       // update status to false
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
+      console.log(this.viewModel)
       if (!update_status.status) {
         this.resizeCanvas(options.viewport.width, options.viewport.height);
-        if (this.viewModel?.inputSettings?.settings?.canvas?.show_errors ?? true) {
+        if (this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true) {
           this.svg.call(drawErrors, options, this.viewModel.colourPalette, update_status?.error, update_status?.type);
         } else {
           this.svg.call(initialiseSVG, true);
@@ -75,7 +76,7 @@ export class Visual implements powerbi.extensibility.IVisual {
                                       update_status.warning);
       }
 
-      if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings.summary_table.show_table) {
+      if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings[0].summary_table.show_table) {
         this.resizeCanvas(0, 0);
         this.tableDiv.call(drawSummaryTable, this)
                      .call(addContextMenu, this);
@@ -158,7 +159,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     // Set all elements to their default opacity before applying highlights
     linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings)
+      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings[0])
     });
     dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
     dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
@@ -166,7 +167,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     if (anyHighlights || (allSelectionIDs.length > 0)) {
       linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings)
+        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings[0])
       });
       dotsSelection.nodes().forEach(currentDotNode => {
         const dot: plotData = d3.select(currentDotNode).datum() as plotData;

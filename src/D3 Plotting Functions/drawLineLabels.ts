@@ -38,7 +38,7 @@ type lineLabelType = {
 }
 
 export default function drawLineLabels(selection: svgBaseType, visualObj: Visual) {
-  const lineSettings = visualObj.viewModel.inputSettings.settings.lines;
+  const lineSettings = visualObj.viewModel.inputSettings.settings[0].lines;
   const rebaselinePoints: number[] = new Array<number>();
   visualObj.viewModel.groupedLines[0][1].forEach((d: lineData, idx: number) => {
     if (d.line_value === null) {
@@ -63,7 +63,7 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
       }
     });
   });
-  const formatValue = valueFormatter(visualObj.viewModel.inputSettings.settings, visualObj.viewModel.inputSettings.derivedSettings);
+  const formatValue = valueFormatter(visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.inputSettings.derivedSettings[0]);
   selection
     .select(".linesgroup")
     .selectAll("text")

@@ -2,7 +2,7 @@ import { summaryTableRowData, plotData } from "../Classes/viewModelClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawDownloadButton(selection: svgBaseType, visualObj: Visual) {
-  if (!(visualObj.viewModel.inputSettings.settings.download_options.show_button)) {
+  if (!(visualObj.viewModel.inputSettings.settings[0].download_options.show_button)) {
     selection.select(".download-btn-group").remove();
     return;
   }
