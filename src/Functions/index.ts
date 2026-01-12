@@ -5,7 +5,6 @@ export { default as broadcastUnary, sqrt, abs, exp, square } from "./broadcastUn
 export { default as buildTooltip } from "./buildTooltip"
 export { default as checkFlagDirection } from "../Outlier Flagging/checkFlagDirection"
 export { c4, c5, a3, b3, b4 } from "./sampleConstants"
-export { default as diff } from "./diff"
 export { default as extractConditionalFormatting } from "./extractConditionalFormatting"
 export { default as extractDataColumn } from "./extractDataColumn"
 export { default as extractInputData, type dataObject } from "./extractInputData"

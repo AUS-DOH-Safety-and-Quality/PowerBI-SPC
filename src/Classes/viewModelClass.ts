@@ -358,10 +358,17 @@ export default class viewModelClass {
     if (groupStartEndIndexes.length > 1) {
       const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
         // Force a deep copy
-        const data: dataObject = JSON.parse(JSON.stringify(inputData));
-        data.limitInputArgs.denominators = data.limitInputArgs.denominators.slice(indexes[0], indexes[1])
-        data.limitInputArgs.numerators = data.limitInputArgs.numerators.slice(indexes[0], indexes[1])
-        data.limitInputArgs.keys = data.limitInputArgs.keys.slice(indexes[0], indexes[1])
+        let data: dataObject = JSON.parse(JSON.stringify(inputData));
+        Object.keys(data.limitInputArgs).forEach(key => {
+          if (Array.isArray(data.limitInputArgs[key])) {
+            data.limitInputArgs[key] = data.limitInputArgs[key].slice(indexes[0], indexes[1]);
+            // Special case for subset points - need to re-index so that
+            //   the indexes are relative to the new subset
+            if (key === "subset_points") {
+              data.limitInputArgs[key] = data.limitInputArgs[key].map((d: number) => d - indexes[0]);
+            }
+          }
+        });
         return data;
       })
 
