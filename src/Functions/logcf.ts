@@ -23,6 +23,7 @@ export default function logcf(x: number, i: number, d: number, eps: number): num
 
   b2 = c4 * b1 - i * b2;
 
+  // Evaluate continued fraction using modified Lentz's method
   while (Math.abs(a2 * b1 - a1 * b2) > Math.abs(eps * b1 * b2)) {
     let c3: number = c2 * c2 * x;
     c2 += d;
@@ -36,6 +37,7 @@ export default function logcf(x: number, i: number, d: number, eps: number): num
     a2 = c4 * a1 - c3 * a2;
     b2 = c4 * b1 - c3 * b2;
 
+    // Rescale to prevent overflow/underflow
     if (Math.abs(b2) > scalefactor) {
       a1 /= scalefactor;
       b1 /= scalefactor;

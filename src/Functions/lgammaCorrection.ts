@@ -11,6 +11,7 @@ import chebyshevPolynomial from "./chebyshevPolynomial";
  * @returns The correction term for the logarithm of the gamma function at x
  */
 export default function lgammaCorrection(x: number): number {
+  // Coefficients for the Chebyshev approximation
   const algmcs: readonly number[] = [
     .1666389480451863247205729650822e+0,
     -.1384948176067563840732986059135e-4,
@@ -32,9 +33,11 @@ export default function lgammaCorrection(x: number): number {
   if (x < 10) {
     throw new Error("lgammaCorrection: x must be >= 10");
   } else if (x < 94906265.62425156) {
+    // For intermediate values 10 <= x < ~9.5e7, use Chebyshev approximation
     const tmp: number = 10 / x;
     return chebyshevPolynomial(tmp * tmp * 2 - 1, algmcs, 5) / x;
   } else {
+    // For very large x, use simple asymptotic approximation 1/(12x)
     return 1 / (x * 12);
   }
 }

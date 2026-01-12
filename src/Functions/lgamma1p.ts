@@ -21,6 +21,7 @@ export default function lgamma1p(a: number): number {
     return lgamma(a + 1);
   }
 
+  // Coefficients for the polynomial approximation of ln(gamma(1+x))
   const coeffs: readonly number[] = [
     0.3224670334241132182362075833230126e-0,
     0.6735230105319809513324605383715000e-1,
@@ -66,7 +67,11 @@ export default function lgamma1p(a: number): number {
 
   const N: number = coeffs.length;
   const c: number = 0.2273736845824652515226821577978691e-12;
+
+  // Use continued fraction approximation for the tail of the expansion
   let lgam: number = c * logcf(-a / 2, N + 2, 1, 1e-14);
+
+  // Evaluate the polynomial using Horner's method
   for (let i = N - 1; i >= 0; i--) {
     lgam = coeffs[i] - a * lgam;
   }

@@ -14,6 +14,7 @@ import { LOG_SQRT_TWO_PI } from "./Constants";
  * @returns The value of the gamma function at x
  */
 export default function gamma(x: number): number {
+  // Coefficients for the Chebyshev approximation
   const gamcs: readonly number[] = [
     .8571195590989331421920062399942e-2,
     .4415381324841006757191315771652e-2,
@@ -65,6 +66,7 @@ export default function gamma(x: number): number {
     return Number.NaN;
   }
 
+  // Gamma function has singularities at zero and negative integers.
   if (x == 0 || (x < 0 && x === Math.trunc(x))) {
     return Number.NaN;
   }
@@ -72,6 +74,7 @@ export default function gamma(x: number): number {
   let y: number = Math.abs(x);
   let value: number;
 
+  // Use Chebyshev polynomial approximation for small values (|x| <= 10).
   if (y <= 10) {
     let n: number = Math.trunc(x);
     if (x < 0) {
@@ -84,11 +87,14 @@ export default function gamma(x: number): number {
       return value;
     }
 
+    // Handle negative range by recursion: Gamma(z) = Gamma(z+1) / z
     if (n < 0) {
+      // Check for proximity to non-positive integers (singularities)
       if (x < -0.5 && Math.abs(x - Math.trunc(x - 0.5) / x) < dxrel) {
         return Number.NaN;
       }
 
+      // Check if y is too close to zero (underflow territory)
       if (y < 2.2474362225598545e-308) {
         return x < 0 ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
       }
@@ -100,26 +106,31 @@ export default function gamma(x: number): number {
       }
       return value;
     } else {
+      // Handle positive range recursion: Gamma(z+1) = z * Gamma(z)
       for (let i: number = 1; i <= n; i++) {
         value *= (y + i);
       }
       return value;
     }
   } else {
+    // Check for overflow (Gamma(172) > Number.MAX_VALUE).
     if (x > 171.61447887182298) {
       return Number.POSITIVE_INFINITY;
     }
 
+    // For very small negative numbers, Gamma approaches zero.
     if (x < -170.5674972726612) {
       return 0;
     }
 
+    // For integer values <= 50, compute factorial directly.
     if (y <= 50 && y == Math.trunc(y)) {
       value = 1;
       for (let i: number = 2; i < y; i++) {
         value *= i;
       }
     } else {
+      // For larger values, use Stirling's approximation
       const two_y: number = 2 * y;
       value = Math.exp((y - 0.5) * Math.log(y) - y + LOG_SQRT_TWO_PI
               + ((two_y == Math.trunc(two_y)) ? stirlingError(y) : lgammaCorrection(y)));
@@ -129,6 +140,7 @@ export default function gamma(x: number): number {
       return value;
     }
 
+    // Reflection formula for negative numbers: Gamma(x) = -pi / (x * sin(pi*x) * Gamma(-x))
     const sinpiy: number = sinpi(y);
     return (sinpiy === 0) ? Number.POSITIVE_INFINITY : -Math.PI / (y * sinpiy * value);
   }
