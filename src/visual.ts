@@ -148,8 +148,8 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   updateHighlighting(): void {
-    const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
-    const anyHighlightsGrouped: boolean = this.viewModel.inputDataGrouped ? this.viewModel.inputDataGrouped.some(d => d.anyHighlights) : false;
+    const anyHighlights: boolean = this.viewModel.inputData.length > 0
+      && this.viewModel.inputData.some(d => d.anyHighlights);
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
     const dotsSelection = this.svg.selectAll(".dotsgroup").selectChildren();
@@ -164,7 +164,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
     tableSelection.style("opacity", (d: plotData) => d.aesthetics["table_opacity"]);
 
-    if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
+    if (anyHighlights || (allSelectionIDs.length > 0)) {
       linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
         return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings)
       });

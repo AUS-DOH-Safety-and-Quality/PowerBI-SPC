@@ -134,42 +134,43 @@ export type colourPaletteType = {
 };
 
 export default class viewModelClass {
-  inputData: dataObject;
+  inputData: dataObject[];
   inputSettings: settingsClass;
-  controlLimits: controlLimitsObject;
-  outliers: outliersObject;
-  plotPoints: plotData[];
+  controlLimits: controlLimitsObject[];
+  outliers: outliersObject[];
+  plotPoints: (plotData[] | plotDataGrouped[])[];
   groupedLines: [string, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   splitIndexes: number[];
-  groupStartEndIndexes: number[][];
+  groupStartEndIndexes: number[][][];
   firstRun: boolean;
   colourPalette: colourPaletteType;
-  tableColumns: { name: string; label: string; }[];
+  tableColumns: { name: string; label: string; }[][];
   svgWidth: number;
   svgHeight: number;
   headless: boolean;
   frontend: boolean;
 
-  showGrouped: boolean;
   indicatorVarNames: string[];
   groupNames: string[][];
-  inputDataGrouped: dataObject[];
-  controlLimitsGrouped: controlLimitsObject[];
-  outliersGrouped: outliersObject[];
-  groupStartEndIndexesGrouped: number[][][];
-  tableColumnsGrouped: { name: string; label: string; }[];
-  plotPointsGrouped: plotDataGrouped[];
-  identitiesGrouped: ISelectionId[][];
+  identities: ISelectionId[][];
+
+  get showGrouped(): boolean {
+    return this.inputData && this.inputData.length > 1;
+  }
 
   constructor() {
-    this.inputData = <dataObject>null;
+    this.inputData = new Array<dataObject>();
     this.inputSettings = new settingsClass();
-    this.controlLimits = null;
-    this.plotPoints = new Array<plotData>();
+    this.controlLimits = new Array<controlLimitsObject>();
+    this.outliers = new Array<outliersObject>();
+    this.plotPoints = new Array<plotData[] | plotDataGrouped[]>();
     this.groupedLines = new Array<[string, lineData[]]>();
     this.firstRun = true
     this.splitIndexes = new Array<number>();
+    this.groupStartEndIndexes = new Array<number[][]>();
+    this.identities = new Array<ISelectionId[]>();
+    this.tableColumns = new Array<{ name: string; label: string; }[]>();
     this.colourPalette = null;
     this.headless = false;
     this.frontend = false;
@@ -236,91 +237,98 @@ export default class viewModelClass {
 
     // Only re-construct data and re-calculate limits if they have changed
     if (options.type === 2 || this.firstRun) {
-      if (options.dataViews[0].categorical.categories.some(d => d.source.roles.indicator)) {
-        this.showGrouped = true;
-        this.inputDataGrouped = new Array<dataObject>();
-        this.groupStartEndIndexesGrouped = new Array<number[][]>();
-        this.controlLimitsGrouped = new Array<controlLimitsObject>();
-        this.outliersGrouped = new Array<outliersObject>();
-        this.identitiesGrouped = new Array<ISelectionId[]>();
+      // Handle split indexes (only for first indicator in single mode)
+      const hasIndicator: boolean = options.dataViews[0].categorical.categories.some(d => d.source.roles.indicator);
+      const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+      const split_indexes: number[] = JSON.parse(split_indexes_str);
+      this.splitIndexes = hasIndicator ? [] : split_indexes;
 
-        idx_per_indicator.forEach((group_idxs, idx) => {
-          const inpData: dataObject = extractInputData(options.dataViews[0].categorical,
-                                                        this.inputSettings.settingsGrouped[idx],
-                                                        this.inputSettings.derivedSettingsGrouped[idx],
-                                                        this.inputSettings.validationStatus.messages,
-                                                        group_idxs);
-          const invalidData: boolean = inpData.validationStatus.status !== 0;
-          const groupStartEndIndexes: number[][] = invalidData ? new Array<number[]>() : this.getGroupingIndexes(inpData);
-          const limits: controlLimitsObject = invalidData ? null : this.calculateLimits(inpData, groupStartEndIndexes, this.inputSettings.settingsGrouped[idx]);
-          const outliers: outliersObject = invalidData ? null : this.flagOutliers(limits, groupStartEndIndexes,
-                                                                                  this.inputSettings.settingsGrouped[idx],
-                                                                                  this.inputSettings.derivedSettingsGrouped[idx]);
+      // Initialize arrays
+      this.inputData = new Array<dataObject>();
+      this.groupStartEndIndexes = new Array<number[][]>();
+      this.controlLimits = new Array<controlLimitsObject>();
+      this.outliers = new Array<outliersObject>();
+      this.identities = new Array<ISelectionId[]>();
+      this.tableColumns = new Array<{ name: string; label: string; }[]>();
 
-          if (!invalidData) {
-            this.scaleAndTruncateLimits(limits, this.inputSettings.settingsGrouped[idx],
-                                        this.inputSettings.derivedSettingsGrouped[idx]);
-          }
-          const identities = group_idxs.map(i => {
-            return host.createSelectionIdBuilder().withCategory(options.dataViews[0].categorical.categories[0], i).createSelectionId();
-          })
-          this.identitiesGrouped.push(identities);
-          this.inputDataGrouped.push(inpData);
-          this.groupStartEndIndexesGrouped.push(groupStartEndIndexes);
-          this.controlLimitsGrouped.push(limits);
-          this.outliersGrouped.push(outliers);
-        })
+      // Loop through each indicator group
+      idx_per_indicator.forEach((group_idxs, idx) => {
+        // Determine which settings to use
+        const settings = this.inputSettings.settingsGrouped?.[idx] ?? this.inputSettings.settings;
+        const derivedSettings = this.inputSettings.derivedSettingsGrouped?.[idx] ?? this.inputSettings.derivedSettings;
+
+        // Extract data for this indicator
+        const inpData: dataObject = extractInputData(
+          options.dataViews[0].categorical,
+          settings,
+          derivedSettings,
+          this.inputSettings.validationStatus.messages,
+          group_idxs
+        );
+
+        const invalidData: boolean = inpData.validationStatus.status !== 0;
+
+        // Calculate grouping indexes (only first indicator can have splits)
+        const groupStartEnd: number[][] = invalidData
+          ? new Array<number[]>()
+          : this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
+
+        // Calculate control limits
+        const limits: controlLimitsObject = invalidData
+          ? null
+          : this.calculateLimits(inpData, groupStartEnd, settings);
+
+        // Flag outliers
+        const outliers: outliersObject = invalidData
+          ? null
+          : this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
+
+        // Scale and truncate limits
+        if (!invalidData) {
+          this.scaleAndTruncateLimits(limits, settings, derivedSettings);
+        }
+
+        // Create selection identities
+        const identities = group_idxs.map(i => {
+          return host.createSelectionIdBuilder()
+            .withCategory(options.dataViews[0].categorical.categories[0], i)
+            .createSelectionId();
+        });
+
+        // Push to arrays
+        this.inputData.push(inpData);
+        this.groupStartEndIndexes.push(groupStartEnd);
+        this.controlLimits.push(limits);
+        this.outliers.push(outliers);
+        this.identities.push(identities);
+      });
+
+      // Initialize plot data based on mode
+      if (this.showGrouped) {
         this.initialisePlotDataGrouped();
       } else {
-        this.showGrouped = false;
-        this.groupNames = null;
-        this.inputDataGrouped = null;
-        this.groupStartEndIndexesGrouped = null;
-        this.controlLimitsGrouped = null;
-        const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
-        const split_indexes: number[] = JSON.parse(split_indexes_str);
-        this.splitIndexes = split_indexes;
-        this.inputData = extractInputData(options.dataViews[0].categorical,
-                                          this.inputSettings.settings,
-                                          this.inputSettings.derivedSettings,
-                                          this.inputSettings.validationStatus.messages,
-                                          idx_per_indicator[0]);
-
-        if (this.inputData.validationStatus.status === 0) {
-          this.groupStartEndIndexes = this.getGroupingIndexes(this.inputData, this.splitIndexes);
-          this.controlLimits = this.calculateLimits(this.inputData, this.groupStartEndIndexes, this.inputSettings.settings);
-          this.scaleAndTruncateLimits(this.controlLimits, this.inputSettings.settings,
-                                      this.inputSettings.derivedSettings);
-          this.outliers = this.flagOutliers(this.controlLimits, this.groupStartEndIndexes,
-                                            this.inputSettings.settings,
-                                            this.inputSettings.derivedSettings);
-
-          // Structure the data and calculated limits to the format needed for plotting
-          this.initialisePlotData(host);
-          this.initialiseGroupedLines();
-        }
+        this.initialisePlotData(host);
+        this.initialiseGroupedLines();
       }
     }
 
     this.firstRun = false;
-    if (this.showGrouped) {
-      if (this.inputDataGrouped.map(d => d.validationStatus.status).some(d => d !== 0)) {
-        res.status = false;
-        res.error = this.inputDataGrouped.map(d => d.validationStatus.error).join("\n");
-        return res;
-      }
-      if (this.inputDataGrouped.some(d => d.warningMessage !== "")) {
-       res.warning = this.inputDataGrouped.map(d => d.warningMessage).join("\n");
-      }
-    } else {
-      if (this.inputData.validationStatus.status !== 0) {
-        res.status = false;
-        res.error = this.inputData.validationStatus.error;
-        return res;
-      }
-      if (this.inputData.warningMessage !== "") {
-        res.warning = this.inputData.warningMessage;
-      }
+
+    // Validation (unified for all indicators)
+    if (this.inputData.some(d => d.validationStatus.status !== 0)) {
+      res.status = false;
+      res.error = this.inputData
+        .filter(d => d.validationStatus.status !== 0)
+        .map(d => d.validationStatus.error)
+        .join("\n");
+      return res;
+    }
+
+    if (this.inputData.some(d => d.warningMessage !== "")) {
+      res.warning = this.inputData
+        .filter(d => d.warningMessage !== "")
+        .map(d => d.warningMessage)
+        .join("\n");
     }
 
     return res;
@@ -392,32 +400,35 @@ export default class viewModelClass {
   }
 
   initialisePlotDataGrouped(): void {
-    this.plotPointsGrouped = new Array<plotDataGrouped>();
-    this.tableColumnsGrouped = new Array<{ name: string; label: string; }>();
+    this.plotPoints = new Array<plotDataGrouped[]>();
+    this.tableColumns = new Array<{ name: string; label: string; }[]>();
+
+    // Build table column definitions
+    const tableColumnsDef = new Array<{ name: string; label: string; }>();
     this.indicatorVarNames.forEach(indicator_name => {
-      this.tableColumnsGrouped.push({ name: indicator_name, label: indicator_name });
+      tableColumnsDef.push({ name: indicator_name, label: indicator_name });
     })
-    this.tableColumnsGrouped.push({ name: "latest_date", label: "Latest Date" });
+    tableColumnsDef.push({ name: "latest_date", label: "Latest Date" });
 
     const lineSettings = this.inputSettings.settings.lines;
     if (lineSettings.show_main) {
-      this.tableColumnsGrouped.push({ name: "value", label: "Value" });
+      tableColumnsDef.push({ name: "value", label: "Value" });
     }
     if (this.inputSettings.settings.spc.ttip_show_numerator) {
-      this.tableColumnsGrouped.push({ name: "numerator", label: "Numerator" });
+      tableColumnsDef.push({ name: "numerator", label: "Numerator" });
     }
     if (this.inputSettings.settings.spc.ttip_show_denominator) {
-      this.tableColumnsGrouped.push({ name: "denominator", label: "Denominator" });
+      tableColumnsDef.push({ name: "denominator", label: "Denominator" });
     }
     if (lineSettings.show_target) {
-      this.tableColumnsGrouped.push({ name: "target", label: lineSettings.ttip_label_target });
+      tableColumnsDef.push({ name: "target", label: lineSettings.ttip_label_target });
     }
     if (lineSettings.show_alt_target) {
-      this.tableColumnsGrouped.push({ name: "alt_target", label: lineSettings.ttip_label_alt_target });
+      tableColumnsDef.push({ name: "alt_target", label: lineSettings.ttip_label_alt_target });
     }
     ["99", "95", "68"].forEach(limit => {
       if (lineSettings[`show_${limit}`]) {
-        this.tableColumnsGrouped.push({
+        tableColumnsDef.push({
           name: `ucl${limit}`,
           label: `${lineSettings[`ttip_label_${limit}_prefix_upper`]}${lineSettings[`ttip_label_${limit}`]}`
         })
@@ -425,7 +436,7 @@ export default class viewModelClass {
     });
     ["68", "95", "99"].forEach(limit => {
       if (lineSettings[`show_${limit}`]) {
-        this.tableColumnsGrouped.push({
+        tableColumnsDef.push({
           name: `lcl${limit}`,
           label: `${lineSettings[`ttip_label_${limit}_prefix_lower`]}${lineSettings[`ttip_label_${limit}`]}`
         })
@@ -433,28 +444,30 @@ export default class viewModelClass {
     })
     const nhsIconSettings: defaultSettingsType["nhs_icons"] = this.inputSettings.settings.nhs_icons;
     if (nhsIconSettings.show_variation_icons) {
-      this.tableColumnsGrouped.push({ name: "variation", label: "Variation" });
+      tableColumnsDef.push({ name: "variation", label: "Variation" });
     }
     if (nhsIconSettings.show_assurance_icons) {
-      this.tableColumnsGrouped.push({ name: "assurance", label: "Assurance" });
+      tableColumnsDef.push({ name: "assurance", label: "Assurance" });
     }
-    const anyTooltips: boolean = this.inputDataGrouped.some(d => d?.tooltips?.some(t => t.length > 0));
+    const anyTooltips: boolean = this.inputData.some(d => d?.tooltips?.some(t => t.length > 0));
 
     if (anyTooltips) {
-      this.inputDataGrouped?.[0].tooltips?.[0].forEach(tooltip => {
-        this.tableColumnsGrouped.push({ name: tooltip.displayName, label: tooltip.displayName });
+      this.inputData?.[0].tooltips?.[0].forEach(tooltip => {
+        tableColumnsDef.push({ name: tooltip.displayName, label: tooltip.displayName });
       })
     }
+
+    // Process each indicator group
     for (let i: number = 0; i < this.groupNames.length; i++) {
       // Skip if no data for this group
-      if (isNullOrUndefined(this.inputDataGrouped[i]?.categories)) {
+      if (isNullOrUndefined(this.inputData[i]?.categories)) {
         continue;
       }
       const formatValues = valueFormatter(this.inputSettings.settingsGrouped[i], this.inputSettings.derivedSettingsGrouped[i]);
       const varIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_variation_filter;
       const assIconFilter: string = this.inputSettings.settingsGrouped[i].summary_table.table_assurance_filter;
-      const limits: controlLimitsObject = this.controlLimitsGrouped[i];
-      const outliers: outliersObject = this.outliersGrouped[i];
+      const limits: controlLimitsObject = this.controlLimits[i];
+      const outliers: outliersObject = this.outliers[i];
       const lastIndex: number = limits.keys.length - 1;
       const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settingsGrouped[i]);
       if (varIconFilter !== "all") {
@@ -510,204 +523,224 @@ export default class viewModelClass {
       table_row_entries.push(["assurance", assIcon]);
 
       if (anyTooltips) {
-        this.inputDataGrouped[i].tooltips[lastIndex].forEach(tooltip => {
+        this.inputData[i].tooltips[lastIndex].forEach(tooltip => {
           table_row_entries.push([tooltip.displayName, tooltip.value]);
         })
       }
 
-      this.plotPointsGrouped.push({
+      if (!this.plotPoints[i]) {
+        this.plotPoints[i] = [];
+      }
+
+      (this.plotPoints[i] as plotDataGrouped[]).push({
         table_row: Object.fromEntries(table_row_entries) as summaryTableRowDataGrouped,
-        identity: this.identitiesGrouped[i],
+        identity: this.identities[i],
         aesthetics: this.inputSettings.settingsGrouped[i].summary_table,
-        highlighted: this.inputDataGrouped[i].anyHighlights
+        highlighted: this.inputData[i].anyHighlights
       })
+
+      this.tableColumns[i] = tableColumnsDef;
     }
   }
 
   initialisePlotData(host: IVisualHost): void {
-    this.plotPoints = new Array<plotData>();
-    this.tickLabels = new Array<{ x: number; label: string; }>();
+    // Use first (and only) indicator data
+    const inputData = this.inputData[0];
+    const controlLimits = this.controlLimits[0];
+    const outliers = this.outliers[0];
+    const settings = this.inputSettings.settingsGrouped?.[0] ?? this.inputSettings.settings;
+    const derivedSettings = this.inputSettings.derivedSettingsGrouped?.[0]
+      ?? this.inputSettings.derivedSettings;
 
-    this.tableColumns = new Array<{ name: string; label: string; }>();
-    this.tableColumns.push({ name: "date", label: "Date" });
-    this.tableColumns.push({ name: "value", label: "Value" });
-    if (!isNullOrUndefined(this.controlLimits.numerators)) {
-      this.tableColumns.push({ name: "numerator", label: "Numerator" });
+    this.plotPoints[0] = new Array<plotData>();
+    this.tickLabels = new Array<{ x: number; label: string; }>();
+    this.tableColumns[0] = new Array<{ name: string; label: string; }>();
+
+    this.tableColumns[0].push({ name: "date", label: "Date" });
+    this.tableColumns[0].push({ name: "value", label: "Value" });
+    if (!isNullOrUndefined(controlLimits.numerators)) {
+      this.tableColumns[0].push({ name: "numerator", label: "Numerator" });
     }
-    if (!isNullOrUndefined(this.controlLimits.denominators)) {
-      this.tableColumns.push({ name: "denominator", label: "Denominator" });
+    if (!isNullOrUndefined(controlLimits.denominators)) {
+      this.tableColumns[0].push({ name: "denominator", label: "Denominator" });
     }
-    if (this.inputSettings.settings.lines.show_target) {
-      this.tableColumns.push({ name: "target", label: "Target" });
+    if (settings.lines.show_target) {
+      this.tableColumns[0].push({ name: "target", label: "Target" });
     }
-    if (this.inputSettings.settings.lines.show_alt_target) {
-      this.tableColumns.push({ name: "alt_target", label: "Alt. Target" });
+    if (settings.lines.show_alt_target) {
+      this.tableColumns[0].push({ name: "alt_target", label: "Alt. Target" });
     }
-    if (this.inputSettings.settings.lines.show_specification) {
-      this.tableColumns.push({ name: "speclimits_lower", label: "Spec. Lower" },
+    if (settings.lines.show_specification) {
+      this.tableColumns[0].push({ name: "speclimits_lower", label: "Spec. Lower" },
                              { name: "speclimits_upper", label: "Spec. Upper" });
     }
-    if (this.inputSettings.settings.lines.show_trend) {
-      this.tableColumns.push({ name: "trend_line", label: "Trend Line" });
+    if (settings.lines.show_trend) {
+      this.tableColumns[0].push({ name: "trend_line", label: "Trend Line" });
     }
-    if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
-      if (this.inputSettings.settings.lines.show_99) {
-        this.tableColumns.push({ name: "ll99", label: "LL 99%" },
+    if (derivedSettings.chart_type_props.has_control_limits) {
+      if (settings.lines.show_99) {
+        this.tableColumns[0].push({ name: "ll99", label: "LL 99%" },
                                { name: "ul99", label: "UL 99%" });
       }
-      if (this.inputSettings.settings.lines.show_95) {
-        this.tableColumns.push({ name: "ll95", label: "LL 95%" }, { name: "ul95", label: "UL 95%" });
+      if (settings.lines.show_95) {
+        this.tableColumns[0].push({ name: "ll95", label: "LL 95%" }, { name: "ul95", label: "UL 95%" });
       }
-      if (this.inputSettings.settings.lines.show_68) {
-        this.tableColumns.push({ name: "ll68", label: "LL 68%" }, { name: "ul68", label: "UL 68%" });
+      if (settings.lines.show_68) {
+        this.tableColumns[0].push({ name: "ll68", label: "LL 68%" }, { name: "ul68", label: "UL 68%" });
       }
     }
 
-    if (this.inputSettings.settings.outliers.astronomical) {
-      this.tableColumns.push({ name: "astpoint", label: "Ast. Point" });
+    if (settings.outliers.astronomical) {
+      this.tableColumns[0].push({ name: "astpoint", label: "Ast. Point" });
     }
-    if (this.inputSettings.settings.outliers.trend) {
-      this.tableColumns.push({ name: "trend", label: "Trend" });
+    if (settings.outliers.trend) {
+      this.tableColumns[0].push({ name: "trend", label: "Trend" });
     }
-    if (this.inputSettings.settings.outliers.shift) {
-      this.tableColumns.push({ name: "shift", label: "Shift" });
+    if (settings.outliers.shift) {
+      this.tableColumns[0].push({ name: "shift", label: "Shift" });
     }
 
-    for (let i: number = 0; i < this.controlLimits.keys.length; i++) {
-      const index: number = this.controlLimits.keys[i].x;
-      const aesthetics: defaultSettingsType["scatter"] = this.inputData.scatter_formatting[i];
+    for (let i: number = 0; i < controlLimits.keys.length; i++) {
+      const index: number = controlLimits.keys[i].x;
+      const aesthetics: defaultSettingsType["scatter"] = inputData.scatter_formatting[i];
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
-      if (this.outliers.shift[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.shift[i], "outliers",
-                                  "shift_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.shift[i], "outliers",
-                                  "shift_colour", this.inputSettings.settings) as string;
+      if (outliers.shift[i] !== "none") {
+        aesthetics.colour = getAesthetic(outliers.shift[i], "outliers",
+                                  "shift_colour", settings) as string;
+        aesthetics.colour_outline = getAesthetic(outliers.shift[i], "outliers",
+                                  "shift_colour", settings) as string;
       }
-      if (this.outliers.trend[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.trend[i], "outliers",
-                                  "trend_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.trend[i], "outliers",
-                                  "trend_colour", this.inputSettings.settings) as string;
+      if (outliers.trend[i] !== "none") {
+        aesthetics.colour = getAesthetic(outliers.trend[i], "outliers",
+                                  "trend_colour", settings) as string;
+        aesthetics.colour_outline = getAesthetic(outliers.trend[i], "outliers",
+                                  "trend_colour", settings) as string;
       }
-      if (this.outliers.two_in_three[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.two_in_three[i], "outliers",
-                                  "twointhree_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.two_in_three[i], "outliers",
-                                  "twointhree_colour", this.inputSettings.settings) as string;
+      if (outliers.two_in_three[i] !== "none") {
+        aesthetics.colour = getAesthetic(outliers.two_in_three[i], "outliers",
+                                  "twointhree_colour", settings) as string;
+        aesthetics.colour_outline = getAesthetic(outliers.two_in_three[i], "outliers",
+                                  "twointhree_colour", settings) as string;
       }
-      if (this.outliers.astpoint[i] !== "none") {
-        aesthetics.colour = getAesthetic(this.outliers.astpoint[i], "outliers",
-                                  "ast_colour", this.inputSettings.settings) as string;
-        aesthetics.colour_outline = getAesthetic(this.outliers.astpoint[i], "outliers",
-                                  "ast_colour", this.inputSettings.settings) as string;
+      if (outliers.astpoint[i] !== "none") {
+        aesthetics.colour = getAesthetic(outliers.astpoint[i], "outliers",
+                                  "ast_colour", settings) as string;
+        aesthetics.colour_outline = getAesthetic(outliers.astpoint[i], "outliers",
+                                  "ast_colour", settings) as string;
       }
       const table_row: summaryTableRowData = {
-        date: this.controlLimits.keys[i].label,
-        numerator: this.controlLimits.numerators?.[i],
-        denominator: this.controlLimits.denominators?.[i],
-        value: this.controlLimits.values[i],
-        target: this.controlLimits.targets[i],
-        alt_target: this.controlLimits.alt_targets[i],
-        ll99: this.controlLimits?.ll99?.[i],
-        ll95: this.controlLimits?.ll95?.[i],
-        ll68: this.controlLimits?.ll68?.[i],
-        ul68: this.controlLimits?.ul68?.[i],
-        ul95: this.controlLimits?.ul95?.[i],
-        ul99: this.controlLimits?.ul99?.[i],
-        speclimits_lower: this.controlLimits?.speclimits_lower?.[i],
-        speclimits_upper: this.controlLimits?.speclimits_upper?.[i],
-        trend_line: this.controlLimits?.trend_line?.[i],
-        astpoint: this.outliers.astpoint[i],
-        trend: this.outliers.trend[i],
-        shift: this.outliers.shift[i],
-        two_in_three: this.outliers.two_in_three[i]
+        date: controlLimits.keys[i].label,
+        numerator: controlLimits.numerators?.[i],
+        denominator: controlLimits.denominators?.[i],
+        value: controlLimits.values[i],
+        target: controlLimits.targets[i],
+        alt_target: controlLimits.alt_targets[i],
+        ll99: controlLimits?.ll99?.[i],
+        ll95: controlLimits?.ll95?.[i],
+        ll68: controlLimits?.ll68?.[i],
+        ul68: controlLimits?.ul68?.[i],
+        ul95: controlLimits?.ul95?.[i],
+        ul99: controlLimits?.ul99?.[i],
+        speclimits_lower: controlLimits?.speclimits_lower?.[i],
+        speclimits_upper: controlLimits?.speclimits_upper?.[i],
+        trend_line: controlLimits?.trend_line?.[i],
+        astpoint: outliers.astpoint[i],
+        trend: outliers.trend[i],
+        shift: outliers.shift[i],
+        two_in_three: outliers.two_in_three[i]
       }
 
 
-      this.plotPoints.push({
+      this.plotPoints[0].push({
         x: index,
-        value: this.controlLimits.values[i],
+        value: controlLimits.values[i],
         aesthetics: aesthetics,
         table_row: table_row,
         identity: host.createSelectionIdBuilder()
-                      .withCategory(this.inputData.categories, this.inputData.limitInputArgs.keys[i].id)
+                      .withCategory(inputData.categories, inputData.limitInputArgs.keys[i].id)
                       .createSelectionId(),
-        highlighted: !isNullOrUndefined(this.inputData.highlights?.[index]),
-        tooltip: buildTooltip(table_row, this.inputData?.tooltips?.[index],
-                              this.inputSettings.settings, this.inputSettings.derivedSettings),
+        highlighted: !isNullOrUndefined(inputData.highlights?.[index]),
+        tooltip: buildTooltip(table_row, inputData?.tooltips?.[index],
+                              settings, derivedSettings),
         label: {
-          text_value: this.inputData.labels?.[index],
-          aesthetics: this.inputData.label_formatting[index],
+          text_value: inputData.labels?.[index],
+          aesthetics: inputData.label_formatting[index],
           angle: null,
           distance: null,
           line_offset: null,
           marker_offset: null
         }
       })
-      this.tickLabels.push({x: index, label: this.controlLimits.keys[i].label});
+      this.tickLabels.push({x: index, label: controlLimits.keys[i].label});
     }
   }
 
   initialiseGroupedLines(): void {
+    const settings = this.inputSettings.settingsGrouped?.[0] ?? this.inputSettings.settings;
+    const derivedSettings = this.inputSettings.derivedSettingsGrouped?.[0]
+      ?? this.inputSettings.derivedSettings;
+    const controlLimits = this.controlLimits[0];
+    const inputData = this.inputData[0];
+
     const labels: string[] = new Array<string>();
-    if (this.inputSettings.settings.lines.show_main) {
+    if (settings.lines.show_main) {
       labels.push("values");
     }
-    if (this.inputSettings.settings.lines.show_target) {
+    if (settings.lines.show_target) {
       labels.push("targets");
     }
-    if (this.inputSettings.settings.lines.show_alt_target) {
+    if (settings.lines.show_alt_target) {
       labels.push("alt_targets");
     }
-    if (this.inputSettings.settings.lines.show_specification) {
+    if (settings.lines.show_specification) {
       labels.push("speclimits_lower", "speclimits_upper");
     }
-    if (this.inputSettings.settings.lines.show_trend) {
+    if (settings.lines.show_trend) {
       labels.push("trend_line");
     }
-    if (this.inputSettings.derivedSettings.chart_type_props.has_control_limits) {
-      if (this.inputSettings.settings.lines.show_99) {
+    if (derivedSettings.chart_type_props.has_control_limits) {
+      if (settings.lines.show_99) {
         labels.push("ll99", "ul99");
       }
-      if (this.inputSettings.settings.lines.show_95) {
+      if (settings.lines.show_95) {
         labels.push("ll95", "ul95");
       }
-      if (this.inputSettings.settings.lines.show_68) {
+      if (settings.lines.show_68) {
         labels.push("ll68", "ul68");
       }
     }
 
     const formattedLines: lineData[] = new Array<lineData>();
-    const nLimits = this.controlLimits.keys.length;
+    const nLimits = controlLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
-      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || this.inputData.groupingIndexes.includes(i - 1);
+      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || inputData.groupingIndexes.includes(i - 1);
       let isNewAltTarget: boolean = false;
-      if (i > 0 && this.inputSettings.settings.lines.show_alt_target) {
-        isNewAltTarget = this.controlLimits.alt_targets[i] !== this.controlLimits.alt_targets[i - 1];
+      if (i > 0 && settings.lines.show_alt_target) {
+        isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
       }
       labels.forEach(label => {
-        const join_rebaselines: boolean = this.inputSettings.settings.lines[`join_rebaselines_${lineNameMap[label]}`];
+        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineNameMap[label]}`];
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
         if (isRebaselinePoint || isNewAltTarget) {
           const is_alt_target: boolean = label === "alt_targets" && isNewAltTarget;
           const is_rebaseline: boolean = label !== "alt_targets" && isRebaselinePoint;
           formattedLines.push({
-            x: this.controlLimits.keys[i].x,
-            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : this.controlLimits[label]?.[i],
+            x: controlLimits.keys[i].x,
+            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : controlLimits[label]?.[i],
             group: label,
-            aesthetics: this.inputData.line_formatting[i]
+            aesthetics: inputData.line_formatting[i]
           })
         }
 
         formattedLines.push({
-          x: this.controlLimits.keys[i].x,
-          line_value: this.controlLimits[label]?.[i],
+          x: controlLimits.keys[i].x,
+          line_value: controlLimits[label]?.[i],
           group: label,
-          aesthetics: this.inputData.line_formatting[i]
+          aesthetics: inputData.line_formatting[i]
         })
       })
     }

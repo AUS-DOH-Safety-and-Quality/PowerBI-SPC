@@ -46,7 +46,8 @@ function getLabelAttributes(d: plotData, visualObj: Visual): {x: number, y: numb
 }
 
 export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
-  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels || !visualObj.viewModel.inputData.anyLabels) {
+  if (!visualObj.viewModel.inputSettings.settings.labels.show_labels
+      || !visualObj.viewModel.inputData[0]?.anyLabels) {
     selection.select(".text-labels").remove();
     return;
   }
@@ -91,7 +92,7 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
 
   selection.select(".text-labels")
             .selectAll(".text-group-inner")
-            .data(visualObj.viewModel.plotPoints)
+            .data(visualObj.viewModel.plotPoints[0] as plotData[])
             .join("g")
             .classed("text-group-inner", true)
             .each(function(d: plotData) {

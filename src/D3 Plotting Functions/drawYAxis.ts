@@ -14,10 +14,12 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
     if (yAxisProperties.tick_count) {
       yAxis.ticks(yAxisProperties.tick_count)
     }
-    if (visualObj.viewModel.inputData) {
+    if (visualObj.viewModel.inputData.length > 0 && visualObj.viewModel.inputData[0]) {
+      const derivedSettings = visualObj.viewModel.inputSettings.derivedSettingsGrouped?.[0]
+        ?? visualObj.viewModel.inputSettings.derivedSettings;
       yAxis.tickFormat(
         (d: number) => {
-          return visualObj.viewModel.inputSettings.derivedSettings.percentLabels
+          return derivedSettings.percentLabels
             ? d.toFixed(sig_figs) + "%"
             : d.toFixed(sig_figs);
         }

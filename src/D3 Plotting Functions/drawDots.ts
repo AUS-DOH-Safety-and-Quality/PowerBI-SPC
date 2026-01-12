@@ -11,7 +11,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
   selection
       .select(".dotsgroup")
       .selectAll("path")
-      .data(visualObj.viewModel.plotPoints)
+      .data(visualObj.viewModel.plotPoints[0] as plotData[])
       .join("path")
       .filter((d: plotData) => !isNullOrUndefined(d.value))
       .attr("d", (d: plotData) => {
