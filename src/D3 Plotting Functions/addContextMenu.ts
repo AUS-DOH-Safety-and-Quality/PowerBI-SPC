@@ -4,7 +4,7 @@ import type { divBaseType, svgBaseType, Visual } from "../visual";
 
 export default function addContextMenu(selection: svgBaseType | divBaseType, visualObj: Visual) {
   if (!(visualObj.plotProperties.displayPlot
-        || visualObj.viewModel.inputSettings.settings.summary_table.show_table
+        || visualObj.viewModel.inputSettings.settings[0].summary_table.show_table
         || visualObj.viewModel.showGrouped)) {
     selection.on("contextmenu", () => { return; });
     return;

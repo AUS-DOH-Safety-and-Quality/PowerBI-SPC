@@ -4,6 +4,7 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
+    "build": "pbiviz package",
     "eslint": "npx eslint .",
     "test": "karma start --browsers=ChromeHeadlessCI",
     "debug": "karma start --single-run=false --browsers=Chrome",

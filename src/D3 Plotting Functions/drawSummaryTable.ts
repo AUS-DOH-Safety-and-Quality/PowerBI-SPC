@@ -194,21 +194,22 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
   let cols: { name: string; label: string; }[];
 
   if (visualObj.viewModel.showGrouped){
-    plotPoints = visualObj.viewModel.plotPointsGrouped;
-    cols = visualObj.viewModel.tableColumnsGrouped;
+    // Flatten all indicators for table display
+    plotPoints = visualObj.viewModel.plotPoints.flat() as plotDataGrouped[];
+    cols = visualObj.viewModel.tableColumns[0]; // Same columns for all
   } else {
-    plotPoints = visualObj.viewModel.plotPoints;
-    cols = visualObj.viewModel.tableColumns;
+    plotPoints = visualObj.viewModel.plotPoints[0] as plotData[];
+    cols = visualObj.viewModel.tableColumns[0];
   }
 
   const maxWidth: number = visualObj.viewModel.svgWidth / cols.length;
-  const tableSettings = visualObj.viewModel.inputSettings.settings.summary_table;
+  const tableSettings = visualObj.viewModel.inputSettings.settings[0].summary_table;
 
   selection.call(drawTableHeaders, cols, tableSettings, maxWidth)
             .call(drawTableRows, visualObj, plotPoints, tableSettings, maxWidth);
 
   if (plotPoints.length > 0) {
-    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings, visualObj.viewModel.showGrouped)
+    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.showGrouped)
   }
 
   selection.call(drawOuterBorder, tableSettings);

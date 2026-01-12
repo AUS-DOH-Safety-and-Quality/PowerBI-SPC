@@ -1,15 +1,15 @@
-import { summaryTableRowData } from "../Classes/viewModelClass";
+import { summaryTableRowData, plotData } from "../Classes/viewModelClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawDownloadButton(selection: svgBaseType, visualObj: Visual) {
-  if (!(visualObj.viewModel.inputSettings.settings.download_options.show_button)) {
+  if (!(visualObj.viewModel.inputSettings.settings[0].download_options.show_button)) {
     selection.select(".download-btn-group").remove();
     return;
   }
   if (selection.select(".download-btn-group").empty()) {
     selection.append("text").classed("download-btn-group", true);
   }
-  const table_rows: summaryTableRowData[] = visualObj.viewModel.plotPoints.map(d => d.table_row);
+  const table_rows: summaryTableRowData[] = (visualObj.viewModel.plotPoints[0] as plotData[]).map(d => d.table_row);
   const csv_rows: string[] = new Array<string>();
   csv_rows.push(Object.keys(table_rows[0]).join(","));
   table_rows.forEach(row => {

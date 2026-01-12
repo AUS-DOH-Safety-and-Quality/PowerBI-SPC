@@ -29,7 +29,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
     if (!plotProperties.displayPlot) {
       return;
     }
-    const plotPoints: plotData[] = visualObj.viewModel.plotPoints
+    const plotPoints: plotData[] = visualObj.viewModel.plotPoints[0] as plotData[]
 
     const boundRect = visualObj.svg.node().getBoundingClientRect();
     const xValue: number = (event.pageX - boundRect.left);

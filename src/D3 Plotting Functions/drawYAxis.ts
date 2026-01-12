@@ -6,18 +6,19 @@ import type { svgBaseType, Visual } from "../visual";
 export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
   const yAxisProperties: axisProperties = visualObj.plotProperties.yAxis;
   const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.plotProperties.yScale);
-  const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.settings.y_axis.ylimit_sig_figs;
-  const sig_figs: number = isNullOrUndefined(yaxis_sig_figs) ? visualObj.viewModel.inputSettings.settings.spc.sig_figs : yaxis_sig_figs;
+  const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.settings[0].y_axis.ylimit_sig_figs;
+  const sig_figs: number = isNullOrUndefined(yaxis_sig_figs) ? visualObj.viewModel.inputSettings.settings[0].spc.sig_figs : yaxis_sig_figs;
   const displayPlot: boolean = visualObj.plotProperties.displayPlot;
 
   if (yAxisProperties.ticks) {
     if (yAxisProperties.tick_count) {
       yAxis.ticks(yAxisProperties.tick_count)
     }
-    if (visualObj.viewModel.inputData) {
+    if (visualObj.viewModel.inputData.length > 0 && visualObj.viewModel.inputData[0]) {
+      const derivedSettings = visualObj.viewModel.inputSettings.derivedSettings[0];
       yAxis.tickFormat(
         (d: number) => {
-          return visualObj.viewModel.inputSettings.derivedSettings.percentLabels
+          return derivedSettings.percentLabels
             ? d.toFixed(sig_figs) + "%"
             : d.toFixed(sig_figs);
         }

@@ -11,7 +11,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
   selection
       .select(".dotsgroup")
       .selectAll("path")
-      .data(visualObj.viewModel.plotPoints)
+      .data(visualObj.viewModel.plotPoints[0] as plotData[])
       .join("path")
       .filter((d: plotData) => !isNullOrUndefined(d.value))
       .attr("d", (d: plotData) => {
@@ -36,7 +36,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       .style("stroke-width", (d: plotData) => d.aesthetics.width_outline)
       .on("click", (event, d: plotData) => {
         if (visualObj.host.hostCapabilities.allowInteractions) {
-          if (visualObj.viewModel.inputSettings.settings.spc.split_on_click) {
+          if (visualObj.viewModel.inputSettings.settings[0].spc.split_on_click) {
             // Identify whether limits are already split at datapoint, and undo if so
             const xIndex: number = visualObj.viewModel.splitIndexes.indexOf(d.x)
             if (xIndex > -1) {

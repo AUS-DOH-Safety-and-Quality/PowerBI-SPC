@@ -22,10 +22,10 @@ describe("extractValues", () => {
         expect(extractValues(values, indices)).toEqual(expected);
     });
 
-    it("should return undefined for out-of-bounds indices", () => {
+    it("should ignore out-of-bounds indices", () => {
         const values = [1, 2];
         const indices = [0, 5];
-        const expected = [1, undefined];
+        const expected = [1];
         expect(extractValues(values, indices)).toEqual(expected);
     });
 

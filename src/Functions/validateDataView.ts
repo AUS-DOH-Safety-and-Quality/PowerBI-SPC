@@ -25,8 +25,8 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   let needs_sd: boolean;
   let chart_type: string;
 
-  if (inputSettingsClass?.derivedSettingsGrouped.length > 0) {
-    inputSettingsClass?.derivedSettingsGrouped.forEach((d) => {
+  if (inputSettingsClass?.derivedSettings.length > 0) {
+    inputSettingsClass?.derivedSettings.forEach((d) => {
       if (d.chart_type_props.needs_denominator) {
         chart_type = d.chart_type_props.name;
         needs_denominator = true;
@@ -37,9 +37,9 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
       }
     });
   } else {
-    chart_type = inputSettingsClass.settings.spc.chart_type;
-    needs_denominator = inputSettingsClass.derivedSettings.chart_type_props.needs_denominator;
-    needs_sd = inputSettingsClass.derivedSettings.chart_type_props.needs_sd;
+    chart_type = inputSettingsClass.settings[0].spc.chart_type;
+    needs_denominator = inputSettingsClass.derivedSettings[0].chart_type_props.needs_denominator;
+    needs_sd = inputSettingsClass.derivedSettings[0].chart_type_props.needs_sd;
   }
 
   if (needs_denominator) {

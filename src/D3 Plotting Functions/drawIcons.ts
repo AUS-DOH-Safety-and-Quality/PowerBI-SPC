@@ -10,7 +10,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   if (!(visualObj.plotProperties.displayPlot)) {
     return;
   }
-  const nhsIconSettings: defaultSettingsType["nhs_icons"] = visualObj.viewModel.inputSettings.settings.nhs_icons;
+  const nhsIconSettings: defaultSettingsType["nhs_icons"] = visualObj.viewModel.inputSettings.settings[0].nhs_icons;
   const draw_variation: boolean = nhsIconSettings.show_variation_icons;
   const variation_location: string = nhsIconSettings.variation_icons_locations;
   const svg_width: number = visualObj.viewModel.svgWidth
@@ -19,7 +19,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
 
   if (draw_variation) {
     const variation_scaling: number = nhsIconSettings.variation_icons_scaling;
-    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel.outliers, visualObj.viewModel.inputSettings.settings);
+    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel.outliers[0], visualObj.viewModel.inputSettings.settings[0]);
     variationIconsPresent.forEach((icon: string, idx: number) => {
       selection
           .call(initialiseIconSVG, icon, iconTransformSpec(svg_width, svg_height, variation_location, variation_scaling, idx))
@@ -33,9 +33,11 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   if (draw_assurance) {
     const assurance_location: string = nhsIconSettings.assurance_icons_locations;
     const assurance_scaling: number = nhsIconSettings.assurance_icons_scaling;
-    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel.controlLimits,
-                                                              visualObj.viewModel.inputSettings.settings,
-                                                              visualObj.viewModel.inputSettings.derivedSettings);
+    const settings = visualObj.viewModel.inputSettings.settings[0];
+    const derivedSettings = visualObj.viewModel.inputSettings.derivedSettings[0];
+    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel.controlLimits[0],
+                                                              settings,
+                                                              derivedSettings);
     if (assuranceIconPresent === "none") {
       return;
     }

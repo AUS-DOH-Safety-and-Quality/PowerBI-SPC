@@ -58,7 +58,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
       if (!update_status.status) {
         this.resizeCanvas(options.viewport.width, options.viewport.height);
-        if (this.viewModel?.inputSettings?.settings?.canvas?.show_errors ?? true) {
+        if (this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true) {
           this.svg.call(drawErrors, options, this.viewModel.colourPalette, update_status?.error, update_status?.type);
         } else {
           this.svg.call(initialiseSVG, true);
@@ -75,7 +75,7 @@ export class Visual implements powerbi.extensibility.IVisual {
                                       update_status.warning);
       }
 
-      if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings.summary_table.show_table) {
+      if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings[0].summary_table.show_table) {
         this.resizeCanvas(0, 0);
         this.tableDiv.call(drawSummaryTable, this)
                      .call(addContextMenu, this);
@@ -148,8 +148,8 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   updateHighlighting(): void {
-    const anyHighlights: boolean = this.viewModel.inputData ? this.viewModel.inputData.anyHighlights : false;
-    const anyHighlightsGrouped: boolean = this.viewModel.inputDataGrouped ? this.viewModel.inputDataGrouped.some(d => d.anyHighlights) : false;
+    const anyHighlights: boolean = this.viewModel.inputData.length > 0
+      && this.viewModel.inputData.some(d => d.anyHighlights);
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
 
     const dotsSelection = this.svg.selectAll(".dotsgroup").selectChildren();
@@ -158,15 +158,15 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     // Set all elements to their default opacity before applying highlights
     linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings)
+      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings[0])
     });
     dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
     dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
     tableSelection.style("opacity", (d: plotData) => d.aesthetics["table_opacity"]);
 
-    if (anyHighlights || (allSelectionIDs.length > 0) || anyHighlightsGrouped) {
+    if (anyHighlights || (allSelectionIDs.length > 0)) {
       linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings)
+        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings[0])
       });
       dotsSelection.nodes().forEach(currentDotNode => {
         const dot: plotData = d3.select(currentDotNode).datum() as plotData;
