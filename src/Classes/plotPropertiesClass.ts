@@ -2,7 +2,7 @@ import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import truncate from "../Functions/truncate";
 import min from "../Functions/min";
 import max from "../Functions/max";
-import { type dataObject } from "../Functions/extractInputData";
+import type { dataObject } from "../Functions/extractInputData";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import isValidNumber from "../Functions/isValidNumber";
 import type powerbi from "powerbi-visuals-api";
@@ -11,7 +11,7 @@ import type { defaultSettingsType } from "./settingsClass";
 import type { plotData, controlLimitsObject } from "./viewModelClass";
 import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
-import { colourPaletteType } from "./viewModelClass";
+import type { colourPaletteType } from "./viewModelClass";
 
 export type axisProperties = {
   lower: number,

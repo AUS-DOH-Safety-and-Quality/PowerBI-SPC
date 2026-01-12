@@ -2,7 +2,7 @@ import type { svgBaseType, Visual } from "../visual";
 import { lineNameMap } from "../Functions/getAesthetic";
 import valueFormatter from "../Functions/valueFormatter";
 import * as d3 from "./D3 Modules";
-import { lineData } from "../Classes/viewModelClass";
+import type { lineData } from "../Classes/viewModelClass";
 
 const positionOffsetMap: Record<string, number> = {
   "above": -1,

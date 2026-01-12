@@ -1,4 +1,4 @@
-import { plotData, type plotDataGrouped } from "../Classes/viewModelClass";
+import type { plotData, plotDataGrouped } from "../Classes/viewModelClass";
 import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"

@@ -4,7 +4,7 @@ import type { defaultSettingsType } from "../Classes/settingsClass";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 import valueFormatter from "./valueFormatter";
-import { summaryTableRowData } from "../Classes/viewModelClass";
+import type { summaryTableRowData } from "../Classes/viewModelClass";
 
 /**
  * Builds the tooltip data for a specific index in the chart.

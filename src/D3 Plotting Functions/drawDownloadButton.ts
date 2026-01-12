@@ -1,4 +1,4 @@
-import { summaryTableRowData, plotData } from "../Classes/viewModelClass";
+import type { summaryTableRowData, plotData } from "../Classes/viewModelClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawDownloadButton(selection: svgBaseType, visualObj: Visual) {

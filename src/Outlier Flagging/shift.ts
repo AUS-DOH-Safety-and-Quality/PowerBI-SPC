@@ -1,4 +1,3 @@
-import { abs } from "../Functions/broadcastUnary";
 import sum from "../Functions/sum";
 
 export default function shift(val: number[], targets: number[], n: number): string[] {
@@ -9,7 +8,7 @@ export default function shift(val: number[], targets: number[], n: number): stri
     return sum(lagged_sign.slice(Math.max(0, i - (n - 1)), i + 1));
   })
   const shift_detected: string[] = lagged_sign_sum.map(d => {
-    if (abs(d) >= n) {
+    if (Math.abs(d) >= n) {
       return d >= n ? "upper" : "lower";
     } else {
       return "none";

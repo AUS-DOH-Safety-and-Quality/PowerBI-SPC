@@ -4,10 +4,19 @@ import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
-import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
-          drawDots, drawIcons, addContextMenu,
-          drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
-          drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
+import drawXAxis from "./D3 Plotting Functions/drawXAxis";
+import drawYAxis from "./D3 Plotting Functions/drawYAxis";
+import drawTooltipLine from "./D3 Plotting Functions/drawTooltipLine";
+import drawLines from "./D3 Plotting Functions/drawLines";
+import drawDots from "./D3 Plotting Functions/drawDots";
+import drawIcons from "./D3 Plotting Functions/drawIcons";
+import addContextMenu from "./D3 Plotting Functions/addContextMenu";
+import drawErrors from "./D3 Plotting Functions/drawErrors";
+import initialiseSVG from "./D3 Plotting Functions/initialiseSVG";
+import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
+import drawValueLabels from "./D3 Plotting Functions/drawValueLabels";
+import drawLineLabels from "./D3 Plotting Functions/drawLineLabels";
+import drawDownloadButton from "./D3 Plotting Functions/drawDownloadButton";
 import plotPropertiesClass from "./Classes/plotPropertiesClass";
 import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";

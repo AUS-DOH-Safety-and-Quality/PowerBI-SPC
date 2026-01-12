@@ -1,4 +1,3 @@
-import { abs } from "../Functions/broadcastUnary";
 import sum from "../Functions/sum";
 
 export default function trend(val: number[], n: number): string[] {
@@ -9,7 +8,7 @@ export default function trend(val: number[], n: number): string[] {
     return sum(lagged_sign.slice(Math.max(0, i - (n - 2)), i + 1));
   })
   const trend_detected: string[] = lagged_sign_sum.map(d => {
-    if (abs(d) >= (n - 1)) {
+    if (Math.abs(d) >= (n - 1)) {
       return d >= (n - 1) ? "upper" : "lower";
     } else {
       return "none";

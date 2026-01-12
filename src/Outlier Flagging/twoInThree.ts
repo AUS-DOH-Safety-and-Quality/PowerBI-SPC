@@ -1,4 +1,3 @@
-import { abs } from "../Functions/broadcastUnary";
 import sum from "../Functions/sum";
 
 export default function twoInThree(val: number[], ll95: number[], ul95: number[], highlight_series: boolean): string[] {
@@ -9,7 +8,7 @@ export default function twoInThree(val: number[], ll95: number[], ul95: number[]
     return sum(outside95.slice(Math.max(0, i - 2), i + 1));
   })
   const two_in_three_detected: string[] = lagged_sign_sum.map(d => {
-    if (abs(d) >= 2) {
+    if (Math.abs(d) >= 2) {
       return d >= 2 ? "upper" : "lower";
     } else {
       return "none";

@@ -12,7 +12,7 @@ import checkFlagDirection from "../Outlier Flagging/checkFlagDirection";
 import truncate, { type truncateInputs } from "../Functions/truncate";
 import { multiply } from "../Functions/broadcastBinary";
 import rep from "../Functions/rep";
-import { type dataObject } from "../Functions/extractInputData";
+import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";

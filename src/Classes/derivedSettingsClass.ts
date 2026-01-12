@@ -1,4 +1,4 @@
-import { defaultSettingsType } from "./settingsClass"
+import type { defaultSettingsType } from "./settingsClass"
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
