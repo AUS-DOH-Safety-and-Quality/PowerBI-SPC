@@ -27,6 +27,20 @@ const enum FormattingComponent {
   ToggleSwitch = "ToggleSwitch",
 }
 
+import {
+  FONT_LIST,
+  BORDER_STYLE_ITEMS,
+  BORDER_STYLE_VALID,
+  lineWidth,
+  lineType,
+  opacity,
+  fontPicker,
+  fontSize,
+  createOutlierColours,
+  createLimitLineSettings,
+  createSingleLineSettings
+} from './settingsFactories';
+
 const defaultColours = {
   improvement: "#00B0F0",
   deterioration: "#E46C0A",
@@ -41,35 +55,7 @@ const textOptions = {
   font: {
     type: "Dropdown",
     default: "'Arial', sans-serif",
-    valid: [
-      "'Arial', sans-serif",
-      "Arial",
-      "'Arial Black'",
-      "'Arial Unicode MS'",
-      "Calibri",
-      "Cambria",
-      "'Cambria Math'",
-      "Candara",
-      "'Comic Sans MS'",
-      "Consolas",
-      "Constantia",
-      "Corbel",
-      "'Courier New'",
-      "wf_standard-font, helvetica, arial, sans-serif",
-      "wf_standard-font_light, helvetica, arial, sans-serif",
-      "Georgia",
-      "'Lucida Sans Unicode'",
-      "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
-      "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif",
-      "'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
-      "'Segoe UI Bold', wf_segoe-ui_bold, helvetica, arial, sans-serif",
-      "Symbol",
-      "Tahoma",
-      "'Times New Roman'",
-      "'Trebuchet MS'",
-      "Verdana",
-      "Wingdings"
-    ]
+    valid: FONT_LIST
   },
   size: {
     default: 10,
@@ -100,7 +86,7 @@ const borderOptions = {
   },
   style: {
     default: "solid",
-    valid: ["solid", "dotted", "dashed", "double", "groove", "ridge", "inset", "outset", "none"]
+    valid: BORDER_STYLE_VALID
   },
   colour: {
     default: "#000000"
@@ -316,26 +302,7 @@ const settingsModel = {
             { displayName : "Specification", value : "Specification" }
           ]
         },
-        ast_colour_improvement: {
-          displayName: "Imp. Ast. Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.improvement
-        },
-        ast_colour_deterioration: {
-          displayName: "Det. Ast. Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.deterioration
-        },
-        ast_colour_neutral_low: {
-          displayName: "Neutral (Low) Ast. Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_low
-        },
-        ast_colour_neutral_high: {
-          displayName: "Neutral (High) Ast. Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_high
-        }
+        ...createOutlierColours("ast", defaultColours)
       },
       "Shifts": {
         shift: {
@@ -349,26 +316,7 @@ const settingsModel = {
           default: 7,
           options: { minValue: { value: 1 } }
         },
-        shift_colour_improvement: {
-          displayName: "Imp. Shift Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.improvement
-        },
-        shift_colour_deterioration: {
-          displayName: "Det. Shift Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.deterioration
-        },
-        shift_colour_neutral_low: {
-          displayName: "Neutral (Low) Shift Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_low
-        },
-        shift_colour_neutral_high: {
-          displayName: "Neutral (High) Shift Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_high
-        }
+        ...createOutlierColours("shift", defaultColours)
       },
       "Trends": {
         trend: {
@@ -382,26 +330,7 @@ const settingsModel = {
           default: 5,
           options: { minValue: { value: 1 } }
         },
-        trend_colour_improvement: {
-          displayName: "Imp. Trend Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.improvement
-        },
-        trend_colour_deterioration: {
-          displayName: "Det. Trend Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.deterioration
-        },
-        trend_colour_neutral_low: {
-          displayName: "Neutral (Low) Trend Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_low
-        },
-        trend_colour_neutral_high: {
-          displayName: "Neutral (High) Trend Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_high
-        }
+        ...createOutlierColours("trend", defaultColours)
       },
       "Two-In-Three": {
         two_in_three: {
@@ -426,26 +355,7 @@ const settingsModel = {
             { displayName : "Specification", value : "Specification" }
           ]
         },
-        twointhree_colour_improvement: {
-          displayName: "Imp. Two-in-Three Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.improvement
-        },
-        twointhree_colour_deterioration: {
-          displayName: "Det. Two-in-Three Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.deterioration
-        },
-        twointhree_colour_neutral_low: {
-          displayName: "Neutral (Low) Two-in-Three Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_low
-        },
-        twointhree_colour_neutral_high: {
-          displayName: "Neutral (High) Two-in-Three Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.neutral_high
-        }
+        ...createOutlierColours("twointhree", defaultColours)
       }
     }
   },
@@ -575,226 +485,23 @@ const settingsModel = {
     description: "Line Settings",
     displayName: "Line Settings",
     settingsGroups: {
-      "Main": {
-        show_main: {
-          displayName: "Show Main Line",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        width_main: {
-          displayName: "Main Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_main: {
-          displayName: "Main Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 0",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_main: {
-          displayName: "Main Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.common_cause
-        },
-        opacity_main: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_main: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_main: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_main: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_main: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_main: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_main: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["above", "below", "beside"],
-          items: [
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_main: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_main: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_main: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_main: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_main: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_main: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
-      },
-      "Target": {
-        show_target: {
-          displayName: "Show Target",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        width_target: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 1.5,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_target: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 0",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_target: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        opacity_target: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_target: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_target: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_target: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_target: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "Centerline"
-        },
-        plot_label_show_target: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_target: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_target: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_target: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["above", "below", "beside"],
-          items: [
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_target: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_target: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_target: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_target: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_target: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_target: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
-      },
+      "Main": createSingleLineSettings("main", "Main Line", {
+        show: true,
+        width: 1,
+        type: "10 0",
+        colour: defaultColours.common_cause,
+        opacity: 1,
+        opacity_unselected: 0.2
+      }, false),
+      "Target": createSingleLineSettings("target", "Target", {
+        show: true,
+        width: 1.5,
+        type: "10 0",
+        colour: defaultColours.standard,
+        opacity: 1,
+        opacity_unselected: 0.2,
+        tooltip_label: "Centerline"
+      }, true),
       "Alt. Target": {
         show_alt_target: {
           displayName: "Show Alt. Target Line",
@@ -811,496 +518,40 @@ const settingsModel = {
           type: FormattingComponent.ToggleSwitch,
           default: false
         },
-        width_alt_target: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 1.5,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_alt_target: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 0",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_alt_target: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        opacity_alt_target: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_alt_target: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_alt_target: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_alt_target: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_alt_target: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "Alt. Target"
-        },
-        plot_label_show_alt_target: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_alt_target: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_alt_target: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_alt_target: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["above", "below", "beside"],
-          items: [
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_alt_target: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_alt_target: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_alt_target: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_alt_target: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_alt_target: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_alt_target: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
+        ...createSingleLineSettings("alt_target", "Alt. Target", {
+          show: false,
+          width: 1.5,
+          type: "10 0",
+          colour: defaultColours.standard,
+          opacity: 1,
+          opacity_unselected: 0.2,
+          tooltip_label: "Alt. Target"
+        }, true)
       },
-      "68% Limits": {
-        show_68: {
-          displayName: "Show 68% Lines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        width_68: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 2,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_68: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "2 5",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_68: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.limits
-        },
-        opacity_68: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_68: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_68: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_68: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_68: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "68% Limit"
-        },
-        ttip_label_68_prefix_lower: {
-          displayName: "Tooltip Label - Lower Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Lower "
-        },
-        ttip_label_68_prefix_upper: {
-          displayName: "Tooltip Label - Upper Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Upper "
-        },
-        plot_label_show_68: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_68: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_68: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_68: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"],
-          items: [
-            { displayName : "Outside",    value : "outside" },
-            { displayName : "Inside",     value : "inside" },
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_68: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_68: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_68: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_68: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_68: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_68: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
-      },
-      "95% Limits": {
-        show_95: {
-          displayName: "Show 95% Lines",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        width_95: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 2,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_95: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "2 5",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_95: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.limits
-        },
-        opacity_95: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_95: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_95: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_95: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_95: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "95% Limit"
-        },
-        ttip_label_95_prefix_lower: {
-          displayName: "Tooltip Label - Lower Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Lower "
-        },
-        ttip_label_95_prefix_upper: {
-          displayName: "Tooltip Label - Upper Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Upper "
-        },
-        plot_label_show_95: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_95: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_95: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_95: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"],
-          items: [
-            { displayName : "Outside",    value : "outside" },
-            { displayName : "Inside",     value : "inside" },
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_95: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_95: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_95: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_95: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_95: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_95: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
-      },
-      "99% Limits": {
-        show_99: {
-          displayName: "Show 99% Lines",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        width_99: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 2,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_99: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 10",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_99: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.limits
-        },
-        opacity_99: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_99: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_99: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_99: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_99: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "99% Limit"
-        },
-        ttip_label_99_prefix_lower: {
-          displayName: "Tooltip Label - Lower Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Lower "
-        },
-        ttip_label_99_prefix_upper: {
-          displayName: "Tooltip Label - Upper Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Upper "
-        },
-        plot_label_show_99: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_99: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_99: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_99: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"],
-          items: [
-            { displayName : "Outside",    value : "outside" },
-            { displayName : "Inside",     value : "inside" },
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_99: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_99: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_99: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_99: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_99: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_99: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
-      },
+      "68% Limits": createLimitLineSettings("68", "68%", {
+        show: false,
+        width: 2,
+        type: "2 5",
+        colour: defaultColours.limits,
+        opacity: 1,
+        opacity_unselected: 0.2
+      }, true),
+      "95% Limits": createLimitLineSettings("95", "95%", {
+        show: true,
+        width: 2,
+        type: "2 5",
+        colour: defaultColours.limits,
+        opacity: 1,
+        opacity_unselected: 0.2
+      }, true),
+      "99% Limits": createLimitLineSettings("99", "99%", {
+        show: true,
+        width: 2,
+        type: "10 10",
+        colour: defaultColours.limits,
+        opacity: 1,
+        opacity_unselected: 0.2
+      }, true),
       "Specification Limits": {
         show_specification: {
           displayName: "Show Specification Lines",
@@ -1322,242 +573,24 @@ const settingsModel = {
           type: FormattingComponent.ToggleSwitch,
           default: false
         },
-        width_specification: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 2,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_specification: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 10",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_specification: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.limits
-        },
-        opacity_specification: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_specification: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_specification: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_specification: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_specification: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "specification Limit"
-        },
-        ttip_label_specification_prefix_lower: {
-          displayName: "Tooltip Label - Lower Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Lower "
-        },
-        ttip_label_specification_prefix_upper: {
-          displayName: "Tooltip Label - Upper Prefix",
-          type: FormattingComponent.TextInput,
-          default: "Upper "
-        },
-        plot_label_show_specification: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_specification: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_specification: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_specification: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["outside", "inside", "above", "below", "beside"],
-          items: [
-            { displayName : "Outside",    value : "outside" },
-            { displayName : "Inside",     value : "inside" },
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_specification: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_specification: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_specification: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_specification: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_specification: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_specification: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
+        ...createLimitLineSettings("specification", "specification", {
+          show: false,
+          width: 2,
+          type: "10 10",
+          colour: defaultColours.limits,
+          opacity: 1,
+          opacity_unselected: 0.2
+        }, true)
       },
-      "Trend": {
-        show_trend: {
-          displayName: "Show Trend",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        width_trend: {
-          displayName: "Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 1.5,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        type_trend: {
-          displayName: "Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 0",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
-        colour_trend: {
-          displayName: "Line Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.common_cause
-        },
-        opacity_trend: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        opacity_unselected_trend: {
-          displayName: "Opacity if Any Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        join_rebaselines_trend: {
-          displayName: "Connect Rebaselined Limits",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        ttip_show_trend: {
-          displayName: "Show value in tooltip",
-          type: FormattingComponent.ToggleSwitch,
-          default: true
-        },
-        ttip_label_trend: {
-          displayName: "Tooltip Label",
-          type: FormattingComponent.TextInput,
-          default: "Centerline"
-        },
-        plot_label_show_trend: {
-          displayName: "Show Value on Plot",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_all_trend: {
-          displayName: "Show Value at all Re-Baselines",
-          type: FormattingComponent.ToggleSwitch,
-          default: false
-        },
-        plot_label_show_n_trend: {
-          displayName: "Show Value at Last N Re-Baselines",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 1 } }
-        },
-        plot_label_position_trend: {
-          displayName: "Position of Value on Line(s)",
-          type: FormattingComponent.Dropdown,
-          default: "beside",
-          valid: ["above", "below", "beside"],
-          items: [
-            { displayName : "Above",      value : "above" },
-            { displayName : "Below",      value : "below" },
-            { displayName : "Beside",     value : "beside" }
-          ]
-        },
-        plot_label_vpad_trend: {
-          displayName: "Value Vertical Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 0
-        },
-        plot_label_hpad_trend: {
-          displayName: "Value Horizontal Padding",
-          type: FormattingComponent.NumUpDown,
-          default: 10
-        },
-        plot_label_font_trend: {
-          displayName: "Value Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        plot_label_size_trend: {
-          displayName: "Value Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
-        plot_label_colour_trend: {
-          displayName: "Value Colour",
-          type: FormattingComponent.ColorPicker,
-          default: defaultColours.standard
-        },
-        plot_label_prefix_trend: {
-          displayName: "Value Prefix",
-          type: FormattingComponent.TextInput,
-          default: ""
-        }
-      }
+      "Trend": createSingleLineSettings("trend", "Trend", {
+        show: false,
+        width: 1.5,
+        type: "10 0",
+        colour: defaultColours.common_cause,
+        opacity: 1,
+        opacity_unselected: 0.2,
+        tooltip_label: "Centerline"
+      }, true)
     }
   },
   x_axis: {
@@ -1593,18 +626,8 @@ const settingsModel = {
           default: 10,
           options: { minValue: { value: 0 }, maxValue: { value: 100 } }
         },
-        xlimit_tick_font: {
-          displayName: "Tick Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        xlimit_tick_size: {
-          displayName: "Tick Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        xlimit_tick_font: fontPicker("Tick Font", textOptions.font.default),
+        xlimit_tick_size: fontSize("Tick Font Size", textOptions.size.default),
         xlimit_tick_colour: {
           displayName: "Tick Font Colour",
           type: FormattingComponent.ColorPicker,
@@ -1623,18 +646,8 @@ const settingsModel = {
           type: FormattingComponent.TextInput,
           default: <string>null
         },
-        xlimit_label_font: {
-          displayName: "Label Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        xlimit_label_size: {
-          displayName: "Label Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        xlimit_label_font: fontPicker("Label Font", textOptions.font.default),
+        xlimit_label_size: fontSize("Label Font Size", textOptions.size.default),
         xlimit_label_colour: {
           displayName: "Label Font Colour",
           type: FormattingComponent.ColorPicker,
@@ -1688,18 +701,8 @@ const settingsModel = {
           default: 10,
           options: { minValue: { value: 0 }, maxValue: { value: 100 } }
         },
-        ylimit_tick_font: {
-          displayName: "Tick Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        ylimit_tick_size: {
-          displayName: "Tick Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        ylimit_tick_font: fontPicker("Tick Font", textOptions.font.default),
+        ylimit_tick_size: fontSize("Tick Font Size", textOptions.size.default),
         ylimit_tick_colour: {
           displayName: "Tick Font Colour",
           type: FormattingComponent.ColorPicker,
@@ -1718,18 +721,8 @@ const settingsModel = {
           type: FormattingComponent.TextInput,
           default: <string>null
         },
-        ylimit_label_font: {
-          displayName: "Label Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        ylimit_label_size: {
-          displayName: "Label Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        ylimit_label_font: fontPicker("Label Font", textOptions.font.default),
+        ylimit_label_size: fontSize("Label Font Size", textOptions.size.default),
         ylimit_label_colour: {
           displayName: "Label Font Colour",
           type: FormattingComponent.ColorPicker,
@@ -1850,39 +843,15 @@ const settingsModel = {
             { displayName : "None",     value : "none" }
           ]
         },
-        table_opacity: {
-          displayName: "Default Opacity",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        table_opacity_selected: {
-          displayName: "Opacity if Selected",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
-        table_opacity_unselected: {
-          displayName: "Opacity if Unselected",
-          type: FormattingComponent.NumUpDown,
-          default: 0.2,
-          options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-        },
+        table_opacity: opacity("Default Opacity", 1),
+        table_opacity_selected: opacity("Opacity if Selected", 1),
+        table_opacity_unselected: opacity("Opacity if Unselected", 0.2),
         table_outer_border_style: {
           displayName: "Outer Border Style",
           type: FormattingComponent.Dropdown,
           default: borderOptions.style.default,
           valid: borderOptions.style.valid,
-          items: [
-            { displayName : "Solid",  value : "solid" },
-            { displayName : "Dashed", value : "dashed" },
-            { displayName : "Dotted", value : "dotted" },
-            { displayName : "Double", value : "double" },
-            { displayName : "Groove", value : "groove" },
-            { displayName : "Ridge",  value : "ridge" },
-            { displayName : "Inset",  value : "inset" },
-            { displayName : "Outset", value : "outset" }
-          ]
+          items: BORDER_STYLE_ITEMS
         },
         table_outer_border_width: {
           displayName: "Outer Border Width",
@@ -1917,18 +886,8 @@ const settingsModel = {
         }
       },
       "Header": {
-        table_header_font: {
-          displayName: "Header Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        table_header_size: {
-          displayName: "Header Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        table_header_font: fontPicker("Header Font", textOptions.font.default),
+        table_header_size: fontSize("Header Font Size", textOptions.size.default),
         table_header_text_align: {
           displayName: "Text Alignment",
           type: FormattingComponent.AlignmentGroup,
@@ -1978,16 +937,7 @@ const settingsModel = {
           type: FormattingComponent.Dropdown,
           default: borderOptions.style.default,
           valid: borderOptions.style.valid,
-          items: [
-            { displayName : "Solid",  value : "solid" },
-            { displayName : "Dashed", value : "dashed" },
-            { displayName : "Dotted", value : "dotted" },
-            { displayName : "Double", value : "double" },
-            { displayName : "Groove", value : "groove" },
-            { displayName : "Ridge",  value : "ridge" },
-            { displayName : "Inset",  value : "inset" },
-            { displayName : "Outset", value : "outset" }
-          ]
+          items: BORDER_STYLE_ITEMS
         },
         table_header_border_width: {
           displayName: "Header Border Width",
@@ -2012,18 +962,8 @@ const settingsModel = {
         }
       },
       "Body": {
-        table_body_font: {
-          displayName: "Body Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        table_body_size: {
-          displayName: "Body Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        table_body_font: fontPicker("Body Font", textOptions.font.default),
+        table_body_size: fontSize("Body Font Size", textOptions.size.default),
         table_body_text_align: {
           displayName: "Text Alignment",
           type: FormattingComponent.AlignmentGroup,
@@ -2073,16 +1013,7 @@ const settingsModel = {
           type: FormattingComponent.Dropdown,
           default: borderOptions.style.default,
           valid: borderOptions.style.valid,
-          items: [
-            { displayName : "Solid",  value : "solid" },
-            { displayName : "Dashed", value : "dashed" },
-            { displayName : "Dotted", value : "dotted" },
-            { displayName : "Double", value : "double" },
-            { displayName : "Groove", value : "groove" },
-            { displayName : "Ridge",  value : "ridge" },
-            { displayName : "Inset",  value : "inset" },
-            { displayName : "Outset", value : "outset" }
-          ]
+          items: BORDER_STYLE_ITEMS
         },
         table_body_border_width: {
           displayName: "Body Border Width",
@@ -2157,18 +1088,8 @@ const settingsModel = {
           default: 0,
           options: { minValue: { value: -90 }, maxValue: { value: 90 } }
         },
-        label_font: {
-          displayName: "Label Font",
-          type: FormattingComponent.FontPicker,
-          default: textOptions.font.default,
-          valid: textOptions.font.valid
-        },
-        label_size: {
-          displayName: "Label Font Size",
-          type: FormattingComponent.NumUpDown,
-          default: textOptions.size.default,
-          options: textOptions.size.options
-        },
+        label_font: fontPicker("Label Font", textOptions.font.default),
+        label_size: fontSize("Label Font Size", textOptions.size.default),
         label_colour: {
           displayName: "Label Font Colour",
           type: FormattingComponent.ColorPicker,
@@ -2179,23 +1100,8 @@ const settingsModel = {
           type: FormattingComponent.ColorPicker,
           default: defaultColours.standard
         },
-        label_line_width: {
-          displayName: "Connecting Line Width",
-          type: FormattingComponent.NumUpDown,
-          default: 1,
-          options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-        },
-        label_line_type: {
-          displayName: "Connecting Line Type",
-          type: FormattingComponent.Dropdown,
-          default: "10 0",
-          valid: ["10 0", "10 10", "2 5"],
-          items: [
-            { displayName : "Solid",  value : "10 0" },
-            { displayName : "Dashed", value : "10 10" },
-            { displayName : "Dotted", value : "2 5" }
-          ]
-        },
+        label_line_width: lineWidth("Connecting Line Width", 1),
+        label_line_type: lineType("Connecting Line Type", "10 0"),
         label_line_max_length: {
           displayName: "Max Connecting Line Length (px)",
           type: FormattingComponent.NumUpDown,
