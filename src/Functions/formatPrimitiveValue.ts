@@ -1,5 +1,5 @@
 import type powerbi from "powerbi-visuals-api"
-import { defaultSettingsType } from "../Classes"
+import type { defaultSettingsType } from "../Classes/settingsClass"
 import broadcastBinary from "./broadcastBinary"
 import isNullOrUndefined from "./isNullOrUndefined"
 type PrimitiveValue = powerbi.PrimitiveValue

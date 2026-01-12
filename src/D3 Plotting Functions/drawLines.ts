@@ -1,6 +1,9 @@
 import * as d3 from "./D3 Modules";
-import type { defaultSettingsType, lineData } from "../Classes";
-import { getAesthetic, isNullOrUndefined, between } from "../Functions";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { lineData } from "../Classes/viewModelClass";
+import getAesthetic from "../Functions/getAesthetic";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import between from "../Functions/between";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {

@@ -1,9 +1,10 @@
 import * as nhsIcons from "./NHS Icons"
 import initialiseIconSVG from "./initialiseIconSVG";
 import { iconTransformSpec } from "./initialiseIconSVG";
-import { assuranceIconToDraw, variationIconsToDraw } from "../Functions";
+import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
+import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import type { svgBaseType, Visual } from "../visual";
-import type { defaultSettingsType } from "../Classes";
+import type { defaultSettingsType } from "../Classes/settingsClass";
 
 export default function drawIcons(selection: svgBaseType, visualObj: Visual): void {
   selection.selectAll(".icongroup").remove()

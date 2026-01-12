@@ -1,4 +1,4 @@
-import { between } from "../Functions"
+import between from "../Functions/between"
 
 export default function astronomical(val: number[], ll99: number[], ul99: number[]): string[] {
   return val.map((d, i) => {

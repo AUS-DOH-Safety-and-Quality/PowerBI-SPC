@@ -1,4 +1,4 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes";
+import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for a run chart (median-only chart with no control limits).

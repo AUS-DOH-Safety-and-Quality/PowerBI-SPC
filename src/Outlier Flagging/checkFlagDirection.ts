@@ -1,4 +1,4 @@
-import { broadcastBinary } from "../Functions"
+import broadcastBinary from "../Functions/broadcastBinary"
 
 /**
  * Checks the flag direction based on the outlier status and flag settings.

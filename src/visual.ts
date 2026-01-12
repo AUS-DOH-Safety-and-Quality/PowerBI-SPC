@@ -8,9 +8,11 @@ import { drawXAxis, drawYAxis, drawTooltipLine, drawLines,
           drawDots, drawIcons, addContextMenu,
           drawErrors, initialiseSVG, drawSummaryTable, drawDownloadButton,
           drawValueLabels, drawLineLabels } from "./D3 Plotting Functions"
-import { plotPropertiesClass, viewModelClass, type plotData, type viewModelValidationT } from "./Classes"
+import plotPropertiesClass from "./Classes/plotPropertiesClass";
+import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
-import { getAesthetic, identitySelected } from "./Functions";
+import getAesthetic from "./Functions/getAesthetic";
+import identitySelected from "./Functions/identitySelected";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;

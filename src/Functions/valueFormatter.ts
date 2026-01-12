@@ -1,4 +1,5 @@
-import type { defaultSettingsType, derivedSettingsClass } from "../Classes";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 
 const formatValues = function<T>(value: T, name: string,

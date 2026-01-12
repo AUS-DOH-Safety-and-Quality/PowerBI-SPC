@@ -1,5 +1,6 @@
 import type { svgBaseType, Visual } from "../visual";
-import type { plotData, plotPropertiesClass } from "../Classes";
+import type { plotData } from "../Classes/viewModelClass";
+import type plotPropertiesClass from "../Classes/plotPropertiesClass";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
   const plotProperties: plotPropertiesClass = visualObj.plotProperties;

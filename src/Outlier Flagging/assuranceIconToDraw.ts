@@ -1,5 +1,7 @@
-import type { controlLimitsObject, defaultSettingsType, derivedSettingsClass } from "../Classes";
-import { isNullOrUndefined } from "../Functions";
+import type { controlLimitsObject } from "../Classes/viewModelClass";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import type derivedSettingsClass from "../Classes/derivedSettingsClass";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
 
 export default function assuranceIconToDraw(controlLimits: controlLimitsObject,
                                             inputSettings: defaultSettingsType,

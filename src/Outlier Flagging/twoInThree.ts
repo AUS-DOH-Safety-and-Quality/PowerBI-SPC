@@ -1,4 +1,5 @@
-import { abs, sum } from "../Functions";
+import { abs } from "../Functions/broadcastUnary";
+import sum from "../Functions/sum";
 
 export default function twoInThree(val: number[], ll95: number[], ul95: number[], highlight_series: boolean): string[] {
   const outside95: number[] = val.map((d, i) => {

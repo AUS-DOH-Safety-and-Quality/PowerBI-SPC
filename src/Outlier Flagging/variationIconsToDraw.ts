@@ -1,4 +1,5 @@
-import type { defaultSettingsType, outliersObject } from "../Classes";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { outliersObject } from "../Classes/viewModelClass";
 
 export default function variationIconsToDraw(outliers: outliersObject, inputSettings: defaultSettingsType): string[] {
   const imp_direction: string = inputSettings.outliers.improvement_direction;

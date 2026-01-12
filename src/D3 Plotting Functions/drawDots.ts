@@ -1,5 +1,6 @@
-import type { plotData } from "../Classes";
-import { between, isNullOrUndefined } from "../Functions";
+import type { plotData } from "../Classes/viewModelClass";
+import between from "../Functions/between";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
 

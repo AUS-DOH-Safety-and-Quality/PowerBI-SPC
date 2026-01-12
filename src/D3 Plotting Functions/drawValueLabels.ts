@@ -1,7 +1,7 @@
 import * as d3 from "./D3 Modules";
 import type { svgBaseType, Visual } from "../visual";
-import type { plotData } from "../Classes";
-import { isValidNumber } from "../Functions";
+import type { plotData } from "../Classes/viewModelClass";
+import isValidNumber from "../Functions/isValidNumber";
 
 function getLabelAttributes(d: plotData, visualObj: Visual): {x: number, y: number, theta: number, line_offset: number, marker_offset: number} {
   const label_direction_mult: number = d.label.aesthetics.label_position === "top" ? -1 : 1;

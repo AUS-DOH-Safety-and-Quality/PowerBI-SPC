@@ -3,8 +3,16 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type PrimitiveValue = powerbi.PrimitiveValue;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import { extractDataColumn, extractValues, extractConditionalFormatting, validateInputData, isNullOrUndefined, seq, between } from "../Functions"
-import { type defaultSettingsType, type controlLimitsArgs, type derivedSettingsClass } from "../Classes";
+import extractDataColumn from "../Functions/extractDataColumn";
+import extractValues from "../Functions/extractValues";
+import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
+import validateInputData from "../Functions/validateInputData";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import seq from "../Functions/seq";
+import between from "../Functions/between";
+import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { controlLimitsArgs } from "../Classes/viewModelClass";
+import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {

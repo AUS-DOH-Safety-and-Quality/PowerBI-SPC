@@ -1,4 +1,4 @@
-import { derivedSettingsClass } from "../Classes";
+import derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 
 export type ValidationT = { status: number, messages: string[], error?: string };
