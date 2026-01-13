@@ -3,6 +3,22 @@ import type { axisProperties } from "../Classes/plotPropertiesClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
+  const xAxisGroup = selection.select(".xaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
+  const xAxisLabel = selection.select(".xaxislabel") as d3.Selection<SVGTextElement, unknown, null, undefined>;
+  if (!visualObj.viewModel.inputSettings.settings[0].x_axis.xlimit_show) {
+    // X Axis plotting is disabled, so remove any existing axis and return early
+    xAxisGroup.remove();
+    xAxisLabel.remove();
+    return;
+  }
+  // If the groups have been removed, re-add them
+  if (xAxisGroup.empty()) {
+    selection.append('g').classed("xaxisgroup", true);
+  }
+  if (xAxisLabel.empty()) {
+    selection.append('text').classed('xaxislabel', true);
+  }
+
   const xAxisProperties: axisProperties = visualObj.plotProperties.xAxis;
   const xAxis: d3.Axis<d3.NumberValue> = d3.axisBottom(visualObj.plotProperties.xScale);
 
@@ -24,8 +40,6 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
   const plotHeight: number = visualObj.viewModel.svgHeight;
   const xAxisHeight: number = plotHeight - visualObj.plotProperties.yAxis.start_padding;
   const displayPlot: boolean = visualObj.plotProperties.displayPlot;
-  const xAxisGroup = selection.select(".xaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
-
   xAxisGroup
       .call(xAxis)
       .attr("color", displayPlot ? xAxisProperties.colour : "#FFFFFF")

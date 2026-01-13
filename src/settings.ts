@@ -423,6 +423,11 @@ const settingsModel = {
     displayName: "Scatter Settings",
     settingsGroups: {
       "all": {
+        show_dots: {
+          displayName: "Show Scatter",
+          type: FormattingComponent.ToggleSwitch,
+          default: true
+        },
         shape: {
           displayName: "Shape",
           type: FormattingComponent.Dropdown,
@@ -598,6 +603,11 @@ const settingsModel = {
     displayName: "X Axis Settings",
     settingsGroups: {
       "Axis": {
+        xlimit_show: {
+          displayName: "Show X Axis",
+          type: FormattingComponent.ToggleSwitch,
+          default: true
+        },
         xlimit_colour: {
           displayName: "Axis Colour",
           type: FormattingComponent.ColorPicker,
@@ -661,6 +671,11 @@ const settingsModel = {
     displayName: "Y Axis Settings",
     settingsGroups: {
       "Axis": {
+        ylimit_show: {
+          displayName: "Show Y Axis",
+          type: FormattingComponent.ToggleSwitch,
+          default: true
+        },
         ylimit_colour: {
           displayName: "Axis Colour",
           type: FormattingComponent.ColorPicker,

@@ -38,6 +38,16 @@ type lineLabelType = {
 }
 
 export default function drawLineLabels(selection: svgBaseType, visualObj: Visual) {
+  if (visualObj.viewModel.groupedLines.length === 0) {
+    // No lines being rendered, so remove any existing labels and return early
+    selection
+      .select(".linesgroup")
+      .selectAll("text")
+      .data([])
+      .join("text")
+      .remove();
+    return;
+  }
   const lineSettings = visualObj.viewModel.inputSettings.settings[0].lines;
   const rebaselinePoints: number[] = new Array<number>();
   visualObj.viewModel.groupedLines[0][1].forEach((d: lineData, idx: number) => {
