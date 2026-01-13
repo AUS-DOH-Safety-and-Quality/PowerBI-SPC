@@ -8,7 +8,8 @@
     "eslint": "npx eslint .",
     "test": "karma start --browsers=ChromeHeadlessCI",
     "debug": "karma start --single-run=false --browsers=Chrome",
-    "bundle": "npx rollup --config rollup.config.js --configPlugin typescript"
+    "bundle": "npx rollup --config rollup.config.js --configPlugin typescript",
+    "docs": "typedoc"
   },
   "dependencies": {
     "d3-axis": "^3.0.0",
@@ -53,6 +54,7 @@
     "style-loader": "^4.0.0",
     "ts-loader": "9.5.4",
     "tslib": "^2.8.1",
+    "typedoc": "^0.28.16",
     "typescript": "5.9.3"
   },
   "override": {

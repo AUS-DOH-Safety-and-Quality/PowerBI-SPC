@@ -1,0 +1,8 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./src"],
+    "entryPointStrategy": "expand",
+    "out": "./PowerBI-SPC-Docs/docs/api",
+    "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+    "skipErrorChecking": true
+}

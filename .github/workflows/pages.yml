@@ -11,6 +11,9 @@ on:
     branches: ["main"]
     paths:
       - PowerBI-SPC-Docs/** # Push events to docs folder
+      - src/**
+      - package.json
+      - typedoc.json
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,14 +33,23 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: PowerBI-SPC-Docs/docs
 
     steps:
       - uses: actions/checkout@v6
         with:
           submodules: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeDoc
+        run: npm run docs
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -54,6 +66,7 @@ jobs:
       - name: Build Site Page with Jekyll
         # Outputs to the './_site' directory by default
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        working-directory: PowerBI-SPC-Docs/docs
         env:
           JEKYLL_ENV: production
 
