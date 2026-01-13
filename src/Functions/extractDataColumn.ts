@@ -8,15 +8,8 @@ import dateSettingsToFormatOptions from "../Functions/dateSettingsToFormatOption
 import parseInputDates from "../Functions/parseInputDates";
 import rep from "../Functions/rep";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import formatDateParts from "../Functions/formatDateParts";
 type TargetT = number[] | string[] | VisualTooltipDataItem[][];
-
-function datePartsToRecord(dateParts: Intl.DateTimeFormatPart[]) {
-  const datePartsRecord = Object.fromEntries(dateParts.filter(part => part.type !== "literal").map(part => [part.type, part.value]));
-  ["weekday", "day", "month", "year"].forEach(key => {
-    datePartsRecord[key] ??= ""
-  })
-  return datePartsRecord
-}
 
 function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: defaultSettingsType, idxs: number[]): string[] {
   const n_keys: number = idxs.length;
@@ -40,19 +33,20 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: defaul
     return ret;
   }
   const inputDates = parseInputDates(col, idxs);
-  const formatter = new Intl.DateTimeFormat(inputSettings.dates.date_format_locale, dateSettingsToFormatOptions(inputSettings.dates));
-  let day_elem: string = inputSettings.dates.date_format_locale === "en-GB" ? "day" : "month";
-  let month_elem: string = inputSettings.dates.date_format_locale === "en-GB" ? "month" : "day";
+  const formatOptions = dateSettingsToFormatOptions(inputSettings.dates);
+  const locale = inputSettings.dates.date_format_locale as "en-GB" | "en-US";
+  let day_elem: string = locale === "en-GB" ? "day" : "month";
+  let month_elem: string = locale === "en-GB" ? "month" : "day";
 
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
       ret[i] = null
     } else {
-      const dateParts = datePartsToRecord(formatter.formatToParts(<Date>inputDates.dates[i]))
-      const datePartStrings: string[] = [dateParts.weekday + " " + dateParts[day_elem],
-                                          dateParts[month_elem],
+      const datePartsRecord = formatDateParts(inputDates.dates[i], locale, formatOptions);
+      const datePartStrings: string[] = [datePartsRecord.weekday + " " + datePartsRecord[day_elem],
+                                          datePartsRecord[month_elem],
                                           inputDates.quarters?.[i] ?? "",
-                                          dateParts.year];
+                                          datePartsRecord.year];
       ret[i] = datePartStrings.filter(d => String(d).trim()).join(delim)
     }
   }

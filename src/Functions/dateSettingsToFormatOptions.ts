@@ -1,10 +1,11 @@
 import type { defaultSettingsType } from "../Classes/settingsClass"
 import isNullOrUndefined from "./isNullOrUndefined"
+import type { DateFormatOptions } from "./formatDateParts"
 
 /**
- * Mapping from user-friendly visual settings to Intl.DateTimeFormat weekday options.
+ * Mapping from user-friendly visual settings to date formatter weekday options.
  *
- * Maps PowerBI visual dropdown options to JavaScript Intl.DateTimeFormat API values:
+ * Maps PowerBI visual dropdown options to weekday format values:
  * - "DD" → null (no weekday, just day number)
  * - "Thurs DD" → "short" (abbreviated weekday name)
  * - "Thursday DD" → "long" (full weekday name)
@@ -18,9 +19,9 @@ const weekdayDateMap: Record<string, "long" | "short"> = {
 }
 
 /**
- * Mapping from user-friendly visual settings to Intl.DateTimeFormat month options.
+ * Mapping from user-friendly visual settings to date formatter month options.
  *
- * Maps PowerBI visual dropdown options to JavaScript Intl.DateTimeFormat API values:
+ * Maps PowerBI visual dropdown options to month format values:
  * - "MM" → "2-digit" (e.g., "01", "12")
  * - "Mon" → "short" (e.g., "Jan", "Dec")
  * - "Month" → "long" (e.g., "January", "December")
@@ -34,9 +35,9 @@ const monthDateMap: Record<string, "2-digit" | "short" | "long"> = {
 }
 
 /**
- * Mapping from user-friendly visual settings to Intl.DateTimeFormat year options.
+ * Mapping from user-friendly visual settings to date formatter year options.
  *
- * Maps PowerBI visual dropdown options to JavaScript Intl.DateTimeFormat API values:
+ * Maps PowerBI visual dropdown options to year format values:
  * - "YYYY" → "numeric" (e.g., "2024")
  * - "YY" → "2-digit" (e.g., "24")
  * - "(blank)" → null (omit year entirely)
@@ -48,9 +49,9 @@ const yearDateMap: Record<string, "numeric" | "2-digit"> = {
 }
 
 /**
- * Mapping from user-friendly visual settings to Intl.DateTimeFormat day options.
+ * Mapping from user-friendly visual settings to date formatter day options.
  *
- * Maps PowerBI visual dropdown options to JavaScript Intl.DateTimeFormat API values.
+ * Maps PowerBI visual dropdown options to day format values.
  * All non-blank options produce "2-digit" day format (e.g., "01", "15", "31").
  */
 const dayDateMap = {
@@ -61,7 +62,7 @@ const dayDateMap = {
 }
 
 /**
- * Central lookup table mapping Intl.DateTimeFormat option names to their respective
+ * Central lookup table mapping date format option names to their respective
  * setting-to-value translation maps.
  */
 const dateOptionsLookup = {
@@ -72,21 +73,21 @@ const dateOptionsLookup = {
 }
 
 /**
- * Converts PowerBI SPC visual date settings into Intl.DateTimeFormatOptions format.
+ * Converts PowerBI SPC visual date settings into DateFormatOptions format.
  *
  * This function transforms user-friendly date format settings from the PowerBI visual
- * (e.g., "MM", "YYYY", "Thursday DD") into the appropriate options object for JavaScript's
- * Intl.DateTimeFormat API, enabling locale-aware date formatting.
+ * (e.g., "MM", "YYYY", "Thursday DD") into the appropriate options object for the
+ * custom date formatting function, enabling locale-aware date formatting.
  *
  * Key behaviors:
  * - Filters out locale and delimiter settings (handled separately)
- * - Maps visual setting keys to Intl.DateTimeFormat option keys
- * - Translates visual setting values to valid Intl API values
+ * - Maps visual setting keys to date format option keys
+ * - Translates visual setting values to valid format values
  * - Automatically includes weekday format when day format includes weekday name
  * - Omits date components when set to "(blank)"
  *
  * @param date_settings - The date configuration from the visual's settings object
- * @returns Intl.DateTimeFormatOptions object suitable for use with new Intl.DateTimeFormat()
+ * @returns DateFormatOptions object suitable for use with formatDateParts()
  *
  * @example
  * ```typescript
@@ -101,12 +102,11 @@ const dateOptionsLookup = {
  * const options = dateSettingsToFormatOptions(settings);
  * // Returns: { weekday: "long", day: "2-digit", month: "long", year: "numeric" }
  *
- * const formatter = new Intl.DateTimeFormat("en-GB", options);
- * formatter.format(new Date("2024-01-15"));
- * // Output: "Monday, 15 January 2024"
+ * const result = formatDateParts(new Date("2024-01-15"), "en-GB", options);
+ * // Returns: { weekday: "Monday", day: "15", month: "January", year: "2024" }
  * ```
  */
-export default function dateSettingsToFormatOptions(date_settings: defaultSettingsType["dates"]): Intl.DateTimeFormatOptions {
+export default function dateSettingsToFormatOptions(date_settings: defaultSettingsType["dates"]): DateFormatOptions {
   // Array to collect [key, value] pairs for the options object
   const formatOpts: string[][] = new Array<string[]>();
 
