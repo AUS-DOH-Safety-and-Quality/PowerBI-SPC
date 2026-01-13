@@ -4,6 +4,22 @@ import type { axisProperties } from "../Classes/plotPropertiesClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
+  const yAxisGroup = selection.select(".yaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
+  const yAxisLabel = selection.select(".yaxislabel") as d3.Selection<SVGTextElement, unknown, null, undefined>;
+  if (!visualObj.viewModel.inputSettings.settings[0].y_axis.ylimit_show) {
+    // Y Axis plotting is disabled, so remove any existing axis and return early
+    yAxisGroup.remove();
+    yAxisLabel.remove();
+    return;
+  }
+  // If the groups have been removed, re-add them
+  if (yAxisGroup.empty()) {
+    selection.append('g').classed("yaxisgroup", true);
+  }
+  if (yAxisLabel.empty()) {
+    selection.append('text').classed('yaxislabel', true);
+  }
+
   const yAxisProperties: axisProperties = visualObj.plotProperties.yAxis;
   const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.plotProperties.yScale);
   const yaxis_sig_figs: number = visualObj.viewModel.inputSettings.settings[0].y_axis.ylimit_sig_figs;
@@ -27,7 +43,6 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
   } else {
     yAxis.tickValues([]);
   }
-  const yAxisGroup = selection.select(".yaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
 
   yAxisGroup
       .call(yAxis)

@@ -5,6 +5,17 @@ import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
+  if (!visualObj.viewModel.inputSettings.settings[0].scatter.show_dots) {
+    // Dot plotting is disabled, so remove any existing dots and return early
+    selection
+      .select(".dotsgroup")
+      .selectAll("path")
+      .data([])
+      .join("path")
+      .remove();
+    return;
+  }
+
   const ylower: number = visualObj.plotProperties.yAxis.lower;
   const yupper: number = visualObj.plotProperties.yAxis.upper;
   const xlower: number = visualObj.plotProperties.xAxis.lower;

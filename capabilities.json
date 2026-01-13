@@ -236,6 +236,9 @@
     },
     "scatter": {
       "properties": {
+        "show_dots" : {
+          "type" : { "bool" : true }
+        },
         "shape": {
           "type": { "enumeration" : [ ] }
         },
@@ -779,6 +782,9 @@
     },
     "x_axis": {
       "properties": {
+        "xlimit_show": {
+          "type" : { "bool" : true }
+        },
         "xlimit_colour":{
           "type": { "fill": { "solid": { "color": true } } }
         },
@@ -822,6 +828,9 @@
     },
     "y_axis": {
       "properties": {
+        "ylimit_show": {
+          "type" : { "bool" : true }
+        },
         "ylimit_colour":{
           "type": { "fill": { "solid": { "color": true } } }
         },
