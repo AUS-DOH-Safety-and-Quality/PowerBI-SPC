@@ -59,7 +59,7 @@ export default class plotPropertiesClass {
     const colorPalette: colourPaletteType = viewModel.colourPalette;
 
     this.displayPlot = plotPoints
-      ? plotPoints.length > 1
+      ? plotPoints.length > 0
       : null;
 
     let xLowerLimit: number = inputSettings.x_axis.xlimit_l;
