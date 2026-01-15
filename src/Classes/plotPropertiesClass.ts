@@ -81,8 +81,8 @@ export default class plotPropertiesClass {
       const targets: number[] = controlLimits.targets?.filter(d => isValidNumber(d));
 
       const maxValue: number = max(values);
-      const maxValueOrLimit: number = max(values.concat(ul99).concat(speclimits_upper).concat(alt_targets));
-      const minValueOrLimit: number = min(values.concat(ll99).concat(speclimits_lower).concat(alt_targets));
+      const maxValueOrLimit: number = max((values.concat(ul99).concat(speclimits_upper).concat(alt_targets)).filter(d => isValidNumber(d)));
+      const minValueOrLimit: number = min((values.concat(ll99).concat(speclimits_lower).concat(alt_targets)).filter(d => isValidNumber(d)));
       const maxTarget: number = max(targets) ?? 0;
       const minTarget: number = min(targets) ?? 0;
 

@@ -4,7 +4,7 @@
     "displayName":"SPC Charts",
     "guid":"PBISPC",
     "visualClassName":"Visual",
-    "version":"1.7.4.16",
+    "version":"1.7.4.17",
     "description":"A PowerBI custom visual for SPC charts",
     "supportUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC",
     "gitHubUrl":"https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC"
