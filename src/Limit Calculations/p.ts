@@ -80,6 +80,7 @@ export default function pLimits(args: controlLimitsArgs): controlLimitsObject {
   let rtn: controlLimitsObject = {
     keys: args.keys,
     values: new Array<number>(n),      // The plotted values (proportions)
+    numerators: args.numerators,        // Defective counts for reference
     denominators: args.denominators,    // Sample sizes for reference
     targets: new Array<number>(n),      // Centreline (overall proportion)
     ll99: new Array<number>(n),         // Lower 3-sigma limit
