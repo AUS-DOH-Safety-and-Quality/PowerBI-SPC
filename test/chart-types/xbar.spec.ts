@@ -1,5 +1,5 @@
 import powerbi from "powerbi-visuals-api";
-import { defaultSettings } from "../../src/settings";
+import buildSettings from "../helpers/build-settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/build-data-view";
@@ -23,8 +23,7 @@ describe("xbar Chart Test", () => {
   });
 
   it("Xbar Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
-    defaultSettingsCopy.spc.chart_type = "xbar";
+    const settings = buildSettings({ "spc.chart_type": "xbar" });
     visual.update({
       dataViews: [ buildDataView({
         key: keys,
@@ -32,7 +31,7 @@ describe("xbar Chart Test", () => {
         denominators: denominators,
         xbar_sds: xbar_sds
       },
-      defaultSettingsCopy) ],
+      settings) ],
       viewport: { width: 500, height: 500 },
       type: powerbi.VisualUpdateType.Data
     });

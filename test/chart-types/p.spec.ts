@@ -1,5 +1,5 @@
 import powerbi from "powerbi-visuals-api";
-import { defaultSettings } from "../../src/settings";
+import buildSettings from "../helpers/build-settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/build-data-view";
@@ -22,15 +22,14 @@ describe("P Chart Test", () => {
   });
 
   it("P Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
-    defaultSettingsCopy.spc.chart_type = "p";
+    const settings = buildSettings({ "spc.chart_type": "p" });
     visual.update({
       dataViews: [ buildDataView({
         key: keys,
         numerators: numerators,
         denominators: denominators
       },
-      defaultSettingsCopy) ],
+      settings) ],
       viewport: { width: 500, height: 500 },
       type: powerbi.VisualUpdateType.Data
     });
