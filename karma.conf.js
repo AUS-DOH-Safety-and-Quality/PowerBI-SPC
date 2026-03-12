@@ -4,7 +4,7 @@ const webpackConfig = require("./test.webpack.config.js");
 const tsconfig = require("./test.tsconfig.json");
 const path = require("path");
 
-const testRecursivePath = "test/**/test-*.ts";
+const testRecursivePath = "test/**/*.spec.ts";
 const srcOriginalRecursivePath = "src/**/*.ts";
 const coverageFolder = "coverage";
 
@@ -75,7 +75,15 @@ module.exports = (config) => {
             },
             combineBrowserReports: true,
             fixWebpackSourcePaths: true,
-            verbose: false
+            verbose: false,
+            thresholds: {
+                global: {
+                    statements: 60,
+                    branches: 50,
+                    functions: 55,
+                    lines: 60
+                }
+            }
         },
         coverageReporter: {
             type: "html",

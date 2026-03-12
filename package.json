@@ -7,6 +7,9 @@
     "build": "pbiviz package",
     "eslint": "npx eslint .",
     "test": "karma start --browsers=ChromeHeadlessCI",
+    "test:unit": "karma start karma.unit.conf.js --browsers=ChromeHeadlessCI",
+    "test:integration": "karma start karma.integration.conf.js --browsers=ChromeHeadlessCI",
+    "test:all": "karma start --browsers=ChromeHeadlessCI",
     "debug": "karma start --single-run=false --browsers=Chrome",
     "bundle": "npx rollup --config rollup.config.js --configPlugin typescript",
     "docs": "typedoc"
@@ -35,6 +38,7 @@
     "coverage-istanbul-loader": "^3.0.5",
     "eslint": "^10.0.2",
     "eslint-plugin-powerbi-visuals": "^1.1.0",
+    "fast-check": "^4.6.0",
     "jasmine": "^6.1.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",

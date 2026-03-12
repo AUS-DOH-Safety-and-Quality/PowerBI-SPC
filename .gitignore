@@ -14,8 +14,8 @@ webpack.statistics*
 # OS generated files
 .DS_Store
 
-# Typedoc generated docs
-docs
+# Typedoc generated docs (output configured in typedoc.json -> PowerBI-SPC-Docs/docs/api)
+PowerBI-SPC-Docs
 
 # Coverage reports
 coverage

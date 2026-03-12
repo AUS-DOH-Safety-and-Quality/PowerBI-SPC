@@ -15,8 +15,8 @@
   ]
   },
   "files": [
-    "./test/test-initialisation.ts",
-    "./test/test-errors.ts"
+    "./test/integration/initialisation.spec.ts",
+    "./test/integration/errors.spec.ts"
   ],
   "include": [
       "src/*.ts"
