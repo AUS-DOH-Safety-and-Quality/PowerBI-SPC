@@ -1,7 +1,7 @@
 import powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
-import { Visual } from "../src/visual";
-import buildDataView from "./helpers/buildDataView";
+import { Visual } from "../../src/visual";
+import buildDataView from "../helpers/build-data-view";
 
 const stringKeys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const stringGrouping: string[] = ["A", "A", "A", "B", "B", "B", "B"];
