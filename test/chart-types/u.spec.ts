@@ -2,7 +2,7 @@ import powerbi from "powerbi-visuals-api";
 import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
-import buildDataView from "../helpers/buildDataView";
+import buildDataView from "../helpers/build-data-view";
 import { controlLimitsObject } from "../../src/Classes/viewModelClass";
 
 const keys: string[] = ["2015-01-01","2015-02-01","2015-03-01","2015-04-01","2015-05-01","2015-06-01","2015-07-01","2015-08-01","2015-09-01","2015-10-01","2015-11-01","2015-12-01","2016-01-01","2016-02-01","2016-03-01","2016-04-01","2016-05-01","2016-06-01","2016-07-01","2016-08-01","2016-09-01","2016-10-01","2016-11-01","2016-12-01"];
