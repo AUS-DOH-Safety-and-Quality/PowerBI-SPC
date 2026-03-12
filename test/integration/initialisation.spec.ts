@@ -13,13 +13,12 @@ describe("Chart Initialisation", () => {
     element: element,
     host: createVisualHost({})
   });
-  const visualClassElement: Element = document.body.querySelector('.visual') as Element;
-  const svgElement: Element = visualClassElement.querySelector('svg') as Element;
-  const tableDivElement: Element = visualClassElement.querySelector('div') as Element;
+  const svgElement: Element = element.querySelector('svg') as Element;
+  const tableDivElement: Element = element.querySelector('div') as Element;
 
   it("Visual can be created", () => {
     // Expect that the visual element has been created
-    expect(visualClassElement).toBeTruthy();
+    expect(element).toBeTruthy();
 
     // Expect that the visual element contains both an SVG for the chart and a div for the table
     expect(svgElement).toBeTruthy();

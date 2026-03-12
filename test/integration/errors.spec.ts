@@ -21,8 +21,7 @@ describe("Chart Errors", () => {
     element: element,
     host: createVisualHost({})
   });
-  const visualClassElement: Element = document.body.querySelector('.visual') as Element;
-  const svgElement: Element = visualClassElement.querySelector('svg') as Element;
+  const svgElement: Element = element.querySelector('svg') as Element;
 
   it("Errors render", () => {
     visual.update({
