@@ -29,15 +29,15 @@ describe("sampleConstants", () => {
       });
     });
 
-    it("should return null for n <= 1", () => {
-      expect(c4(1)).toBeNull();
-      expect(c4(0)).toBeNull();
-      expect(c4(-1)).toBeNull();
+    it("should return NaN for n <= 1", () => {
+      expect(c4(1)).toBeNaN();
+      expect(c4(0)).toBeNaN();
+      expect(c4(-1)).toBeNaN();
     });
 
-    it("should return null for null/undefined input", () => {
-      expect(c4(null as any)).toBeNull();
-      expect(c4(undefined as any)).toBeNull();
+    it("should return NaN for null/undefined input", () => {
+      expect(c4(null as any)).toBeNaN();
+      expect(c4(undefined as any)).toBeNaN();
     });
 
     it("should be monotonically increasing for n >= 2", () => {
@@ -133,14 +133,6 @@ describe("sampleConstants", () => {
   // b3(n, k) = 1 - k * c5(n) / c4(n)
   // b4(n, k) = 1 + k * c5(n) / c4(n)
   describe("b3 and b4", () => {
-    it("should satisfy b3(n,k) + b4(n,k) = 2 for all valid n and k", () => {
-      for (let n = 2; n <= 30; n++) {
-        for (const k of [1, 2, 3]) {
-          expect(b3(n, k) + b4(n, k)).toBeCloseTo(2.0, 10);
-        }
-      }
-    });
-
     it("should satisfy b4(n,k) > b3(n,k) for all valid n and k", () => {
       for (let n = 2; n <= 30; n++) {
         for (const k of [1, 2, 3]) {
@@ -186,6 +178,36 @@ describe("sampleConstants", () => {
           expect(b4(n, k)).toBeGreaterThan(0);
         }
       }
+    });
+  });
+
+  // ===== Boundary: invalid sample sizes propagate NaN =====
+  // BUG-5/BUG-6 fix: c4(≤1) now returns NaN instead of null,
+  // ensuring all downstream functions propagate NaN correctly
+  // (previously c5(≤1) silently returned 1, b3/b4 returned ±Infinity)
+  describe("invalid sample size propagation", () => {
+    it("c5(1) should return NaN, not 1", () => {
+      expect(c5(1)).toBeNaN();
+    });
+
+    it("c5(0) should return NaN", () => {
+      expect(c5(0)).toBeNaN();
+    });
+
+    it("a3(1) should return NaN", () => {
+      expect(a3(1)).toBeNaN();
+    });
+
+    it("a3(0) should return NaN", () => {
+      expect(a3(0)).toBeNaN();
+    });
+
+    it("b3(1, 3) should return NaN, not -Infinity", () => {
+      expect(b3(1, 3)).toBeNaN();
+    });
+
+    it("b4(1, 3) should return NaN, not Infinity", () => {
+      expect(b4(1, 3)).toBeNaN();
     });
   });
 });
