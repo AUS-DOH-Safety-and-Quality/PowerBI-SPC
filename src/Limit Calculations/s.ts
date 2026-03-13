@@ -70,13 +70,16 @@ export default function sLimits(args: controlLimitsArgs): controlLimitsObject {
     const curr_sd: number = group_sd[args.subset_points[i]];
     const Nm1: number = curr_count - 1; // Degrees of freedom for this subgroup
 
-    Nm1_sum += Nm1;
-    weighted_sd_sum += Nm1 * Math.pow(curr_sd, 2); // Weight variance by degrees of freedom
+    // Subgroups with n <= 1 have 0 or negative df and cannot contribute to pooling
+    if (Nm1 > 0) {
+      Nm1_sum += Nm1;
+      weighted_sd_sum += Nm1 * Math.pow(curr_sd, 2); // Weight variance by degrees of freedom
+    }
   }
 
   // Calculate pooled (weighted) standard deviation - this becomes the centreline
   // cl = sqrt(pooled variance) = sqrt(Σ[(n-1)*s²] / Σ(n-1))
-  const cl: number = Math.sqrt(weighted_sd_sum / Nm1_sum);
+  const cl: number = Nm1_sum > 0 ? Math.sqrt(weighted_sd_sum / Nm1_sum) : NaN;
 
   const n: number = args.keys.length; // Total number of data points
 
@@ -98,12 +101,22 @@ export default function sLimits(args: controlLimitsArgs): controlLimitsObject {
   // B3 = 1 - (k * c5/c4), B4 = 1 + (k * c5/c4), where k is the sigma multiplier
   for (let i = 0; i < n; i++) {
     rtn.targets[i] = cl;
-    rtn.ll99[i] = cl * b3(count_per_group[i], 3); // 3-sigma lower limit
-    rtn.ll95[i] = cl * b3(count_per_group[i], 2); // 2-sigma lower limit
-    rtn.ll68[i] = cl * b3(count_per_group[i], 1); // 1-sigma lower limit
-    rtn.ul68[i] = cl * b4(count_per_group[i], 1); // 1-sigma upper limit
-    rtn.ul95[i] = cl * b4(count_per_group[i], 2); // 2-sigma upper limit
-    rtn.ul99[i] = cl * b4(count_per_group[i], 3); // 3-sigma upper limit
+    // b3/b4 require sample size > 1 (c4 is undefined for n <= 1)
+    if (count_per_group[i] > 1) {
+      rtn.ll99[i] = Math.max(0, cl * b3(count_per_group[i], 3)); // 3-sigma lower limit
+      rtn.ll95[i] = Math.max(0, cl * b3(count_per_group[i], 2)); // 2-sigma lower limit
+      rtn.ll68[i] = Math.max(0, cl * b3(count_per_group[i], 1)); // 1-sigma lower limit
+      rtn.ul68[i] = cl * b4(count_per_group[i], 1); // 1-sigma upper limit
+      rtn.ul95[i] = cl * b4(count_per_group[i], 2); // 2-sigma upper limit
+      rtn.ul99[i] = cl * b4(count_per_group[i], 3); // 3-sigma upper limit
+    } else {
+      rtn.ll99[i] = NaN;
+      rtn.ll95[i] = NaN;
+      rtn.ll68[i] = NaN;
+      rtn.ul68[i] = NaN;
+      rtn.ul95[i] = NaN;
+      rtn.ul99[i] = NaN;
+    }
   }
 
   return rtn;
