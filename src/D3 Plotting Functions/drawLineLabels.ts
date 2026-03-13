@@ -81,8 +81,9 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     .join("text")
     .text((d: lineLabelType) => {
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return lineSettings[`plot_label_show_${lineNameMap[lineGroup[0]]}`]
-              ? lineSettings[`plot_label_prefix_${lineNameMap[lineGroup[0]]}`] + formatValue(lineGroup[1][d.index].line_value, "value")
+      const lineValue = lineGroup[1][d.index].line_value;
+      return lineSettings[`plot_label_show_${lineNameMap[lineGroup[0]]}`] && lineValue !== null
+              ? lineSettings[`plot_label_prefix_${lineNameMap[lineGroup[0]]}`] + formatValue(lineValue, "value")
               : "";
     })
     .attr("x", (d: lineLabelType) => {
@@ -91,7 +92,8 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
     })
     .attr("y", (d: lineLabelType) => {
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return visualObj.plotProperties.yScale(lineGroup[1][d.index].line_value)
+      const lineValue = lineGroup[1][d.index].line_value;
+      return lineValue !== null ? visualObj.plotProperties.yScale(lineValue) : 0;
     })
     .attr("fill", (d: lineLabelType) => {
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
