@@ -223,20 +223,20 @@ input data:
 
 | ID | Requirement | Source Module | Test File(s) | Status |
 |----|-------------|---------------|-------------|--------|
-| SPC-001 | I-chart limits (mean ± 3σ, σ=AMR/d2) | `Limit Calculations/i.ts` | `chart-types/i.spec.ts`, `limit-calculations/i-limits.spec.ts` | Partial |
-| SPC-002 | I-chart median variant | `Limit Calculations/i_m.ts` | `chart-types/i-m.spec.ts` | Planned |
-| SPC-003 | I-chart median MR variant | `Limit Calculations/i_mm.ts` | `chart-types/i-mm.spec.ts` | Planned |
-| SPC-004 | P-chart limits (binomial) | `Limit Calculations/p.ts` | `chart-types/p.spec.ts` | Partial |
-| SPC-005 | P'-chart (fixed limits) | `Limit Calculations/pprime.ts` | `chart-types/pprime.spec.ts` | Partial |
-| SPC-006 | C-chart limits (Poisson) | `Limit Calculations/c.ts` | `chart-types/c.spec.ts` | Partial |
-| SPC-007 | U-chart limits (rate) | `Limit Calculations/u.ts` | `chart-types/u.spec.ts` | Partial |
-| SPC-008 | U'-chart (fixed limits) | `Limit Calculations/uprime.ts` | `chart-types/uprime.spec.ts` | Partial |
-| SPC-009 | XBar-chart limits (A3) | `Limit Calculations/xbar.ts` | `chart-types/xbar.spec.ts` | Partial |
-| SPC-010 | S-chart limits (B3/B4) | `Limit Calculations/s.ts` | `chart-types/s.spec.ts` | Partial |
-| SPC-011 | MR-chart limits | `Limit Calculations/mr.ts` | `chart-types/mr.spec.ts` | Partial |
-| SPC-012 | G-chart limits | `Limit Calculations/g.ts` | `chart-types/g.spec.ts` | Partial |
-| SPC-013 | T-chart limits | `Limit Calculations/t.ts` | `chart-types/t.spec.ts` | Partial |
-| SPC-014 | Run chart (median only) | `Limit Calculations/run.ts` | `chart-types/run.spec.ts` | Planned |
+| SPC-001 | I-chart limits (mean ± 3σ, σ=AMR/d2) | `Limit Calculations/i.ts` | `chart-types/i.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-002 | I-chart median variant | `Limit Calculations/i_m.ts` | `chart-types/i-m.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-003 | I-chart median MR variant | `Limit Calculations/i_mm.ts` | `chart-types/i-mm.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-004 | P-chart limits (binomial) | `Limit Calculations/p.ts` | `chart-types/p.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-005 | P'-chart (Laney) | `Limit Calculations/pprime.ts` | `chart-types/pprime.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-006 | C-chart limits (Poisson) | `Limit Calculations/c.ts` | `chart-types/c.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-007 | U-chart limits (rate) | `Limit Calculations/u.ts` | `chart-types/u.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-008 | U'-chart (Laney) | `Limit Calculations/uprime.ts` | `chart-types/uprime.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-009 | XBar-chart limits (A3) | `Limit Calculations/xbar.ts` | `chart-types/xbar.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-010 | S-chart limits (B3/B4) | `Limit Calculations/s.ts` | `chart-types/s.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-011 | MR-chart limits | `Limit Calculations/mr.ts` | `chart-types/mr.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-012 | G-chart limits | `Limit Calculations/g.ts` | `chart-types/g.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-013 | T-chart limits | `Limit Calculations/t.ts` | `chart-types/t.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
+| SPC-014 | Run chart (median only) | `Limit Calculations/run.ts` | `chart-types/run.spec.ts`, `limit-calculations/golden-datasets.spec.ts`, `limit-calculations/limit-invariants.spec.ts`, `limit-calculations/edge-cases.spec.ts` | Done |
 | OUT-001 | Astronomical point (>3σ) | `Outlier Flagging/astronomical.ts` | `outlier-flagging/astronomical.spec.ts` | Done |
 | OUT-002 | Shift detection | `Outlier Flagging/shift.ts` | `outlier-flagging/shift.spec.ts` | Done |
 | OUT-003 | Trend detection | `Outlier Flagging/trend.ts` | `outlier-flagging/trend.spec.ts` | Done |
@@ -244,14 +244,14 @@ input data:
 | OUT-005 | Flag direction check | `Outlier Flagging/checkFlagDirection.ts` | `outlier-flagging/check-flag-direction.spec.ts` | Done |
 | OUT-006 | Variation icon selection | `Outlier Flagging/variationIconsToDraw.ts` | `outlier-flagging/variation-icons-to-draw.spec.ts` | Done |
 | OUT-007 | Assurance icon selection | `Outlier Flagging/assuranceIconToDraw.ts` | `outlier-flagging/assurance-icon-to-draw.spec.ts` | Done |
-| CONST-001 | c4 bias correction | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Planned |
-| CONST-002 | c5 relative variability | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Planned |
-| CONST-003 | A3 X-bar factor | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Planned |
-| CONST-004 | B3/B4 S-chart factors | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Planned |
-| VAL-001 | Data validation (13 types) | `Functions/validateInputData.ts` | `errors/validation-inputdata.spec.ts` | Planned |
-| VAL-002 | DataView validation | `Functions/validateDataView.ts` | `errors/validation-dataview.spec.ts` | Planned |
-| INV-001 | Limit ordering invariant | All limit calculations | `limit-calculations/limit-invariants.spec.ts` | Planned |
-| INV-002 | Non-negativity constraints | p, c, u, g, t limit calcs | `limit-calculations/limit-invariants.spec.ts` | Planned |
+| CONST-001 | c4 bias correction | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Done |
+| CONST-002 | c5 relative variability | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Done |
+| CONST-003 | A3 X-bar factor | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Done |
+| CONST-004 | B3/B4 S-chart factors | `Functions/sampleConstants.ts` | `functions/sample-constants.spec.ts` | Done |
+| VAL-001 | Data validation (13 types) | `Functions/validateInputData.ts` | `functions/validate-input-data.spec.ts` | Done |
+| VAL-002 | DataView validation | `Functions/validateDataView.ts` | `functions/validate-data-view.spec.ts` | Done |
+| INV-001 | Limit ordering invariant | All limit calculations | `limit-calculations/limit-invariants.spec.ts` | Done |
+| INV-002 | Non-negativity constraints | p, c, u, g, t limit calcs | `limit-calculations/limit-invariants.spec.ts` | Done |
 
 **Status key:** Done = tested and validated | Partial = basic test exists, needs expansion | Planned = test to be created
 
