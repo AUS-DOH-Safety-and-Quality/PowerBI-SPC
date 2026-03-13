@@ -5,7 +5,6 @@ export type ValidationT = { status: number, messages: string[], error?: string }
 
 const enum ValidationFailTypes {
   Valid = 0,
-  GroupingMissing = 1,
   DateMissing = 2,
   NumeratorMissing = 3,
   NumeratorNegative = 4,
@@ -16,7 +15,8 @@ const enum ValidationFailTypes {
   SDNegative = 9,
   NumeratorNaN = 10,
   DenominatorNaN = 11,
-  SDNaN = 12
+  SDNaN = 12,
+  DenominatorZero = 13
 }
 
 function validateInputDataImpl(key: string,
@@ -30,50 +30,39 @@ function validateInputDataImpl(key: string,
   if (isNullOrUndefined(key)) {
     rtn.message = "Date missing";
     rtn.type = ValidationFailTypes.DateMissing;
-  }
-
-  if (isNullOrUndefined(numerator)) {
+  } else if (isNullOrUndefined(numerator)) {
     rtn.message = "Numerator missing";
     rtn.type = ValidationFailTypes.NumeratorMissing;
-  }
-
-  if (isNaN(numerator)) {
+  } else if (!isFinite(numerator)) {
     rtn.message = "Numerator is not a number";
     rtn.type = ValidationFailTypes.NumeratorNaN;
-  }
-
-  if (chart_type_props.numerator_non_negative && numerator < 0) {
+  } else if (chart_type_props.numerator_non_negative && numerator < 0) {
     rtn.message = "Numerator negative";
     rtn.type = ValidationFailTypes.NumeratorNegative;
-  }
-
-  if (check_denom) {
-    if (isNullOrUndefined(denominator)) {
-      rtn.message = "Denominator missing";
-      rtn.type = ValidationFailTypes.DenominatorMissing;
-    } else if (isNaN(denominator)) {
-      rtn.message = "Denominator is not a number";
-      rtn.type = ValidationFailTypes.DenominatorNaN;
-    } else if (denominator < 0) {
-      rtn.message = "Denominator negative";
-      rtn.type = ValidationFailTypes.DenominatorNegative;
-    } else if (chart_type_props.numerator_leq_denominator && denominator < numerator) {
-      rtn.message = "Denominator < numerator";
-      rtn.type = ValidationFailTypes.DenominatorLessThanNumerator;
-    }
-  }
-
-  if (chart_type_props.needs_sd) {
-    if (isNullOrUndefined(xbar_sd)) {
-      rtn.message = "SD missing";
-      rtn.type = ValidationFailTypes.SDMissing;
-    } else if (isNaN(xbar_sd)) {
-      rtn.message = "SD is not a number";
-      rtn.type = ValidationFailTypes.SDNaN;
-    } else if (xbar_sd < 0) {
-      rtn.message = "SD negative";
-      rtn.type = ValidationFailTypes.SDNegative;
-    }
+  } else if (check_denom && isNullOrUndefined(denominator)) {
+    rtn.message = "Denominator missing";
+    rtn.type = ValidationFailTypes.DenominatorMissing;
+  } else if (check_denom && !isFinite(denominator)) {
+    rtn.message = "Denominator is not a number";
+    rtn.type = ValidationFailTypes.DenominatorNaN;
+  } else if (check_denom && denominator < 0) {
+    rtn.message = "Denominator negative";
+    rtn.type = ValidationFailTypes.DenominatorNegative;
+  } else if (check_denom && denominator === 0) {
+    rtn.message = "Denominator is zero";
+    rtn.type = ValidationFailTypes.DenominatorZero;
+  } else if (check_denom && chart_type_props.numerator_leq_denominator && denominator < numerator) {
+    rtn.message = "Denominator < numerator";
+    rtn.type = ValidationFailTypes.DenominatorLessThanNumerator;
+  } else if (chart_type_props.needs_sd && isNullOrUndefined(xbar_sd)) {
+    rtn.message = "SD missing";
+    rtn.type = ValidationFailTypes.SDMissing;
+  } else if (chart_type_props.needs_sd && !isFinite(xbar_sd)) {
+    rtn.message = "SD is not a number";
+    rtn.type = ValidationFailTypes.SDNaN;
+  } else if (chart_type_props.needs_sd && xbar_sd < 0) {
+    rtn.message = "SD negative";
+    rtn.type = ValidationFailTypes.SDNegative;
   }
   return rtn;
 }
@@ -93,7 +82,8 @@ export default function validateInputData(keys: string[],
                       || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators) && denominators.length > 0);
   const n: number = idxs.length;
   for (let i = 0; i < n; i++) {
-    const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], chart_type_props,  check_denom);
+    const idx = idxs[i];
+    const validation = validateInputDataImpl(keys[idx], numerators?.[idx], denominators?.[idx], xbar_sds?.[idx], chart_type_props,  check_denom);
     messages.push(validation.message);
     all_status.push(validation.type);
   }
@@ -119,10 +109,6 @@ export default function validateInputData(keys: string[],
 
   if (allSameType && commonType !== ValidationFailTypes.Valid) {
     switch(commonType) {
-      case ValidationFailTypes.GroupingMissing: {
-        validationRtn.error = "Grouping missing"
-        break;
-      }
       case ValidationFailTypes.DateMissing: {
         validationRtn.error = "All dates/IDs are missing or null!"
         break;
@@ -149,6 +135,10 @@ export default function validateInputData(keys: string[],
       }
       case ValidationFailTypes.DenominatorNegative: {
         validationRtn.error = "All denominators are negative!"
+        break;
+      }
+      case ValidationFailTypes.DenominatorZero: {
+        validationRtn.error = "All denominators are zero!";
         break;
       }
       case ValidationFailTypes.DenominatorLessThanNumerator: {

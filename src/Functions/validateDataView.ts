@@ -8,7 +8,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   if (isNullOrUndefined(inputDV?.[0]) || (inputDV?.[0]?.categorical?.categories?.[0]?.identity?.length === 0)) {
     return ""; //"No data present!";
   }
-  if (isNullOrUndefined(inputDV[0]?.categorical?.categories) || isNullOrUndefined(inputDV[0]?.categorical?.categories.some(d => d.source?.roles?.key))) {
+  if (isNullOrUndefined(inputDV[0]?.categorical?.categories) || !inputDV[0]?.categorical?.categories.some(d => d.source?.roles?.key)) {
     return ""; //"No grouping/ID variable passed!";
   }
 
@@ -21,25 +21,22 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
     return "No Numerators passed!";
   }
 
-  let needs_denominator: boolean;
-  let needs_sd: boolean;
-  let chart_type: string;
+  let needs_denominator = false;
+  let needs_sd = false;
+  let denom_chart_type = "";
+  let sd_chart_type = "";
 
-  if (inputSettingsClass?.derivedSettings.length > 0) {
-    inputSettingsClass?.derivedSettings.forEach((d) => {
+  if (inputSettingsClass?.derivedSettings?.length > 0) {
+    for (const d of inputSettingsClass.derivedSettings) {
       if (d.chart_type_props.needs_denominator) {
-        chart_type = d.chart_type_props.name;
+        denom_chart_type = denom_chart_type || d.chart_type_props.name;
         needs_denominator = true;
       }
       if (d.chart_type_props.needs_sd) {
-        chart_type = d.chart_type_props.name;
+        sd_chart_type = sd_chart_type || d.chart_type_props.name;
         needs_sd = true;
       }
-    });
-  } else {
-    chart_type = inputSettingsClass.settings[0].spc.chart_type;
-    needs_denominator = inputSettingsClass.derivedSettings[0].chart_type_props.needs_denominator;
-    needs_sd = inputSettingsClass.derivedSettings[0].chart_type_props.needs_sd;
+    }
   }
 
   if (needs_denominator) {
@@ -49,7 +46,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
                      ?.some(d => d.source?.roles?.denominators);
 
     if (!denominatorsPresent) {
-      return `Chart type '${chart_type}' requires denominators!`;
+      return `Chart type '${denom_chart_type}' requires denominators!`;
     }
   }
 
@@ -60,7 +57,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
                      ?.some(d => d.source?.roles?.xbar_sds);
 
     if (!xbarSDPresent) {
-      return `Chart type '${chart_type}' requires SDs!`;
+      return `Chart type '${sd_chart_type}' requires SDs!`;
     }
   }
 

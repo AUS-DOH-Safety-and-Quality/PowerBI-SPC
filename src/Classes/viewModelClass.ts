@@ -35,7 +35,7 @@ export type viewModelValidationT = {
 
 export type lineData = {
   x: number;
-  line_value: number;
+  line_value: number | null;
   group: string;
   aesthetics: defaultSettingsType["lines"];
 }
@@ -93,10 +93,10 @@ export type plotData = {
   label: {
     text_value: string,
     aesthetics: defaultSettingsType["labels"],
-    angle: number,
-    distance: number,
-    line_offset: number,
-    marker_offset: number
+    angle: number | null,
+    distance: number | null,
+    line_offset: number | null,
+    marker_offset: number | null
   };
 }
 
@@ -417,6 +417,10 @@ export default class viewModelClass {
       if (key === "keys") {
         continue;
       }
+      // TODO: This introduces null into number[] arrays (controlLimitsObject types declare number[]).
+      // The type definitions should be updated to (number | null)[] for all limit arrays,
+      // but this affects hundreds of consumers across limit calculations, outlier flagging,
+      // and rendering. Needs its own analysis pass to update safely.
       controlLimits[key] = controlLimits[key]?.map(d => isNaN(d) ? null : d);
     }
 
