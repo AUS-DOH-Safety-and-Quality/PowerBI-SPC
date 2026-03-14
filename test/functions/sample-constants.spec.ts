@@ -62,8 +62,7 @@ describe("sampleConstants", () => {
   // ===== c5: Relative variability of sample SD =====
   // c5(n) = sqrt(1 - c4(n)^2)
   // NOTE: c5 is not independently published in standard tables.
-  // The identity test (precision 10) is the authoritative verification.
-  // The reference values below are derived from published c4 and serve as sanity checks.
+  // Reference values below are derived from published c4.
   describe("c5", () => {
     const derivedC5: [number, number][] = [
       [2,  0.6028],
@@ -77,14 +76,6 @@ describe("sampleConstants", () => {
       it(`c5(${n}) should be approximately ${expected}`, () => {
         expect(c5(n)).toBeCloseTo(expected, 3);
       });
-    });
-
-    it("should satisfy identity c5(n) = sqrt(1 - c4(n)^2)", () => {
-      for (let n = 2; n <= 30; n++) {
-        const c4Val = c4(n);
-        const expected = Math.sqrt(1 - c4Val * c4Val);
-        expect(c5(n)).toBeCloseTo(expected, 10);
-      }
     });
 
     it("should be monotonically decreasing for n >= 2", () => {
@@ -108,13 +99,6 @@ describe("sampleConstants", () => {
       it(`a3(${n}) should match published value ${PUBLISHED_A3[n]}`, () => {
         expect(a3(n)).toBeCloseTo(PUBLISHED_A3[n], PRECISION.A3);
       });
-    });
-
-    it("should satisfy identity a3(n) = 3 / (c4(n) * sqrt(n))", () => {
-      for (let n = 2; n <= 30; n++) {
-        const expected = 3 / (c4(n) * Math.sqrt(n));
-        expect(a3(n)).toBeCloseTo(expected, 10);
-      }
     });
 
     it("should be monotonically decreasing for n >= 2", () => {

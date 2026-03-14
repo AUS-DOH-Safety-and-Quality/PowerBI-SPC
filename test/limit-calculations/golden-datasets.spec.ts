@@ -104,7 +104,15 @@ function assertFixturesAgree(ts: GoldenDataset, r: GoldenDataset): void {
     const tsValues = ts.expected[key];
     const rValues = r.expected[key];
 
-    // Only compare keys present in BOTH fixtures
+    // Only compare keys present in BOTH fixtures; warn on mismatch
+    if (!tsValues && rValues) {
+      console.warn(`assertFixturesAgree: "${key}" present in R fixture but missing from TS fixture`);
+      continue;
+    }
+    if (tsValues && !rValues) {
+      console.warn(`assertFixturesAgree: "${key}" present in TS fixture but missing from R fixture`);
+      continue;
+    }
     if (!tsValues || !rValues) continue;
 
     expect(tsValues.length).toBe(rValues.length);

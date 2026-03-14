@@ -85,4 +85,28 @@ describe("assertLimitsMatch", () => {
       assertLimitsMatch(limits, { targets: [10, 10], values: [10, 10] }, 2);
     }).not.toThrow();
   });
+
+  it("handles NaN expected values without crashing", () => {
+    const limits = makeLimits(2, 10);
+    (limits as any).targets = [NaN, NaN];
+    expect(() => {
+      assertLimitsMatch(limits, { targets: [NaN, NaN] }, 2);
+    }).not.toThrow();
+  });
+
+  it("handles Infinity expected values without crashing", () => {
+    const limits = makeLimits(2, 10);
+    (limits as any).targets = [Infinity, -Infinity];
+    expect(() => {
+      assertLimitsMatch(limits, { targets: [Infinity, -Infinity] }, 2);
+    }).not.toThrow();
+  });
+
+  it("handles null expected values without crashing", () => {
+    const limits = makeLimits(2, 10);
+    (limits as any).targets = [null, null];
+    expect(() => {
+      assertLimitsMatch(limits, { targets: [null, null] as any }, 2);
+    }).not.toThrow();
+  });
 });

@@ -17,9 +17,9 @@ describe("buildControlLimitsArgs", () => {
     expect(args.numerators).toEqual([10, 20, 30]);
   });
 
-  it("defaults denominators to empty array when not provided", () => {
+  it("defaults denominators to undefined when not provided", () => {
     const args = buildControlLimitsArgs({ keys, numerators });
-    expect(args.denominators).toEqual([]);
+    expect(args.denominators).toBeUndefined();
   });
 
   it("passes denominators through when provided", () => {

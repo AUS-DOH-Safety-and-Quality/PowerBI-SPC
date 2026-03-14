@@ -31,7 +31,7 @@ export default function buildControlLimitsArgs(opts: {
   return {
     keys: keys,
     numerators: opts.numerators,
-    denominators: opts.denominators ?? [],
+    denominators: opts.denominators,
     xbar_sds: opts.xbar_sds,
     subset_points: subset_points,
     outliers_in_limits: outliers_in_limits
