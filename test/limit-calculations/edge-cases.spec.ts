@@ -567,18 +567,23 @@ describe("All-identical data (variance = 0)", () => {
   for (const chartType of continuousCharts) {
     it(`${chartType}-chart with identical non-zero values: limits collapse to centreline`, () => {
       const n = 10;
+      const inputValue = 42;
       const args = buildControlLimitsArgs({
         keys: makeKeys(n),
-        numerators: new Array(n).fill(42)
+        numerators: new Array(n).fill(inputValue)
       });
       const limits = limitFnMap[chartType](args);
 
+      // Centreline must equal the input value (independent of limit calculation)
+      const mean = new Array(n).fill(inputValue).reduce((a, b) => a + b, 0) / n;
       for (let i = 0; i < limits.keys.length; i++) {
-        expect(limits.targets[i]).toBeCloseTo(42, 5);
+        expect(limits.targets[i]).toBeCloseTo(mean, 5);
         if (chartType !== "run") {
           // MR = 0 for all points, so sigma = 0, limits = centreline
-          expect(limits.ul99![i]).toBeCloseTo(42, 5);
-          expect(limits.ll99![i]).toBeCloseTo(42, 5);
+          expect(limits.ul99![i]).toBeCloseTo(inputValue, 5);
+          expect(limits.ll99![i]).toBeCloseTo(inputValue, 5);
+          // Explicit zero-width check: zero variance must produce zero-width limits
+          expect(limits.ul99![i] - limits.ll99![i]).toBeCloseTo(0, 5);
           expect(isFinite(limits.ul99![i])).toBeTrue();
           expect(isFinite(limits.ll99![i])).toBeTrue();
         }
