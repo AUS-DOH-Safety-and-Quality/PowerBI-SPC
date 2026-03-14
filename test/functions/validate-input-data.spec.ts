@@ -164,12 +164,13 @@ describe("validateInputData (VAL-001)", () => {
       expect(result.status).toBe(0);
     });
 
-    it("checks denominators for I-chart when denominators ARE supplied (denominator_optional)", () => {
+    it("I-chart with all-null denominators passes (optional denoms, no values provided)", () => {
+      // denominator_optional=true: null entries mean "not provided", so no validation needed
       const props = buildChartTypeProps("i");
       const nullDenoms = [null, null, null] as any as number[];
       const result = validateInputData(validKeys, validNumerators, nullDenoms, [], props, allIdxs);
-      expect(result.status).toBe(1);
-      expect(result.error).toBe("All denominators missing or null!");
+      expect(result.status).toBe(0);
+      expect(result.error).toBeUndefined();
     });
   });
 
@@ -486,6 +487,76 @@ describe("validateInputData (VAL-001)", () => {
       const result = validateInputData(validKeys, validNumerators, validDenominators, shortSDs, props, allIdxs);
       expect(result.messages[1]).toBe("SD missing");
       expect(result.messages[2]).toBe("SD missing");
+    });
+  });
+
+  // ---- BUG-A: isFinite type coercion (global isFinite vs Number.isFinite) ----
+
+  describe("isFinite type coercion (BUG-A)", () => {
+    it("rejects empty string numerator (isFinite('') === true, Number.isFinite('') === false)", () => {
+      const props = buildChartTypeProps("i");
+      // Empty strings coerce to 0 via global isFinite, so isFinite("") === true.
+      // Number.isFinite("") === false — should be caught as NaN.
+      const result = validateInputData(validKeys, ["", "", ""] as any, [], [], props, allIdxs);
+      expect(result.status).toBe(1);
+      expect(result.error).toBe("All numerators are not numbers!");
+    });
+
+    it("rejects empty string denominator (isFinite coercion bug)", () => {
+      const props = buildChartTypeProps("p");
+      const result = validateInputData(validKeys, validNumerators, ["", "", ""] as any, [], props, allIdxs);
+      expect(result.status).toBe(1);
+      expect(result.error).toBe("All denominators are not numbers!");
+    });
+
+    it("rejects empty string SD (isFinite coercion bug)", () => {
+      const props = buildChartTypeProps("xbar");
+      const result = validateInputData(validKeys, validNumerators, validDenominators, ["", "", ""] as any, props, allIdxs);
+      expect(result.status).toBe(1);
+      expect(result.error).toBe("All SDs are not numbers!");
+    });
+
+    it("rejects boolean true numerator (isFinite(true) === true, Number.isFinite(true) === false)", () => {
+      const props = buildChartTypeProps("i");
+      const result = validateInputData(validKeys, [true, true, true] as any, [], [], props, allIdxs);
+      expect(result.status).toBe(1);
+      expect(result.error).toBe("All numerators are not numbers!");
+    });
+  });
+
+  // ---- BUG-C: Per-row check_denom for denominator_optional charts ----
+
+  describe("Per-row check_denom (BUG-C)", () => {
+    it("I-chart with partial denominators: null rows should pass, provided rows should validate", () => {
+      const props = buildChartTypeProps("i"); // denominator_optional = true
+      // Row 0 has denominator, row 1 has null, row 2 has denominator.
+      // Old bug: global check_denom=true because array.length>0, so row 1 fails "Denominator missing".
+      // Fixed: row 1 should pass because denominators are optional and this row has no value.
+      const denoms = [100, null, 300] as any as number[];
+      const result = validateInputData(validKeys, validNumerators, denoms, [], props, allIdxs);
+      expect(result.status).toBe(0);
+      expect(result.messages[0]).toBe("");
+      expect(result.messages[1]).toBe("");  // null denom on optional chart = valid
+      expect(result.messages[2]).toBe("");
+    });
+
+    it("I-chart with partial denominators: provided invalid denominator still caught", () => {
+      const props = buildChartTypeProps("i"); // denominator_optional = true
+      // Row 0 has valid denom, row 1 has null (should pass), row 2 has negative (should fail).
+      const denoms = [100, null, -50] as any as number[];
+      const result = validateInputData(validKeys, validNumerators, denoms, [], props, allIdxs);
+      expect(result.status).toBe(0);  // not all invalid
+      expect(result.messages[0]).toBe("");
+      expect(result.messages[1]).toBe("");  // null on optional = valid
+      expect(result.messages[2]).toBe("Denominator negative");  // provided but invalid
+    });
+
+    it("P-chart (needs_denominator) still rejects null denominators", () => {
+      const props = buildChartTypeProps("p"); // needs_denominator = true
+      const denoms = [100, null, 300] as any as number[];
+      const result = validateInputData(validKeys, validNumerators, denoms, [], props, allIdxs);
+      expect(result.status).toBe(0);  // not all invalid
+      expect(result.messages[1]).toBe("Denominator missing");  // required, not optional
     });
   });
 
