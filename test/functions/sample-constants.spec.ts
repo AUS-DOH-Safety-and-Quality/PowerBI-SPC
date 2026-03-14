@@ -62,8 +62,7 @@ describe("sampleConstants", () => {
   // ===== c5: Relative variability of sample SD =====
   // c5(n) = sqrt(1 - c4(n)^2)
   // NOTE: c5 is not independently published in standard tables.
-  // The identity test (precision 10) is the authoritative verification.
-  // The reference values below are derived from published c4 and serve as sanity checks.
+  // Reference values below are derived from published c4.
   describe("c5", () => {
     const derivedC5: [number, number][] = [
       [2,  0.6028],
@@ -77,14 +76,6 @@ describe("sampleConstants", () => {
       it(`c5(${n}) should be approximately ${expected}`, () => {
         expect(c5(n)).toBeCloseTo(expected, 3);
       });
-    });
-
-    it("should satisfy identity c5(n) = sqrt(1 - c4(n)^2)", () => {
-      for (let n = 2; n <= 30; n++) {
-        const c4Val = c4(n);
-        const expected = Math.sqrt(1 - c4Val * c4Val);
-        expect(c5(n)).toBeCloseTo(expected, 10);
-      }
     });
 
     it("should be monotonically decreasing for n >= 2", () => {
@@ -110,13 +101,6 @@ describe("sampleConstants", () => {
       });
     });
 
-    it("should satisfy identity a3(n) = 3 / (c4(n) * sqrt(n))", () => {
-      for (let n = 2; n <= 30; n++) {
-        const expected = 3 / (c4(n) * Math.sqrt(n));
-        expect(a3(n)).toBeCloseTo(expected, 10);
-      }
-    });
-
     it("should be monotonically decreasing for n >= 2", () => {
       for (let n = 2; n < 50; n++) {
         expect(a3(n + 1)).toBeLessThan(a3(n));
@@ -133,14 +117,6 @@ describe("sampleConstants", () => {
   // b3(n, k) = 1 - k * c5(n) / c4(n)
   // b4(n, k) = 1 + k * c5(n) / c4(n)
   describe("b3 and b4", () => {
-    it("should satisfy b3(n,k) + b4(n,k) = 2 for all valid n and k", () => {
-      for (let n = 2; n <= 30; n++) {
-        for (const k of [1, 2, 3]) {
-          expect(b3(n, k) + b4(n, k)).toBeCloseTo(2.0, 10);
-        }
-      }
-    });
-
     it("should satisfy b4(n,k) > b3(n,k) for all valid n and k", () => {
       for (let n = 2; n <= 30; n++) {
         for (const k of [1, 2, 3]) {

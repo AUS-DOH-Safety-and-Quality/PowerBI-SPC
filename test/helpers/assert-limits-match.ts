@@ -35,10 +35,16 @@ export default function assertLimitsMatch(
     expect(actualValues.length).toBe(n);
 
     for (let i = 0; i < n; i++) {
-      expect(actualValues[i]).toBeCloseTo(
-        (expectedValues as number[])[i],
-        precision
-      );
+      const exp = (expectedValues as number[])[i];
+      if (exp === null || exp === undefined) {
+        expect(actualValues[i]).toBeNull();
+      } else if (isNaN(exp)) {
+        expect(actualValues[i]).toBeNaN();
+      } else if (!isFinite(exp)) {
+        expect(actualValues[i]).toBe(exp);
+      } else {
+        expect(actualValues[i]).toBeCloseTo(exp, precision);
+      }
     }
   }
 }
