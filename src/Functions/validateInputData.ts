@@ -19,9 +19,12 @@ enum ValidationFailTypes {
   SDNaN = 12,
 }
 
+// Short alias for the enum — used as both a type and a value throughout this file
 type V = ValidationFailTypes;
 const V = ValidationFailTypes;
 
+// row: per-observation message (shown in removal warnings)
+// all: aggregate error when every observation fails with the same type
 const validationMessages: Record<V, { row: string; all: string }> = {
   [V.Valid]:                        { row: "",                            all: "" },
   [V.DateMissing]:                  { row: "Date missing",                all: "All dates/IDs are missing or null!" },
@@ -38,6 +41,9 @@ const validationMessages: Record<V, { row: string; all: string }> = {
   [V.SDNegative]:                   { row: "SD negative",                 all: "All SDs are negative!" },
 };
 
+// Validates a single data row. Guard clause order matters: null/undefined checks
+// must precede Number.isFinite checks (Number.isFinite(null) === false would
+// otherwise report "not a number" instead of "missing").
 function validateInputDataImpl(
   key: string,
   numerator: number,
@@ -92,7 +98,11 @@ export default function validateInputData(
 
   const messages: string[] = [];
   const all_status: V[] = [];
+  // needs_denominator (p, pp, u, etc.): always validate denominator
   const denom_required: boolean = chart_type_props.needs_denominator;
+  // denominator_optional (i, mr, run, etc.): only validate rows where a denominator
+  // value was actually provided. Without per-row checking, null rows on optional
+  // charts would incorrectly fail with "Denominator missing".
   const denom_optional: boolean = chart_type_props.denominator_optional
                                   && !isNullOrUndefined(denominators)
                                   && denominators.length > 0;
@@ -108,6 +118,9 @@ export default function validateInputData(
     all_status.push(failType);
   }
 
+  // Determine overall status: if any row is valid, status=0 (partial data is usable).
+  // If all rows failed: use a specific error when all failed for the same reason,
+  // otherwise use a generic message.
   const failureTypes = new Set(all_status);
   const hasValidData = failureTypes.has(V.Valid);
 
