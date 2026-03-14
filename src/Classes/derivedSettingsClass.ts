@@ -60,7 +60,7 @@ export default class derivedSettingsClass {
       needs_denominator: ["p", "pp", "u", "up", "xbar", "s"].includes(chartType),
       denominator_optional: ["i", "i_m", "i_mm", "run", "mr"].includes(chartType),
       numerator_non_negative: ["p", "pp", "u", "up", "s", "c", "g", "t"].includes(chartType),
-      numerator_leq_denominator: ["p", "pp", "u", "up"].includes(chartType),
+      numerator_leq_denominator: ["p", "pp"].includes(chartType),
       has_control_limits: !(["run"].includes(chartType)),
       needs_sd: ["xbar"].includes(chartType),
       integer_num_den: ["c", "p", "pp"].includes(chartType),

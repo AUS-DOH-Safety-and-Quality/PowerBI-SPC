@@ -3,171 +3,140 @@ import isNullOrUndefined from "./isNullOrUndefined";
 
 export type ValidationT = { status: number, messages: string[], error?: string };
 
-const enum ValidationFailTypes {
+enum ValidationFailTypes {
   Valid = 0,
-  GroupingMissing = 1,
   DateMissing = 2,
   NumeratorMissing = 3,
   NumeratorNegative = 4,
+  NumeratorNaN = 10,
   DenominatorMissing = 5,
   DenominatorNegative = 6,
   DenominatorLessThanNumerator = 7,
+  DenominatorNaN = 11,
+  DenominatorZero = 13,
   SDMissing = 8,
   SDNegative = 9,
-  NumeratorNaN = 10,
-  DenominatorNaN = 11,
-  SDNaN = 12
+  SDNaN = 12,
 }
 
-function validateInputDataImpl(key: string,
-                              numerator: number,
-                              denominator: number,
-                              xbar_sd: number,
-                              chart_type_props: derivedSettingsClass["chart_type_props"],
-                              check_denom: boolean): { message: string, type: ValidationFailTypes }  {
+// Short alias for the enum — used as both a type and a value throughout this file
+type V = ValidationFailTypes;
+const V = ValidationFailTypes;
 
-  const rtn = { message: "", type: ValidationFailTypes.Valid };
-  if (isNullOrUndefined(key)) {
-    rtn.message = "Date missing";
-    rtn.type = ValidationFailTypes.DateMissing;
-  }
+// row: per-observation message (shown in removal warnings)
+// all: aggregate error when every observation fails with the same type
+const validationMessages: Record<V, { row: string; all: string }> = {
+  [V.Valid]:                        { row: "",                            all: "" },
+  [V.DateMissing]:                  { row: "Date missing",                all: "All dates/IDs are missing or null!" },
+  [V.NumeratorMissing]:             { row: "Numerator missing",           all: "All numerators are missing or null!" },
+  [V.NumeratorNaN]:                 { row: "Numerator is not a number",   all: "All numerators are not numbers!" },
+  [V.NumeratorNegative]:            { row: "Numerator negative",          all: "All numerators are negative!" },
+  [V.DenominatorMissing]:           { row: "Denominator missing",         all: "All denominators missing or null!" },
+  [V.DenominatorNaN]:               { row: "Denominator is not a number", all: "All denominators are not numbers!" },
+  [V.DenominatorNegative]:          { row: "Denominator negative",        all: "All denominators are negative!" },
+  [V.DenominatorZero]:              { row: "Denominator is zero",         all: "All denominators are zero!" },
+  [V.DenominatorLessThanNumerator]: { row: "Denominator < numerator",     all: "All denominators are smaller than numerators!" },
+  [V.SDMissing]:                    { row: "SD missing",                  all: "All SDs missing or null!" },
+  [V.SDNaN]:                        { row: "SD is not a number",          all: "All SDs are not numbers!" },
+  [V.SDNegative]:                   { row: "SD negative",                 all: "All SDs are negative!" },
+};
 
-  if (isNullOrUndefined(numerator)) {
-    rtn.message = "Numerator missing";
-    rtn.type = ValidationFailTypes.NumeratorMissing;
-  }
+// Validates a single data row. Guard clause order matters: null/undefined checks
+// must precede Number.isFinite checks (Number.isFinite(null) === false would
+// otherwise report "not a number" instead of "missing").
+function validateInputDataImpl(
+  key: string,
+  numerator: number,
+  denominator: number,
+  xbar_sd: number,
+  chart_type_props: derivedSettingsClass["chart_type_props"],
+  check_denom: boolean
+): V {
+  if (isNullOrUndefined(key))
+    return V.DateMissing;
 
-  if (isNaN(numerator)) {
-    rtn.message = "Numerator is not a number";
-    rtn.type = ValidationFailTypes.NumeratorNaN;
-  }
+  if (isNullOrUndefined(numerator))
+    return V.NumeratorMissing;
+  if (!Number.isFinite(numerator))
+    return V.NumeratorNaN;
+  if (chart_type_props.numerator_non_negative && numerator < 0)
+    return V.NumeratorNegative;
 
-  if (chart_type_props.numerator_non_negative && numerator < 0) {
-    rtn.message = "Numerator negative";
-    rtn.type = ValidationFailTypes.NumeratorNegative;
-  }
+  if (check_denom && isNullOrUndefined(denominator))
+    return V.DenominatorMissing;
+  if (check_denom && !Number.isFinite(denominator))
+    return V.DenominatorNaN;
+  if (check_denom && denominator < 0)
+    return V.DenominatorNegative;
+  if (check_denom && denominator === 0)
+    return V.DenominatorZero;
+  if (check_denom && chart_type_props.numerator_leq_denominator && denominator < numerator)
+    return V.DenominatorLessThanNumerator;
 
-  if (check_denom) {
-    if (isNullOrUndefined(denominator)) {
-      rtn.message = "Denominator missing";
-      rtn.type = ValidationFailTypes.DenominatorMissing;
-    } else if (isNaN(denominator)) {
-      rtn.message = "Denominator is not a number";
-      rtn.type = ValidationFailTypes.DenominatorNaN;
-    } else if (denominator < 0) {
-      rtn.message = "Denominator negative";
-      rtn.type = ValidationFailTypes.DenominatorNegative;
-    } else if (chart_type_props.numerator_leq_denominator && denominator < numerator) {
-      rtn.message = "Denominator < numerator";
-      rtn.type = ValidationFailTypes.DenominatorLessThanNumerator;
-    }
-  }
+  if (chart_type_props.needs_sd && isNullOrUndefined(xbar_sd))
+    return V.SDMissing;
+  if (chart_type_props.needs_sd && !Number.isFinite(xbar_sd))
+    return V.SDNaN;
+  if (chart_type_props.needs_sd && xbar_sd < 0)
+    return V.SDNegative;
 
-  if (chart_type_props.needs_sd) {
-    if (isNullOrUndefined(xbar_sd)) {
-      rtn.message = "SD missing";
-      rtn.type = ValidationFailTypes.SDMissing;
-    } else if (isNaN(xbar_sd)) {
-      rtn.message = "SD is not a number";
-      rtn.type = ValidationFailTypes.SDNaN;
-    } else if (xbar_sd < 0) {
-      rtn.message = "SD negative";
-      rtn.type = ValidationFailTypes.SDNegative;
-    }
-  }
-  return rtn;
+  return V.Valid;
 }
 
-// ESLint errors due to number of lines in function, but would reduce readability to separate further
-
-export default function validateInputData(keys: string[],
-                                          numerators: number[],
-                                          denominators: number[],
-                                          xbar_sds: number[],
-                                          chart_type_props: derivedSettingsClass["chart_type_props"],
-                                          idxs: number[]): { status: number, messages: string[], error?: string } {
-  let allSameType: boolean = false;
-  let messages: string[] = new Array<string>();
-  let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
-  const check_denom = chart_type_props.needs_denominator
-                      || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators) && denominators.length > 0);
+export default function validateInputData(
+  keys: string[],
+  numerators: number[],
+  denominators: number[],
+  xbar_sds: number[],
+  chart_type_props: derivedSettingsClass["chart_type_props"],
+  idxs: number[]
+): ValidationT {
   const n: number = idxs.length;
-  for (let i = 0; i < n; i++) {
-    const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], chart_type_props,  check_denom);
-    messages.push(validation.message);
-    all_status.push(validation.type);
+  if (n === 0) {
+    return { status: 1, messages: [], error: "No valid data found!" };
   }
 
-  let allSameTypeSet = new Set(all_status);
-  allSameType = allSameTypeSet.size === 1;
-  let commonType = Array.from(allSameTypeSet)[0];
+  const messages: string[] = [];
+  const all_status: V[] = [];
+  // needs_denominator (p, pp, u, etc.): always validate denominator
+  const denom_required: boolean = chart_type_props.needs_denominator;
+  // denominator_optional (i, mr, run, etc.): only validate rows where a denominator
+  // value was actually provided. Without per-row checking, null rows on optional
+  // charts would incorrectly fail with "Denominator missing".
+  const denom_optional: boolean = chart_type_props.denominator_optional
+                                  && !isNullOrUndefined(denominators)
+                                  && denominators.length > 0;
 
-  let validationRtn: ValidationT = {
-    status: (allSameType && commonType !== ValidationFailTypes.Valid) ? 1 : 0,
-    messages: messages
+  for (let i = 0; i < n; i++) {
+    const idx = idxs[i];
+    const check_denom = denom_required || (denom_optional && !isNullOrUndefined(denominators?.[idx]));
+    const failType = validateInputDataImpl(
+      keys[idx], numerators?.[idx], denominators?.[idx], xbar_sds?.[idx],
+      chart_type_props, check_denom
+    );
+    messages.push(validationMessages[failType].row);
+    all_status.push(failType);
+  }
+
+  // Determine overall status: if any row is valid, status=0 (partial data is usable).
+  // If all rows failed: use a specific error when all failed for the same reason,
+  // otherwise use a generic message.
+  const failureTypes = new Set(all_status);
+  const hasValidData = failureTypes.has(V.Valid);
+
+  const validationRtn: ValidationT = {
+    status: hasValidData ? 0 : 1,
+    messages,
   };
 
-  // If all data has failed, but for different reasons, return a generic error
-  if (validationRtn.status === 0) {
-    const allInvalid: boolean = all_status.every(d => d !== ValidationFailTypes.Valid);
-    if (allInvalid) {
-      validationRtn.status = 1; // All data invalid
+  if (!hasValidData) {
+    if (failureTypes.size === 1) {
+      const commonType = failureTypes.values().next().value as V;
+      validationRtn.error = validationMessages[commonType].all;
+    } else {
       validationRtn.error = "No valid data found!";
-      return validationRtn;
     }
   }
 
-  if (allSameType && commonType !== ValidationFailTypes.Valid) {
-    switch(commonType) {
-      case ValidationFailTypes.GroupingMissing: {
-        validationRtn.error = "Grouping missing"
-        break;
-      }
-      case ValidationFailTypes.DateMissing: {
-        validationRtn.error = "All dates/IDs are missing or null!"
-        break;
-      }
-      case ValidationFailTypes.NumeratorMissing: {
-        validationRtn.error = "All numerators are missing or null!"
-        break;
-      }
-      case ValidationFailTypes.NumeratorNaN: {
-        validationRtn.error = "All numerators are not numbers!"
-        break;
-      }
-      case ValidationFailTypes.NumeratorNegative: {
-        validationRtn.error = "All numerators are negative!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorMissing: {
-        validationRtn.error = "All denominators missing or null!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorNaN: {
-        validationRtn.error = "All denominators are not numbers!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorNegative: {
-        validationRtn.error = "All denominators are negative!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorLessThanNumerator: {
-        validationRtn.error = "All denominators are smaller than numerators!";
-        break;
-      }
-      case ValidationFailTypes.SDMissing: {
-        validationRtn.error = "All SDs missing or null!";
-        break;
-      }
-      case ValidationFailTypes.SDNaN: {
-        validationRtn.error = "All SDs are not numbers!";
-        break;
-      }
-      case ValidationFailTypes.SDNegative: {
-        validationRtn.error = "All SDs are negative!";
-        break;
-      }
-    }
-  }
   return validationRtn;
 }
