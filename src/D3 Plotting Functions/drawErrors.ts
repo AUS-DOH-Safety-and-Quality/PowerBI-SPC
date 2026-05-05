@@ -8,7 +8,7 @@ export default function drawErrors(selection: svgBaseType,
                                     options: VisualUpdateOptions,
                                     colourPalette: colourPaletteType,
                                     message: string,
-                                    type: string = null) {
+                                    type: string | undefined) {
   selection.call(initialiseSVG, true);
   const errMessageSVG = selection.append("g").classed("errormessage", true);
 
