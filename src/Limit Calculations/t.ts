@@ -66,10 +66,11 @@ export default function tLimits(args: controlLimitsArgs): controlLimitsObject {
     limits.targets[i] = Math.pow(limits.targets[i], 3.6);
     limits.values[i] = Math.pow(limits.values[i], 3.6);
 
-    // Back-transform lower limits and truncate at 0 (time cannot be negative)
-    limits.ll99![i] = Math.max(0, Math.pow(limits.ll99![i], 3.6));
-    limits.ll95![i] = Math.max(0, Math.pow(limits.ll95![i], 3.6));
-    limits.ll68![i] = Math.max(0, Math.pow(limits.ll68![i], 3.6));
+    // Clamp negative transformed limits to 0 before back-transform, because
+    // Math.pow(negative, 3.6) is NaN (non-integer exponent of negative base)
+    limits.ll99![i] = limits.ll99![i] < 0 ? 0 : Math.pow(limits.ll99![i], 3.6);
+    limits.ll95![i] = limits.ll95![i] < 0 ? 0 : Math.pow(limits.ll95![i], 3.6);
+    limits.ll68![i] = limits.ll68![i] < 0 ? 0 : Math.pow(limits.ll68![i], 3.6);
 
     // Back-transform upper limits (no truncation needed)
     limits.ul68![i] = Math.pow(limits.ul68![i], 3.6);
