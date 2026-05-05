@@ -57,7 +57,10 @@
     "typedoc": "^0.28.17",
     "typescript": "5.9.3"
   },
-  "override": {
-    "powerbi-visuals-api": "$powerbi-visuals-api"
+  "overrides": {
+    "powerbi-visuals-api": "$powerbi-visuals-api",
+    "powerbi-visuals-utils-testutils": {
+      "lodash-es": "^4.18.1"
+    }
   }
 }
