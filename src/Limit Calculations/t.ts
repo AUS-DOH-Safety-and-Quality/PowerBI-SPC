@@ -52,7 +52,6 @@ export default function tLimits(args: controlLimitsArgs): controlLimitsObject {
   // Create a copy of args with transformed data and no denominators
   const inputArgsCopy: controlLimitsArgs = {
     numerators: val,
-    denominators: null,
     keys: args.keys,
     subset_points: args.subset_points,
     outliers_in_limits: args.outliers_in_limits

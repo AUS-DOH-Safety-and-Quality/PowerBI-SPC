@@ -53,7 +53,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  */
 export default function pLimits(args: controlLimitsArgs): controlLimitsObject {
   const numerators: number[] = args.numerators;       // Number of defectives in each sample
-  const denominators: number[] = args.denominators;   // Sample size for each subgroup
+  const denominators: number[] = args.denominators!;   // Sample size for each subgroup
   const subset_points: number[] = args.subset_points; // Indices of points to include
   const n_sub: number = subset_points.length;         // Number of points used for limit calculation
 
@@ -105,14 +105,14 @@ export default function pLimits(args: controlLimitsArgs): controlLimitsObject {
     rtn.targets[i] = cl;
 
     // Lower limits truncated at 0 (proportion cannot be negative)
-    rtn.ll99[i] = Math.max(0, cl - threeSigma); // LCL = max(0, p̄ - 3σ)
-    rtn.ll95[i] = Math.max(0, cl - twoSigma);   // 2σ lower limit
-    rtn.ll68[i] = Math.max(0, cl - sigma);      // 1σ lower limit
+    rtn.ll99![i] = Math.max(0, cl - threeSigma); // LCL = max(0, p̄ - 3σ)
+    rtn.ll95![i] = Math.max(0, cl - twoSigma);   // 2σ lower limit
+    rtn.ll68![i] = Math.max(0, cl - sigma);      // 1σ lower limit
 
     // Upper limits truncated at 1 (proportion cannot exceed 100%)
-    rtn.ul68[i] = Math.min(1, cl + sigma);      // 1σ upper limit
-    rtn.ul95[i] = Math.min(1, cl + twoSigma);   // 2σ upper limit
-    rtn.ul99[i] = Math.min(1, cl + threeSigma); // UCL = min(1, p̄ + 3σ)
+    rtn.ul68![i] = Math.min(1, cl + sigma);      // 1σ upper limit
+    rtn.ul95![i] = Math.min(1, cl + twoSigma);   // 2σ upper limit
+    rtn.ul99![i] = Math.min(1, cl + threeSigma); // UCL = min(1, p̄ + 3σ)
   }
 
   return rtn;

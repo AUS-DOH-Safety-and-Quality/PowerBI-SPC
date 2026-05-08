@@ -62,9 +62,9 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  */
 export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject {
   // Extract input arrays from arguments
-  const count_per_group: number[] = args.denominators;  // Sample size of each subgroup
+  const count_per_group: number[] = args.denominators!;  // Sample size of each subgroup
   const group_means: number[] = args.numerators;        // Mean of each subgroup
-  const group_sd: number[] = args.xbar_sds;             // Standard deviation of each subgroup
+  const group_sd: number[] = args.xbar_sds!;             // Standard deviation of each subgroup
   const n_sub: number = args.subset_points.length;      // Number of points used for limit calculation
   const subset_points: number[] = args.subset_points;   // Indices of points to use
 
@@ -127,12 +127,12 @@ export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject
     const A3_sd_div_3: number = (A3_sd / 3);
 
     rtn.targets[i] = cl;                      // Centreline (grand mean)
-    rtn.ll99[i] = cl - A3_sd;                 // Lower 3-sigma limit
-    rtn.ll95[i] = cl - A3_sd_div_3 * 2;       // Lower 2-sigma limit
-    rtn.ll68[i] = cl - A3_sd_div_3;           // Lower 1-sigma limit
-    rtn.ul68[i] = cl + A3_sd_div_3;           // Upper 1-sigma limit
-    rtn.ul95[i] = cl + A3_sd_div_3 * 2;       // Upper 2-sigma limit
-    rtn.ul99[i] = cl + A3_sd;                 // Upper 3-sigma limit
+    rtn.ll99![i] = cl - A3_sd;                 // Lower 3-sigma limit
+    rtn.ll95![i] = cl - A3_sd_div_3 * 2;       // Lower 2-sigma limit
+    rtn.ll68![i] = cl - A3_sd_div_3;           // Lower 1-sigma limit
+    rtn.ul68![i] = cl + A3_sd_div_3;           // Upper 1-sigma limit
+    rtn.ul95![i] = cl + A3_sd_div_3 * 2;       // Upper 2-sigma limit
+    rtn.ul99![i] = cl + A3_sd;                 // Upper 3-sigma limit
   }
 
   return rtn;

@@ -1,4 +1,6 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import median from "../Functions/median";
 
 /**
  * Calculates control limits for an I-mR chart using the median instead of mean.
@@ -50,12 +52,12 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  */
 export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
-  const useRatio: boolean = (args.denominators && args.denominators.length > 0);
+  const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
 
   // Extract input arrays from arguments
   const n_sub: number = args.subset_points.length;          // Number of points used for limit calculation
   const numerators: readonly number[] = args.numerators;    // Raw values or numerators for ratios
-  const denominators: readonly number[] = args.denominators; // Denominators for ratio calculation
+  const denominators: readonly number[] = args.denominators ?? []; // Denominators for ratio calculation
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Extract subset values and store for median calculation
@@ -65,16 +67,8 @@ export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
                                 : numerators[subset_points[i]];
   }
 
-  // Calculate median (centreline) by sorting and finding middle value
-  let sorted_subset: number[] = ratio_subset.slice().sort((a, b) => a - b);
-  let cl: number;
-  if (n_sub % 2 === 0) {
-    // Even number of points: average of two middle values
-    cl = (sorted_subset[n_sub / 2 - 1] + sorted_subset[n_sub / 2]) / 2;
-  } else {
-    // Odd number of points: middle value
-    cl = sorted_subset[Math.floor(n_sub / 2)];
-  }
+  // Calculate median (centreline)
+  const cl: number = median(ratio_subset);
 
   // Calculate moving ranges: MR_i = |x_i - x_{i-1}|
   let consec_diff: number[] = new Array<number>(n_sub - 1);
@@ -127,6 +121,15 @@ export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
     ul99: new Array<number>(n)                             // Upper 3-sigma limit
   }
 
+  const twoSigma: number = 2 * sigma;
+  const threeSigma: number = 3 * sigma;
+  const ll99: number = cl - threeSigma;
+  const ll95: number = cl - twoSigma;
+  const ll68: number = cl - sigma;
+  const ul68: number = cl + sigma;
+  const ul95: number = cl + twoSigma;
+  const ul99: number = cl + threeSigma;
+
   // Calculate control limits for each point
   // I-mR chart has constant limits (same sigma for all points)
   for (let i = 0; i < n; i++) {
@@ -140,12 +143,12 @@ export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
     }
 
     rtn.targets[i] = cl;               // Centreline: x̃ (median)
-    rtn.ll99[i] = cl - 3 * sigma;      // LCL: x̃ - 3σ
-    rtn.ll95[i] = cl - 2 * sigma;      // 2σ lower limit: x̃ - 2σ
-    rtn.ll68[i] = cl - 1 * sigma;      // 1σ lower limit: x̃ - σ
-    rtn.ul68[i] = cl + 1 * sigma;      // 1σ upper limit: x̃ + σ
-    rtn.ul95[i] = cl + 2 * sigma;      // 2σ upper limit: x̃ + 2σ
-    rtn.ul99[i] = cl + 3 * sigma;      // UCL: x̃ + 3σ
+    rtn.ll99![i] = ll99;      // LCL: x̃ - 3σ
+    rtn.ll95![i] = ll95;      // 2σ lower limit: x̃ - 2σ
+    rtn.ll68![i] = ll68;      // 1σ lower limit: x̃ - σ
+    rtn.ul68![i] = ul68;      // 1σ upper limit: x̃ + σ
+    rtn.ul95![i] = ul95;      // 2σ upper limit: x̃ + 2σ
+    rtn.ul99![i] = ul99;      // UCL: x̃ + 3σ
   }
 
   return rtn;

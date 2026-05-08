@@ -79,17 +79,26 @@ export default function cLimits(args: controlLimitsArgs): controlLimitsObject {
     ul99: new Array<number>(n)     // Upper 3-sigma limit
   }
 
+  const twoSigma: number = 2 * sigma;
+  const threeSigma: number = 3 * sigma;
+  const ll99: number = Math.max(0, cl - threeSigma);
+  const ll95: number = Math.max(0, cl - twoSigma);
+  const ll68: number = Math.max(0, cl - sigma);
+  const ul68: number = cl + sigma;
+  const ul95: number = cl + twoSigma;
+  const ul99: number = cl + threeSigma;
+
   // Calculate control limits for each point
   // C-chart has constant limits (same sigma for all points)
   // Lower limits are truncated at 0 since counts cannot be negative
   for (let i = 0; i < n; i++) {
     rtn.targets[i] = cl;
-    rtn.ll99[i] = Math.max(0, cl - 3 * sigma); // LCL = max(0, c̄ - 3σ)
-    rtn.ll95[i] = Math.max(0, cl - 2 * sigma); // 2σ lower limit
-    rtn.ll68[i] = Math.max(0, cl - 1 * sigma); // 1σ lower limit
-    rtn.ul68[i] = cl + 1 * sigma;                          // 1σ upper limit
-    rtn.ul95[i] = cl + 2 * sigma;                          // 2σ upper limit
-    rtn.ul99[i] = cl + 3 * sigma;                          // UCL = c̄ + 3σ
+    rtn.ll99![i] = ll99; // LCL = max(0, c̄ - 3σ)
+    rtn.ll95![i] = ll95; // 2σ lower limit
+    rtn.ll68![i] = ll68; // 1σ lower limit
+    rtn.ul68![i] = ul68;                          // 1σ upper limit
+    rtn.ul95![i] = ul95;                          // 2σ upper limit
+    rtn.ul99![i] = ul99;                          // UCL = c̄ + 3σ
   }
 
   return rtn;
