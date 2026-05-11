@@ -13,28 +13,25 @@ import sum from "../Functions/sum";
  * @param highlight_series - If true, highlight all points in sequence; if false, only those outside 95% limits
  * @returns Array indicating outlier direction: "upper", "lower", or "none" for each point
  */
-export default function twoInThree(val: number[], ll95: number[], ul95: number[], highlight_series: boolean): string[] {
-  // Map each point to +1 (above upper), -1 (below lower), or 0 (within limits)
-  const outside95: number[] = val.map((d, i) => {
-    return d > ul95[i] ? 1 : (d < ll95[i] ? -1 : 0);
-  });
+export default function twoInThree(val: readonly number[], ll95: readonly number[], ul95: readonly number[], highlight_series: boolean): string[] {
+  const length: number = val.length;
+  let outside95: number[] = new Array<number>(length);
+  let two_in_three_detected: string[] = new Array<string>(length);
+  for (let i: number = 0; i < length; i++) {
+    // Map each point to +1 (above upper), -1 (below lower), or 0 (within limits)
+    outside95[i] = val[i] > ul95[i] ? 1 : (val[i] < ll95[i] ? -1 : 0);
 
-  // Calculate rolling sum of last 3 points (including current)
-  const lagged_sign_sum: number[] = outside95.map((_, i) => {
-    return sum(outside95.slice(Math.max(0, i - 2), i + 1));
-  })
+    // Calculate rolling sum of last 3 points (including current)
+    const lagged_sign_sum: number = sum(outside95.slice(Math.max(0, i - 2), i + 1));
 
-  // Detect when absolute sum >= 2 (2 or 3 points on same side)
-  const two_in_three_detected: string[] = lagged_sign_sum.map(d => {
-    if (Math.abs(d) >= 2) {
-      return d >= 2 ? "upper" : "lower";
+    // Detect when absolute sum >= 2 (2 or 3 points on same side)
+    if (Math.abs(lagged_sign_sum) >= 2) {
+      two_in_three_detected[i] = lagged_sign_sum >= 2 ? "upper" : "lower";
     } else {
-      return "none";
+      two_in_three_detected[i] = "none";
     }
-  })
 
-  // Backfill flags to the previous points in the sequence
-  for (let i: number = 0; i < two_in_three_detected.length; i++) {
+    // Backfill flags to the previous points in the sequence
     if (two_in_three_detected[i] !== "none") {
       for (let j: number = (i - 1); j >= (i - 2); j--) {
         // Only highlight points exceeding the 95% limits (unless requested)

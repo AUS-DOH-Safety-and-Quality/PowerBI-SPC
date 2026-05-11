@@ -11,25 +11,28 @@ export default function checkFlagDirection(outlierStatus: string, flagSettings: 
     return outlierStatus;
   }
 
-  const increaseDirectionMap: Record<string, string> = {
+  const increaseDirectionMap = {
     "upper" : "improvement",
     "lower" : "deterioration"
-  }
-  const decreaseDirectionMap: Record<string, string> = {
+  } as const;
+
+  const decreaseDirectionMap = {
     "lower" : "improvement",
     "upper" : "deterioration"
-  }
-  const neutralDirectionMap: Record<string, string> = {
+  } as const;
+
+  const neutralDirectionMap = {
     "lower" : "neutral_low",
     "upper" : "neutral_high"
-  }
-  const flagDirectionMap: Record<string, string> = {
-    "increase" : increaseDirectionMap[outlierStatus],
-    "decrease" : decreaseDirectionMap[outlierStatus],
-    "neutral"  : neutralDirectionMap[outlierStatus]
-  }
+  } as const;
 
-  const mappedFlag: string = flagDirectionMap[flagSettings.improvement_direction];
+  const flagDirectionMap = {
+    "increase" : increaseDirectionMap[outlierStatus as keyof typeof increaseDirectionMap],
+    "decrease" : decreaseDirectionMap[outlierStatus as keyof typeof decreaseDirectionMap],
+    "neutral"  : neutralDirectionMap[outlierStatus as keyof typeof neutralDirectionMap]
+  } as const;
+
+  const mappedFlag: string = flagDirectionMap[flagSettings.improvement_direction as keyof typeof flagDirectionMap];
 
   if (flagSettings.process_flag_type !== "both") {
     return mappedFlag === flagSettings.process_flag_type ? mappedFlag : "none";

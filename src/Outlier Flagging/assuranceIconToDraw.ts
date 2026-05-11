@@ -16,29 +16,29 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
  * @param derivedSettings - Derived settings including chart type properties
  * @returns Icon identifier: "consistentPass", "consistentFail", "inconsistent", or "none"
  */
-export default function assuranceIconToDraw(controlLimits: controlLimitsObject,
-                                            inputSettings: defaultSettingsType,
-                                            derivedSettings: derivedSettingsClass): string {
+export default function assuranceIconToDraw(controlLimits: Readonly<controlLimitsObject>,
+                                            inputSettings: Readonly<defaultSettingsType>,
+                                            derivedSettings: Readonly<derivedSettingsClass>): string {
   // Return "none" if chart type doesn't support control limits
   if (!(derivedSettings.chart_type_props.has_control_limits)) {
     return "none";
   }
   const imp_direction: string = inputSettings.outliers.improvement_direction;
-  const N: number = controlLimits.ll99.length - 1;
-  const alt_target: number = controlLimits?.alt_targets?.[N];
+  const N: number = controlLimits.ll99!.length - 1;
 
   // No assurance icon if no alternative target or neutral improvement direction
-  if (isNullOrUndefined(alt_target) || imp_direction === "neutral") {
+  if (isNullOrUndefined(controlLimits?.alt_targets) || imp_direction === "neutral") {
     return "none";
   }
 
+  const alt_target: number = controlLimits.alt_targets![N];
   const impDirectionIncrease: boolean = imp_direction === "increase";
 
   // Target is above upper 99% limit
-  if (alt_target > controlLimits.ul99[N]) {
+  if (alt_target > controlLimits.ul99![N]) {
     return impDirectionIncrease ? "consistentFail" : "consistentPass";
   // Target is below lower 99% limit
-  } else if (alt_target < controlLimits.ll99[N]) {
+  } else if (alt_target < controlLimits.ll99![N]) {
     return impDirectionIncrease ? "consistentPass" : "consistentFail";
   // Target is within control limits (inconsistent)
   } else {
