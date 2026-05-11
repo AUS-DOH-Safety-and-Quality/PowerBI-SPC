@@ -69,11 +69,11 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Extract input arrays from arguments
   const n_sub: number = args.subset_points.length;          // Number of points used for limit calculation
   const numerators: readonly number[] = args.numerators;    // Raw values or numerators for ratios
-  const denominators: readonly number[] = args.denominators ?? []; // Denominators for ratio calculation
+  const denominators: readonly number[] | undefined = args.denominators; // Denominators for ratio calculation
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Initialize with first value (for moving range calculation we need previous value)
-  let prevVal: number = useRatio ? numerators[subset_points[0]] / denominators[subset_points[0]]
+  let prevVal: number = useRatio ? numerators[subset_points[0]] / denominators![subset_points[0]]
                                  : numerators[subset_points[0]];
 
   // Accumulators for mean and average moving range
@@ -84,7 +84,7 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Calculate sum for mean and moving ranges: MR_i = |x_i - x_{i-1}|
   for (let i = 1; i < n_sub; i++) {
     // Get current value (raw or ratio)
-    let currVal: number = useRatio ? numerators[subset_points[i]] / denominators[subset_points[i]]
+    let currVal: number = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                    : numerators[subset_points[i]];
 
     // Calculate moving range (absolute difference from previous value)
@@ -153,9 +153,9 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   for (let i = 0; i < n; i++) {
     // Calculate the plotted value (raw or ratio)
     if (useRatio) {
-      rtn.values[i] = numerators[i] / denominators[i];  // Ratio: numerator/denominator
+      rtn.values[i] = numerators[i] / denominators![i];  // Ratio: numerator/denominator
       rtn.numerators![i] = numerators[i];                // Store original numerator
-      rtn.denominators![i] = denominators[i];            // Store original denominator
+      rtn.denominators![i] = denominators![i];            // Store original denominator
     } else {
       rtn.values[i] = numerators[i];                     // Raw value
     }

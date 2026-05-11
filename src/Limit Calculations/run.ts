@@ -38,13 +38,13 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): controlLim
   // Extract input arrays from arguments
   const n_sub: number = args.subset_points.length;          // Number of points used for median calculation
   const numerators: readonly number[] = args.numerators;    // Raw values or numerators for ratios
-  const denominators: readonly number[] = args.denominators ?? []; // Denominators for ratio calculation
+  const denominators: readonly number[] | undefined = args.denominators; // Denominators for ratio calculation
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Extract subset values and store for median calculation
   let ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
-    ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators[subset_points[i]]
+    ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                 : numerators[subset_points[i]];
   }
 
@@ -66,9 +66,9 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): controlLim
   for (let i = 0; i < n; i++) {
     // Calculate the plotted value (raw or ratio)
     if (useRatio) {
-      rtn.values[i] = numerators[i] / denominators[i];  // Ratio: numerator/denominator
+      rtn.values[i] = numerators[i] / denominators![i];  // Ratio: numerator/denominator
       rtn.numerators![i] = numerators[i];                // Store original numerator
-      rtn.denominators![i] = denominators[i];            // Store original denominator
+      rtn.denominators![i] = denominators![i];            // Store original denominator
     } else {
       rtn.values[i] = numerators[i];                     // Raw value
     }
