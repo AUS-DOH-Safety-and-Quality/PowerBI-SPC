@@ -8,7 +8,6 @@
     "eslint": "npx eslint .",
     "test": "karma start --browsers=ChromeHeadlessCI",
     "debug": "karma start --single-run=false --browsers=Chrome",
-    "bundle": "npx rollup --config rollup.config.js --configPlugin typescript",
     "docs": "typedoc"
   },
   "dependencies": {
