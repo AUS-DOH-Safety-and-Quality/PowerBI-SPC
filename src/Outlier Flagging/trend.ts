@@ -11,29 +11,26 @@ import sum from "../Functions/sum";
  * @param n - Number of consecutive trending points required to trigger detection
  * @returns Array indicating trend direction: "upper" (increasing), "lower" (decreasing), or "none"
  */
-export default function trend(val: number[], n: number): string[] {
-  // Calculate sign of change from previous point (+1 increasing, -1 decreasing, 0 no change)
-  const lagged_sign: number[] = val.map((d, i) => {
-    return (i == 0) ? i : Math.sign(d - val[i - 1]);
-  });
+export default function trend(val: readonly number[], n: number): string[] {
+  const length: number = val.length;
+  let lagged_sign: number[] = new Array<number>(length);
+  let trend_detected: string[] = new Array<string>(length);
+  for (let i: number = 0; i < length; i++) {
+    // Calculate sign of change from previous point (+1 increasing, -1 decreasing, 0 no change)
+    lagged_sign[i] = (i === 0) ? 0 : Math.sign(val[i] - val[i - 1]);
 
-  // Calculate rolling sum of signs (n-1 consecutive increases/decreases = sum of n-1)
-  const lagged_sign_sum: number[] = lagged_sign.map((_, i) => {
-    return sum(lagged_sign.slice(Math.max(0, i - (n - 2)), i + 1));
-  })
+    // Calculate rolling sum of signs (n-1 consecutive increases/decreases = sum of n-1)
+    const lagged_sign_sum: number = sum(lagged_sign.slice(Math.max(0, i - (n - 2)), i + 1));
 
-  // Detect when all n-1 changes are in the same direction
-  const trend_detected: string[] = lagged_sign_sum.map(d => {
-    if (Math.abs(d) >= (n - 1)) {
-      return d >= (n - 1) ? "upper" : "lower";
+    // Detect when all n-1 changes are in the same direction
+    if (Math.abs(lagged_sign_sum) >= (n - 1)) {
+      trend_detected[i] = lagged_sign_sum >= (n - 1) ? "upper" : "lower";
     } else {
-      return "none";
+      trend_detected[i] = "none";
     }
-  })
 
-  // Backfill flags to all previous points in the trend sequence
-  for (let i: number = 0; i < trend_detected.length; i++) {
     if (trend_detected[i] !== "none") {
+      // Backfill flags to all previous points in the trend sequence
       for (let j: number = (i - 1); j >= (i - (n - 1)); j--) {
         trend_detected[j] = trend_detected[i];
       }

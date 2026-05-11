@@ -12,13 +12,17 @@ import between from "../Functions/between"
  * @param ul99 - Array of upper 99% control limits
  * @returns Array indicating outlier direction: "upper", "lower", or "none" for each point
  */
-export default function astronomical(val: number[], ll99: number[], ul99: number[]): string[] {
-  return val.map((d, i) => {
+export default function astronomical(val: readonly number[], ll99: readonly number[], ul99: readonly number[]): string[] {
+  const n: number = val.length;
+  let rtn: string[] = new Array<string>(n);
+
+  for (let i = 0; i < n; i++) {
     // Check if point is outside 99% control limits
-    if (!between(d, ll99[i], ul99[i])) {
-      return d > ul99[i] ? "upper" : "lower";
+    if (!between(val[i], ll99[i], ul99[i])) {
+      rtn[i] = val[i] > ul99[i] ? "upper" : "lower";
     } else {
-      return "none";
+      rtn[i] = "none";
     }
-  });
+  }
+  return rtn;
 }
