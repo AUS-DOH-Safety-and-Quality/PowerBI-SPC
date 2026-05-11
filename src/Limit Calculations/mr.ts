@@ -40,7 +40,7 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
  *   - ll99/ll95/ll68: Lower limits (all zero, as moving ranges cannot be negative)
  *   - ul68/ul95/ul99: Upper 1σ, 2σ, and 3σ control limits
  */
-export default function mrLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function mrLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
  const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
 
@@ -91,14 +91,12 @@ export default function mrLimits(args: controlLimitsArgs): controlLimitsObject {
     ul99: new Array<number>(n_mr)                               // Upper 3σ limit
   }
 
-
   const sigma: number = 3.267 / 3;
   const twoSigma: number = 2 * sigma;
   const threeSigma: number = 3 * sigma;
   const ul68: number = cl * sigma;
   const ul95: number = cl * twoSigma;
   const ul99: number = cl * threeSigma;
-
 
   // Populate arrays with moving ranges and control limits
   // Moving ranges cannot be negative, so lower limits are always 0

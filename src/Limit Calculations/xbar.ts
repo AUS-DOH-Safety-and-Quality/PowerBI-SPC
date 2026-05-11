@@ -60,13 +60,13 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/Xbar_and_s_chart} for X-bar and S chart theory
  */
-export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
-  const count_per_group: number[] = args.denominators!;  // Sample size of each subgroup
-  const group_means: number[] = args.numerators;        // Mean of each subgroup
-  const group_sd: number[] = args.xbar_sds!;             // Standard deviation of each subgroup
+  const count_per_group: readonly number[] = args.denominators!;  // Sample size of each subgroup
+  const group_means: readonly number[] = args.numerators;        // Mean of each subgroup
+  const group_sd: readonly number[] = args.xbar_sds!;             // Standard deviation of each subgroup
   const n_sub: number = args.subset_points.length;      // Number of points used for limit calculation
-  const subset_points: number[] = args.subset_points;   // Indices of points to use
+  const subset_points: readonly number[] = args.subset_points;   // Indices of points to use
 
   // Accumulators for pooled variance and grand mean calculations
   let Nm1_sum: number = 0;           // Sum of degrees of freedom (n-1) across subgroups
@@ -102,7 +102,7 @@ export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject
   // Initialize the return object with arrays for all limit lines
   let rtn: controlLimitsObject = {
     keys: args.keys,
-    values: group_means,           // The plotted values (subgroup means)
+    values: args.numerators,           // The plotted values (subgroup means)
     targets: new Array<number>(n), // Centreline (grand mean)
     ll99: new Array<number>(n),    // Lower 3-sigma limit
     ll95: new Array<number>(n),    // Lower 2-sigma limit
@@ -110,7 +110,7 @@ export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject
     ul68: new Array<number>(n),    // Upper 1-sigma limit
     ul95: new Array<number>(n),    // Upper 2-sigma limit
     ul99: new Array<number>(n),    // Upper 3-sigma limit
-    count: count_per_group         // Sample sizes for reference
+    count: args.denominators!         // Sample sizes for reference
   }
 
   // Calculate control limits for each point
@@ -121,18 +121,17 @@ export default function xbarLimits(args: controlLimitsArgs): controlLimitsObject
     // A3 accounts for: (1) converting SD to standard error (÷sqrt(n))
     //                  (2) bias correction via c4
     //                  (3) 3-sigma multiplier
-    const A3_sd: number = a3(count_per_group[i]) * sd;
-
-    // Divide by 3 to get 1-sigma distance, then multiply for different limit levels
-    const A3_sd_div_3: number = (A3_sd / 3);
+    const sigma: number = (a3(count_per_group[i]) * sd) / 3;
+    const twoSigma: number = sigma * 2;
+    const threeSigma: number = sigma * 3;
 
     rtn.targets[i] = cl;                      // Centreline (grand mean)
-    rtn.ll99![i] = cl - A3_sd;                 // Lower 3-sigma limit
-    rtn.ll95![i] = cl - A3_sd_div_3 * 2;       // Lower 2-sigma limit
-    rtn.ll68![i] = cl - A3_sd_div_3;           // Lower 1-sigma limit
-    rtn.ul68![i] = cl + A3_sd_div_3;           // Upper 1-sigma limit
-    rtn.ul95![i] = cl + A3_sd_div_3 * 2;       // Upper 2-sigma limit
-    rtn.ul99![i] = cl + A3_sd;                 // Upper 3-sigma limit
+    rtn.ll99![i] = cl - threeSigma;                 // Lower 3-sigma limit
+    rtn.ll95![i] = cl - twoSigma;       // Lower 2-sigma limit
+    rtn.ll68![i] = cl - sigma;           // Lower 1-sigma limit
+    rtn.ul68![i] = cl + sigma;           // Upper 1-sigma limit
+    rtn.ul95![i] = cl + twoSigma;       // Upper 2-sigma limit
+    rtn.ul99![i] = cl + threeSigma;                 // Upper 3-sigma limit
   }
 
   return rtn;

@@ -102,7 +102,7 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
 
   // Calculate sigma from median moving range: σ = MMR / d2
   // d2 = 1.128 is the expected value of the range for sample size n=2
-  const sigma = mmr / 1.128;
+  const sigma: number = mmr / 1.128;
 
   const n: number = args.keys.length; // Total number of data points
 

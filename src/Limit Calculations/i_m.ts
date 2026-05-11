@@ -50,7 +50,7 @@ import median from "../Functions/median";
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits
  *   - ll68/ul68: Lower/Upper 1-sigma limits
  */
-export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function imLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
   const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
 
@@ -102,7 +102,7 @@ export default function imLimits(args: controlLimitsArgs): controlLimitsObject {
 
   // Calculate sigma from average moving range: σ = AMR / d2
   // d2 = 1.128 is the expected value of the range for sample size n=2
-  const sigma = amr / 1.128;
+  const sigma: number = amr / 1.128;
 
   const n: number = args.keys.length; // Total number of data points
 

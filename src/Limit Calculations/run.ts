@@ -31,7 +31,7 @@ import median from "../Functions/median";
  *   - numerators/denominators: The original values if using ratios
  *   - targets: The centreline (median) for each point
  */
-export default function runLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function runLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
   const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
 

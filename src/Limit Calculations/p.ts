@@ -51,10 +51,10 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/P-chart} for P-chart theory
  */
-export default function pLimits(args: controlLimitsArgs): controlLimitsObject {
-  const numerators: number[] = args.numerators;       // Number of defectives in each sample
-  const denominators: number[] = args.denominators!;   // Sample size for each subgroup
-  const subset_points: number[] = args.subset_points; // Indices of points to include
+export default function pLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+  const numerators: readonly number[] = args.numerators;       // Number of defectives in each sample
+  const denominators: readonly number[] = args.denominators!;   // Sample size for each subgroup
+  const subset_points: readonly number[] = args.subset_points; // Indices of points to include
   const n_sub: number = subset_points.length;         // Number of points used for limit calculation
 
   // Accumulators for calculating overall proportion

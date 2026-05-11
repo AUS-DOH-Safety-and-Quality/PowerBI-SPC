@@ -40,7 +40,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits (lower limits truncated at 0)
  *   - ll68/ul68: Lower/Upper 1-sigma limits (lower limits truncated at 0)
  */
-export default function tLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function tLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   const n: number = args.keys.length;
 
   // Transform data: y = x^(1/3.6)
@@ -50,7 +50,7 @@ export default function tLimits(args: controlLimitsArgs): controlLimitsObject {
   }
 
   // Create a copy of args with transformed data and no denominators
-  const inputArgsCopy: controlLimitsArgs = {
+  const inputArgsCopy: Readonly<controlLimitsArgs> = {
     numerators: val,
     keys: args.keys,
     subset_points: args.subset_points,
@@ -60,21 +60,35 @@ export default function tLimits(args: controlLimitsArgs): controlLimitsObject {
   // Calculate I-chart limits on transformed data
   const limits: controlLimitsObject = iLimits(inputArgsCopy);
 
-  // Back-transform all values and limits using power of 3.6
-  for (let i = 0; i < n; i++) {
-    limits.targets[i] = Math.pow(limits.targets[i], 3.6);
-    limits.values[i] = Math.pow(limits.values[i], 3.6);
+  // Limits & target are constant for i-chart, so only extract and back-transform once
+  const cl: number = Math.pow(limits.targets[0], 3.6);
+  const ll99: number = Math.max(0, Math.pow(limits.ll99![0], 3.6));
+  const ll95: number = Math.max(0, Math.pow(limits.ll95![0], 3.6));
+  const ll68: number = Math.max(0, Math.pow(limits.ll68![0], 3.6));
+  const ul68: number = Math.pow(limits.ul68![0], 3.6);
+  const ul95: number = Math.pow(limits.ul95![0], 3.6);
+  const ul99: number = Math.pow(limits.ul99![0], 3.6);
 
-    // Back-transform lower limits and truncate at 0 (time cannot be negative)
-    limits.ll99![i] = Math.max(0, Math.pow(limits.ll99![i], 3.6));
-    limits.ll95![i] = Math.max(0, Math.pow(limits.ll95![i], 3.6));
-    limits.ll68![i] = Math.max(0, Math.pow(limits.ll68![i], 3.6));
-
-    // Back-transform upper limits (no truncation needed)
-    limits.ul68![i] = Math.pow(limits.ul68![i], 3.6);
-    limits.ul95![i] = Math.pow(limits.ul95![i], 3.6);
-    limits.ul99![i] = Math.pow(limits.ul99![i], 3.6);
+  let rtn: controlLimitsObject = {
+    keys: args.keys,
+    values: args.numerators,                          // The plotted values
+    targets: new Array<number>(n),                         // Centreline (mean)
+    ll99: new Array<number>(n),                            // Lower 3-sigma limit
+    ll95: new Array<number>(n),                            // Lower 2-sigma limit
+    ll68: new Array<number>(n),                            // Lower 1-sigma limit
+    ul68: new Array<number>(n),                            // Upper 1-sigma limit
+    ul95: new Array<number>(n),                            // Upper 2-sigma limit
+    ul99: new Array<number>(n)                             // Upper 3-sigma limit
   }
 
-  return limits;
+  for (let i = 0; i < n; i++) {
+    rtn.targets[i] = cl;               // Centreline: x̄
+    rtn.ll99![i] = ll99;      // LCL: x̃ - 3σ
+    rtn.ll95![i] = ll95;      // 2σ lower limit: x̃ - 2σ
+    rtn.ll68![i] = ll68;      // 1σ lower limit: x̃ - σ
+    rtn.ul68![i] = ul68;      // 1σ upper limit: x̃ + σ
+    rtn.ul95![i] = ul95;      // 2σ upper limit: x̃ + 2σ
+    rtn.ul99![i] = ul99;      // UCL: x̃ + 3σ
+  }
+  return rtn;
 }

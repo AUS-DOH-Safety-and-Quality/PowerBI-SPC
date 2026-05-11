@@ -53,10 +53,10 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/Xbar_and_s_chart} for S-chart theory
  */
-export default function sLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
-  const group_sd: number[] = args.numerators;       // Standard deviation of each subgroup
-  const count_per_group: number[] = args.denominators!; // Sample size of each subgroup
+  const group_sd: readonly number[] = args.numerators;       // Standard deviation of each subgroup
+  const count_per_group: readonly number[] = args.denominators!; // Sample size of each subgroup
   const n_sub: number = args.subset_points.length;  // Number of points used for limit calculation
 
   // Accumulators for pooled variance calculation
@@ -83,7 +83,7 @@ export default function sLimits(args: controlLimitsArgs): controlLimitsObject {
   // Initialize the return object with arrays for all limit lines
   let rtn: controlLimitsObject = {
     keys: args.keys,
-    values: group_sd,              // The plotted values (subgroup SDs)
+    values: args.numerators,              // The plotted values (subgroup SDs)
     targets: new Array<number>(n), // Centreline (pooled SD)
     ll99: new Array<number>(n),    // Lower 3-sigma limit
     ll95: new Array<number>(n),    // Lower 2-sigma limit

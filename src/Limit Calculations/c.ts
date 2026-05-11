@@ -46,10 +46,10 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/C-chart} for C-chart theory
  */
-export default function cLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function cLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   const n_sub: number = args.subset_points.length;  // Number of points used for limit calculation
-  const numerators: number[] = args.numerators;     // Count values for each sample
-  const subset_points: number[] = args.subset_points; // Indices of points to include
+  const numerators: readonly number[] = args.numerators;     // Count values for each sample
+  const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Calculate the sum of counts for subset points to compute the centreline
   let cl: number = 0;

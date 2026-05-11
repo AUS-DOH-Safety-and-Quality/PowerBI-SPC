@@ -62,7 +62,7 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
  *
  * @see {@link https://en.wikipedia.org/wiki/X-bar_and_R_chart} for individuals chart theory
  */
-export default function iLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
   const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
 
@@ -120,7 +120,7 @@ export default function iLimits(args: controlLimitsArgs): controlLimitsObject {
 
   // Calculate sigma from average moving range: σ = AMR / d2
   // d2 = 1.128 is the expected value of the range for sample size n=2
-  const sigma = amr / 1.128;
+  const sigma: number = amr / 1.128;
 
   const n: number = args.keys.length; // Total number of data points
 

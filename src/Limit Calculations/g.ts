@@ -53,10 +53,10 @@ import median from "../Functions/median";
  *
  * @see {@link https://en.wikipedia.org/wiki/G-chart} for G-chart theory
  */
-export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
-  const numerators: number[] = args.numerators;         // Counts (opportunities between events)
-  const subset_points: number[] = args.subset_points;   // Indices of points to include
+  const numerators: readonly number[] = args.numerators;         // Counts (opportunities between events)
+  const subset_points: readonly number[] = args.subset_points;   // Indices of points to include
   const n_sub: number = subset_points.length;           // Number of points used for limit calculation
 
   // Array to store subset values for median calculation

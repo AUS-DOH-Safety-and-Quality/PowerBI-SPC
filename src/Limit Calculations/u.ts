@@ -44,7 +44,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits (lower limits truncated at 0)
  *   - ll68/ul68: Lower/Upper 1-sigma limits (lower limits truncated at 0)
  */
-export default function uLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function uLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
   const n: number = args.keys.length;                       // Total number of data points
   const numerators: readonly number[] = args.numerators;    // Nonconformity counts

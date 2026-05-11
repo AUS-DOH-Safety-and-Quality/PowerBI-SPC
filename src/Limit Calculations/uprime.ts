@@ -49,19 +49,13 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits (lower limits truncated at 0)
  *   - ll68/ul68: Lower/Upper 1-sigma limits (lower limits truncated at 0)
  */
-export default function uprimeLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function uprimeLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
   const n: number = args.keys.length;                       // Total number of data points
   const numerators: readonly number[] = args.numerators;    // Nonconformity counts
   const denominators: readonly number[] = args.denominators!; // Sample sizes
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
   const n_sub: number = subset_points.length;               // Number of subset points
-
-  // Calculate values (rates) for all points
-  let val: number[] = new Array<number>(n);
-  for (let i = 0; i < n; i++) {
-    val[i] = numerators[i] / denominators[i];
-  }
 
   // Calculate centreline: overall rate = total nonconformities / total units (from subset)
   let sum_numerators: number = 0;
@@ -75,23 +69,23 @@ export default function uprimeLimits(args: controlLimitsArgs): controlLimitsObje
 
   // Calculate standard deviations for each point (based on Poisson assumption)
   let sd: number[] = new Array<number>(n);
+  // Calculate values (rates) for all points
+  let val: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
+    val[i] = numerators[i] / denominators[i];
     sd[i] = Math.sqrt(cl / denominators[i]);
   }
 
   // Calculate z-scores for subset points: z = (u - ū) / σ
-  let zscore: number[] = new Array<number>(n_sub);
-  for (let i = 0; i < n_sub; i++) {
-    let idx = subset_points[i];
-    zscore[i] = (val[idx] - cl) / sd[idx];
-  }
-
   // Calculate moving ranges of z-scores: MR_i = |z_i - z_{i-1}|
   let consec_diff: number[] = new Array<number>(n_sub - 1);
   let amr: number = 0;  // Running sum for average moving range
+  let prevZ: number = (val[subset_points[0]] - cl) / sd[subset_points[0]];
   for (let i = 1; i < n_sub; i++) {
-    consec_diff[i - 1] = Math.abs(zscore[i] - zscore[i - 1]);
+    let currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]]
+    consec_diff[i - 1] = Math.abs(currZ - prevZ);
     amr += consec_diff[i - 1];
+    prevZ = currZ;
   }
 
   // Calculate initial average moving range: AMR = Σ|z_i - z_{i-1}| / (n-1)
