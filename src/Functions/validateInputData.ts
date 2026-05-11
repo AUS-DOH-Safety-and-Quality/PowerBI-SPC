@@ -16,7 +16,8 @@ const enum ValidationFailTypes {
   SDNegative = 9,
   NumeratorNaN = 10,
   DenominatorNaN = 11,
-  SDNaN = 12
+  SDNaN = 12,
+  DenominatorLessThanOne = 13
 }
 
 function validateInputDataImpl(key: string,
@@ -60,6 +61,9 @@ function validateInputDataImpl(key: string,
     } else if (chart_type_props.numerator_leq_denominator && denominator < numerator) {
       rtn.message = "Denominator < numerator";
       rtn.type = ValidationFailTypes.DenominatorLessThanNumerator;
+    } else if (chart_type_props.denominator_gt_one && denominator <= 1) {
+      rtn.message = "Denominator <= 1"
+      rtn.type = ValidationFailTypes.DenominatorLessThanOne
     }
   }
 
@@ -165,6 +169,10 @@ export default function validateInputData(keys: string[],
       }
       case ValidationFailTypes.SDNegative: {
         validationRtn.error = "All SDs are negative!";
+        break;
+      }
+      case ValidationFailTypes.DenominatorLessThanOne: {
+        validationRtn.error = "All denominators are less than or equal to one!";
         break;
       }
     }

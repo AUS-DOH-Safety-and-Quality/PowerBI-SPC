@@ -31,7 +31,8 @@ export default class derivedSettingsClass {
     integer_num_den: boolean,
     value_name: string,
     x_axis_use_date: boolean,
-    date_name: string
+    date_name: string,
+    denominator_gt_one: boolean
   }
 
   update(inputSettingsSpc: defaultSettingsType["spc"]) {
@@ -66,7 +67,8 @@ export default class derivedSettingsClass {
       integer_num_den: ["c", "p", "pp"].includes(chartType),
       value_name: valueNames[chartType],
       x_axis_use_date: !(["g", "t"].includes(chartType)),
-      date_name: !(["g", "t"].includes(chartType)) ? "Date" : "Event"
+      date_name: !(["g", "t"].includes(chartType)) ? "Date" : "Event",
+      denominator_gt_one: ["xbar", "s"].includes(chartType)
     }
 
     this.multiplier = multiplier
