@@ -1,4 +1,4 @@
-import sum from "../Functions/sum";
+import sum from "../Functions/Math/sum";
 
 /**
  * Detects trend rule violations (n consecutive points consistently increasing or decreasing).

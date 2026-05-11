@@ -1,5 +1,5 @@
-import lgamma from "../Functions/lgamma";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import lgamma from "./lgamma";
+import isNullOrUndefined from "../isNullOrUndefined";
 
 /**
  * Calculates the c4 bias correction factor for sample standard deviation.
@@ -24,7 +24,7 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
  */
 export function c4(sampleSize: number): number {
   if ((sampleSize <= 1) || isNullOrUndefined(sampleSize)) {
-    return null;
+    throw new Error(`Invalid sample size: ${sampleSize}`);
   }
   const Nminus1: number = sampleSize - 1;
 
@@ -78,8 +78,10 @@ export function c5(sampleSize: number): number {
  * @see {@link https://en.wikipedia.org/wiki/Xbar_and_s_chart}
  */
 export function a3(sampleSize: number): number {
-  const filt_samp: number = sampleSize  <= 1 ? null : sampleSize;
-  return 3.0 / (c4(filt_samp) * Math.sqrt(filt_samp));
+  if ((sampleSize <= 1) || isNullOrUndefined(sampleSize)) {
+    throw new Error(`Invalid sample size: ${sampleSize}`);
+  }
+  return 3.0 / (c4(sampleSize) * Math.sqrt(sampleSize));
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import median from "../Functions/median";
+import median from "../Functions/Math/median";
 
 /**
  * Calculates control limits for a run chart (median-only chart with no control limits).

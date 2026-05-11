@@ -1,6 +1,6 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import min from "../Functions/min";
-import max from "../Functions/max";
+import min from "../Functions/Math/min";
+import max from "../Functions/Math/max";
 import type { dataObject } from "../Functions/extractInputData";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import isValidNumber from "../Functions/isValidNumber";

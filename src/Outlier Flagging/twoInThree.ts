@@ -1,4 +1,4 @@
-import sum from "../Functions/sum";
+import sum from "../Functions/Math/sum";
 
 /**
  * Detects two-in-three rule violations (2 out of 3 consecutive points outside 95% limits).

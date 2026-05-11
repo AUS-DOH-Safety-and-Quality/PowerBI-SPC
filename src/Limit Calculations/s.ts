@@ -1,4 +1,4 @@
-import { b3, b4 } from "../Functions/sampleConstants";
+import { b3, b4 } from "../Functions/Math/sampleConstants";
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**

@@ -1,4 +1,4 @@
-import sum from "../Functions/sum";
+import sum from "../Functions/Math/sum";
 
 /**
  * Detects shift rule violations (n consecutive points on same side of target/centerline).

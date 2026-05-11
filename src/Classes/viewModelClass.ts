@@ -17,7 +17,7 @@ import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataView from "../Functions/validateDataView";
 import valueFormatter from "../Functions/valueFormatter";
-import calculateTrendLine from "../Functions/calculateTrendLine";
+import calculateTrendLine from "../Functions/Math/calculateTrendLine";
 import groupBy from "../Functions/groupBy";
 import astronomical from "../Outlier Flagging/astronomical";
 import trend from "../Outlier Flagging/trend";
