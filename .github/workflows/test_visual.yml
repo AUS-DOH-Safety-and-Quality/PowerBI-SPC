@@ -44,20 +44,9 @@ jobs:
       run: |
         npm run test
 
-    - name: Build frontend bundle
-      run: |
-        npm run bundle
-
     - name: Attach built visual
       if: success()
       uses: actions/upload-artifact@v7
       with:
         name: powerbi-visual-${{ github.sha }}
         path: dist/*.pbiviz
-
-    - name: Attach built frontend bundle
-      if: success()
-      uses: actions/upload-artifact@v7
-      with:
-        name: frontend-bundle-${{ github.sha }}
-        path: .tmp/build/PBISPC.js
