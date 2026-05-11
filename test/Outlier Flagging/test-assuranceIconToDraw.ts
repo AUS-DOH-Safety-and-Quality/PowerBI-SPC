@@ -37,7 +37,8 @@ describe("assuranceIconToDraw", () => {
             integer_num_den: false,
             value_name: "test",
             x_axis_use_date: false,
-            date_name: "test"
+            date_name: "test",
+            denominator_gt_one: false
         };
         return derived;
     };
