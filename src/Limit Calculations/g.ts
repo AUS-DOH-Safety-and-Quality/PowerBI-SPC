@@ -1,4 +1,5 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import median from "../Functions/median";
 
 /**
  * Calculates control limits for a G-chart (Geometric chart).
@@ -52,10 +53,10 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/G-chart} for G-chart theory
  */
-export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
-  const numerators: number[] = args.numerators;         // Counts (opportunities between events)
-  const subset_points: number[] = args.subset_points;   // Indices of points to include
+  const numerators: readonly number[] = args.numerators;         // Counts (opportunities between events)
+  const subset_points: readonly number[] = args.subset_points;   // Indices of points to include
   const n_sub: number = subset_points.length;           // Number of points used for limit calculation
 
   // Array to store subset values for median calculation
@@ -66,24 +67,16 @@ export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
 
   // Calculate sum of counts for subset points and store values for median
   for (let i = 0; i < n_sub; i++) {
-    numerator_subset[i] = numerators[subset_points[i]];
-    cl += numerators[subset_points[i]];
+    const curr_numerator: number = numerators[subset_points[i]];
+    numerator_subset[i] = curr_numerator;
+    cl += curr_numerator;
   }
 
   // Calculate mean: ḡ = Σg / n
   cl /= n_sub;
 
-  // Calculate median for display as centreline (more robust to outliers)
-  // Sort the subset array and find the middle value
-  let sorted_subset: number[] = numerator_subset.slice().sort((a, b) => a - b);
-  let median_val: number;
-  if (n_sub % 2 === 0) {
-    // Even number of points: average of two middle values
-    median_val = (sorted_subset[n_sub / 2 - 1] + sorted_subset[n_sub / 2]) / 2;
-  } else {
-    // Odd number of points: middle value
-    median_val = sorted_subset[Math.floor(n_sub / 2)];
-  }
+  // Calculate median for display as centreline
+  const median_val: number = median(numerator_subset);
 
   // Calculate sigma using geometric distribution formula: σ = √(ḡ(ḡ + 1))
   // Derived from Var(G) = μ(μ + 1) for geometric distribution
@@ -104,17 +97,21 @@ export default function gLimits(args: controlLimitsArgs): controlLimitsObject {
     ul99: new Array<number>(n)         // Upper 3-sigma limit
   }
 
+  const ul68: number = cl + sigma;
+  const ul95: number = cl + 2 * sigma;
+  const ul99: number = cl + 3 * sigma;
+
   // Calculate control limits for each point
   // G-chart has constant limits (same sigma for all points)
   // Lower limits are 0 because counts cannot be negative
   for (let i = 0; i < n; i++) {
     rtn.targets[i] = median_val;        // Use median as centreline for display
-    rtn.ll68[i] = 0;                    // Lower limits all 0 (geometric lower bound)
-    rtn.ll95[i] = 0;
-    rtn.ll99[i] = 0;
-    rtn.ul68[i] = cl + 1 * sigma;       // 1σ upper limit: ḡ + σ
-    rtn.ul95[i] = cl + 2 * sigma;       // 2σ upper limit: ḡ + 2σ
-    rtn.ul99[i] = cl + 3 * sigma;       // UCL: ḡ + 3σ
+    rtn.ll68![i] = 0;                    // Lower limits all 0 (geometric lower bound)
+    rtn.ll95![i] = 0;
+    rtn.ll99![i] = 0;
+    rtn.ul68![i] = ul68;       // 1σ upper limit: ḡ + σ
+    rtn.ul95![i] = ul95;       // 2σ upper limit: ḡ + 2σ
+    rtn.ul99![i] = ul99;       // UCL: ḡ + 3σ
   }
 
   return rtn;

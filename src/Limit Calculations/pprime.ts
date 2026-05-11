@@ -49,19 +49,13 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits (truncated at 0 and 1)
  *   - ll68/ul68: Lower/Upper 1-sigma limits (truncated at 0 and 1)
  */
-export default function pprimeLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function pprimeLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Extract input arrays from arguments
   const n: number = args.keys.length;                       // Total number of data points
   const numerators: readonly number[] = args.numerators;    // Nonconforming unit counts
-  const denominators: readonly number[] = args.denominators; // Sample sizes
+  const denominators: readonly number[] = args.denominators!; // Sample sizes
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
   const n_sub: number = subset_points.length;               // Number of subset points
-
-  // Calculate values (proportions) for all points
-  let val: number[] = new Array<number>(n);
-  for (let i = 0; i < n; i++) {
-    val[i] = numerators[i] / denominators[i];
-  }
 
   // Calculate centreline: overall proportion = total nonconforming / total inspected (from subset)
   let sum_numerators: number = 0;
@@ -73,25 +67,28 @@ export default function pprimeLimits(args: controlLimitsArgs): controlLimitsObje
   }
   const cl: number = sum_numerators / sum_denominators;
 
+  // Pre-calculate p̄(1 - p̄) for sigma calculation
+  // This is the numerator of the variance formula for binomial proportion
+  const cl_mult: number = cl * (1 - cl);
+
+  // Calculate values (proportions) for all points
   // Calculate standard deviations for each point (based on binomial assumption)
+  let val: number[] = new Array<number>(n);
   let sd: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
-    sd[i] = Math.sqrt((cl * (1 - cl)) / denominators[i]);
-  }
-
-  // Calculate z-scores for subset points: z = (p - p̄) / σ
-  let zscore: number[] = new Array<number>(n_sub);
-  for (let i = 0; i < n_sub; i++) {
-    let idx = subset_points[i];
-    zscore[i] = (val[idx] - cl) / sd[idx];
+    val[i] = numerators[i] / denominators[i];
+    sd[i] = Math.sqrt(cl_mult / denominators[i]);
   }
 
   // Calculate moving ranges of z-scores: MR_i = |z_i - z_{i-1}|
   let consec_diff: number[] = new Array<number>(n_sub - 1);
   let amr: number = 0;  // Running sum for average moving range
+  let prevZ: number = (val[subset_points[0]] - cl) / sd[subset_points[0]];
   for (let i = 1; i < n_sub; i++) {
-    consec_diff[i - 1] = Math.abs(zscore[i] - zscore[i - 1]);
+    let currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]]
+    consec_diff[i - 1] = Math.abs(currZ - prevZ);
     amr += consec_diff[i - 1];
+    prevZ = currZ;
   }
 
   // Calculate initial average moving range: AMR = Σ|z_i - z_{i-1}| / (n-1)
@@ -139,14 +136,16 @@ export default function pprimeLimits(args: controlLimitsArgs): controlLimitsObje
   for (let i = 0; i < n; i++) {
     // Calculate sigma for this sample: σ = base_sd × (MR / d2)
     const sigma: number = sd[i] * sigma_multiplier;
+    const twoSigma: number = 2 * sigma;
+    const threeSigma: number = 3 * sigma;
 
     rtn.targets[i] = cl;                                   // Centreline: p̄
-    rtn.ll99[i] = Math.max(0, cl - 3 * sigma);             // LCL: max(0, p̄ - 3σ)
-    rtn.ll95[i] = Math.max(0, cl - 2 * sigma);             // 2σ lower: max(0, p̄ - 2σ)
-    rtn.ll68[i] = Math.max(0, cl - 1 * sigma);             // 1σ lower: max(0, p̄ - σ)
-    rtn.ul68[i] = Math.min(1, cl + 1 * sigma);             // 1σ upper: min(1, p̄ + σ)
-    rtn.ul95[i] = Math.min(1, cl + 2 * sigma);             // 2σ upper: min(1, p̄ + 2σ)
-    rtn.ul99[i] = Math.min(1, cl + 3 * sigma);             // UCL: min(1, p̄ + 3σ)
+    rtn.ll99![i] = Math.max(0, cl - threeSigma);             // LCL: max(0, p̄ - 3σ)
+    rtn.ll95![i] = Math.max(0, cl - twoSigma);             // 2σ lower: max(0, p̄ - 2σ)
+    rtn.ll68![i] = Math.max(0, cl - sigma);             // 1σ lower: max(0, p̄ - σ)
+    rtn.ul68![i] = Math.min(1, cl + sigma);             // 1σ upper: min(1, p̄ + σ)
+    rtn.ul95![i] = Math.min(1, cl + twoSigma);             // 2σ upper: min(1, p̄ + 2σ)
+    rtn.ul99![i] = Math.min(1, cl + threeSigma);             // UCL: min(1, p̄ + 3σ)
   }
 
   return rtn;

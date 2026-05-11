@@ -1,4 +1,6 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import median from "../Functions/median";
 
 /**
  * Calculates control limits for a run chart (median-only chart with no control limits).
@@ -29,33 +31,25 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - numerators/denominators: The original values if using ratios
  *   - targets: The centreline (median) for each point
  */
-export default function runLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function runLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
-  const useRatio: boolean = (args.denominators && args.denominators.length > 0);
+  const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
 
   // Extract input arrays from arguments
   const n_sub: number = args.subset_points.length;          // Number of points used for median calculation
   const numerators: readonly number[] = args.numerators;    // Raw values or numerators for ratios
-  const denominators: readonly number[] = args.denominators; // Denominators for ratio calculation
+  const denominators: readonly number[] | undefined = args.denominators; // Denominators for ratio calculation
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Extract subset values and store for median calculation
   let ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
-    ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators[subset_points[i]]
+    ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                 : numerators[subset_points[i]];
   }
 
-  // Calculate median (centreline) by sorting and finding middle value
-  let sorted_subset: number[] = ratio_subset.slice().sort((a, b) => a - b);
-  let cl: number;
-  if (n_sub % 2 === 0) {
-    // Even number of points: average of two middle values
-    cl = (sorted_subset[n_sub / 2 - 1] + sorted_subset[n_sub / 2]) / 2;
-  } else {
-    // Odd number of points: middle value
-    cl = sorted_subset[Math.floor(n_sub / 2)];
-  }
+  // Calculate median (centreline)
+  const cl: number = median(ratio_subset);
 
   const n: number = args.keys.length; // Total number of data points
 
@@ -72,9 +66,9 @@ export default function runLimits(args: controlLimitsArgs): controlLimitsObject 
   for (let i = 0; i < n; i++) {
     // Calculate the plotted value (raw or ratio)
     if (useRatio) {
-      rtn.values[i] = numerators[i] / denominators[i];  // Ratio: numerator/denominator
+      rtn.values[i] = numerators[i] / denominators![i];  // Ratio: numerator/denominator
       rtn.numerators![i] = numerators[i];                // Store original numerator
-      rtn.denominators![i] = denominators[i];            // Store original denominator
+      rtn.denominators![i] = denominators![i];            // Store original denominator
     } else {
       rtn.values[i] = numerators[i];                     // Raw value
     }

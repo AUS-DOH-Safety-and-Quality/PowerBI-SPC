@@ -132,7 +132,7 @@ export type controlLimitsArgs = {
   denominators?: number[];
   xbar_sds?: number[];
   outliers_in_limits?: boolean;
-  subset_points?: number[];
+  subset_points: number[];
 }
 
 export type outliersObject = {
