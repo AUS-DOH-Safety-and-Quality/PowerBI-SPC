@@ -194,6 +194,7 @@ export default class settingsClass {
         return [settingName, defaultSettings[settingGroupName][settingName]];
       }))];
     })) as defaultSettingsType];
+    console.log("init: ", this.settings);
     this.derivedSettings = [new derivedSettingsClass()];
   }
 }

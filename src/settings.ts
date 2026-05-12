@@ -228,7 +228,7 @@ const settingsModel = {
         num_points_subset: {
           displayName: "Subset Number of Points for Limit Calculations",
           type: FormattingComponent.NumUpDown,
-          default: <number>null
+          default: undefined
         },
         subset_points_from: {
           displayName: "Subset Points From",
@@ -283,12 +283,12 @@ const settingsModel = {
         ll_truncate: {
           displayName: "Truncate Lower Limits at:",
           type: FormattingComponent.NumUpDown,
-          default: <number>null
+          default: undefined
         },
         ul_truncate: {
           displayName: "Truncate Upper Limits at:",
           type: FormattingComponent.NumUpDown,
-          default: <number>null
+          default: undefined
         }
       }
     }
@@ -832,7 +832,7 @@ const settingsModel = {
         alt_target: {
           displayName: "Additional Target Value:",
           type: FormattingComponent.NumUpDown,
-          default: <number>null
+          default: undefined
         },
         multiplier_alt_target: {
           displayName: "Apply Multiplier to Alt. Target",
@@ -1338,12 +1338,12 @@ const settingsModel = {
         specification_upper: {
           displayName: "Upper Specification Limit:",
           type: FormattingComponent.NumUpDown,
-          default: <number>null
+          default: undefined
         },
         specification_lower: {
           displayName: "Lower Specification Limit:",
           type: FormattingComponent.NumUpDown,
-          default: <number>null
+          default: undefined
         },
         multiplier_specification: {
           displayName: "Apply Multiplier to Specification Limits",
@@ -1606,12 +1606,12 @@ const settingsModel = {
         xlimit_l: {
           displayName: "Lower Limit",
           type: FormattingComponent.NumUpDown,
-          default:<number>null
+          default:undefined
         },
         xlimit_u: {
           displayName: "Upper Limit",
           type: FormattingComponent.NumUpDown,
-          default:<number>null
+          default:undefined
         }
       },
       "Ticks": {
@@ -1654,7 +1654,7 @@ const settingsModel = {
         xlimit_label: {
           displayName: "Label",
           type: FormattingComponent.TextInput,
-          default: <string>null
+          default: undefined
         },
         xlimit_label_font: {
           displayName: "Label Font",
@@ -1700,18 +1700,18 @@ const settingsModel = {
         ylimit_sig_figs: {
           displayName: "Tick Decimal Places",
           type: FormattingComponent.NumUpDown,
-          default:<number>null,
+          default:undefined,
           options: { minValue: { value: 0 }, maxValue: { value: 100 } }
         },
         ylimit_l: {
           displayName: "Lower Limit",
           type: FormattingComponent.NumUpDown,
-          default:<number>null
+          default:undefined
         },
         ylimit_u: {
           displayName: "Upper Limit",
           type: FormattingComponent.NumUpDown,
-          default:<number>null
+          default:undefined
         }
       },
       "Ticks": {
@@ -1754,7 +1754,7 @@ const settingsModel = {
         ylimit_label: {
           displayName: "Label",
           type: FormattingComponent.TextInput,
-          default: <string>null
+          default: undefined
         },
         ylimit_label_font: {
           displayName: "Label Font",
@@ -2281,6 +2281,23 @@ for (const key in settingsModel) {
 }
 
 const defaultSettings = Object.fromEntries(defaultSettingsArray) as defaultSettingsType;
+const settingsModelClone = JSON.parse(JSON.stringify(settingsModel));
+
+for (const key in settingsModelClone) {
+  for (const group in settingsModelClone[key].settingsGroups) {
+    for (const setting in settingsModelClone[key].settingsGroups[group]) {
+      Object.defineProperty(settingsModelClone[key], setting, {
+        get: function() {
+          return this.settingsGroups[group][setting]
+        }
+      });
+    }
+  }
+}
+
+console.log("Default Settings:", defaultSettings);
+console.log(settingsModelClone.canvas.show_errors);
+console.log(settingsModelClone.lines.plot_label_position_main);
 
 export { defaultSettings }
 export default settingsModel;

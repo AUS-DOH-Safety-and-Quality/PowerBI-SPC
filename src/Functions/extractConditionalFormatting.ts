@@ -53,14 +53,16 @@ export default function
         extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
 
         // New API has numeric min/max under 'options' member
-        const valid = defaultSettings[settingGroupName][settingName]?.["valid"] ?? defaultSettings[settingGroupName][settingName]?.["options"];
-        const isNumericRange: boolean = !isNullOrUndefined(valid?.minValue) || !isNullOrUndefined(valid?.maxValue)
-        if (valid) {
+        const validValues = defaultSettings[settingGroupName][settingName]?.["valid"] ?? defaultSettings[settingGroupName][settingName]?.["options"];
+        const isNumericRange: boolean = !isNullOrUndefined(validValues?.minValue) || !isNullOrUndefined(validValues?.maxValue)
+        const defaultUndefined: boolean = isNullOrUndefined(extractedSetting);
+
+        if (validValues && !defaultUndefined) {
           let message: string = "";
-          if (valid instanceof Array && !valid.includes(extractedSetting)) {
-            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`
-          } else if (isNumericRange && !between(extractedSetting, valid?.minValue?.value, valid?.maxValue?.value)) {
-            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid?.minValue?.value} and ${valid?.maxValue?.value}`
+          if (validValues instanceof Array && !validValues.includes(extractedSetting)) {
+            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${validValues.join(", ")}`
+          } else if (isNumericRange && !between(extractedSetting, validValues?.minValue?.value, validValues?.maxValue?.value)) {
+            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${validValues?.minValue?.value} and ${validValues?.maxValue?.value}`
           }
           if (message !== "") {
             extractedSetting = defaultSettings[settingGroupName][settingName]["default"];
