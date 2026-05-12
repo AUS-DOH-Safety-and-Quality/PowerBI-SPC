@@ -1,5 +1,5 @@
 import * as d3 from "./D3 Modules";
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../Classes/settingsClass";
 import type { lineData } from "../Classes/viewModelClass";
 import getAesthetic from "../Functions/getAesthetic";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
@@ -53,10 +53,10 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
           .attr("stroke", (d: lineData) => {
             return visualObj.viewModel.colourPalette.isHighContrast
                     ? visualObj.viewModel.colourPalette.foregroundColour
-                    : getAesthetic(currLine, "lines", "colour", { lines: d.aesthetics } as defaultSettingsType)
+                    : getAesthetic(currLine, "lines", "colour", { lines: d.aesthetics } as settingsValueType)
           })
-          .attr("stroke-width", (d: lineData) => getAesthetic(currLine, "lines", "width", { lines: d.aesthetics } as defaultSettingsType))
-          .attr("stroke-dasharray", (d: lineData) => getAesthetic(currLine, "lines", "type", { lines: d.aesthetics } as defaultSettingsType))
+          .attr("stroke-width", (d: lineData) => getAesthetic(currLine, "lines", "width", { lines: d.aesthetics } as settingsValueType))
+          .attr("stroke-dasharray", (d: lineData) => getAesthetic(currLine, "lines", "type", { lines: d.aesthetics } as settingsValueType))
           .attr("stroke-dashoffset", (_, idx: number) => {
               const prev_x: number = visualObj.plotProperties.xScale(currLineData[0].x);
               const curr_x: number = visualObj.plotProperties.xScale(currLineData[idx].x);

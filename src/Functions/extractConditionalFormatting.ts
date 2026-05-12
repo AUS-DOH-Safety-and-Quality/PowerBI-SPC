@@ -3,38 +3,37 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
-import type { defaultSettingsType, defaultSettingsKeys } from "../Classes/settingsClass";
-import { defaultSettings } from "../settings";
+import type { settingsValueType, defaultSettingsKeys } from "../Classes/settingsClass";
+import { settingsModelClone } from "../settings";
 import rep from "./rep";
 import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";
 
-type SettingsTypes = defaultSettingsType[defaultSettingsKeys];
+type SettingsTypes = settingsValueType[defaultSettingsKeys];
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
-export type ConditionalReturnT<T extends SettingsTypes> = { values: T[], validation: SettingsValidationT }
+export type ConditionalReturnT<T extends SettingsTypes> = { values: T[] | undefined, validation: SettingsValidationT }
 
 function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string, settingName: string, defaultValue: T): T {
   const propertyValue: powerbi.DataViewPropertyValue = settingObject?.[settingGroup]?.[settingName];
   if (isNullOrUndefined(propertyValue)) {
     return defaultValue;
   }
-  return (<Fill>propertyValue)?.solid ? (<Fill>propertyValue).solid.color as T
+  return (<Fill>propertyValue)?.solid ? (<Fill>propertyValue).solid!.color as T
                                       : propertyValue as T;
 }
 
 export default function
-  extractConditionalFormatting<T extends SettingsTypes>(categoricalView: DataViewCategorical,
+  extractConditionalFormatting<T extends SettingsTypes>(categoricalView: DataViewCategorical | undefined,
                                                         settingGroupName: string,
-                                                        inputSettings: defaultSettingsType,
                                                         idxs: number[]): ConditionalReturnT<T> {
   if (isNullOrUndefined(categoricalView?.categories)) {
-    return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
+    return { values: undefined, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
   if (categoricalView?.categories?.[0]?.identity?.length === 0) {
-    return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
+    return { values: undefined, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
-  const inputCategories: DataViewCategoryColumn = (categoricalView.categories as DataViewCategoryColumn[])[0];
-  const settingNames = Object.keys(inputSettings[settingGroupName]);
+  const inputCategories: DataViewCategoryColumn = (categoricalView!.categories as DataViewCategoryColumn[])[0];
+  const settingNames: string[] = settingsModelClone[settingGroupName].settingNames;
 
   // Force a deep copy to avoid JS's absurd pass-by-reference handling
   const validationRtn: SettingsValidationT
@@ -42,18 +41,18 @@ export default function
   const n: number = idxs.length;
   let rtn: T[] = new Array<T>(n);
   for (let i = 0; i < n; i++) {
-    const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
+    const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : undefined;
     rtn[i] = Object.fromEntries(
       settingNames.map(settingName => {
-        const defaultSetting = defaultSettings[settingGroupName][settingName]["default"];
+        const defaultSetting = settingsModelClone[settingGroupName][settingName].default;
 
-        let extractedSetting = getSettingValue(inpObjects, settingGroupName, settingName, defaultSetting);
+        let extractedSetting = isNullOrUndefined(inpObjects) ? undefined : getSettingValue(inpObjects!, settingGroupName, settingName, defaultSetting);
         // PBI passes empty string when clearing conditional formatting
         // for dropdown setting using the eraser button, so just reset to default
         extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
 
         // New API has numeric min/max under 'options' member
-        const validValues = defaultSettings[settingGroupName][settingName]?.["valid"] ?? defaultSettings[settingGroupName][settingName]?.["options"];
+        const validValues = settingsModelClone[settingGroupName][settingName]?.valid ?? settingsModelClone[settingGroupName][settingName]?.options;
         const isNumericRange: boolean = !isNullOrUndefined(validValues?.minValue) || !isNullOrUndefined(validValues?.maxValue)
         const defaultUndefined: boolean = isNullOrUndefined(extractedSetting);
 
@@ -65,7 +64,7 @@ export default function
             message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${validValues?.minValue?.value} and ${validValues?.maxValue?.value}`
           }
           if (message !== "") {
-            extractedSetting = defaultSettings[settingGroupName][settingName]["default"];
+            extractedSetting = settingsModelClone[settingGroupName][settingName].default;
             validationRtn.messages[i].push(message);
           }
         }

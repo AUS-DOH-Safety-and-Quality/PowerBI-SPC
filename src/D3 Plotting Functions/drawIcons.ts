@@ -4,14 +4,14 @@ import { iconTransformSpec } from "./initialiseIconSVG";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import type { svgBaseType, Visual } from "../visual";
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../Classes/settingsClass";
 
 export default function drawIcons(selection: svgBaseType, visualObj: Visual): void {
   selection.selectAll(".icongroup").remove()
   if (!(visualObj.plotProperties.displayPlot)) {
     return;
   }
-  const nhsIconSettings: defaultSettingsType["nhs_icons"] = visualObj.viewModel.inputSettings.settings[0].nhs_icons;
+  const nhsIconSettings: settingsValueType["nhs_icons"] = visualObj.viewModel.inputSettings.settings[0].nhs_icons;
   const draw_variation: boolean = nhsIconSettings.show_variation_icons;
   const variation_location: string = nhsIconSettings.variation_icons_locations;
   const svg_width: number = visualObj.viewModel.svgWidth

@@ -2,17 +2,18 @@ import type powerbi from "powerbi-visuals-api"
 type DataView = powerbi.DataView;
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import { default as settingsModel, defaultSettings, type defaultSettingsType,
-  type defaultSettingsKeys, type defaultSettingsNestedKeys
+import { default as settingsModel, defaultSettings, type settingsValueType,
+  type defaultSettingsKeys, type defaultSettingsNestedKeys,
+  settingsModelClone
  } from "../settings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
 
-export { type defaultSettingsType, type defaultSettingsKeys };
+export { type settingsValueType, type defaultSettingsKeys };
 export type settingsScalarTypes = number | string | boolean;
 
 export type optionalSettingsTypes = Partial<{
-  [K in keyof typeof defaultSettings]: Partial<defaultSettingsType[K]>;
+  [K in keyof typeof defaultSettings]: Partial<settingsValueType[K]>;
 }>;
 
 // Re-declare enum to avoid importing powerbi module everywhere settingsClass is used
@@ -30,7 +31,7 @@ const enum VisualEnumerationInstanceKinds {
  * These are defined in the settingsGroups.ts file
  */
 export default class settingsClass {
-  settings: defaultSettingsType[];
+  settings: settingsValueType[];
   derivedSettings: derivedSettingsClass[];
   validationStatus: SettingsValidationT;
 
@@ -41,29 +42,24 @@ export default class settingsClass {
    * @param inputObjects
    */
   update(inputView: DataView, groupIdxs: number[][]): void {
-    this.validationStatus
-      = JSON.parse(JSON.stringify({ status: 0, messages: new Array<string[]>(), error: "" }));
+    this.validationStatus = { status: 0, messages: new Array<string[]>(), error: "" };
 
     // Initialize settings array based on number of groups
-    this.settings = new Array<defaultSettingsType>();
-    this.derivedSettings = new Array<derivedSettingsClass>();
+    this.settings = new Array<settingsValueType>(groupIdxs.length);
+    this.derivedSettings = new Array<derivedSettingsClass>(groupIdxs.length);
 
-    groupIdxs.forEach(() => {
-      this.settings.push(Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
-        return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
-          return [settingName, defaultSettings[settingGroupName][settingName]];
-        }))];
-      })) as defaultSettingsType);
-      this.derivedSettings.push(new derivedSettingsClass());
-    });
+    for (let i = 0; i < groupIdxs.length; i++) {
+      this.settings[i] = settingsModelClone.defaultValues as settingsValueType;
+      this.derivedSettings[i] = new derivedSettingsClass();
+    }
 
     const all_idxs: number[] = groupIdxs.flat();
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.keys(this.settings[0]);
 
     allSettingGroups.forEach((settingGroup: defaultSettingsKeys) => {
-      const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKeys]>
-        = extractConditionalFormatting(inputView?.categorical, settingGroup, this.settings[0], all_idxs);
+      const condFormatting: ConditionalReturnT<settingsValueType[defaultSettingsKeys]>
+        = extractConditionalFormatting(inputView?.categorical, settingGroup, all_idxs);
 
       if (condFormatting.validation.status !== 0) {
         this.validationStatus.status = condFormatting.validation.status;
@@ -189,12 +185,7 @@ export default class settingsClass {
   }
 
   constructor() {
-    this.settings = [Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
-      return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
-        return [settingName, defaultSettings[settingGroupName][settingName]];
-      }))];
-    })) as defaultSettingsType];
-    console.log("init: ", this.settings);
+    this.settings = [settingsModelClone.defaultValues as settingsValueType];
     this.derivedSettings = [new derivedSettingsClass()];
   }
 }

@@ -228,7 +228,7 @@ const settingsModel = {
         num_points_subset: {
           displayName: "Subset Number of Points for Limit Calculations",
           type: FormattingComponent.NumUpDown,
-          default: undefined
+          default: undefined as number | undefined
         },
         subset_points_from: {
           displayName: "Subset Points From",
@@ -283,12 +283,12 @@ const settingsModel = {
         ll_truncate: {
           displayName: "Truncate Lower Limits at:",
           type: FormattingComponent.NumUpDown,
-          default: undefined
+          default: undefined as number | undefined
         },
         ul_truncate: {
           displayName: "Truncate Upper Limits at:",
           type: FormattingComponent.NumUpDown,
-          default: undefined
+          default: undefined as number | undefined
         }
       }
     }
@@ -832,7 +832,7 @@ const settingsModel = {
         alt_target: {
           displayName: "Additional Target Value:",
           type: FormattingComponent.NumUpDown,
-          default: undefined
+          default: undefined as number | undefined
         },
         multiplier_alt_target: {
           displayName: "Apply Multiplier to Alt. Target",
@@ -1338,12 +1338,12 @@ const settingsModel = {
         specification_upper: {
           displayName: "Upper Specification Limit:",
           type: FormattingComponent.NumUpDown,
-          default: undefined
+          default: undefined as number | undefined
         },
         specification_lower: {
           displayName: "Lower Specification Limit:",
           type: FormattingComponent.NumUpDown,
-          default: undefined
+          default: undefined as number | undefined
         },
         multiplier_specification: {
           displayName: "Apply Multiplier to Specification Limits",
@@ -1606,12 +1606,12 @@ const settingsModel = {
         xlimit_l: {
           displayName: "Lower Limit",
           type: FormattingComponent.NumUpDown,
-          default:undefined
+          default: undefined as number | undefined
         },
         xlimit_u: {
           displayName: "Upper Limit",
           type: FormattingComponent.NumUpDown,
-          default:undefined
+          default: undefined as number | undefined
         }
       },
       "Ticks": {
@@ -1654,7 +1654,7 @@ const settingsModel = {
         xlimit_label: {
           displayName: "Label",
           type: FormattingComponent.TextInput,
-          default: undefined
+          default: undefined as string | undefined
         },
         xlimit_label_font: {
           displayName: "Label Font",
@@ -1700,18 +1700,18 @@ const settingsModel = {
         ylimit_sig_figs: {
           displayName: "Tick Decimal Places",
           type: FormattingComponent.NumUpDown,
-          default:undefined,
+          default: undefined as number | undefined,
           options: { minValue: { value: 0 }, maxValue: { value: 100 } }
         },
         ylimit_l: {
           displayName: "Lower Limit",
           type: FormattingComponent.NumUpDown,
-          default:undefined
+          default: undefined as number | undefined
         },
         ylimit_u: {
           displayName: "Upper Limit",
           type: FormattingComponent.NumUpDown,
-          default:undefined
+          default: undefined as number | undefined
         }
       },
       "Ticks": {
@@ -1754,7 +1754,7 @@ const settingsModel = {
         ylimit_label: {
           displayName: "Label",
           type: FormattingComponent.TextInput,
-          default: undefined
+          default: undefined as string | undefined
         },
         ylimit_label_font: {
           displayName: "Label Font",
@@ -2261,31 +2261,22 @@ export type NestedKeysOf<T>
     ? { [K in keyof T]: K extends string ? K : never; }[keyof T]
     : never;
 
-export type defaultSettingsType = {
+export type settingsValueType = {
   [K in settingsModelKeys]: {
     [L in keyof settingsGroupMembers<settingsModelType[K]>]: DefaultTypes<settingsGroupMembers<settingsModelType[K]>[L]>
   }
 }
-export type defaultSettingsKeys = keyof defaultSettingsType;
-export type defaultSettingsNestedKeys = NestedKeysOf<defaultSettingsType[defaultSettingsKeys]>;
+export type defaultSettingsKeys = keyof settingsValueType;
+export type defaultSettingsNestedKeys = NestedKeysOf<settingsValueType[defaultSettingsKeys]>;
 
-const defaultSettingsArray = [];
-for (const key in settingsModel) {
-  const curr_card = [];
-  for (const group in settingsModel[key].settingsGroups) {
-    for (const setting in settingsModel[key].settingsGroups[group]) {
-      curr_card.push([setting, settingsModel[key].settingsGroups[group][setting]]);
-    }
-  }
-  defaultSettingsArray.push([key, Object.fromEntries(curr_card)]);
-}
 
-const defaultSettings = Object.fromEntries(defaultSettingsArray) as defaultSettingsType;
 const settingsModelClone = JSON.parse(JSON.stringify(settingsModel));
 
 for (const key in settingsModelClone) {
+  let settingNames: string[] = [];
   for (const group in settingsModelClone[key].settingsGroups) {
     for (const setting in settingsModelClone[key].settingsGroups[group]) {
+      settingNames.push(setting);
       Object.defineProperty(settingsModelClone[key], setting, {
         get: function() {
           return this.settingsGroups[group][setting]
@@ -2293,11 +2284,36 @@ for (const key in settingsModelClone) {
       });
     }
   }
+  Object.defineProperty(settingsModelClone[key], "settingNames", {
+    get: function() {
+      return settingNames;
+    }
+  });
 }
 
-console.log("Default Settings:", defaultSettings);
-console.log(settingsModelClone.canvas.show_errors);
-console.log(settingsModelClone.lines.plot_label_position_main);
+type settingScalarType = string | number | boolean | undefined;
 
-export { defaultSettings }
+Object.defineProperty(settingsModelClone, "defaultValues", {
+  get: function(): settingsValueType {
+    const defaultValuesArray: (string | settingsValueType[defaultSettingsKeys])[][] = new Array<(string | settingsValueType[defaultSettingsKeys])[]>();
+    for (const key in this) {
+      if (this[key].settingNames) {
+        let currSettingsDefaults: (settingScalarType)[][] = new Array<(settingScalarType)[]>();
+        this[key].settingNames.forEach((setting: string) => {
+          currSettingsDefaults.push([setting, this[key][setting].default as settingScalarType]);
+        });
+        defaultValuesArray.push([key, Object.fromEntries(currSettingsDefaults) as settingsValueType[defaultSettingsKeys]]);
+      }
+    }
+    return Object.fromEntries(defaultValuesArray) as settingsValueType;
+  }
+})
+
+
+const defaultSettings = settingsModelClone.defaultValues as settingsValueType;
+
+Object.freeze(settingsModelClone);
+
+
+export { defaultSettings, settingsModelClone }
 export default settingsModel;

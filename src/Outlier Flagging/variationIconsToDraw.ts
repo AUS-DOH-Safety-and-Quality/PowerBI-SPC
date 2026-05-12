@@ -1,4 +1,4 @@
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../Classes/settingsClass";
 import type { outliersObject } from "../Classes/viewModelClass";
 
 /**
@@ -13,7 +13,7 @@ import type { outliersObject } from "../Classes/viewModelClass";
  * @param inputSettings - User-defined settings including improvement direction and flag settings
  * @returns Array of icon identifiers to display (e.g., "improvementHigh", "concernLow", "commonCause")
  */
-export default function variationIconsToDraw(outliers: Readonly<outliersObject>, inputSettings: Readonly<defaultSettingsType>): string[] {
+export default function variationIconsToDraw(outliers: Readonly<outliersObject>, inputSettings: Readonly<settingsValueType>): string[] {
   const imp_direction: string = inputSettings.outliers.improvement_direction;
 
   // Map improvement direction to suffix for icon names

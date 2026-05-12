@@ -10,22 +10,22 @@ import validateInputData from "../Functions/validateInputData";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import seq from "../Functions/seq";
 import between from "../Functions/between";
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../Classes/settingsClass";
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {
   limitInputArgs: controlLimitsArgs;
-  spcSettings: defaultSettingsType["spc"];
+  spcSettings: settingsValueType["spc"];
   highlights: PrimitiveValue[];
   anyHighlights: boolean;
   categories: DataViewCategoryColumn;
   groupings: string[];
   groupingIndexes: number[];
-  scatter_formatting: defaultSettingsType["scatter"][];
-  line_formatting: defaultSettingsType["lines"][];
-  label_formatting: defaultSettingsType["labels"][];
+  scatter_formatting: settingsValueType["scatter"][];
+  line_formatting: settingsValueType["lines"][];
+  label_formatting: settingsValueType["labels"][];
   tooltips: VisualTooltipDataItem[][];
   labels: string[];
   anyLabels: boolean;
@@ -60,7 +60,7 @@ function invalidInputData(inputValidStatus: ValidationT): dataObject {
 }
 
 export default function extractInputData(inputView: DataViewCategorical,
-                                          inputSettings: defaultSettingsType,
+                                          inputSettings: settingsValueType,
                                           derivedSettings: derivedSettingsClass,
                                           validationMessages: string[][],
                                           idxs: number[]): dataObject {
@@ -72,19 +72,19 @@ export default function extractInputData(inputView: DataViewCategorical,
   const groupings: string[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings, idxs);
   const labels: string[] = extractDataColumn<string[]>(inputView, "labels", inputSettings, idxs);
   const highlights: powerbi.PrimitiveValue[] = idxs.map(d => inputView?.values?.[0]?.highlights?.[d]);
-  let scatter_cond = extractConditionalFormatting<defaultSettingsType["scatter"]>(inputView, "scatter", inputSettings, idxs)?.values;
-  let lines_cond = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings, idxs)?.values;
-  let labels_cond = extractConditionalFormatting<defaultSettingsType["labels"]>(inputView, "labels", inputSettings, idxs)?.values;
-  let alt_targets: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings, idxs)
+  let scatter_cond = extractConditionalFormatting<settingsValueType["scatter"]>(inputView, "scatter", idxs)?.values;
+  let lines_cond = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", idxs)?.values;
+  let labels_cond = extractConditionalFormatting<settingsValueType["labels"]>(inputView, "labels", idxs)?.values;
+  let alt_targets: number[] = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", idxs)
                                     ?.values
                                     .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
-  let speclimits_lower: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings, idxs)
+  let speclimits_lower: number[] = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", idxs)
                                     ?.values
                                     .map(d => d.show_specification ? d.specification_lower : null);
-  let speclimits_upper: number[] = extractConditionalFormatting<defaultSettingsType["lines"]>(inputView, "lines", inputSettings, idxs)
+  let speclimits_upper: number[] = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", idxs)
                                     ?.values
                                     .map(d => d.show_specification ? d.specification_upper : null);
-  let spcSettings: defaultSettingsType["spc"][] = extractConditionalFormatting<defaultSettingsType["spc"]>(inputView, "spc", inputSettings, idxs)?.values
+  let spcSettings: settingsValueType["spc"][] = extractConditionalFormatting<settingsValueType["spc"]>(inputView, "spc", idxs)?.values
   const inputValidStatus: ValidationT = validateInputData(keys, numerators, denominators, xbar_sds, derivedSettings.chart_type_props, idxs);
   if (inputValidStatus.status !== 0) {
     return invalidInputData(inputValidStatus);

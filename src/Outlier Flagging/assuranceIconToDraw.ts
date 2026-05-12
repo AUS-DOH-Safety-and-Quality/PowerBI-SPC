@@ -1,5 +1,5 @@
 import type { controlLimitsObject } from "../Classes/viewModelClass";
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../Classes/settingsClass";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 
@@ -17,7 +17,7 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
  * @returns Icon identifier: "consistentPass", "consistentFail", "inconsistent", or "none"
  */
 export default function assuranceIconToDraw(controlLimits: Readonly<controlLimitsObject>,
-                                            inputSettings: Readonly<defaultSettingsType>,
+                                            inputSettings: Readonly<settingsValueType>,
                                             derivedSettings: Readonly<derivedSettingsClass>): string {
   // Return "none" if chart type doesn't support control limits
   if (!(derivedSettings.chart_type_props.has_control_limits)) {

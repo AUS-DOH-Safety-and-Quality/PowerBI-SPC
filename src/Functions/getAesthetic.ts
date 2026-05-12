@@ -1,4 +1,4 @@
-import type { defaultSettingsType } from "../Classes/settingsClass"
+import type { settingsValueType } from "../Classes/settingsClass"
 
 const lineNameMap: Record<string, string> = {
   "ll99" : "99",
@@ -15,7 +15,7 @@ const lineNameMap: Record<string, string> = {
   "trend_line" : "trend",
 }
 
-export default function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: defaultSettingsType): string | number {
+export default function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsValueType): string | number {
   const mapName: string = group.includes("line") ? lineNameMap[type] : type;
   const settingName: string = aesthetic + "_" + mapName;
   return inputSettings[group][settingName];
