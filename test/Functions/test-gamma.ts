@@ -1,4 +1,4 @@
-import gamma from "../../src/Functions/gamma";
+import gamma from "../../src/Functions/Math/gamma";
 
 describe("gamma", () => {
 

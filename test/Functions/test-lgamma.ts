@@ -1,4 +1,4 @@
-import lgamma from "../../src/Functions/lgamma";
+import lgamma from "../../src/Functions/Math/lgamma";
 
 describe("lgamma", () => {
 

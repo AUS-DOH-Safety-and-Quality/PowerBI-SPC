@@ -1,4 +1,4 @@
-import calculateTrendLine from "../../src/Functions/calculateTrendLine";
+import calculateTrendLine from "../../src/Functions/Math/calculateTrendLine";
 
 describe("calculateTrendLine", () => {
     it("should return an empty array if input is empty", () => {
