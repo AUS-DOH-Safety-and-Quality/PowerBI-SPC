@@ -3,8 +3,7 @@ type DataView = powerbi.DataView;
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import { default as settingsModel, defaultSettings, type settingsValueType,
-  type defaultSettingsKeys, type defaultSettingsNestedKeys,
-  settingsModelClone
+  type defaultSettingsKeys, type defaultSettingsNestedKeys
  } from "../settings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
@@ -49,7 +48,7 @@ export default class settingsClass {
     this.derivedSettings = new Array<derivedSettingsClass>(groupIdxs.length);
 
     for (let i = 0; i < groupIdxs.length; i++) {
-      this.settings[i] = settingsModelClone.defaultValues as settingsValueType;
+      this.settings[i] = defaultSettings;
       this.derivedSettings[i] = new derivedSettingsClass();
     }
 
@@ -185,7 +184,7 @@ export default class settingsClass {
   }
 
   constructor() {
-    this.settings = [settingsModelClone.defaultValues as settingsValueType];
+    this.settings = [defaultSettings];
     this.derivedSettings = [new derivedSettingsClass()];
   }
 }
