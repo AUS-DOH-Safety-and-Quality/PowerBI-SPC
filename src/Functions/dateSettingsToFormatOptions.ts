@@ -11,7 +11,7 @@ import type { DateFormatOptions } from "./formatDateParts"
  * - "Thursday DD" → "long" (full weekday name)
  * - "(blank)" → null (omit day entirely)
  */
-const weekdayDateMap: Record<string, "long" | "short"> = {
+const weekdayDateMap: Record<string, "long" | "short" | null> = {
   "DD" : null,
   "Thurs DD" : "short",
   "Thursday DD" : "long",
@@ -27,7 +27,7 @@ const weekdayDateMap: Record<string, "long" | "short"> = {
  * - "Month" → "long" (e.g., "January", "December")
  * - "(blank)" → null (omit month entirely)
  */
-const monthDateMap: Record<string, "2-digit" | "short" | "long"> = {
+const monthDateMap: Record<string, "2-digit" | "short" | "long" | null> = {
   "MM" : "2-digit",
   "Mon" : "short",
   "Month" : "long",
@@ -42,7 +42,7 @@ const monthDateMap: Record<string, "2-digit" | "short" | "long"> = {
  * - "YY" → "2-digit" (e.g., "24")
  * - "(blank)" → null (omit year entirely)
  */
-const yearDateMap: Record<string, "numeric" | "2-digit"> = {
+const yearDateMap: Record<string, "numeric" | "2-digit" | null> = {
   "YYYY" : "numeric",
   "YY" : "2-digit",
   "(blank)" : null
@@ -54,7 +54,7 @@ const yearDateMap: Record<string, "numeric" | "2-digit"> = {
  * Maps PowerBI visual dropdown options to day format values.
  * All non-blank options produce "2-digit" day format (e.g., "01", "15", "31").
  */
-const dayDateMap = {
+const dayDateMap: Record<string, "2-digit" | null> = {
   "DD" : "2-digit",
   "Thurs DD" : "2-digit",
   "Thursday DD" : "2-digit",
@@ -65,7 +65,7 @@ const dayDateMap = {
  * Central lookup table mapping date format option names to their respective
  * setting-to-value translation maps.
  */
-const dateOptionsLookup = {
+const dateOptionsLookup: Record<string, Record<string, string | null>> = {
   "weekday" : weekdayDateMap,
   "day" : dayDateMap,
   "month" : monthDateMap,
@@ -108,7 +108,7 @@ const dateOptionsLookup = {
  */
 export default function dateSettingsToFormatOptions(date_settings: defaultSettingsType["dates"]): DateFormatOptions {
   // Array to collect [key, value] pairs for the options object
-  const formatOpts: string[][] = new Array<string[]>();
+  const formatOpts: [string, string | null][] = [];
 
   // Iterate through all date settings
   Object.keys(date_settings).forEach((key) => {
@@ -121,7 +121,7 @@ export default function dateSettingsToFormatOptions(date_settings: defaultSettin
       const lookup = dateOptionsLookup[formattedKey];
 
       // Translate the visual setting value to the Intl API value
-      const val = lookup[date_settings[key]];
+      const val = lookup[date_settings[key as keyof defaultSettingsType["dates"]]];
 
       // Only include non-null values (null means "(blank)" was selected)
       if (!isNullOrUndefined(val)) {
@@ -129,8 +129,8 @@ export default function dateSettingsToFormatOptions(date_settings: defaultSettin
 
         // Special case: when day format includes weekday name, also add weekday option
         // This handles "Thurs DD" and "Thursday DD" formats
-        if (formattedKey === "day" && date_settings[key] !== "DD") {
-          formatOpts.push(["weekday", weekdayDateMap[date_settings[key]]])
+        if (formattedKey === "day" && date_settings[key as keyof defaultSettingsType["dates"]] !== "DD") {
+          formatOpts.push(["weekday", weekdayDateMap[date_settings[key as keyof defaultSettingsType["dates"]]]])
         }
       }
     }

@@ -54,7 +54,7 @@ export default class settingsClass {
           return [settingName, defaultSettings[settingGroupName][settingName]];
         }))];
       })) as defaultSettingsType);
-      this.derivedSettings.push(new derivedSettingsClass());
+      this.derivedSettings.push(new derivedSettingsClass(this.settings[0].spc));
     });
 
     const all_idxs: number[] = groupIdxs.flat();
@@ -112,7 +112,7 @@ export default class settingsClass {
     }
 */
     this.settings.forEach((settingsItem, idx) => {
-      this.derivedSettings[idx].update(settingsItem.spc);
+      this.derivedSettings[idx] = new derivedSettingsClass(settingsItem.spc);
     });
   }
 
@@ -194,6 +194,6 @@ export default class settingsClass {
         return [settingName, defaultSettings[settingGroupName][settingName]];
       }))];
     })) as defaultSettingsType];
-    this.derivedSettings = [new derivedSettingsClass()];
+    this.derivedSettings = [new derivedSettingsClass(this.settings[0].spc)];
   }
 }

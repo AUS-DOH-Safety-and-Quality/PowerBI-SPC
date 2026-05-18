@@ -15,7 +15,7 @@ const valueNames: Record<string, string> = {
   "pp": "Proportion",
   "u": "Rate",
   "up": "Rate"
-}
+};
 
 export default class derivedSettingsClass {
   multiplier: number
@@ -35,7 +35,7 @@ export default class derivedSettingsClass {
     denominator_gt_one: boolean
   }
 
-  update(inputSettingsSpc: defaultSettingsType["spc"]) {
+  constructor(inputSettingsSpc: defaultSettingsType["spc"]) {
     const chartType: string = inputSettingsSpc.chart_type;
     const pChartType: boolean = ["p", "pp"].includes(chartType);
     const percentSettingString: string = inputSettingsSpc.perc_labels;

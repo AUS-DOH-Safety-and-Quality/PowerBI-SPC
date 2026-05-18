@@ -80,7 +80,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: formatValues(table_row[`ul${limit}`], "value")
+          value: formatValues(table_row[`ul${limit}` as keyof summaryTableRowData], "value")
         })
       }
     })
@@ -102,7 +102,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
       if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
           displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: formatValues(table_row[`ll${limit}`], "value")
+          value: formatValues(table_row[`ll${limit}` as keyof summaryTableRowData], "value")
         })
       }
     })

@@ -5,13 +5,13 @@ type PrimitiveValue = powerbi.PrimitiveValue
 type ValueTypeDescriptor = powerbi.ValueTypeDescriptor
 
 export default function formatPrimitiveValue(rawValue: PrimitiveValue,
-                                              config: { valueType: ValueTypeDescriptor,
+                                              config: { valueType: ValueTypeDescriptor | undefined,
                                                         dateSettings: defaultSettingsType["dates"]}): string {
   if (isNullOrUndefined(rawValue)) {
-    return null;
+    return "";
   }
 
-  if (config.valueType.numeric) {
+  if (config.valueType?.numeric) {
     return (<number>rawValue).toString()
   } else {
     return <string>rawValue
