@@ -4,7 +4,8 @@ type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as limitFunctions from "../Limit Calculations"
-import settingsClass, { type defaultSettingsType } from "./settingsClass";
+import settingsClass from "./settingsClass";
+import { type settingsValueType } from "../settings";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
 import getAesthetic from "../Functions/getAesthetic";
@@ -37,7 +38,7 @@ export type lineData = {
   x: number;
   line_value: number;
   group: string;
-  aesthetics: defaultSettingsType["lines"];
+  aesthetics: settingsValueType["lines"];
 }
 
 export type summaryTableRowData = {
@@ -82,7 +83,7 @@ export type summaryTableRowDataGrouped = {
 export type plotData = {
   x: number;
   value: number;
-  aesthetics: defaultSettingsType["scatter"];
+  aesthetics: settingsValueType["scatter"];
   table_row: summaryTableRowData;
   // ISelectionId allows the visual to report the selection choice to PowerBI
   identity: ISelectionId;
@@ -92,7 +93,7 @@ export type plotData = {
   tooltip: VisualTooltipDataItem[];
   label: {
     text_value: string,
-    aesthetics: defaultSettingsType["labels"],
+    aesthetics: settingsValueType["labels"],
     angle: number,
     distance: number,
     line_offset: number,
@@ -103,7 +104,7 @@ export type plotData = {
 export type plotDataGrouped = {
   table_row: summaryTableRowDataGrouped;
   identity: ISelectionId[];
-  aesthetics: defaultSettingsType["summary_table"];
+  aesthetics: settingsValueType["summary_table"];
   highlighted: boolean;
 }
 
@@ -366,7 +367,7 @@ export default class viewModelClass {
     return groupStartEndIndexes;
   }
 
-  calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: defaultSettingsType): controlLimitsObject {
+  calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsValueType): controlLimitsObject {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
       = limitFunctions[inputSettings.spc.chart_type];
 
@@ -466,7 +467,7 @@ export default class viewModelClass {
         })
       }
     })
-    const nhsIconSettings: defaultSettingsType["nhs_icons"] = this.inputSettings.settings[0].nhs_icons;
+    const nhsIconSettings: settingsValueType["nhs_icons"] = this.inputSettings.settings[0].nhs_icons;
     if (nhsIconSettings.show_variation_icons) {
       tableColumnsDef.push({ name: "variation", label: "Variation" });
     }
@@ -633,7 +634,7 @@ export default class viewModelClass {
 
     for (let i: number = 0; i < controlLimits.keys.length; i++) {
       const index: number = controlLimits.keys[i].x;
-      const aesthetics: defaultSettingsType["scatter"] = inputData.scatter_formatting[i];
+      const aesthetics: settingsValueType["scatter"] = inputData.scatter_formatting[i];
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
@@ -783,7 +784,7 @@ export default class viewModelClass {
   }
 
   scaleAndTruncateLimits(controlLimits: controlLimitsObject,
-                          inputSettings: defaultSettingsType,
+                          inputSettings: settingsValueType,
                           derivedSettings: derivedSettingsClass): void {
     // Scale limits using provided multiplier
     const multiplier: number = derivedSettings.multiplier;
@@ -831,7 +832,7 @@ export default class viewModelClass {
   }
 
   flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][],
-                inputSettings: defaultSettingsType, derivedSettings: derivedSettingsClass): outliersObject {
+                inputSettings: settingsValueType, derivedSettings: derivedSettingsClass): outliersObject {
     const process_flag_type: string = inputSettings.outliers.process_flag_type;
     const improvement_direction: string = inputSettings.outliers.improvement_direction;
     const trend_n: number = inputSettings.outliers.trend_n;

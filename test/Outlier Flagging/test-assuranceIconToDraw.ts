@@ -1,6 +1,6 @@
 import assuranceIconToDraw from "../../src/Outlier Flagging/assuranceIconToDraw";
 import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
-import type { defaultSettingsType } from "../../src/Classes/settingsClass";
+import type { settingsValueType } from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
 
 describe("assuranceIconToDraw", () => {
@@ -17,11 +17,11 @@ describe("assuranceIconToDraw", () => {
     } as controlLimitsObject);
 
     // Helper to create mock settings
-    const createSettings = (improvement_direction: string): defaultSettingsType => ({
+    const createSettings = (improvement_direction: string): settingsValueType => ({
         outliers: {
             improvement_direction: improvement_direction
         }
-    } as defaultSettingsType);
+    } as settingsValueType);
 
     // Helper to create derived settings with control limits
     const createDerivedSettings = (has_control_limits: boolean): derivedSettingsClass => {

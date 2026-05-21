@@ -3,15 +3,13 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
-import type { defaultSettingsType, defaultSettingsKeys } from "../Classes/settingsClass";
-import { defaultSettings } from "../settings";
+import { default as settingsModel, defaultSettings, type settingsValueTypesUnion, type settingsValueType } from "../settings";
 import rep from "./rep";
 import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";
 
-type SettingsTypes = defaultSettingsType[defaultSettingsKeys];
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
-export type ConditionalReturnT<T extends SettingsTypes> = { values: T[], validation: SettingsValidationT }
+export type ConditionalReturnT<T extends settingsValueTypesUnion> = { values: T[], validation: SettingsValidationT }
 
 function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string, settingName: string, defaultValue: T): T {
   const propertyValue: powerbi.DataViewPropertyValue = settingObject?.[settingGroup]?.[settingName];
@@ -23,9 +21,9 @@ function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string
 }
 
 export default function
-  extractConditionalFormatting<T extends SettingsTypes>(categoricalView: DataViewCategorical,
+  extractConditionalFormatting<T extends settingsValueTypesUnion>(categoricalView: DataViewCategorical,
                                                         settingGroupName: string,
-                                                        inputSettings: defaultSettingsType,
+                                                        inputSettings: settingsValueType,
                                                         idxs: number[]): ConditionalReturnT<T> {
   if (isNullOrUndefined(categoricalView?.categories)) {
     return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
@@ -45,7 +43,7 @@ export default function
     const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
     rtn[i] = Object.fromEntries(
       settingNames.map(settingName => {
-        const defaultSetting = defaultSettings[settingGroupName][settingName]["default"];
+        const defaultSetting = defaultSettings[settingGroupName][settingName];
 
         let extractedSetting = getSettingValue(inpObjects, settingGroupName, settingName, defaultSetting);
         // PBI passes empty string when clearing conditional formatting
@@ -53,9 +51,10 @@ export default function
         extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
 
         // New API has numeric min/max under 'options' member
-        const valid = defaultSettings[settingGroupName][settingName]?.["valid"] ?? defaultSettings[settingGroupName][settingName]?.["options"];
+        const valid = settingsModel[settingGroupName][settingName]?.["valid"] ?? settingsModel[settingGroupName][settingName]?.["options"];
         const isNumericRange: boolean = !isNullOrUndefined(valid?.minValue) || !isNullOrUndefined(valid?.maxValue)
-        if (valid) {
+        const defaultIsUndefined: boolean = isNullOrUndefined(defaultSetting);
+        if (valid && !defaultIsUndefined) {
           let message: string = "";
           if (valid instanceof Array && !valid.includes(extractedSetting)) {
             message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`
@@ -63,7 +62,7 @@ export default function
             message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid?.minValue?.value} and ${valid?.maxValue?.value}`
           }
           if (message !== "") {
-            extractedSetting = defaultSettings[settingGroupName][settingName]["default"];
+            extractedSetting = defaultSettings[settingGroupName][settingName];
             validationRtn.messages[i].push(message);
           }
         }

@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api"
 type DataViewValueColumn = powerbi.DataViewValueColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../settings";
 import formatPrimitiveValue from "../Functions/formatPrimitiveValue";
 import dateSettingsToFormatOptions from "../Functions/dateSettingsToFormatOptions";
 import parseInputDates from "../Functions/parseInputDates";
@@ -11,7 +11,7 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import formatDateParts from "../Functions/formatDateParts";
 type TargetT = number[] | string[] | VisualTooltipDataItem[][];
 
-function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: defaultSettingsType, idxs: number[]): string[] {
+function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: number[]): string[] {
   const n_keys: number = idxs.length;
   let ret = new Array<string>(n_keys);
   // If only one input is passed and it is not a date type then just return the string values
@@ -53,7 +53,7 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: defaul
   return ret
 }
 
-function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSettingsType, idxs: number[]): string[] {
+function extractKeys(inputView: DataViewCategorical, inputSettings: settingsValueType, idxs: number[]): string[] {
   const col: powerbi.DataViewCategoryColumn[] = inputView.categories.filter(viewColumn => viewColumn.source?.roles?.["key"]);
 
   // To handle separately formatting multiple 'key' columns that may come from different
@@ -109,7 +109,7 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: defaultSetti
   return combinedKeys;
 }
 
-function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultSettingsType, idxs: number[]): VisualTooltipDataItem[][] {
+function extractTooltips(inputView: DataViewCategorical, inputSettings: settingsValueType, idxs: number[]): VisualTooltipDataItem[][] {
   const tooltipColumns = inputView.values.filter(viewColumn => viewColumn.source.roles.tooltips);
   const n_keys: number = idxs.length;
   let ret: VisualTooltipDataItem[][] = new Array<VisualTooltipDataItem[]>(n_keys);
@@ -128,7 +128,7 @@ function extractTooltips(inputView: DataViewCategorical, inputSettings: defaultS
 
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
-                                              inputSettings: defaultSettingsType,
+                                              inputSettings: settingsValueType,
                                               idxs: number[]): T {
   if (name === "key") {
     return extractKeys(inputView, inputSettings, idxs) as Extract<T, string[]>;

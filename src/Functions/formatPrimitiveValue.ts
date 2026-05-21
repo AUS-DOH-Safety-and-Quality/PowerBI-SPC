@@ -1,12 +1,12 @@
 import type powerbi from "powerbi-visuals-api"
-import type { defaultSettingsType } from "../Classes/settingsClass"
+import type { settingsValueType } from "../settings"
 import isNullOrUndefined from "./isNullOrUndefined"
 type PrimitiveValue = powerbi.PrimitiveValue
 type ValueTypeDescriptor = powerbi.ValueTypeDescriptor
 
 export default function formatPrimitiveValue(rawValue: PrimitiveValue,
                                               config: { valueType: ValueTypeDescriptor,
-                                                        dateSettings: defaultSettingsType["dates"]}): string {
+                                                        dateSettings: settingsValueType["dates"]}): string {
   if (isNullOrUndefined(rawValue)) {
     return null;
   }
