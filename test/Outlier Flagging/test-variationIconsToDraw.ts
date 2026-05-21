@@ -1,6 +1,6 @@
 import variationIconsToDraw from "../../src/Outlier Flagging/variationIconsToDraw";
 import type { outliersObject } from "../../src/Classes/viewModelClass";
-import type { defaultSettingsType } from "../../src/Classes/settingsClass";
+import type { settingsValueType } from "../../src/settings";
 
 describe("variationIconsToDraw", () => {
     // Helper to create mock outliers object
@@ -17,14 +17,14 @@ describe("variationIconsToDraw", () => {
     } as outliersObject);
 
     // Helper to create mock settings
-    const createSettings = (improvement_direction: string, flag_last_point: boolean): defaultSettingsType => ({
+    const createSettings = (improvement_direction: string, flag_last_point: boolean): settingsValueType => ({
         outliers: {
             improvement_direction: improvement_direction
         },
         nhs_icons: {
             flag_last_point: flag_last_point
         }
-    } as defaultSettingsType);
+    } as settingsValueType);
 
     describe("no outliers detected", () => {
         it("should return 'commonCause' when no outliers are present", () => {

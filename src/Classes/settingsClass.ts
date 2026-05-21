@@ -2,17 +2,14 @@ import type powerbi from "powerbi-visuals-api"
 type DataView = powerbi.DataView;
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import { default as settingsModel, defaultSettings, type defaultSettingsType,
-  type defaultSettingsKeys, type defaultSettingsNestedKeys
+import { default as settingsModel, defaultSettings, type settingsValueType,
+  defaultSettingsString, settingsValueTypesUnion
  } from "../settings";
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
 
-export { type defaultSettingsType, type defaultSettingsKeys };
-export type settingsScalarTypes = number | string | boolean;
-
 export type optionalSettingsTypes = Partial<{
-  [K in keyof typeof defaultSettings]: Partial<defaultSettingsType[K]>;
+  [K in keyof typeof defaultSettings]: Partial<settingsValueType[K]>;
 }>;
 
 // Re-declare enum to avoid importing powerbi module everywhere settingsClass is used
@@ -30,7 +27,7 @@ const enum VisualEnumerationInstanceKinds {
  * These are defined in the settingsGroups.ts file
  */
 export default class settingsClass {
-  settings: defaultSettingsType[];
+  settings: settingsValueType[];
   derivedSettings: derivedSettingsClass[];
   validationStatus: SettingsValidationT;
 
@@ -45,15 +42,11 @@ export default class settingsClass {
       = JSON.parse(JSON.stringify({ status: 0, messages: new Array<string[]>(), error: "" }));
 
     // Initialize settings array based on number of groups
-    this.settings = new Array<defaultSettingsType>();
+    this.settings = new Array<settingsValueType>();
     this.derivedSettings = new Array<derivedSettingsClass>();
 
     groupIdxs.forEach(() => {
-      this.settings.push(Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
-        return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
-          return [settingName, defaultSettings[settingGroupName][settingName]];
-        }))];
-      })) as defaultSettingsType);
+      this.settings.push(JSON.parse(defaultSettingsString) as settingsValueType);
       this.derivedSettings.push(new derivedSettingsClass());
     });
 
@@ -61,8 +54,8 @@ export default class settingsClass {
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.keys(this.settings[0]);
 
-    allSettingGroups.forEach((settingGroup: defaultSettingsKeys) => {
-      const condFormatting: ConditionalReturnT<defaultSettingsType[defaultSettingsKeys]>
+    allSettingGroups.forEach((settingGroup) => {
+      const condFormatting: ConditionalReturnT<settingsValueTypesUnion>
         = extractConditionalFormatting(inputView?.categorical, settingGroup, this.settings[0], all_idxs);
 
       if (condFormatting.validation.status !== 0) {
@@ -83,12 +76,12 @@ export default class settingsClass {
       // Get the names of all settings in a given class and
       // use those to extract and update the relevant values
       const settingNames: string[] = Object.keys(this.settings[0][settingGroup]);
-      settingNames.forEach((settingName: defaultSettingsNestedKeys) => {
+      settingNames.forEach((settingName) => {
         groupIdxs.forEach((idx, idx_idx) => {
           this.settings[idx_idx][settingGroup][settingName]
             = condFormatting?.values
               ? condFormatting?.values[idx[0]][settingName]
-              : defaultSettings[settingGroup][settingName]["default"]
+              : defaultSettings[settingGroup][settingName]
         })
       })
     })
@@ -189,11 +182,7 @@ export default class settingsClass {
   }
 
   constructor() {
-    this.settings = [Object.fromEntries(Object.keys(defaultSettings).map((settingGroupName) => {
-      return [settingGroupName, Object.fromEntries(Object.keys(defaultSettings[settingGroupName]).map((settingName) => {
-        return [settingName, defaultSettings[settingGroupName][settingName]];
-      }))];
-    })) as defaultSettingsType];
+    this.settings = [JSON.parse(defaultSettingsString) as settingsValueType];
     this.derivedSettings = [new derivedSettingsClass()];
   }
 }

@@ -4,9 +4,9 @@ import DataView = powerbi.DataView;
 import { valueType } from "powerbi-visuals-utils-typeutils";
 import ValueType = valueType.ValueType;
 import isNullOrUndefined from "../../src/Functions/isNullOrUndefined";
-import { defaultSettingsType } from "../../src/settings";
+import { settingsValueType } from "../../src/settings";
 
-function buildColumn(displayName: string, queryName: string, values: any[], settings?: defaultSettingsType): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
+function buildColumn(displayName: string, queryName: string, values: any[], settings?: settingsValueType): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
   const roles = Object.fromEntries([[queryName, true]]);
   var type;
   switch(typeof values[0]) {
@@ -32,7 +32,7 @@ function buildColumn(displayName: string, queryName: string, values: any[], sett
 }
 
 export default function buildDataView(args: { key?: string[], indicator?: string[], numerators?: any[], denominators?: any[], xbar_sds?: any[], groupings?: any[] },
-                                      settings?: defaultSettingsType): DataView {
+                                      settings?: settingsValueType): DataView {
   const metadata_columns: powerbi.DataViewMetadataColumn[] = [];
   const categories: powerbi.DataViewCategoryColumn[] = [];
   const values: powerbi.DataViewValueColumns = Object.assign([], { grouped: () => [] });

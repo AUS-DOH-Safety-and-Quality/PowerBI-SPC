@@ -6,7 +6,7 @@ import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import isValidNumber from "../Functions/isValidNumber";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import type { defaultSettingsType } from "./settingsClass";
+import type { settingsValueType } from "../settings";
 import type { plotData, controlLimitsObject } from "./viewModelClass";
 import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
@@ -54,7 +54,7 @@ export default class plotPropertiesClass {
     const plotPoints: plotData[] = viewModel.plotPoints[0] as plotData[] ?? [];
     const controlLimits: controlLimitsObject = viewModel.controlLimits[0];
     const inputData: dataObject = viewModel.inputData[0];
-    const inputSettings: defaultSettingsType = viewModel.inputSettings.settings[0];
+    const inputSettings: settingsValueType = viewModel.inputSettings.settings[0];
     const derivedSettings: derivedSettingsClass = viewModel.inputSettings.derivedSettings[0];
     const colorPalette: colourPaletteType = viewModel.colourPalette;
 

@@ -1,6 +1,6 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../settings";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 import valueFormatter from "./valueFormatter";
@@ -21,7 +21,7 @@ import type { summaryTableRowData } from "../Classes/viewModelClass";
 
 export default function buildTooltip(table_row: summaryTableRowData,
                                       inputTooltips: powerbi.extensibility.VisualTooltipDataItem[],
-                                      inputSettings: defaultSettingsType,
+                                      inputSettings: settingsValueType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
 
   const ast_limit: string = inputSettings.outliers.astronomical_limit;

@@ -1,4 +1,4 @@
-import type { defaultSettingsType } from "../Classes/settingsClass"
+import type { settingsValueType } from "../settings"
 import isNullOrUndefined from "./isNullOrUndefined"
 import type { DateFormatOptions } from "./formatDateParts"
 
@@ -106,7 +106,7 @@ const dateOptionsLookup = {
  * // Returns: { weekday: "Monday", day: "15", month: "January", year: "2024" }
  * ```
  */
-export default function dateSettingsToFormatOptions(date_settings: defaultSettingsType["dates"]): DateFormatOptions {
+export default function dateSettingsToFormatOptions(date_settings: settingsValueType["dates"]): DateFormatOptions {
   // Array to collect [key, value] pairs for the options object
   const formatOpts: string[][] = new Array<string[]>();
 

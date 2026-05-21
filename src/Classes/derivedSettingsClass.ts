@@ -1,4 +1,4 @@
-import type { defaultSettingsType } from "./settingsClass"
+import type { settingsValueType } from "../settings"
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -35,7 +35,7 @@ export default class derivedSettingsClass {
     denominator_gt_one: boolean
   }
 
-  update(inputSettingsSpc: defaultSettingsType["spc"]) {
+  update(inputSettingsSpc: settingsValueType["spc"]) {
     const chartType: string = inputSettingsSpc.chart_type;
     const pChartType: boolean = ["p", "pp"].includes(chartType);
     const percentSettingString: string = inputSettingsSpc.perc_labels;

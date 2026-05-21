@@ -3,11 +3,11 @@ import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
-import type { defaultSettingsType } from "../Classes/settingsClass";
+import type { settingsValueType } from "../settings";
 import identitySelected from "../Functions/identitySelected";
 
 function drawTableHeaders(selection: divBaseType, cols: { name: string; label: string; }[],
-                          tableSettings: defaultSettingsType["summary_table"], maxWidth: number) {
+                          tableSettings: settingsValueType["summary_table"], maxWidth: number) {
   const tableHeaders = selection.select(".table-header")
             .selectAll("th")
             .data(cols)
@@ -53,7 +53,7 @@ function drawTableHeaders(selection: divBaseType, cols: { name: string; label: s
 
 function drawTableRows(selection: divBaseType, visualObj: Visual,
                        plotPoints: plotData[] | plotDataGrouped[],
-                       tableSettings: defaultSettingsType["summary_table"],
+                       tableSettings: settingsValueType["summary_table"],
                        maxWidth: number) {
   const tableRows = selection
                         .select(".table-body")
@@ -92,7 +92,7 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
   }
 }
 
-function drawOuterBorder(selection: divBaseType, tableSettings: defaultSettingsType["summary_table"]) {
+function drawOuterBorder(selection: divBaseType, tableSettings: settingsValueType["summary_table"]) {
   selection.select(".table-group")
             .style("border-width", `${tableSettings.table_outer_border_width}px`)
             .style("border-style", tableSettings.table_outer_border_style)
@@ -121,7 +121,7 @@ function drawOuterBorder(selection: divBaseType, tableSettings: defaultSettingsT
 }
 
 function drawTableCells(selection: divBaseType, cols: { name: string; label: string; }[],
-                        inputSettings: defaultSettingsType, showGrouped: boolean) {
+                        inputSettings: settingsValueType, showGrouped: boolean) {
   const tableCells = selection.select(".table-body")
             .selectAll('tr')
             .selectAll('td')
@@ -158,7 +158,7 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
 
       currNode.text(value).classed("cell-text", true);
     }
-    const tableAesthetics: defaultSettingsType["summary_table"]
+    const tableAesthetics: settingsValueType["summary_table"]
       = rowData.aesthetics?.["table_body_bg_colour"]
                               ? rowData.aesthetics as any
                               : inputSettings.summary_table;
