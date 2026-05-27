@@ -75,9 +75,7 @@ export default function extractInputData(inputView: DataViewCategorical,
   let scatter_cond = extractConditionalFormatting<settingsValueType["scatter"]>(inputView, "scatter", inputSettings, idxs)?.values;
   let lines_cond = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", inputSettings, idxs)?.values;
   let labels_cond = extractConditionalFormatting<settingsValueType["labels"]>(inputView, "labels", inputSettings, idxs)?.values;
-  let alt_targets: number[] = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", inputSettings, idxs)
-                                    ?.values
-                                    .map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
+  let alt_targets: number[] = lines_cond.map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
   let speclimits_lower: number[] = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", inputSettings, idxs)
                                     ?.values
                                     .map(d => d.show_specification ? d.specification_lower : null);

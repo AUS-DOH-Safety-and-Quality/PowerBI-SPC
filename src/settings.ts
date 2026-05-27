@@ -71,24 +71,18 @@ type settingsValueType = {
 }
 type settingsValueTypesUnion = settingsValueType[settingsModelKeys];
 
-const settingsKeys: settingsModelKeys[] = Object.keys(settingsModel) as settingsModelKeys[];
-
-type settingScalarType = string | number | boolean | undefined;
-const defaultValuesArray = new Array<(string | settingsValueTypesUnion)[]>(settingsKeys.length);
-for (let i = 0; i < settingsKeys.length; i++) {
-  const key: string = settingsKeys[i];
-  const settingNames: string[] = (settingsModel[key] as any).settingNames;
-  const curr_card = new Array<[string, settingScalarType]>(settingNames.length);
-
-  for (let j = 0; j < settingNames.length; j++) {
-    const setting: string = settingNames[j];
-    curr_card[j] = [setting, settingsModel[key][setting]["default"]];
+Object.defineProperty(settingsModel, "defaultValues", {
+  get: function() {
+    let ret = {};
+    for (const key in this) {
+      const currSettings: string[] = this[key].settingNames;
+      ret[key] = Object.fromEntries(currSettings.map(d => [d, this[key][d]["default"]]));
+    }
+    return ret as settingsValueType;
   }
-  defaultValuesArray[i] = [key, Object.fromEntries(curr_card) as settingsValueTypesUnion];
-}
+})
 
-const defaultSettings: settingsValueType = Object.fromEntries(defaultValuesArray) as settingsValueType;
-const defaultSettingsString: string = JSON.stringify(defaultSettings);
+const defaultSettings: settingsValueType = (settingsModel as any).defaultValues;
 
-export { defaultSettings, defaultSettingsString, settingsValueType, settingsValueTypesUnion };
+export { defaultSettings, settingsValueType, settingsValueTypesUnion };
 export default settingsModel;
