@@ -1,70 +1,22 @@
-import { FormattingComponent, defaultColours } from "./common";
+import {
+  defaultColours, colourOption,
+  numberOptionMinMax, toggleOption, dropdownOption
+} from "./common";
 
 const scatterSettings = {
   description: "Scatter Settings",
   displayName: "Scatter Settings",
   settingsGroups: {
     "all": {
-      show_dots: {
-        displayName: "Show Scatter",
-        type: FormattingComponent.ToggleSwitch,
-        default: true
-      },
-      shape: {
-        displayName: "Shape",
-        type: FormattingComponent.Dropdown,
-        default: "Circle",
-        valid: ["Circle", "Cross", "Diamond", "Square", "Star", "Triangle", "Wye"],
-        items: [
-          { displayName : "Circle", value : "Circle" },
-          { displayName : "Cross", value : "Cross" },
-          { displayName : "Diamond", value : "Diamond" },
-          { displayName : "Square", value : "Square" },
-          { displayName : "Star", value : "Star" },
-          { displayName : "Triangle", value : "Triangle" },
-          { displayName : "Wye", value : "Wye" }
-        ]
-      },
-      size: {
-        displayName: "Size",
-        type: FormattingComponent.NumUpDown,
-        default: 2.5,
-        options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-      },
-      colour: {
-        displayName: "Colour",
-        type: FormattingComponent.ColorPicker,
-        default: defaultColours.common_cause
-      },
-      colour_outline: {
-        displayName: "Outline Colour",
-        type: FormattingComponent.ColorPicker,
-        default: defaultColours.common_cause
-      },
-      width_outline: {
-        displayName: "Outline Width",
-        type: FormattingComponent.NumUpDown,
-        default: 1,
-        options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-      },
-      opacity: {
-        displayName: "Default Opacity",
-        type: FormattingComponent.NumUpDown,
-        default: 1,
-        options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-      },
-      opacity_selected: {
-        displayName: "Opacity if Selected",
-        type: FormattingComponent.NumUpDown,
-        default: 1,
-        options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-      },
-      opacity_unselected: {
-        displayName: "Opacity if Unselected",
-        type: FormattingComponent.NumUpDown,
-        default: 0.2,
-        options: { minValue: { value: 0 }, maxValue: { value: 1 } }
-      }
+      show_dots: toggleOption("Show Scatter", true),
+      shape: dropdownOption("Shape", "Circle", ["Circle", "Cross", "Diamond", "Square", "Star", "Triangle", "Wye"]),
+      size: numberOptionMinMax("Size", 2.5, 0, 100),
+      colour: colourOption("Colour", defaultColours.common_cause),
+      colour_outline: colourOption("Outline Colour", defaultColours.common_cause),
+      width_outline: numberOptionMinMax("Outline Width", 1, 0, 100),
+      opacity: numberOptionMinMax("Default Opacity", 1, 0, 1),
+      opacity_selected: numberOptionMinMax("Opacity if Selected", 1, 0, 1),
+      opacity_unselected: numberOptionMinMax("Opacity if Unselected", 0.2, 0, 1)
     }
   }
 };
