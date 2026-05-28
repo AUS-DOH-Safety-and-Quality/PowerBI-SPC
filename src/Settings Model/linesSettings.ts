@@ -1,5 +1,4 @@
 import {
-  defaultColours,
   toggleOption, numberOptionMinMax, lineTypeOption,
   colourOption, numberOption, numberOptionMin,
   fontOption, fontSizeOption, textOption,
@@ -14,7 +13,7 @@ const linesSettings = {
       show_main: toggleOption("Show Main Line", true),
       width_main: numberOptionMinMax("Main Line Width", 1, 0, 100),
       type_main: lineTypeOption("Main Line Type", "10 0"),
-      colour_main: colourOption("Main Line Colour", defaultColours.common_cause),
+      colour_main: colourOption("Main Line Colour", "common_cause"),
       opacity_main: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_main: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_main: toggleOption("Connect Rebaselined Limits", false),
@@ -26,14 +25,14 @@ const linesSettings = {
       plot_label_hpad_main: numberOption("Value Horizontal Padding", 10),
       plot_label_font_main: fontOption("Value Font"),
       plot_label_size_main: fontSizeOption("Value Font Size"),
-      plot_label_colour_main: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_main: colourOption("Value Colour", "standard"),
       plot_label_prefix_main: textOption("Value Prefix", "")
     },
     "Target": {
       show_target: toggleOption("Show Target", true),
       width_target: numberOptionMinMax("Line Width", 1.5, 0, 100),
       type_target: lineTypeOption("Line Type", "10 0"),
-      colour_target: colourOption("Line Colour", defaultColours.standard),
+      colour_target: colourOption("Line Colour", "standard"),
       opacity_target: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_target: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_target: toggleOption("Connect Rebaselined Limits", false),
@@ -47,7 +46,7 @@ const linesSettings = {
       plot_label_hpad_target: numberOption("Value Horizontal Padding", 10),
       plot_label_font_target: fontOption("Value Font"),
       plot_label_size_target: fontSizeOption("Value Font Size"),
-      plot_label_colour_target: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_target: colourOption("Value Colour", "standard"),
       plot_label_prefix_target: textOption("Value Prefix", "")
     },
     "Alt. Target": {
@@ -56,7 +55,7 @@ const linesSettings = {
       multiplier_alt_target: toggleOption("Apply Multiplier to Alt. Target", false),
       width_alt_target: numberOptionMinMax("Line Width", 1.5, 0, 100),
       type_alt_target: lineTypeOption("Line Type", "10 0"),
-      colour_alt_target: colourOption("Line Colour", defaultColours.standard),
+      colour_alt_target: colourOption("Line Colour", "standard"),
       opacity_alt_target: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_alt_target: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_alt_target: toggleOption("Connect Rebaselined Limits", false),
@@ -70,14 +69,14 @@ const linesSettings = {
       plot_label_hpad_alt_target: numberOption("Value Horizontal Padding", 10),
       plot_label_font_alt_target: fontOption("Value Font"),
       plot_label_size_alt_target: fontSizeOption("Value Font Size"),
-      plot_label_colour_alt_target: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_alt_target: colourOption("Value Colour", "standard"),
       plot_label_prefix_alt_target: textOption("Value Prefix", "")
     },
     "68% Limits": {
       show_68: toggleOption("Show 68% Lines", false),
       width_68: numberOptionMinMax("Line Width", 2, 0, 100),
       type_68: lineTypeOption("Line Type", "2 5"),
-      colour_68: colourOption("Line Colour", defaultColours.limits),
+      colour_68: colourOption("Line Colour", "limits"),
       opacity_68: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_68: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_68: toggleOption("Connect Rebaselined Limits", false),
@@ -93,14 +92,14 @@ const linesSettings = {
       plot_label_hpad_68: numberOption("Value Horizontal Padding", 10),
       plot_label_font_68: fontOption("Value Font"),
       plot_label_size_68: fontSizeOption("Value Font Size"),
-      plot_label_colour_68: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_68: colourOption("Value Colour", "standard"),
       plot_label_prefix_68: textOption("Value Prefix", "")
     },
     "95% Limits": {
       show_95: toggleOption("Show 95% Lines", true),
       width_95: numberOptionMinMax("Line Width", 2, 0, 100),
       type_95: lineTypeOption("Line Type", "2 5"),
-      colour_95: colourOption("Line Colour", defaultColours.limits),
+      colour_95: colourOption("Line Colour", "limits"),
       opacity_95: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_95: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_95: toggleOption("Connect Rebaselined Limits", false),
@@ -116,14 +115,14 @@ const linesSettings = {
       plot_label_hpad_95: numberOption("Value Horizontal Padding", 10),
       plot_label_font_95: fontOption("Value Font"),
       plot_label_size_95: fontSizeOption("Value Font Size"),
-      plot_label_colour_95: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_95: colourOption("Value Colour", "standard"),
       plot_label_prefix_95: textOption("Value Prefix", "")
     },
     "99% Limits": {
       show_99: toggleOption("Show 99% Lines", true),
       width_99: numberOptionMinMax("Line Width", 2, 0, 100),
       type_99: lineTypeOption("Line Type", "10 10"),
-      colour_99: colourOption("Line Colour", defaultColours.limits),
+      colour_99: colourOption("Line Colour", "limits"),
       opacity_99: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_99: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_99: toggleOption("Connect Rebaselined Limits", false),
@@ -139,7 +138,7 @@ const linesSettings = {
       plot_label_hpad_99: numberOption("Value Horizontal Padding", 10),
       plot_label_font_99: fontOption("Value Font"),
       plot_label_size_99: fontSizeOption("Value Font Size"),
-      plot_label_colour_99: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_99: colourOption("Value Colour", "standard"),
       plot_label_prefix_99: textOption("Value Prefix", "")
     },
     "Specification Limits": {
@@ -149,7 +148,7 @@ const linesSettings = {
       multiplier_specification: toggleOption("Apply Multiplier to Specification Limits", false),
       width_specification: numberOptionMinMax("Line Width", 2, 0, 100),
       type_specification: lineTypeOption("Line Type", "10 10"),
-      colour_specification: colourOption("Line Colour", defaultColours.limits),
+      colour_specification: colourOption("Line Colour", "limits"),
       opacity_specification: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_specification: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_specification: toggleOption("Connect Rebaselined Limits", false),
@@ -165,14 +164,14 @@ const linesSettings = {
       plot_label_hpad_specification: numberOption("Value Horizontal Padding", 10),
       plot_label_font_specification: fontOption("Value Font"),
       plot_label_size_specification: fontSizeOption("Value Font Size"),
-      plot_label_colour_specification: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_specification: colourOption("Value Colour", "standard"),
       plot_label_prefix_specification: textOption("Value Prefix", "")
     },
     "Trend": {
       show_trend: toggleOption("Show Trend", false),
       width_trend: numberOptionMinMax("Line Width", 1.5, 0, 100),
       type_trend: lineTypeOption("Line Type", "10 0"),
-      colour_trend: colourOption("Line Colour", defaultColours.common_cause),
+      colour_trend: colourOption("Line Colour", "common_cause"),
       opacity_trend: numberOptionMinMax("Default Opacity", 1, 0, 1),
       opacity_unselected_trend: numberOptionMinMax("Opacity if Any Selected", 0.2, 0, 1),
       join_rebaselines_trend: toggleOption("Connect Rebaselined Limits", false),
@@ -186,7 +185,7 @@ const linesSettings = {
       plot_label_hpad_trend: numberOption("Value Horizontal Padding", 10),
       plot_label_font_trend: fontOption("Value Font"),
       plot_label_size_trend: fontSizeOption("Value Font Size"),
-      plot_label_colour_trend: colourOption("Value Colour", defaultColours.standard),
+      plot_label_colour_trend: colourOption("Value Colour", "standard"),
       plot_label_prefix_trend: textOption("Value Prefix", "")
     }
   }

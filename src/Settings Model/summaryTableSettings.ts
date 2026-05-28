@@ -1,6 +1,5 @@
 import {
-  textOptions, borderOptions,
-  defaultColours, toggleOption, numberOptionMinMax,
+  toggleOption, numberOptionMinMax,
   fontOption, fontSizeOption, colourOption, dropdownOption,
   borderStyleOption, borderWidthOption, alignmentOption,
   fontWeightOption, textTransformOption
@@ -24,13 +23,13 @@ const summaryTableSettings = {
         "Filter by Assurance Type", "all", ["all", "any", "pass", "fail", "inconsistent"], "none",
         ["All", "Consistent - Any", "Consistent Pass", "Consistent Fail", "Inconsistent"]
       ),
-      table_text_overflow: dropdownOption("Text Overflow Handling", textOptions.text_overflow.default, textOptions.text_overflow.valid, "sentence"),
+      table_text_overflow: dropdownOption("Text Overflow Handling", "ellipsis", ["ellipsis", "clip", "none"], "sentence"),
       table_opacity: numberOptionMinMax("Default Opacity", 1, 0, 1),
       table_opacity_selected: numberOptionMinMax("Opacity if Selected", 1, 0, 1),
       table_opacity_unselected: numberOptionMinMax("Opacity if Unselected", 0.2, 0, 1),
       table_outer_border_style: borderStyleOption("Outer Border Style"),
       table_outer_border_width: borderWidthOption("Outer Border Width"),
-      table_outer_border_colour: colourOption("Outer Border Colour", borderOptions.colour.default),
+      table_outer_border_colour: colourOption("Outer Border Colour", "standard"),
       table_outer_border_top: toggleOption("Outer Border Top", true),
       table_outer_border_bottom: toggleOption("Outer Border Bottom", true),
       table_outer_border_left: toggleOption("Outer Border Left", true),
@@ -43,11 +42,11 @@ const summaryTableSettings = {
       table_header_font_weight: fontWeightOption("Header Font Weight"),
       table_header_text_transform: textTransformOption("Header Text Transform"),
       table_header_text_padding: numberOptionMinMax("Padding Around Text", 1, 0, 100),
-      table_header_colour: colourOption("Header Font Colour", defaultColours.standard),
-      table_header_bg_colour: colourOption("Header Background Colour", "#D3D3D3"),
+      table_header_colour: colourOption("Header Font Colour", "standard"),
+      table_header_bg_colour: colourOption("Header Background Colour", "lightgray"),
       table_header_border_style: borderStyleOption("Header Border Style"),
       table_header_border_width: borderWidthOption("Header Border Width"),
-      table_header_border_colour: colourOption("Header Border Colour", borderOptions.colour.default),
+      table_header_border_colour: colourOption("Header Border Colour", "standard"),
       table_header_border_bottom: toggleOption("Bottom Border", true),
       table_header_border_inner: toggleOption("Inner Borders", true)
     },
@@ -58,11 +57,11 @@ const summaryTableSettings = {
       table_body_font_weight: fontWeightOption("Font Weight"),
       table_body_text_transform: textTransformOption("Text Transform"),
       table_body_text_padding: numberOptionMinMax("Padding Around Text", 1, 0, 100),
-      table_body_colour: colourOption("Body Font Colour", defaultColours.standard),
-      table_body_bg_colour: colourOption("Body Background Colour", "#FFFFFF"),
+      table_body_colour: colourOption("Body Font Colour", "standard"),
+      table_body_bg_colour: colourOption("Body Background Colour", "white"),
       table_body_border_style: borderStyleOption("Body Border Style"),
       table_body_border_width: borderWidthOption("Body Border Width"),
-      table_body_border_colour: colourOption("Body Border Colour", borderOptions.colour.default),
+      table_body_border_colour: colourOption("Body Border Colour", "standard"),
       table_body_border_top_bottom: toggleOption("Top/Bottom Borders", true),
       table_body_border_left_right: toggleOption("Left/Right Borders", true)
     }

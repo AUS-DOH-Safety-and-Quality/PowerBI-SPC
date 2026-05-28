@@ -1,5 +1,5 @@
 import {
-  defaultColours, fontOption, toggleOption,
+  fontOption, toggleOption,
   colourOption, fontSizeOption, lineTypeOption,
   numberOption,
   numberOptionMinMax, dropdownOption
@@ -17,16 +17,16 @@ const labelsSettings = {
       label_angle_offset: numberOptionMinMax("Label Angle Offset (degrees)", 0, -90, 90),
       label_font: fontOption("Label Font"),
       label_size: fontSizeOption("Label Font Size"),
-      label_colour: colourOption("Label Font Colour", defaultColours.standard),
-      label_line_colour: colourOption("Connecting Line Colour", defaultColours.standard),
+      label_colour: colourOption("Label Font Colour", "standard"),
+      label_line_colour: colourOption("Connecting Line Colour", "standard"),
       label_line_width: numberOptionMinMax("Connecting Line Width", 1, 0, 100),
       label_line_type: lineTypeOption("Connecting Line Type", "10 0"),
       label_line_max_length: numberOptionMinMax("Max Connecting Line Length (px)", 1000, 0, 10000),
       label_marker_show: toggleOption("Show Line Markers", true),
       label_marker_offset: numberOption("Marker Offset from Value (px)", 5),
       label_marker_size: numberOptionMinMax("Marker Size", 3, 0, 100),
-      label_marker_colour: colourOption("Marker Fill Colour", defaultColours.standard),
-      label_marker_outline_colour: colourOption("Marker Outline Colour", defaultColours.standard)
+      label_marker_colour: colourOption("Marker Fill Colour", "standard"),
+      label_marker_outline_colour: colourOption("Marker Outline Colour", "standard")
     }
   }
 };
