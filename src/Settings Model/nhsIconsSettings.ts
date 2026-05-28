@@ -1,61 +1,19 @@
-import { FormattingComponent } from "./common";
+import { toggleOption, numberOptionMin, dropdownOption } from "./common";
+
+const iconLocations: string[] = ["Top Right", "Bottom Right", "Top Left", "Bottom Left"];
 
 const nhsIconsSettings = {
   description: "NHS Icons Settings",
   displayName: "NHS Icons Settings",
   settingsGroups: {
     "all": {
-      show_variation_icons: {
-        displayName: "Show Variation Icons",
-        type: FormattingComponent.ToggleSwitch,
-        default: false
-      },
-      flag_last_point: {
-        displayName: "Flag Only Last Point",
-        type: FormattingComponent.ToggleSwitch,
-        default: true
-      },
-      variation_icons_locations: {
-        displayName: "Variation Icon Locations",
-        type: FormattingComponent.Dropdown,
-        default: "Top Right",
-        valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"],
-        items: [
-          { displayName : "Top Right",    value : "Top Right" },
-          { displayName : "Bottom Right", value : "Bottom Right" },
-          { displayName : "Top Left",     value : "Top Left" },
-          { displayName : "Bottom Left",  value : "Bottom Left" }
-        ]
-      },
-      variation_icons_scaling: {
-        displayName: "Scale Variation Icon Size",
-        type: FormattingComponent.NumUpDown,
-        default: 1,
-        options: { minValue: { value: 0 } }
-      },
-      show_assurance_icons: {
-        displayName: "Show Assurance Icons",
-        type: FormattingComponent.ToggleSwitch,
-        default: false
-      },
-      assurance_icons_locations: {
-        displayName: "Assurance Icon Locations",
-        type: FormattingComponent.Dropdown,
-        default: "Top Right",
-        valid: ["Top Right", "Bottom Right", "Top Left", "Bottom Left"],
-        items: [
-          { displayName : "Top Right",    value : "Top Right" },
-          { displayName : "Bottom Right", value : "Bottom Right" },
-          { displayName : "Top Left",     value : "Top Left" },
-          { displayName : "Bottom Left",  value : "Bottom Left" }
-        ]
-      },
-      assurance_icons_scaling: {
-        displayName: "Scale Assurance Icon Size",
-        type: FormattingComponent.NumUpDown,
-        default: 1,
-        options: { minValue: { value: 0 } }
-      }
+      show_variation_icons: toggleOption("Show Variation Icons", false),
+      flag_last_point: toggleOption("Flag Only Last Point", true),
+      variation_icons_locations: dropdownOption("Variation Icon Locations", "Top Right", iconLocations),
+      variation_icons_scaling: numberOptionMin("Scale Variation Icon Size", 1, 0),
+      show_assurance_icons: toggleOption("Show Assurance Icons", false),
+      assurance_icons_locations: dropdownOption("Assurance Icon Locations", "Top Right", iconLocations),
+      assurance_icons_scaling: numberOptionMin("Scale Assurance Icon Size", 1, 0)
     }
   }
 };

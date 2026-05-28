@@ -116,21 +116,188 @@ const borderOptions = {
   }
 };
 
-const lineOptions = {
-  type: {
-    valid: ["10 0", "10 10", "2 5"],
-    items: [
-      { displayName: "Solid", value: "10 0" },
-      { displayName: "Dashed", value: "10 10" },
-      { displayName: "Dotted", value: "2 5" }
-    ]
+
+type UndefinedOrNumT<T> = T extends undefined ? undefined | number : T;
+
+function numberOption<T>(displayName: string, defaultValue: T) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.NumUpDown,
+    default: defaultValue as UndefinedOrNumT<T>
   }
+}
+
+function numberOptionMin<T>(displayName: string, defaultValue: T, minValue: number) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.NumUpDown,
+    default: defaultValue as UndefinedOrNumT<T>,
+    options: { minValue: { value: minValue } }
+  }
+}
+function numberOptionMinMax<T>(displayName: string, defaultValue: T,
+                            minValue: number, maxValue: number) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.NumUpDown,
+    default: defaultValue as UndefinedOrNumT<T>,
+    options: { minValue: { value: minValue }, maxValue: { value: maxValue } }
+  }
+}
+
+function toggleOption(displayName: string, defaultValue: boolean) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.ToggleSwitch,
+    default: defaultValue
+  }
+}
+
+function paddingOption(displayName: string) {
+  return numberOption(displayName, 10);
+}
+
+function colourOption(displayName: string, defaultValue: string) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.ColorPicker,
+    default: defaultValue
+  }
+}
+
+function fontOption(displayName: string) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.FontPicker,
+    default: textOptions.font.default,
+    valid: textOptions.font.valid
+  }
+}
+
+function fontSizeOption(displayName: string) {
+  return numberOptionMinMax(displayName, textOptions.size.default, 0, 100);
+}
+
+
+
+type DropdownItem = { displayName: string; value: string; }
+const valueTransforms: Record<string, (x: string) => string> = {
+  none: (x: string) => x,
+  sentence: (x: string) => x.toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase())
 };
+
+function dropdownOption(displayName: string, defaultValue: string,
+                        validValues: string[], displayTransform?: string,
+                        displayNames?: string[]) {
+  const numValues: number = validValues.length;
+  const rtn = {
+    displayName: displayName,
+    type: FormattingComponent.Dropdown,
+    default: defaultValue,
+    valid: validValues,
+    items: new Array<DropdownItem>(numValues)
+  };
+
+  const transformFun: (x: string) => string = valueTransforms[(displayTransform ?? "none")]
+
+  for (let i: number = 0; i < numValues; i++) {
+    rtn.items[i] = {
+      displayName: displayNames ? displayNames[i] : transformFun(validValues[i]),
+      value: validValues[i]
+    }
+  }
+
+  return rtn;
+}
+
+
+
+function lineTypeOption(displayName: string, defaultValue: string) {
+  return dropdownOption(displayName, defaultValue, ["10 0", "10 10", "2 5"], "none", ["Solid", "Dashed", "Dotted"])
+}
+
+function textOption(displayName: string, defaultValue: string) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.TextInput,
+    default: defaultValue
+  }
+}
+
+
+
+function lineLabelPositionOption() {
+  return dropdownOption("Position of Value on Line(s)", "beside",
+                        ["outside", "inside", "above", "below", "beside"],
+                        "sentence");
+}
+
+function borderStyleOption(displayName: string) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.Dropdown,
+    default: borderOptions.style.default,
+    valid: borderOptions.style.valid,
+    items: borderOptions.style.items
+  }
+}
+
+function borderWidthOption(displayName: string) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.NumUpDown,
+    default: borderOptions.width.default,
+    options: borderOptions.width.options
+  }
+}
+
+function alignmentOption(displayName: string) {
+  return {
+    displayName: displayName,
+    type: FormattingComponent.AlignmentGroup,
+    default: textOptions.text_align.default,
+    valid: textOptions.text_align.valid
+  }
+}
+
+function fontWeightOption(displayName: string) {
+  return dropdownOption(
+    displayName,
+    textOptions.weight.default,
+    textOptions.weight.valid,
+    "sentence"
+  )
+}
+
+function textTransformOption(displayName: string) {
+  return dropdownOption(
+    displayName,
+    textOptions.text_transform.default,
+    textOptions.text_transform.valid,
+    "sentence"
+  )
+}
 
 export {
   FormattingComponent,
   defaultColours,
   textOptions,
   borderOptions,
-  lineOptions
+  paddingOption,
+  colourOption,
+  fontOption,
+  fontSizeOption,
+  lineTypeOption,
+  toggleOption,
+  numberOption,
+  numberOptionMin,
+  numberOptionMinMax,
+  textOption,
+  lineLabelPositionOption,
+  dropdownOption,
+  borderStyleOption,
+  borderWidthOption,
+  alignmentOption,
+  fontWeightOption,
+  textTransformOption
 };

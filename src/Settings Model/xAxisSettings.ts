@@ -1,90 +1,32 @@
-import { FormattingComponent, defaultColours, textOptions } from "./common";
+import {
+  defaultColours,
+  toggleOption, numberOption, numberOptionMinMax,
+  fontOption, fontSizeOption, textOption, colourOption
+} from "./common";
 
 const xAxisSettings = {
   description: "X Axis Settings",
   displayName: "X Axis Settings",
   settingsGroups: {
     "Axis": {
-      xlimit_show: {
-        displayName: "Show X Axis",
-        type: FormattingComponent.ToggleSwitch,
-        default: true
-      },
-      xlimit_colour: {
-        displayName: "Axis Colour",
-        type: FormattingComponent.ColorPicker,
-        default: defaultColours.standard
-      },
-      xlimit_l: {
-        displayName: "Lower Limit",
-        type: FormattingComponent.NumUpDown,
-        default: undefined as number | undefined
-      },
-      xlimit_u: {
-        displayName: "Upper Limit",
-        type: FormattingComponent.NumUpDown,
-        default: undefined as number | undefined
-      }
+      xlimit_show: toggleOption("Show X Axis", true),
+      xlimit_colour: colourOption("Axis Colour", defaultColours.standard),
+      xlimit_l: numberOption("Lower Limit", undefined),
+      xlimit_u: numberOption("Upper Limit", undefined)
     },
     "Ticks": {
-      xlimit_ticks: {
-        displayName: "Draw Ticks",
-        type: FormattingComponent.ToggleSwitch,
-        default: true
-      },
-      xlimit_tick_count: {
-        displayName: "Maximum Ticks",
-        type: FormattingComponent.NumUpDown,
-        default: 10,
-        options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-      },
-      xlimit_tick_font: {
-        displayName: "Tick Font",
-        type: FormattingComponent.FontPicker,
-        default: textOptions.font.default,
-        valid: textOptions.font.valid
-      },
-      xlimit_tick_size: {
-        displayName: "Tick Font Size",
-        type: FormattingComponent.NumUpDown,
-        default: textOptions.size.default,
-        options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-      },
-      xlimit_tick_colour: {
-        displayName: "Tick Font Colour",
-        type: FormattingComponent.ColorPicker,
-        default: defaultColours.standard
-      },
-      xlimit_tick_rotation: {
-        displayName: "Tick Rotation (Degrees)",
-        type: FormattingComponent.NumUpDown,
-        default: -35,
-        options: { minValue: { value: -360 }, maxValue: { value: 360 } }
-      }
+      xlimit_ticks: toggleOption("Draw Ticks", true),
+      xlimit_tick_count: numberOptionMinMax("Maximum Ticks", 10, 0, 100),
+      xlimit_tick_font: fontOption("Tick Font"),
+      xlimit_tick_size: fontSizeOption("Tick Font Size"),
+      xlimit_tick_colour: colourOption("Tick Font Colour", defaultColours.standard),
+      xlimit_tick_rotation: numberOptionMinMax("Tick Rotation (Degrees)", -35, -360, 360)
     },
     "Label": {
-      xlimit_label: {
-        displayName: "Label",
-        type: FormattingComponent.TextInput,
-        default: undefined as string | undefined
-      },
-      xlimit_label_font: {
-        displayName: "Label Font",
-        type: FormattingComponent.FontPicker,
-        default: textOptions.font.default,
-        valid: textOptions.font.valid
-      },
-      xlimit_label_size: {
-        displayName: "Label Font Size",
-        type: FormattingComponent.NumUpDown,
-        default: textOptions.size.default,
-        options: { minValue: { value: 0 }, maxValue: { value: 100 } }
-      },
-      xlimit_label_colour: {
-        displayName: "Label Font Colour",
-        type: FormattingComponent.ColorPicker,
-        default: defaultColours.standard
-      }
+      xlimit_label: textOption("Label", ""),
+      xlimit_label_font: fontOption("Label Font"),
+      xlimit_label_size: fontSizeOption("Label Font Size"),
+      xlimit_label_colour: colourOption("Label Font Colour", defaultColours.standard)
     }
   }
 };
