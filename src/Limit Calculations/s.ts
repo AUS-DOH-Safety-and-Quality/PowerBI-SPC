@@ -1,4 +1,4 @@
-import { b3, b4 } from "../Functions/sampleConstants";
+import { c4, c5 } from "../Functions/sampleConstants";
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
@@ -97,13 +97,18 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Limits depend on subgroup size via B3 and B4 constants
   // B3 = 1 - (k * c5/c4), B4 = 1 + (k * c5/c4), where k is the sigma multiplier
   for (let i = 0; i < n; i++) {
+    const c5c4: number = (c5(count_per_group[i]) / c4(count_per_group[i]));
+    const sigma: number = cl * c5c4;
+    const twoSigma: number = 2 * sigma;
+    const threeSigma: number = 3 * sigma;
+
     rtn.targets[i] = cl;
-    rtn.ll99![i] = cl * b3(count_per_group[i], 3); // 3-sigma lower limit
-    rtn.ll95![i] = cl * b3(count_per_group[i], 2); // 2-sigma lower limit
-    rtn.ll68![i] = cl * b3(count_per_group[i], 1); // 1-sigma lower limit
-    rtn.ul68![i] = cl * b4(count_per_group[i], 1); // 1-sigma upper limit
-    rtn.ul95![i] = cl * b4(count_per_group[i], 2); // 2-sigma upper limit
-    rtn.ul99![i] = cl * b4(count_per_group[i], 3); // 3-sigma upper limit
+    rtn.ll99![i] = cl - threeSigma;   //cl * b3(count_per_group[i], 3); // 3-sigma lower limit
+    rtn.ll95![i] = cl - twoSigma; // 2-sigma lower limit
+    rtn.ll68![i] = cl - sigma; // 1-sigma lower limit
+    rtn.ul68![i] = cl + sigma; // 1-sigma upper limit
+    rtn.ul95![i] = cl + twoSigma; // 2-sigma upper limit
+    rtn.ul99![i] = cl + threeSigma; // 3-sigma upper limit
   }
 
   return rtn;

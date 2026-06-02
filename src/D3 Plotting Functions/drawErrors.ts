@@ -8,11 +8,11 @@ export default function drawErrors(selection: svgBaseType,
                                     options: VisualUpdateOptions,
                                     colourPalette: colourPaletteType,
                                     message: string,
-                                    type: string = null) {
+                                    type: string) {
   selection.call(initialiseSVG, true);
   const errMessageSVG = selection.append("g").classed("errormessage", true);
 
-  if (type) {
+  if (type !== "") {
     const preamble: Record<string, string> = {
       "internal": "Internal Error! Please file a bug report with the following text:",
       "settings": "Invalid settings provided for all observations! First error:"
