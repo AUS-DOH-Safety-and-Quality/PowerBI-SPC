@@ -9,7 +9,7 @@ import isNullOrUndefined from "./isNullOrUndefined";
  * @param indexArray The array of indices specifying which values to extract.
  * @returns An array of extracted values.
  */
-export default function extractValues<T>(valuesArray: T[], indexArray: number[]): T[] {
+export default function extractValues<T>(valuesArray: readonly T[], indexArray: readonly number[]): T[] {
   if (valuesArray) {
     const validIndexArray: number[] = indexArray.filter(idx => {
       return idx >= 0 && idx < valuesArray.length && !isNullOrUndefined(idx);

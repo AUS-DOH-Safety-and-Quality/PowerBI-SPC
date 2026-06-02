@@ -6,6 +6,8 @@ import isNullOrUndefined from "./isNullOrUndefined";
 import valueFormatter from "./valueFormatter";
 import type { summaryTableRowData } from "../Classes/viewModelClass";
 
+type LinesKeys = keyof settingsValueType["lines"];
+
 /**
  * Builds the tooltip data for a specific index in the chart.
  *
@@ -77,10 +79,10 @@ export default function buildTooltip(table_row: summaryTableRowData,
   }
   if (derivedSettings.chart_type_props.has_control_limits) {
     ["99", "95", "65"].forEach(limit => {
-      if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
+      if (inputSettings.lines[`ttip_show_${limit}` as LinesKeys] && inputSettings.lines[`show_${limit}` as LinesKeys]) {
         tooltip.push({
-          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: formatValues(table_row[`ul${limit}`], "value")
+          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper` as LinesKeys]}${inputSettings.lines[`ttip_label_${limit}` as LinesKeys]}`,
+          value: formatValues(table_row[`ul${limit}` as keyof summaryTableRowData], "value")
         })
       }
     })
@@ -99,10 +101,10 @@ export default function buildTooltip(table_row: summaryTableRowData,
   }
   if (derivedSettings.chart_type_props.has_control_limits) {
     ["68", "95", "99"].forEach(limit => {
-      if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
+      if (inputSettings.lines[`ttip_show_${limit}` as LinesKeys] && inputSettings.lines[`show_${limit}` as LinesKeys]) {
         tooltip.push({
-          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
-          value: formatValues(table_row[`ll${limit}`], "value")
+          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower` as LinesKeys]}${inputSettings.lines[`ttip_label_${limit}` as LinesKeys]}`,
+          value: formatValues(table_row[`ll${limit}` as keyof summaryTableRowData], "value")
         })
       }
     })
