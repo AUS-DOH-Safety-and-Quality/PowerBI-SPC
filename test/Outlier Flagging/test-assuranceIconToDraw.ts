@@ -2,6 +2,7 @@ import assuranceIconToDraw from "../../src/Outlier Flagging/assuranceIconToDraw"
 import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
 import type { settingsValueType } from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
+import { defaultSettings } from "../../src/settings";
 
 describe("assuranceIconToDraw", () => {
     // Helper to create mock control limits
@@ -25,7 +26,7 @@ describe("assuranceIconToDraw", () => {
 
     // Helper to create derived settings with control limits
     const createDerivedSettings = (has_control_limits: boolean): derivedSettingsClass => {
-        const derived = new derivedSettingsClass();
+        const derived = new derivedSettingsClass(defaultSettings["spc"]);
         derived.chart_type_props = {
             has_control_limits: has_control_limits,
             name: "test",
