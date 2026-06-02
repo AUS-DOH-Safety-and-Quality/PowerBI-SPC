@@ -214,6 +214,50 @@ function textTransformOption(displayName: string) {
   )
 }
 
+
+type ExpandRecursive<T> = T extends object
+  ? T extends infer O ? { [K in keyof O]: ExpandRecursive<O[K]> } : never
+  : T;
+
+type MergeUnions<T> = (T extends any ? (x: T) => void : never) extends (x: infer R) => void
+  ? { [K in keyof R]: R[K] }
+  : never;
+
+type settingsGroups<T> = Extract<keyof T, "settingsGroups">;
+type settingsGroupMembers<T> = MergeUnions<T[settingsGroups<T>][keyof T[settingsGroups<T>]]>;
+type DefaultTypes<T> = T[Extract<keyof T, "default">];
+
+type SettingDefaultTypes<T> = ExpandRecursive<{
+  [L in keyof settingsGroupMembers<T>]: DefaultTypes<settingsGroupMembers<T>[L]>
+}>;
+type SettingMembers<T> = ExpandRecursive<{
+  [L in keyof settingsGroupMembers<T>]: settingsGroupMembers<T>[L]
+}>;
+
+
+
+function addGetters<T extends { settingsGroups: Record<string, any> }>(
+  settingCategory: T): ExpandRecursive<T & SettingMembers<T> & { settingNames: string[]}> {
+  let inputClone = JSON.parse(JSON.stringify(settingCategory)) as T; // to avoid mutating original object, which can cause issues with imports
+  let settingNames: string[] = [];
+  for (const group in inputClone.settingsGroups) {
+    for (const setting in inputClone.settingsGroups[group]) {
+      settingNames.push(setting);
+      Object.defineProperty(inputClone, setting, {
+        get: function() {
+          return inputClone.settingsGroups[group][setting]
+        }
+      });
+    }
+  }
+  Object.defineProperty(inputClone, "settingNames", {
+    get: function() {
+      return settingNames;
+    }
+  });
+  return inputClone as unknown as ExpandRecursive<T & SettingMembers<T> & { settingNames: string[] }>;
+}
+
 export {
   FormattingComponent,
   paddingOption,
@@ -230,5 +274,7 @@ export {
   borderWidthOption,
   alignmentOption,
   fontWeightOption,
-  textTransformOption
+  textTransformOption,
+  addGetters,
+  type SettingDefaultTypes
 };
