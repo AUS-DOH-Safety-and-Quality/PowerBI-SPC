@@ -46,8 +46,8 @@ export default class settingsClass {
     this.derivedSettings = new Array<derivedSettingsClass>();
 
     groupIdxs.forEach(() => {
-      this.settings.push(settingsModel.defaultValues as settingsValueType);
-      this.derivedSettings.push(new derivedSettingsClass());
+      this.settings.push(settingsModel.defaultValues);
+      this.derivedSettings.push(new derivedSettingsClass(this.settings[0].spc));
     });
 
     const all_idxs: number[] = groupIdxs.flat();
@@ -105,7 +105,7 @@ export default class settingsClass {
     }
 */
     this.settings.forEach((settingsItem, idx) => {
-      this.derivedSettings[idx].update(settingsItem.spc);
+      this.derivedSettings[idx] = new derivedSettingsClass(settingsItem.spc);
     });
   }
 
@@ -183,6 +183,6 @@ export default class settingsClass {
 
   constructor() {
     this.settings = [settingsModel.defaultValues as settingsValueType];
-    this.derivedSettings = [new derivedSettingsClass()];
+    this.derivedSettings = [new derivedSettingsClass(this.settings[0].spc)];
   }
 }
