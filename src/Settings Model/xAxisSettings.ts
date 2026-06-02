@@ -1,5 +1,5 @@
 import {
-  toggleOption, numberOption, numberOptionMinMax,
+  toggleOption, numberOption,
   fontOption, fontSizeOption, textOption, colourOption
 } from "./common";
 
@@ -15,11 +15,11 @@ const xAxisSettings = {
     },
     "Ticks": {
       xlimit_ticks: toggleOption("Draw Ticks", true),
-      xlimit_tick_count: numberOptionMinMax("Maximum Ticks", 10, 0, 100),
+      xlimit_tick_count: numberOption("Maximum Ticks", 10, { min: 0, max: 100 }),
       xlimit_tick_font: fontOption("Tick Font"),
       xlimit_tick_size: fontSizeOption("Tick Font Size"),
       xlimit_tick_colour: colourOption("Tick Font Colour", "standard"),
-      xlimit_tick_rotation: numberOptionMinMax("Tick Rotation (Degrees)", -35, -360, 360)
+      xlimit_tick_rotation: numberOption("Tick Rotation (Degrees)", -35, { min: -360, max: 360 })
     },
     "Label": {
       xlimit_label: textOption("Label", ""),

@@ -1,3 +1,5 @@
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+
 const enum FormattingComponent {
   AlignmentGroup = "AlignmentGroup",
   ColorPicker = "ColorPicker",
@@ -39,31 +41,29 @@ const defaultColours: Record<string, string> = {
 };
 
 type UndefinedOrNumT<T> = T extends undefined ? undefined | number : T;
+type NumOptionType<T> = {
+  displayName: string;
+  type: FormattingComponent.NumUpDown;
+  default: UndefinedOrNumT<T>;
+  options?: { minValue?: { value: number }; maxValue?: { value: number }; }
+};
 
-function numberOption<T>(displayName: string, defaultValue: T) {
-  return {
+function numberOption<T>(displayName: string, defaultValue: T, minMax?: { min?: number, max?: number }) {
+  const rtn: NumOptionType<T> = {
     displayName: displayName,
     type: FormattingComponent.NumUpDown,
     default: defaultValue as UndefinedOrNumT<T>
+  };
+  if (!isNullOrUndefined(minMax)) {
+    rtn.options = {};
+    if (!isNullOrUndefined(minMax.min)) {
+      rtn.options.minValue = { value: minMax.min };
+    }
+    if (!isNullOrUndefined(minMax.max)) {
+      rtn.options.maxValue = { value: minMax.max };
+    }
   }
-}
-
-function numberOptionMin<T>(displayName: string, defaultValue: T, minValue: number) {
-  return {
-    displayName: displayName,
-    type: FormattingComponent.NumUpDown,
-    default: defaultValue as UndefinedOrNumT<T>,
-    options: { minValue: { value: minValue } }
-  }
-}
-function numberOptionMinMax<T>(displayName: string, defaultValue: T,
-                            minValue: number, maxValue: number) {
-  return {
-    displayName: displayName,
-    type: FormattingComponent.NumUpDown,
-    default: defaultValue as UndefinedOrNumT<T>,
-    options: { minValue: { value: minValue }, maxValue: { value: maxValue } }
-  }
+  return rtn;
 }
 
 function toggleOption(displayName: string, defaultValue: boolean) {
@@ -124,7 +124,7 @@ function fontOption(displayName: string) {
 }
 
 function fontSizeOption(displayName: string) {
-  return numberOptionMinMax(displayName, 10, 0, 100);
+  return numberOption(displayName, 10, { min: 0, max: 100 });
 }
 
 type DropdownItem = { displayName: string; value: string; }
@@ -184,7 +184,7 @@ function borderStyleOption(displayName: string) {
 }
 
 function borderWidthOption(displayName: string) {
-  return numberOptionMin(displayName, 1, 0);
+  return numberOption(displayName, 1, { min: 0 });
 }
 
 function alignmentOption(displayName: string) {
@@ -223,8 +223,6 @@ export {
   lineTypeOption,
   toggleOption,
   numberOption,
-  numberOptionMin,
-  numberOptionMinMax,
   textOption,
   lineLabelPositionOption,
   dropdownOption,

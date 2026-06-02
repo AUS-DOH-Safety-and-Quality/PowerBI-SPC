@@ -5,6 +5,6 @@
  * @param value The value to check.
  * @returns True if the value is null or undefined, false otherwise.
  */
-export default function isNullOrUndefined<T>(value: T): boolean {
+export default function isNullOrUndefined<T>(value: T): value is Extract<T, null | undefined> {
   return value === null || value === undefined;
 }

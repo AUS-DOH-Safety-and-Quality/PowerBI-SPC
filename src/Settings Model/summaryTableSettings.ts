@@ -1,5 +1,5 @@
 import {
-  toggleOption, numberOptionMinMax,
+  toggleOption, numberOption,
   fontOption, fontSizeOption, colourOption, dropdownOption,
   borderStyleOption, borderWidthOption, alignmentOption,
   fontWeightOption, textTransformOption
@@ -24,9 +24,9 @@ const summaryTableSettings = {
         ["All", "Consistent - Any", "Consistent Pass", "Consistent Fail", "Inconsistent"]
       ),
       table_text_overflow: dropdownOption("Text Overflow Handling", "ellipsis", ["ellipsis", "clip", "none"], "sentence"),
-      table_opacity: numberOptionMinMax("Default Opacity", 1, 0, 1),
-      table_opacity_selected: numberOptionMinMax("Opacity if Selected", 1, 0, 1),
-      table_opacity_unselected: numberOptionMinMax("Opacity if Unselected", 0.2, 0, 1),
+      table_opacity: numberOption("Default Opacity", 1, { min: 0, max: 1 }),
+      table_opacity_selected: numberOption("Opacity if Selected", 1, { min: 0, max: 1 }),
+      table_opacity_unselected: numberOption("Opacity if Unselected", 0.2, { min: 0, max: 1 }),
       table_outer_border_style: borderStyleOption("Outer Border Style"),
       table_outer_border_width: borderWidthOption("Outer Border Width"),
       table_outer_border_colour: colourOption("Outer Border Colour", "standard"),
@@ -41,7 +41,7 @@ const summaryTableSettings = {
       table_header_text_align: alignmentOption("Text Alignment"),
       table_header_font_weight: fontWeightOption("Header Font Weight"),
       table_header_text_transform: textTransformOption("Header Text Transform"),
-      table_header_text_padding: numberOptionMinMax("Padding Around Text", 1, 0, 100),
+      table_header_text_padding: numberOption("Padding Around Text", 1, { min: 0, max: 100 }),
       table_header_colour: colourOption("Header Font Colour", "standard"),
       table_header_bg_colour: colourOption("Header Background Colour", "lightgray"),
       table_header_border_style: borderStyleOption("Header Border Style"),
@@ -56,7 +56,7 @@ const summaryTableSettings = {
       table_body_text_align: alignmentOption("Text Alignment"),
       table_body_font_weight: fontWeightOption("Font Weight"),
       table_body_text_transform: textTransformOption("Text Transform"),
-      table_body_text_padding: numberOptionMinMax("Padding Around Text", 1, 0, 100),
+      table_body_text_padding: numberOption("Padding Around Text", 1, { min: 0, max: 100 }),
       table_body_colour: colourOption("Body Font Colour", "standard"),
       table_body_bg_colour: colourOption("Body Background Colour", "white"),
       table_body_border_style: borderStyleOption("Body Border Style"),
