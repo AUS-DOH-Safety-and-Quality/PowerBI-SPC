@@ -22,7 +22,7 @@ type LinesKeys = keyof settingsValueType["lines"];
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 
 export default function buildTooltip(table_row: summaryTableRowData,
-                                      inputTooltips: powerbi.extensibility.VisualTooltipDataItem[],
+                                      inputTooltips: powerbi.extensibility.VisualTooltipDataItem[] | undefined,
                                       inputSettings: settingsValueType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
 

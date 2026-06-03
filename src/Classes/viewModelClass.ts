@@ -27,6 +27,8 @@ import shift from "../Outlier Flagging/shift";
 import { lineNameMap } from "../Functions/getAesthetic";
 import isValidNumber from "../Functions/isValidNumber";
 
+type LineSettingsKeys = keyof settingsValueType["lines"];
+
 export type viewModelValidationT = {
   status: boolean,
   error?: string,
@@ -36,27 +38,27 @@ export type viewModelValidationT = {
 
 export type lineData = {
   x: number;
-  line_value: number;
+  line_value: number | undefined;
   group: string;
   aesthetics: settingsValueType["lines"];
 }
 
 export type summaryTableRowData = {
   date: string;
-  numerator: number;
-  denominator: number;
+  numerator: number | undefined;
+  denominator: number | undefined;
   value: number;
-  target: number;
-  alt_target: number;
-  ll99: number;
-  ll95: number;
-  ll68: number;
-  ul68: number;
-  ul95: number;
-  ul99: number;
-  speclimits_lower: number;
-  speclimits_upper: number;
-  trend_line: number;
+  target: number | undefined;
+  alt_target: number | undefined;
+  ll99: number | undefined;
+  ll95: number | undefined;
+  ll68: number | undefined;
+  ul68: number | undefined;
+  ul95: number | undefined;
+  ul99: number | undefined;
+  speclimits_lower: number | undefined;
+  speclimits_upper: number | undefined;
+  trend_line: number | undefined;
   astpoint: string;
   trend: string;
   shift: string;
@@ -92,12 +94,12 @@ export type plotData = {
   // Tooltip data to print
   tooltip: VisualTooltipDataItem[];
   label: {
-    text_value: string,
+    text_value: string | undefined,
     aesthetics: settingsValueType["labels"],
-    angle: number,
-    distance: number,
-    line_offset: number,
-    marker_offset: number
+    angle: number | undefined,
+    distance: number | undefined,
+    line_offset: number | undefined,
+    marker_offset: number | undefined
   };
 }
 
@@ -111,20 +113,20 @@ export type plotDataGrouped = {
 export type controlLimitsObject = {
   keys: { x: number, id: number, label: string }[];
   values: number[];
-  numerators?: number[];
-  denominators?: number[];
-  targets: number[];
-  ll99?: number[];
-  ll95?: number[];
-  ll68?: number[];
-  ul68?: number[];
-  ul95?: number[];
-  ul99?: number[];
-  count?: number[];
-  alt_targets?: number[];
-  speclimits_lower?: number[];
-  speclimits_upper?: number[];
-  trend_line?: number[];
+  numerators?: (number | undefined)[];
+  denominators?: (number | undefined)[];
+  targets: (number | undefined)[];
+  ll99?: (number | undefined)[];
+  ll95?: (number | undefined)[];
+  ll68?: (number | undefined)[];
+  ul68?: (number | undefined)[];
+  ul95?: (number | undefined)[];
+  ul99?: (number | undefined)[];
+  count?: (number | undefined)[];
+  alt_targets?: (number | undefined)[];
+  speclimits_lower?: (number | undefined)[];
+  speclimits_upper?: (number | undefined)[];
+  trend_line?: (number | undefined)[];
 };
 
 export type controlLimitsArgs = {
@@ -189,9 +191,14 @@ export default class viewModelClass {
     this.groupStartEndIndexes = new Array<number[][]>();
     this.identities = new Array<ISelectionId[]>();
     this.tableColumns = new Array<{ name: string; label: string; }[]>();
-    this.colourPalette = null;
+    this.colourPalette = {} as colourPaletteType;
     this.headless = false;
     this.frontend = false;
+    this.tickLabels = [];
+    this.svgWidth = 0;
+    this.svgHeight = 0;
+    this.indicatorVarNames = [];
+    this.groupNames = [];
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
@@ -207,10 +214,10 @@ export default class viewModelClass {
 
     this.svgWidth = options.viewport.width;
     this.svgHeight = options.viewport.height;
-    this.headless = options?.["headless"] ?? false;
-    this.frontend = options?.["frontend"] ?? false;
+    this.headless = (options as VisualUpdateOptions & { headless?: boolean })?.headless ?? false;
+    this.frontend = (options as VisualUpdateOptions & { frontend?: boolean })?.frontend ?? false;
 
-    const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles.indicator);
+    const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles!.indicator) ?? [];
     this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
 
     const n_indicators: number = indicator_cols?.length;
@@ -253,10 +260,12 @@ export default class viewModelClass {
       return res;
     }
 
+    let invalidData: boolean = false;
+
     // Only re-construct data and re-calculate limits if they have changed
     if (options.type === 2 || this.firstRun) {
       // Handle split indexes (only for first indicator in single mode)
-      const hasIndicator: boolean = options.dataViews[0].categorical.categories.some(d => d.source.roles.indicator);
+      const hasIndicator: boolean = options.dataViews[0].categorical!.categories!.some(d => d.source.roles!.indicator);
       const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       const split_indexes: number[] = JSON.parse(split_indexes_str);
       this.splitIndexes = hasIndicator ? [] : split_indexes;
@@ -277,39 +286,28 @@ export default class viewModelClass {
 
         // Extract data for this indicator
         const inpData: dataObject = extractInputData(
-          options.dataViews[0].categorical,
+          options.dataViews[0].categorical!,
           settings,
           derivedSettings,
           this.inputSettings.validationStatus.messages,
           group_idxs
         );
+        this.inputData.push(inpData);
 
-        const invalidData: boolean = inpData.validationStatus.status !== 0;
-
-        // Calculate grouping indexes (only first indicator can have splits)
-        const groupStartEnd: number[][] = invalidData
-          ? new Array<number[]>()
-          : this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
-
-        // Calculate control limits
-        const limits: controlLimitsObject = invalidData
-          ? null
-          : this.calculateLimits(inpData, groupStartEnd, settings);
-
-        // Flag outliers
-        const outliers: outliersObject = invalidData
-          ? null
-          : this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
-
-        // Scale and truncate limits
-        if (!invalidData) {
-          this.scaleAndTruncateLimits(limits, settings, derivedSettings);
+        if (inpData.validationStatus.status !== 0) {
+          invalidData = true;
+          return;
         }
+
+        const groupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
+        const limits: controlLimitsObject = this.calculateLimits(inpData, groupStartEnd, settings);
+        const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
+        this.scaleAndTruncateLimits(limits, settings, derivedSettings);
 
         // Create selection identities
         const identities = group_idxs.map(i => {
           return host.createSelectionIdBuilder()
-            .withCategory(options.dataViews[0].categorical.categories[0], i)
+            .withCategory(options.dataViews[0].categorical!.categories![0], i)
             .createSelectionId();
         });
 
@@ -321,19 +319,21 @@ export default class viewModelClass {
         this.identities.push(identities);
       });
 
-      // Initialize plot data based on mode
-      if (this.showGrouped) {
-        this.initialisePlotDataGrouped();
-      } else {
-        this.initialisePlotData(host);
-        this.initialiseGroupedLines();
+      if (!invalidData) {
+        // Initialize plot data based on mode
+        if (this.showGrouped) {
+          this.initialisePlotDataGrouped();
+        } else {
+          this.initialisePlotData(host);
+          this.initialiseGroupedLines();
+        }
       }
     }
 
-    this.firstRun = false;
+    this.firstRun = false && !invalidData;
 
     // Validation (unified for all indicators)
-    if (this.inputData.some(d => d.validationStatus.status !== 0)) {
+    if (invalidData) {
       res.status = false;
       res.error = this.inputData
         .filter(d => d.validationStatus.status !== 0)
@@ -355,7 +355,7 @@ export default class viewModelClass {
   getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {
     const allIndexes: number[] = (splitIndexes ?? [])
                                     .concat([-1])
-                                    .concat(inputData.groupingIndexes)
+                                    .concat(inputData.groupingIndexes ?? [])
                                     .concat([inputData.limitInputArgs.keys.length - 1])
                                     .filter((d, idx, arr) => arr.indexOf(d) === idx)
                                     .sort((a,b) => a - b);
@@ -369,7 +369,7 @@ export default class viewModelClass {
 
   calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsValueType): controlLimitsObject {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
-      = limitFunctions[inputSettings.spc.chart_type];
+      = limitFunctions[inputSettings.spc.chart_type as keyof typeof limitFunctions];
 
     inputData.limitInputArgs.outliers_in_limits = inputSettings.spc.outliers_in_limits;
     let controlLimits: controlLimitsObject;
@@ -377,13 +377,15 @@ export default class viewModelClass {
       const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
         // Force a deep copy
         let data: dataObject = JSON.parse(JSON.stringify(inputData));
-        Object.keys(data.limitInputArgs).forEach(key => {
-          if (Array.isArray(data.limitInputArgs[key])) {
-            data.limitInputArgs[key] = data.limitInputArgs[key].slice(indexes[0], indexes[1]);
+        let limitKeys: (keyof controlLimitsArgs)[] = Object.keys(data.limitInputArgs) as (keyof controlLimitsArgs)[];
+        limitKeys.forEach(key => {
+          let currArg = data.limitInputArgs[key];
+          if (Array.isArray(currArg)) {
+            currArg = currArg.slice(indexes[0], indexes[1]);
             // Special case for subset points - need to re-index so that
             //   the indexes are relative to the new subset
             if (key === "subset_points") {
-              data.limitInputArgs[key] = data.limitInputArgs[key].map((d: number) => d - indexes[0]);
+              currArg = (currArg as number[]).map((d: number) => d - indexes[0]);
             }
           }
         });
@@ -400,7 +402,8 @@ export default class viewModelClass {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
           const newValues = Object.entries(curr)[idx][1];
-          allInner[entry[0]] = entry[1]?.concat(newValues);
+          let currValue = allInner[entry[0] as keyof controlLimitsObject];
+          currValue = entry[1]?.concat(newValues) as typeof currValue;
         })
         return allInner;
       })
@@ -414,11 +417,12 @@ export default class viewModelClass {
     controlLimits.speclimits_lower = inputData.speclimits_lower;
     controlLimits.speclimits_upper = inputData.speclimits_upper;
 
-    for (const key of Object.keys(controlLimits)) {
-      if (key === "keys") {
+    for (const key in controlLimits) {
+      const keyTyped: keyof controlLimitsObject = key as keyof controlLimitsObject;
+      if (keyTyped === "keys" || keyTyped == "values" || isNullOrUndefined(controlLimits[keyTyped])) {
         continue;
       }
-      controlLimits[key] = controlLimits[key]?.map(d => isNaN(d) ? null : d);
+      controlLimits[keyTyped] = controlLimits[keyTyped].map(d => isValidNumber(d) ? undefined : d);
     }
 
     return controlLimits;
@@ -452,18 +456,18 @@ export default class viewModelClass {
       tableColumnsDef.push({ name: "alt_target", label: lineSettings.ttip_label_alt_target });
     }
     ["99", "95", "68"].forEach(limit => {
-      if (lineSettings[`show_${limit}`]) {
+      if (lineSettings[`show_${limit}` as LineSettingsKeys]) {
         tableColumnsDef.push({
           name: `ucl${limit}`,
-          label: `${lineSettings[`ttip_label_${limit}_prefix_upper`]}${lineSettings[`ttip_label_${limit}`]}`
+          label: `${lineSettings[`ttip_label_${limit}_prefix_upper` as LineSettingsKeys]}${lineSettings[`ttip_label_${limit}` as LineSettingsKeys]}`
         })
       }
     });
     ["68", "95", "99"].forEach(limit => {
-      if (lineSettings[`show_${limit}`]) {
+      if (lineSettings[`show_${limit}` as LineSettingsKeys]) {
         tableColumnsDef.push({
           name: `lcl${limit}`,
-          label: `${lineSettings[`ttip_label_${limit}_prefix_lower`]}${lineSettings[`ttip_label_${limit}`]}`
+          label: `${lineSettings[`ttip_label_${limit}_prefix_lower` as LineSettingsKeys]}${lineSettings[`ttip_label_${limit}` as LineSettingsKeys]}`
         })
       }
     })
@@ -550,8 +554,8 @@ export default class viewModelClass {
       table_row_entries.push(["variation", varIcons[0]]);
       table_row_entries.push(["assurance", assIcon]);
 
-      if (anyTooltips) {
-        this.inputData[i].tooltips[lastIndex].forEach(tooltip => {
+      if (anyTooltips && !isNullOrUndefined(this.inputData[i].tooltips)) {
+        this.inputData[i].tooltips![lastIndex].forEach(tooltip => {
           table_row_entries.push([tooltip.displayName, tooltip.value]);
         })
       }
@@ -668,7 +672,7 @@ export default class viewModelClass {
         denominator: controlLimits.denominators?.[i],
         value: controlLimits.values[i],
         target: controlLimits.targets[i],
-        alt_target: controlLimits.alt_targets[i],
+        alt_target: controlLimits.alt_targets?.[i],
         ll99: controlLimits?.ll99?.[i],
         ll95: controlLimits?.ll95?.[i],
         ll68: controlLimits?.ll68?.[i],
@@ -699,10 +703,10 @@ export default class viewModelClass {
         label: {
           text_value: inputData.labels?.[index],
           aesthetics: inputData.label_formatting[index],
-          angle: null,
-          distance: null,
-          line_offset: null,
-          marker_offset: null
+          angle: undefined,
+          distance: undefined,
+          line_offset: undefined,
+          marker_offset: undefined
         }
       })
       this.tickLabels.push({x: index, label: controlLimits.keys[i].label});
@@ -752,13 +756,13 @@ export default class viewModelClass {
     const nLimits = controlLimits.keys.length;
 
     for (let i: number = 0; i < nLimits; i++) {
-      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || inputData.groupingIndexes.includes(i - 1);
+      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || (inputData.groupingIndexes?.includes(i - 1) ?? false);
       let isNewAltTarget: boolean = false;
-      if (i > 0 && settings.lines.show_alt_target) {
+      if (i > 0 && settings.lines.show_alt_target && !isNullOrUndefined(controlLimits.alt_targets)) {
         isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
       }
       labels.forEach(label => {
-        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineNameMap[label]}`];
+        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineNameMap[label]}` as LineSettingsKeys] as boolean;
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
         if (isRebaselinePoint || isNewAltTarget) {
@@ -766,7 +770,7 @@ export default class viewModelClass {
           const is_rebaseline: boolean = label !== "alt_targets" && isRebaselinePoint;
           formattedLines.push({
             x: controlLimits.keys[i].x,
-            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? null : controlLimits[label]?.[i],
+            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? undefined : controlLimits[label as Exclude<keyof controlLimitsObject, "keys">]?.[i],
             group: label,
             aesthetics: inputData.line_formatting[i]
           })
@@ -774,7 +778,7 @@ export default class viewModelClass {
 
         formattedLines.push({
           x: controlLimits.keys[i].x,
-          line_value: controlLimits[label]?.[i],
+          line_value: controlLimits[label as Exclude<keyof controlLimitsObject, "keys">]?.[i],
           group: label,
           aesthetics: inputData.line_formatting[i]
         })
@@ -788,13 +792,13 @@ export default class viewModelClass {
                           derivedSettings: derivedSettingsClass): void {
     // Scale limits using provided multiplier
     const multiplier: number = derivedSettings.multiplier;
-    let lines_to_scale: string[] = ["values", "targets"];
+    let lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "targets"];
 
     if (derivedSettings.chart_type_props.has_control_limits) {
       lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
     }
 
-    let lines_to_truncate: string[] = lines_to_scale;
+    let lines_to_truncate: Exclude<keyof controlLimitsObject, "keys">[] = lines_to_scale;
     if (inputSettings.lines.show_alt_target) {
       lines_to_truncate = lines_to_truncate.concat(["alt_targets"]);
       if (inputSettings.lines.multiplier_alt_target) {
@@ -809,19 +813,25 @@ export default class viewModelClass {
     }
 
     lines_to_scale.forEach(limit => {
+      if (isNullOrUndefined(controlLimits[limit])) {
+        return;
+      }
       for (let i: number = 0; i < controlLimits[limit].length; i++) {
         if (!isNullOrUndefined(controlLimits[limit][i])) {
-          controlLimits[limit][i] = controlLimits[limit][i] * multiplier;
+          controlLimits[limit][i] = (controlLimits[limit][i] as number) * multiplier;
         }
       }
     })
 
     lines_to_truncate.forEach(limit => {
+      if (isNullOrUndefined(controlLimits[limit])) {
+        return;
+      }
       for (let i: number = 0; i < controlLimits[limit].length; i++) {
         if (!isNullOrUndefined(controlLimits[limit][i])) {
           const lower_trunc: number = isValidNumber(inputSettings.spc.ll_truncate)
-            ? Math.max(inputSettings.spc.ll_truncate, controlLimits[limit][i])
-            : controlLimits[limit][i];
+            ? Math.max(inputSettings.spc.ll_truncate, controlLimits[limit][i]!)
+            : controlLimits[limit][i] as number;
           const upper_trunc: number = isValidNumber(inputSettings.spc.ul_truncate)
             ? Math.min(inputSettings.spc.ul_truncate, lower_trunc)
             : lower_trunc;

@@ -131,7 +131,7 @@ type ArrayUndefined<T> = T extends (infer U)[] ? Array<U | undefined> : T;
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
                                               inputSettings: settingsValueType,
-                                              idxs: number[]): ArrayUndefined<T> {
+                                              idxs: number[]): ArrayUndefined<T> | undefined {
   if (name === "key") {
     return extractKeys(inputView, inputSettings, idxs) as ArrayUndefined<T>;
   }
@@ -141,7 +141,7 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
 
   const columnRaw = inputView.values!.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
   if (columnRaw.length === 0) {
-    return [ undefined ] as ArrayUndefined<T>;
+    return undefined;
   }
   const n_keys: number = idxs.length;
   if (name === "groupings" || name === "labels") {

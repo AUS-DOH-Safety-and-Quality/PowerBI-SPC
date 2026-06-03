@@ -10,7 +10,6 @@ import {
 import rep from "./rep";
 import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";
-import type { ExpandRecursive } from "../Settings Model/common"
 import getNested from "./getNested"
 
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
