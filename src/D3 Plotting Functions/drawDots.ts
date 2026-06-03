@@ -30,7 +30,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
         const shape: string = d.aesthetics.shape;
         const size: number = d.aesthetics.size;
         // d3.symbol() takes size as area instead of radius
-        return d3.symbol().type(d3[`symbol${shape}`]).size((size*size) * Math.PI)()
+        return d3.symbol().type(d3[`symbol${shape}` as keyof typeof d3] as d3.SymbolType).size((size*size) * Math.PI)()
       })
       .attr("transform", (d: plotData) => {
         if (!between(d.value, ylower, yupper) || !between(d.x, xlower, xupper)) {
@@ -62,7 +62,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
             visualObj.host.persistProperties({
               replace: [{
                 objectName: "split_indexes_storage",
-                selector: undefined,
+                selector: {},
                 properties: { split_indexes: JSON.stringify(visualObj.viewModel.splitIndexes) }
               }]
             });
