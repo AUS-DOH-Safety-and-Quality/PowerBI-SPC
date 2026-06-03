@@ -10,7 +10,7 @@ import datesSettings from "./Settings Model/datesSettings";
 import summaryTableSettings from "./Settings Model/summaryTableSettings";
 import downloadSettings from "./Settings Model/downloadSettings";
 import labelsSettings from "./Settings Model/labelsSettings";
-import { addGetters, type SettingDefaultTypes } from "./Settings Model/common";
+import { addGetters, type SettingDefaultTypes, type MergeUnions } from "./Settings Model/common";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends object ? RecursivePartial<T[P]> : T[P];
@@ -63,5 +63,9 @@ type settingsValueTypesUnion = settingsValueType[settingsModelKeys];
 
 const defaultSettings: settingsValueType = settingsModel.defaultValues;
 
-export { defaultSettings, settingsValueType, settingsValueTypesUnion };
+type SettingsValueKeys = keyof settingsValueType;
+type SettingsValueNestedKeys = keyof MergeUnions<settingsValueTypesUnion>;
+
+
+export { defaultSettings, settingsValueType, settingsValueTypesUnion, SettingsValueKeys, SettingsValueNestedKeys };
 export default settingsModel;

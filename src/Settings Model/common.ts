@@ -276,5 +276,7 @@ export {
   fontWeightOption,
   textTransformOption,
   addGetters,
-  type SettingDefaultTypes
+  type SettingDefaultTypes,
+  type ExpandRecursive,
+  type MergeUnions
 };

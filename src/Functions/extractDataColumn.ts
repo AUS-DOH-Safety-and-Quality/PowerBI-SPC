@@ -126,20 +126,22 @@ function extractTooltips(inputView: DataViewCategorical, inputSettings: settings
   return ret;
 }
 
+type ArrayUndefined<T> = T extends (infer U)[] ? Array<U | undefined> : T;
+
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
                                               inputSettings: settingsValueType,
-                                              idxs: number[]): T | undefined {
+                                              idxs: number[]): ArrayUndefined<T> {
   if (name === "key") {
-    return extractKeys(inputView, inputSettings, idxs) as Extract<T, string[]>;
+    return extractKeys(inputView, inputSettings, idxs) as ArrayUndefined<T>;
   }
   if (name === "tooltips") {
-    return extractTooltips(inputView, inputSettings, idxs) as Extract<T, VisualTooltipDataItem[][]>;
+    return extractTooltips(inputView, inputSettings, idxs) as ArrayUndefined<T>;
   }
 
   const columnRaw = inputView.values!.filter(viewColumn => viewColumn?.source?.roles?.[name]) as DataViewValueColumn[];
   if (columnRaw.length === 0) {
-    return undefined
+    return [ undefined ] as ArrayUndefined<T>;
   }
   const n_keys: number = idxs.length;
   if (name === "groupings" || name === "labels") {
@@ -147,12 +149,12 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
     for (let i = 0; i < n_keys; i++) {
       ret[i] = isNullOrUndefined(columnRaw?.[0]?.values?.[idxs[i]]) ? undefined : String(columnRaw[0].values[idxs[i]]);
     }
-    return ret as Extract<T, string[]>;
+    return ret as ArrayUndefined<T>;
   }
   // Assumed that any other requested columns are numeric columns for plotting
   let ret = new Array<number | undefined>(n_keys);
   for (let i = 0; i < n_keys; i++) {
     ret[i] = isNullOrUndefined(columnRaw?.[0]?.values?.[idxs[i]]) ? undefined : Number(columnRaw[0].values[idxs[i]]);
   }
-  return ret as Extract<T, number[]>;
+  return ret as ArrayUndefined<T>;
 }

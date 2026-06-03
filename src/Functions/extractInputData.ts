@@ -38,23 +38,23 @@ export type dataObject = {
 
 function invalidInputData(inputValidStatus: ValidationT): dataObject {
   return {
-    limitInputArgs: null,
-    spcSettings: null,
-    highlights: null,
+    limitInputArgs: {} as controlLimitsArgs,
+    spcSettings: {} as settingsValueType["spc"],
+    highlights: [],
     anyHighlights: false,
-    categories: null,
-    groupings: null,
-    groupingIndexes: null,
-    scatter_formatting: null,
-    line_formatting: null,
-    label_formatting: null,
-    tooltips: null,
-    labels: null,
+    categories: {} as DataViewCategoryColumn,
+    groupings: [],
+    groupingIndexes: [],
+    scatter_formatting: [],
+    line_formatting: [],
+    label_formatting: [],
+    tooltips: [],
+    labels: [],
     anyLabels: false,
-    warningMessage: inputValidStatus.error,
-    alt_targets: null,
-    speclimits_lower: null,
-    speclimits_upper: null,
+    warningMessage: inputValidStatus.error!,
+    alt_targets: [],
+    speclimits_lower: [],
+    speclimits_upper: [],
     validationStatus: inputValidStatus
   }
 }
@@ -64,17 +64,19 @@ export default function extractInputData(inputView: DataViewCategorical,
                                           derivedSettings: derivedSettingsClass,
                                           validationMessages: string[][],
                                           idxs: number[]): dataObject {
-  const numerators: number[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings, idxs);
-  const denominators: number[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings, idxs);
-  const xbar_sds: number[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings, idxs);
-  const keys: string[] = extractDataColumn<string[]>(inputView, "key", inputSettings, idxs);
+  const numerators: (number | undefined)[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings, idxs);
+  const denominators: (number | undefined)[] = extractDataColumn<number[]>(inputView, "denominators", inputSettings, idxs);
+  const xbar_sds: (number | undefined)[] = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings, idxs);
+  const keys: (string | undefined)[] = extractDataColumn<string[]>(inputView, "key", inputSettings, idxs);
   const tooltips = extractDataColumn<VisualTooltipDataItem[][]>(inputView, "tooltips", inputSettings, idxs);
-  const groupings: string[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings, idxs);
-  const labels: string[] = extractDataColumn<string[]>(inputView, "labels", inputSettings, idxs);
-  const highlights: powerbi.PrimitiveValue[] = idxs.map(d => inputView?.values?.[0]?.highlights?.[d]);
+  const groupings: (string | undefined)[] = extractDataColumn<string[]>(inputView, "groupings", inputSettings, idxs);
+  const labels: (string | undefined)[] = extractDataColumn<string[]>(inputView, "labels", inputSettings, idxs);
+  const highlights: (powerbi.PrimitiveValue | undefined)[] = idxs.map(d => inputView?.values?.[0]?.highlights?.[d]);
+
   let scatter_cond = extractConditionalFormatting<settingsValueType["scatter"]>(inputView, "scatter", inputSettings, idxs)?.values;
   let lines_cond = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", inputSettings, idxs)?.values;
   let labels_cond = extractConditionalFormatting<settingsValueType["labels"]>(inputView, "labels", inputSettings, idxs)?.values;
+
   let alt_targets: number[] = lines_cond.map(d => inputSettings.lines.show_alt_target ? d.alt_target : null);
   let speclimits_lower: number[] = extractConditionalFormatting<settingsValueType["lines"]>(inputView, "lines", inputSettings, idxs)
                                     ?.values

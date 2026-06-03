@@ -3,21 +3,25 @@ type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 type DataViewCategorical = powerbi.DataViewCategorical;
 type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
-import { default as settingsModel, defaultSettings, type settingsValueTypesUnion, type settingsValueType } from "../settings";
+import {
+  default as settingsModel, defaultSettings, type settingsValueTypesUnion,
+  type settingsValueType, type SettingsValueKeys, type SettingsValueNestedKeys
+} from "../settings";
 import rep from "./rep";
 import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";
+import type { ExpandRecursive } from "../Settings Model/common"
+import getNested from "./getNested"
 
 export type SettingsValidationT = { status: number, messages: string[][], error?: string };
-export type ConditionalReturnT<T extends settingsValueTypesUnion> = { values: T[], validation: SettingsValidationT }
+export type ConditionalReturnT<T extends settingsValueTypesUnion> = { values: T[] | undefined, validation: SettingsValidationT }
 
 function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string, settingName: string, defaultValue: T): T {
   const propertyValue: powerbi.DataViewPropertyValue = settingObject?.[settingGroup]?.[settingName];
   if (isNullOrUndefined(propertyValue)) {
     return defaultValue;
   }
-  return (<Fill>propertyValue)?.solid ? (<Fill>propertyValue).solid.color as T
-                                      : propertyValue as T;
+  return ((<Fill>propertyValue)?.solid?.color ?? propertyValue) as T;
 }
 
 export default function
@@ -26,13 +30,13 @@ export default function
                                                         inputSettings: settingsValueType,
                                                         idxs: number[]): ConditionalReturnT<T> {
   if (isNullOrUndefined(categoricalView?.categories)) {
-    return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
+    return { values: undefined, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
   if (categoricalView?.categories?.[0]?.identity?.length === 0) {
-    return { values: null, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
+    return { values: undefined, validation: { status: 0, messages: rep(new Array<string>(), 1) } };
   }
   const inputCategories: DataViewCategoryColumn = (categoricalView.categories as DataViewCategoryColumn[])[0];
-  const settingNames = Object.keys(inputSettings[settingGroupName]);
+  const settingNames = Object.keys(inputSettings[settingGroupName as keyof settingsValueType]);
 
   // Force a deep copy to avoid JS's absurd pass-by-reference handling
   const validationRtn: SettingsValidationT
@@ -43,26 +47,33 @@ export default function
     const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
     rtn[i] = Object.fromEntries(
       settingNames.map(settingName => {
-        const defaultSetting = defaultSettings[settingGroupName][settingName];
+        const defaultSetting = getNested(defaultSettings, settingGroupName as SettingsValueKeys, settingName as SettingsValueNestedKeys);
 
-        let extractedSetting = getSettingValue(inpObjects, settingGroupName, settingName, defaultSetting);
+        let extractedSetting = getSettingValue(inpObjects!, settingGroupName, settingName, defaultSetting);
         // PBI passes empty string when clearing conditional formatting
         // for dropdown setting using the eraser button, so just reset to default
         extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
 
         // New API has numeric min/max under 'options' member
-        const valid = settingsModel[settingGroupName][settingName]?.["valid"] ?? settingsModel[settingGroupName][settingName]?.["options"];
-        const isNumericRange: boolean = !isNullOrUndefined(valid?.minValue) || !isNullOrUndefined(valid?.maxValue)
+        const settingEntry = getNested(settingsModel, settingGroupName as SettingsValueKeys, settingName as SettingsValueNestedKeys);
+        let valid: string[] | { minValue?: { value: number }; maxValue?: { value: number }; } | undefined = undefined;
+        if ("valid" in settingEntry) {
+          valid = settingEntry.valid
+        } else if ("options" in settingEntry) {
+          valid = settingEntry.options
+        }
         const defaultIsUndefined: boolean = isNullOrUndefined(defaultSetting);
         if (valid && !defaultIsUndefined) {
           let message: string = "";
-          if (valid instanceof Array && !valid.includes(extractedSetting)) {
-            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`
-          } else if (isNumericRange && !between(extractedSetting, valid?.minValue?.value, valid?.maxValue?.value)) {
+          if (valid instanceof Array) {
+            if (!valid.includes(extractedSetting as string)) {
+              message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`
+            }
+          } else if ((!isNullOrUndefined(valid?.minValue) || !isNullOrUndefined(valid?.maxValue)) && !between(extractedSetting, valid?.minValue?.value, valid?.maxValue?.value)) {
             message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid?.minValue?.value} and ${valid?.maxValue?.value}`
           }
           if (message !== "") {
-            extractedSetting = defaultSettings[settingGroupName][settingName];
+            extractedSetting = defaultSetting;
             validationRtn.messages[i].push(message);
           }
         }
@@ -77,5 +88,5 @@ export default function
     validationRtn.error = `${validationMessages[0][0]}`;
   }
 
-  return { values: rtn, validation: validationRtn };
+  return { values: rtn as T[] | undefined, validation: validationRtn };
 }
