@@ -15,21 +15,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [24.x]
-
     steps:
     - uses: actions/checkout@v6
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Setup Node 24
       uses: actions/setup-node@v6
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 24
+        cache: 'npm'
 
-    - name: Install Dependencies
+    - name: Install Package Dependencies
       run: |
         npm install
+
+    - name: Install PBI visual Tools
+      run: |
         npm install -g powerbi-visuals-tools@6.2.0
 
     - name: Run linter
