@@ -106,8 +106,14 @@ export default class plotPropertiesClass {
       const maxValue: number = max(values);
       const maxValueOrLimit: number = max((values.concat(ul99).concat(speclimits_upper).concat(alt_targets)).filter(d => isValidNumber(d)));
       const minValueOrLimit: number = min((values.concat(ll99).concat(speclimits_lower).concat(alt_targets)).filter(d => isValidNumber(d)));
-      const maxTarget: number = max(targets) ?? 0;
-      const minTarget: number = min(targets) ?? 0;
+      let maxTarget: number = max(targets);
+      if (!isValidNumber(maxTarget)) {
+        maxTarget = (maxValueOrLimit - minValueOrLimit) / 2 + minValueOrLimit;
+      }
+      let minTarget: number = min(targets);
+      if (!isValidNumber(minTarget)) {
+        minTarget = (maxValueOrLimit - minValueOrLimit) / 2 + minValueOrLimit;
+      }
 
       const upperLimitRaw: number = maxTarget + (maxValueOrLimit - maxTarget) * limitMultiplier;
       const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;

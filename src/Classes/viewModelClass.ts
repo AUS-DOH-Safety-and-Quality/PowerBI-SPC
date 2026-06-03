@@ -312,7 +312,6 @@ export default class viewModelClass {
         });
 
         // Push to arrays
-        this.inputData.push(inpData);
         this.groupStartEndIndexes.push(groupStartEnd);
         this.controlLimits.push(limits);
         this.outliers.push(outliers);
@@ -330,7 +329,7 @@ export default class viewModelClass {
       }
     }
 
-    this.firstRun = false && !invalidData;
+    this.firstRun = false;
 
     // Validation (unified for all indicators)
     if (invalidData) {
@@ -377,15 +376,15 @@ export default class viewModelClass {
       const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
         // Force a deep copy
         let data: dataObject = JSON.parse(JSON.stringify(inputData));
-        let limitKeys: (keyof controlLimitsArgs)[] = Object.keys(data.limitInputArgs) as (keyof controlLimitsArgs)[];
+        let limitKeys: Exclude<(keyof controlLimitsArgs), "outliers_in_limits">[] = Object.keys(data.limitInputArgs) as Exclude<(keyof controlLimitsArgs), "outliers_in_limits">[];
         limitKeys.forEach(key => {
-          let currArg = data.limitInputArgs[key];
-          if (Array.isArray(currArg)) {
-            currArg = currArg.slice(indexes[0], indexes[1]);
+          if (Array.isArray(data.limitInputArgs[key])) {
+            const groupVal = data.limitInputArgs[key].slice(indexes[0], indexes[1]);
+            (data.limitInputArgs[key] as typeof groupVal) = groupVal;
             // Special case for subset points - need to re-index so that
             //   the indexes are relative to the new subset
             if (key === "subset_points") {
-              currArg = (currArg as number[]).map((d: number) => d - indexes[0]);
+              data.limitInputArgs[key] = (data.limitInputArgs[key] as number[]).map((d: number) => d - indexes[0]);
             }
           }
         });
@@ -401,9 +400,8 @@ export default class viewModelClass {
       controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
-          const newValues = Object.entries(curr)[idx][1];
-          let currValue = allInner[entry[0] as keyof controlLimitsObject];
-          currValue = entry[1]?.concat(newValues) as typeof currValue;
+          const newValues = entry[1].concat(Object.entries(curr)[idx][1]);
+          (allInner[entry[0] as keyof controlLimitsObject] as typeof newValues) = newValues;
         })
         return allInner;
       })
@@ -422,7 +420,7 @@ export default class viewModelClass {
       if (keyTyped === "keys" || keyTyped == "values" || isNullOrUndefined(controlLimits[keyTyped])) {
         continue;
       }
-      controlLimits[keyTyped] = controlLimits[keyTyped].map(d => isValidNumber(d) ? undefined : d);
+      controlLimits[keyTyped] = controlLimits[keyTyped].map(d => !isValidNumber(d) ? undefined : d);
     }
 
     return controlLimits;
@@ -859,7 +857,7 @@ export default class viewModelClass {
       const start: number = groupStartEndIndexes[i][0];
       const end: number = groupStartEndIndexes[i][1];
       const group_values: number[] = controlLimits.values.slice(start, end);
-      const group_targets: number[] = controlLimits.targets.slice(start, end);
+      const group_targets: number[] = controlLimits.targets.slice(start, end) as number[];
 
       if (derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
         const limit_map: Record<string, string> = {
@@ -872,8 +870,8 @@ export default class viewModelClass {
           const ast_limit: string = limit_map[inputSettings.outliers.astronomical_limit];
           const ll_prefix: string = ast_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = ast_specification ? "speclimits_upper" : "ul";
-          const lower_limits: number[] = controlLimits?.[`${ll_prefix}${ast_limit}`]?.slice(start, end);
-          const upper_limits: number[] = controlLimits?.[`${ul_prefix}${ast_limit}`]?.slice(start, end);
+          const lower_limits: number[] = controlLimits[`${ll_prefix}${ast_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
+          const upper_limits: number[] = controlLimits[`${ul_prefix}${ast_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
           astronomical(group_values, lower_limits, upper_limits)
             .forEach((flag, idx) => outliers.astpoint[start + idx] = flag)
         }
@@ -882,8 +880,8 @@ export default class viewModelClass {
           const two_in_three_limit: string = limit_map[inputSettings.outliers.two_in_three_limit];
           const ll_prefix: string = two_in_three_specification ? "speclimits_lower" : "ll";
           const ul_prefix: string = two_in_three_specification ? "speclimits_upper" : "ul";
-          const lower_warn_limits: number[] = controlLimits?.[`${ll_prefix}${two_in_three_limit}`]?.slice(start, end);
-          const upper_warn_limits: number[] = controlLimits?.[`${ul_prefix}${two_in_three_limit}`]?.slice(start, end);
+          const lower_warn_limits: number[] = controlLimits[`${ll_prefix}${two_in_three_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
+          const upper_warn_limits: number[] = controlLimits[`${ul_prefix}${two_in_three_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
           twoInThree(group_values, lower_warn_limits, upper_warn_limits, highlight_series)
             .forEach((flag, idx) => outliers.two_in_three[start + idx] = flag)
         }
@@ -898,9 +896,9 @@ export default class viewModelClass {
       }
     }
     Object.keys(outliers).forEach(key => {
-      for (let i = 0; i < outliers[key].length; i++) {
-        outliers[key][i] = checkFlagDirection(outliers[key][i],
-                                              { process_flag_type, improvement_direction });
+      for (let i = 0; i < outliers[key as keyof outliersObject].length; i++) {
+        outliers[key as keyof outliersObject][i] = checkFlagDirection(outliers[key as keyof outliersObject][i],
+                                                                      { process_flag_type, improvement_direction });
       }
     })
     return outliers;
