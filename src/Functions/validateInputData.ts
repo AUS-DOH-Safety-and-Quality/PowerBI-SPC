@@ -38,7 +38,7 @@ function validateInputDataImpl(key: string,
     rtn.type = ValidationFailTypes.NumeratorMissing;
   }
 
-  if (isNaN(numerator)) {
+  if (isNaN(numerator) && !isNullOrUndefined(numerator)) {
     rtn.message = "Numerator is not a number";
     rtn.type = ValidationFailTypes.NumeratorNaN;
   }
@@ -52,7 +52,7 @@ function validateInputDataImpl(key: string,
     if (isNullOrUndefined(denominator)) {
       rtn.message = "Denominator missing";
       rtn.type = ValidationFailTypes.DenominatorMissing;
-    } else if (isNaN(denominator)) {
+    } else if (isNaN(denominator) && !isNullOrUndefined(numerator)) {
       rtn.message = "Denominator is not a number";
       rtn.type = ValidationFailTypes.DenominatorNaN;
     } else if (denominator < 0) {
@@ -71,7 +71,7 @@ function validateInputDataImpl(key: string,
     if (isNullOrUndefined(xbar_sd)) {
       rtn.message = "SD missing";
       rtn.type = ValidationFailTypes.SDMissing;
-    } else if (isNaN(xbar_sd)) {
+    } else if (isNaN(xbar_sd) && !isNullOrUndefined(numerator)) {
       rtn.message = "SD is not a number";
       rtn.type = ValidationFailTypes.SDNaN;
     } else if (xbar_sd < 0) {
