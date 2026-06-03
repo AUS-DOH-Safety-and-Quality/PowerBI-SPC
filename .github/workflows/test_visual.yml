@@ -24,13 +24,13 @@ jobs:
         node-version: 24
         cache: 'npm'
 
-    - name: Install Package Dependencies
-      run: |
-        npm install
-
     - name: Install PBI visual Tools
       run: |
         npm install -g powerbi-visuals-tools@6.2.0
+
+    - name: Install Package Dependencies
+      run: |
+        npm ci
 
     - name: Run linter
       run: |
