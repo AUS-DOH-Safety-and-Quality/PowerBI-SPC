@@ -1,4 +1,5 @@
 import trend from "../../src/Outlier Flagging/trend";
+import { describe, it, expect } from "vitest";
 
 describe("trend", () => {
     it("should return 'none' when no trend is detected", () => {

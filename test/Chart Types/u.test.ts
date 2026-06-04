@@ -1,9 +1,9 @@
-import powerbi from "powerbi-visuals-api";
 import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { type controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { describe, it, expect } from "vitest";
 
 const keys: string[] = ["2015-01-01","2015-02-01","2015-03-01","2015-04-01","2015-05-01","2015-06-01","2015-07-01","2015-08-01","2015-09-01","2015-10-01","2015-11-01","2015-12-01","2016-01-01","2016-02-01","2016-03-01","2016-04-01","2016-05-01","2016-06-01","2016-07-01","2016-08-01","2016-09-01","2016-10-01","2016-11-01","2016-12-01"];
 const numerators: number[] = [575,521,585,528,507,519,457,505,494,512,543,506,509,521,549,531,509,528,419,512,495,513,454,490];
@@ -33,7 +33,7 @@ describe("U Chart Test", () => {
       },
       defaultSettingsCopy) ],
       viewport: { width: 500, height: 500 },
-      type: powerbi.VisualUpdateType.Data
+      type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
     const limits: controlLimitsObject = visual.viewModel.controlLimits[0];

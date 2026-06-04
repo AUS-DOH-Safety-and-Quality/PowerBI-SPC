@@ -1,4 +1,5 @@
 import lgamma from "../../src/Functions/lgamma";
+import { describe, it, expect } from "vitest";
 
 describe("lgamma", () => {
 

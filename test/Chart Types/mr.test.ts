@@ -1,9 +1,9 @@
-import powerbi from "powerbi-visuals-api";
 import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { type controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { describe, it, expect } from "vitest";
 
 const keys: string[] = ["2010-01-01","2010-02-01","2010-03-01","2010-04-01","2010-05-01","2010-06-01","2010-07-01","2010-08-01","2010-09-01","2010-10-01","2010-11-01","2010-12-01","2011-01-01","2011-02-01","2011-03-01","2011-04-01","2011-05-01"];
 const numerators: number[] = [5,7,5,7,7,5,4,9,8,13,8,7,8,7,12,11,8];
@@ -33,7 +33,7 @@ describe("MR Chart Test", () => {
       },
       defaultSettingsCopy) ],
       viewport: { width: 500, height: 500 },
-      type: powerbi.VisualUpdateType.Data
+      type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
     const limits: controlLimitsObject = visual.viewModel.controlLimits[0];

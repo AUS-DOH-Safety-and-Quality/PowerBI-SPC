@@ -3,6 +3,7 @@ import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
 import type { settingsValueType } from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
 import { defaultSettings } from "../../src/settings";
+import { describe, it, expect } from "vitest";
 
 describe("assuranceIconToDraw", () => {
     // Helper to create mock control limits

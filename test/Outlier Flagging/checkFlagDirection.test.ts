@@ -1,4 +1,5 @@
 import checkFlagDirection from "../../src/Outlier Flagging/checkFlagDirection";
+import { describe, it, expect } from "vitest";
 
 describe("checkFlagDirection", () => {
     it("should return 'none' when outlierStatus is 'none'", () => {

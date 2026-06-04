@@ -3,7 +3,7 @@ import { lineNameMap } from "../Functions/getAesthetic";
 import valueFormatter from "../Functions/valueFormatter";
 import * as d3 from "./D3 Modules";
 import type { lineData } from "../Classes/viewModelClass";
-import { settingsValueType } from "../settings";
+import { type settingsValueType } from "../settings";
 
 const positionOffsetMap: Record<string, number> = {
   "above": -1,

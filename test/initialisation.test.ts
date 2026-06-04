@@ -1,7 +1,7 @@
-import powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
+import { describe, it, expect } from "vitest";
 
 const stringKeys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const stringGrouping: string[] = ["A", "A", "A", "B", "B", "B", "B"];
@@ -30,7 +30,7 @@ describe("Chart Initialisation", () => {
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys, numerators: validNumerators }) ],
       viewport: { width: 500, height: 500 },
-      type: powerbi.VisualUpdateType.Data
+      type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
 
@@ -44,7 +44,7 @@ describe("Chart Initialisation", () => {
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys, indicator: stringGrouping, numerators: validNumerators }) ],
       viewport: { width: 500, height: 500 },
-      type: powerbi.VisualUpdateType.Data
+      type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
     // Expect that the table div element now has 100% height and width, while the SPC chart is hidden

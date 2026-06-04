@@ -1,9 +1,9 @@
-import powerbi from "powerbi-visuals-api";
 import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { type controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { describe, it, expect } from "vitest";
 
 const keys: string[] = ["2012-11-01","2012-12-01","2013-01-01","2013-02-01","2013-03-01","2013-04-01","2013-05-01","2013-06-01","2013-07-01","2013-08-01","2013-09-01","2013-10-01","2013-11-01","2013-12-01","2014-01-01","2014-02-01","2014-03-01","2014-04-01","2014-05-01","2014-06-01","2014-07-01","2014-08-01","2014-09-01","2014-10-01","2014-11-01","2014-12-01","2015-01-01","2015-02-01","2015-03-01","2015-04-01","2015-05-01","2015-06-01","2015-07-01","2015-08-01","2015-09-01","2015-10-01"];
 const numerators: number[] = [17,12,27,20,20,18,22,19,19,24,17,16,24,19,19,22,25,19,17,6,25,17,11,14,9,11,7,13,5,5,3,5,9,4,5,9];
@@ -32,7 +32,7 @@ describe("C Chart Test", () => {
       },
       defaultSettingsCopy) ],
       viewport: { width: 500, height: 500 },
-      type: powerbi.VisualUpdateType.Data
+      type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
     const limits: controlLimitsObject = visual.viewModel.controlLimits[0];

@@ -42,6 +42,7 @@ jobs:
 
     - name: Run unit tests
       run: |
+        npx playwright install chromium
         npm run test
 
     - name: Attach built visual

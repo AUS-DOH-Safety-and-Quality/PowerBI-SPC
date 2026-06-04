@@ -19,3 +19,8 @@ docs
 
 # Coverage reports
 coverage
+
+test/__screenshots__
+test/**/__screenshots__
+
+.vitest-attachments
