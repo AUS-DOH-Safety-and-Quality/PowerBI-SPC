@@ -6,9 +6,7 @@
     "package": "pbiviz package",
     "build": "pbiviz package",
     "eslint": "npx eslint .",
-    "test": "karma start --browsers=ChromeHeadlessCI",
-    "debug": "karma start --single-run=false --browsers=Chrome",
-    "docs": "typedoc"
+    "test": "vitest"
   },
   "dependencies": {
     "d3-axis": "3.0.0",
@@ -33,7 +31,6 @@
     "style-loader": "4.0.0",
     "ts-loader": "9.5.7",
     "tslib": "2.8.1",
-    "typedoc": "0.28.19",
     "typescript": "5.9.3",
     "vitest": "^4.1.8"
   },
