@@ -1,6 +1,7 @@
 import variationIconsToDraw from "../../src/Outlier Flagging/variationIconsToDraw";
 import type { outliersObject } from "../../src/Classes/viewModelClass";
 import type { settingsValueType } from "../../src/settings";
+import { describe, it, expect } from "vitest";
 
 describe("variationIconsToDraw", () => {
     // Helper to create mock outliers object

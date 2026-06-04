@@ -1,4 +1,5 @@
 import twoInThree from "../../src/Outlier Flagging/twoInThree";
+import { describe, it, expect } from "vitest";
 
 describe("twoInThree", () => {
     it("should return 'none' when no points are outside 95% limits", () => {

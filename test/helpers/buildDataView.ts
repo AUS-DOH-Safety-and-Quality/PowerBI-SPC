@@ -4,7 +4,7 @@ import DataView = powerbi.DataView;
 import { valueType } from "powerbi-visuals-utils-typeutils";
 import ValueType = valueType.ValueType;
 import isNullOrUndefined from "../../src/Functions/isNullOrUndefined";
-import { settingsValueType } from "../../src/settings";
+import { type settingsValueType } from "../../src/settings";
 
 function buildColumn(displayName: string, queryName: string, values: any[], settings?: settingsValueType): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
   const roles = Object.fromEntries([[queryName, true]]);

@@ -1,4 +1,5 @@
 import calculateTrendLine from "../../src/Functions/calculateTrendLine";
+import { describe, it, expect } from "vitest";
 
 describe("calculateTrendLine", () => {
     it("should return an empty array if input is empty", () => {

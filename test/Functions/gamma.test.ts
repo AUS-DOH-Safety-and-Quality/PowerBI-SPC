@@ -1,4 +1,5 @@
 import gamma from "../../src/Functions/gamma";
+import { describe, it, expect } from "vitest";
 
 describe("gamma", () => {
 

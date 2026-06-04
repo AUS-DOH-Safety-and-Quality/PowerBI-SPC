@@ -9,7 +9,7 @@ import { default as settingsModel, defaultSettings, type settingsValueType,
 import derivedSettingsClass from "./derivedSettingsClass";
 import { type ConditionalReturnT, type SettingsValidationT } from "../Functions/extractConditionalFormatting";
 import getNested from "../Functions/getNested"
-import { FormattingComponent, MergeUnions, FormattingComponentKeys } from "../Settings Model/common";
+import { FormattingComponent, type MergeUnions, type FormattingComponentKeys } from "../Settings Model/common";
 
 export type optionalSettingsTypes = Partial<{
   [K in keyof typeof defaultSettings]: Partial<settingsValueType[K]>;

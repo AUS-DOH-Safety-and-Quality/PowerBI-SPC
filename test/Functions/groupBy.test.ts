@@ -1,4 +1,5 @@
 import groupBy from "../../src/Functions/groupBy";
+import { describe, it, expect } from "vitest";
 
 describe("groupBy", () => {
     it("should group objects by a specific string key", () => {
@@ -9,11 +10,11 @@ describe("groupBy", () => {
             { category: "C", value: 4 }
         ];
         const result = groupBy(data, "category");
-        
+
         // Expected output is an array of tuples [key, items[]]
         // Since Map preserves insertion order of keys: "A", "B", "C"
         expect(result.length).toBe(3);
-        
+
         expect(result[0][0]).toBe("A");
         expect(result[0][1]).toEqual([
             { category: "A", value: 1 },
@@ -45,7 +46,7 @@ describe("groupBy", () => {
         ];
         const result = groupBy(data, "id");
         expect(result.length).toBe(2);
-        
+
         // id 1
         expect(result[0][0] as any).toBe(1);
         expect(result[0][1].length).toBe(2);
@@ -66,13 +67,13 @@ describe("groupBy", () => {
         ];
         // The implementation uses item[key], so it will be undefined.
         const result = groupBy(data, "category");
-        
+
         // Groups: "A" and undefined
         expect(result.length).toBe(2);
-        
+
         // "A" is encountered first
         expect(result[0][0]).toBe("A");
-        
+
         // undefined is second
         expect(result[1][0]).toBeUndefined();
         expect(result[1][1]).toEqual([{ value: 2 }]);

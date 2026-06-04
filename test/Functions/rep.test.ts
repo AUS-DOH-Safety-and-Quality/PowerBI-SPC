@@ -1,4 +1,5 @@
 import rep from "../../src/Functions/rep";
+import { describe, it, expect } from "vitest";
 
 describe("rep", () => {
     it("should repeat a number n times", () => {

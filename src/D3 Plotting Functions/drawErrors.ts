@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import type { svgBaseType } from "../visual";
 import initialiseSVG from "./initialiseSVG";
-import { colourPaletteType } from "../Classes/viewModelClass";
+import { type colourPaletteType } from "../Classes/viewModelClass";
 
 export default function drawErrors(selection: svgBaseType,
                                     options: VisualUpdateOptions,
