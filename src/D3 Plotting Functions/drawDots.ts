@@ -3,9 +3,11 @@ import between from "../Functions/between";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
+import plotPropertiesClass from "../Classes/plotPropertiesClass";
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
-  if (!visualObj.viewModel.inputSettings.settings[0].scatter.show_dots) {
+  const plotProperties: plotPropertiesClass = visualObj.plotProperties;
+  if (!visualObj.viewModel.inputSettings.settings[0].scatter.show_dots || !plotProperties.displayPlot) {
     // Dot plotting is disabled, so remove any existing dots and return early
     selection
       .select(".dotsgroup")
@@ -16,10 +18,10 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
     return;
   }
 
-  const ylower: number = visualObj.plotProperties.yAxis.lower;
-  const yupper: number = visualObj.plotProperties.yAxis.upper;
-  const xlower: number = visualObj.plotProperties.xAxis.lower;
-  const xupper: number = visualObj.plotProperties.xAxis.upper;
+  const ylower: number = plotProperties.yAxis.lower;
+  const yupper: number = plotProperties.yAxis.upper;
+  const xlower: number = plotProperties.xAxis.lower;
+  const xupper: number = plotProperties.xAxis.upper;
   selection
       .select(".dotsgroup")
       .selectAll("path")
@@ -37,7 +39,7 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
           // If the point is outside the limits, don't draw it
           return "translate(0, 0) scale(0)";
         }
-        return `translate(${visualObj.plotProperties.xScale(d.x)}, ${visualObj.plotProperties.yScale(d.value)})`
+        return `translate(${plotProperties.xScale(d.x)}, ${plotProperties.yScale(d.value)})`
       })
       .style("fill", (d: plotData) => {
         return d.aesthetics.colour;
@@ -47,6 +49,9 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       })
       .style("stroke-width", (d: plotData) => d.aesthetics.width_outline)
       .on("click", (event, d: plotData) => {
+        if (!plotProperties.displayPlot) {
+          return;
+        }
         if (visualObj.host.hostCapabilities.allowInteractions) {
           if (visualObj.viewModel.inputSettings.settings[0].spc.split_on_click) {
             // Identify whether limits are already split at datapoint, and undo if so
@@ -82,6 +87,9 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       })
       // Display tooltip content on mouseover
       .on("mouseover", (event, d: plotData) => {
+        if (!plotProperties.displayPlot) {
+          return;
+        }
         // Get screen coordinates of mouse pointer, tooltip will
         //   be displayed at these coordinates
         const x = event.pageX;
@@ -96,6 +104,9 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       })
       // Hide tooltip when mouse moves out of dot
       .on("mouseout", () => {
+        if (!plotProperties.displayPlot) {
+          return;
+        }
         visualObj.host.tooltipService.hide({
           immediately: true,
           isTouchEvent: false
@@ -103,6 +114,9 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
       });
 
     selection.on('click', () => {
+      if (!plotProperties.displayPlot) {
+        return;
+      }
       visualObj.selectionManager.clear();
       visualObj.updateHighlighting();
     });

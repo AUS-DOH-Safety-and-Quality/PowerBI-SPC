@@ -9,7 +9,7 @@ import type { BaseType, Selection } from "../D3 Modules";
  *
  * @param selection The D3 parent object to which the icon's SVG code will be added
  */
-export default function consistentPass(selection: Selection<BaseType, unknown, SVGSVGElement, unknown>): void {
+export default function consistentPass(selection: Selection<BaseType, unknown, SVGSVGElement | BaseType, unknown>): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")

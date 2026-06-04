@@ -31,7 +31,7 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
           const currPoint: lineData = currLineData[i];
 
           xValues[i] = visualObj.plotProperties.xScale(currPoint.x);
-          yValues[i] = visualObj.plotProperties.yScale(currPoint.line_value);
+          yValues[i] = visualObj.plotProperties.yScale(currPoint.line_value as number);
           yValidStatus[i] = !isNullOrUndefined(currPoint.line_value) && between(currPoint.line_value, ylower, yupper);
           anyValid = anyValid || yValidStatus[i];
         }

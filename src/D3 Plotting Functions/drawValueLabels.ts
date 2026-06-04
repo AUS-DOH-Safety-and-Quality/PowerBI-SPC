@@ -119,7 +119,7 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
               textElement
                 .attr("x", x)
                 .attr("y", y)
-                .text(d.label.text_value)
+                .text(d.label.text_value ?? "")
                 .style("text-anchor", "middle")
                 .style("font-size", `${d.label.aesthetics.label_size}px`)
                 .style("font-family", d.label.aesthetics.label_font)
@@ -147,7 +147,7 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
                 .style("stroke", d.label.aesthetics.label_marker_outline_colour);
 
               if (!visualObj.viewModel.headless) {
-                textGroup.call(dragFun);
+                textGroup.call(dragFun as (x: d3.Selection<d3.BaseType | SVGGElement, unknown, null, undefined>) => void);
               }
             });
 }

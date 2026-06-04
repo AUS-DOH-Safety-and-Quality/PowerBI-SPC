@@ -12,7 +12,7 @@ import type { BaseType, Selection } from "../D3 Modules";
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 
-export default function concernHigh(selection: Selection<BaseType, unknown, SVGSVGElement, unknown>): void {
+export default function concernHigh(selection: Selection<BaseType, unknown, SVGSVGElement | BaseType, unknown>): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")
