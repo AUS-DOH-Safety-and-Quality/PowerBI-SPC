@@ -10,79 +10,67 @@ import datesSettings from "./Settings Model/datesSettings";
 import summaryTableSettings from "./Settings Model/summaryTableSettings";
 import downloadSettings from "./Settings Model/downloadSettings";
 import labelsSettings from "./Settings Model/labelsSettings";
+import { addGetters, type SettingDefaultTypes, type MergeUnions } from "./Settings Model/common";
 
-const settingsModel = {
-  canvas: canvasSettings,
-  spc: spcSettings,
-  outliers: outliersSettings,
-  nhs_icons: nhsIconsSettings,
-  scatter: scatterSettings,
-  lines: linesSettings,
-  x_axis: xAxisSettings,
-  y_axis: yAxisSettings,
-  dates: datesSettings,
-  summary_table: summaryTableSettings,
-  download_options: downloadSettings,
-  labels: labelsSettings
-};
+type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends object ? RecursivePartial<T[P]> : T[P];
+}
 
 // Add custom getters to each settings class so that individual settings can be
 //   accessed directly - ignoring the intermediate settingsGroups layer:
 //   - e.g. settings.spc.chart_type rather than settings.spc.settingsGroups.all.chart_type
-for (const key in settingsModel) {
-  let settingNames: string[] = [];
-  for (const group in settingsModel[key].settingsGroups) {
-    for (const setting in settingsModel[key].settingsGroups[group]) {
-      settingNames.push(setting);
-      Object.defineProperty(settingsModel[key], setting, {
-        get: function() {
-          return this.settingsGroups[group][setting]
-        }
-      });
+const settingsModel = {
+  canvas: addGetters(canvasSettings),
+  spc: addGetters(spcSettings),
+  outliers: addGetters(outliersSettings),
+  nhs_icons: addGetters(nhsIconsSettings),
+  scatter: addGetters(scatterSettings),
+  lines: addGetters(linesSettings),
+  x_axis: addGetters(xAxisSettings),
+  y_axis: addGetters(yAxisSettings),
+  dates: addGetters(datesSettings),
+  summary_table: addGetters(summaryTableSettings),
+  download_options: addGetters(downloadSettings),
+  labels: addGetters(labelsSettings),
+
+  get defaultValues(): settingsValueType {
+    let ret = {} as RecursivePartial<settingsValueType>;
+    for (const key in this) {
+      if (key === "defaultValues") continue; // to avoid infinite loop
+      const currSettings = this[key as settingsModelKeys];
+      const currSettingNames: string[] = currSettings.settingNames;
+      ret[key as settingsModelKeys] = {};
+      for (const setting of currSettingNames) {
+        (ret as any)[key as settingsModelKeys][setting] = (currSettings as any)[setting].default;
+      }
     }
+    return ret as settingsValueType;
   }
-  Object.defineProperty(settingsModel[key], "settingNames", {
-    get: function() {
-      return settingNames;
-    }
-  });
-}
+};
 
 /**
  * Majority of below for temporary compatibility with older code
  * for the new settings structure, to be cleaned up in future refactor
  */
 
-type settingsModelType = typeof settingsModel;
+type settingsModelType = Omit<typeof settingsModel, "defaultValues">;
 type settingsModelKeys = keyof settingsModelType;
 
-type MergeUnions<T> = (T extends any ? (x: T) => void : never) extends (x: infer R) => void
-  ? { [K in keyof R]: R[K] }
-  : never;
-
-type settingsGroups<T> = Extract<keyof T, "settingsGroups">;
-type settingsGroupMembers<T> = MergeUnions<T[settingsGroups<T>][keyof T[settingsGroups<T>]]>;
-type DefaultTypes<T> = T[Extract<keyof T, "default">];
-
 type settingsValueType = {
-  [K in settingsModelKeys]: {
-    [L in keyof settingsGroupMembers<settingsModelType[K]>]: DefaultTypes<settingsGroupMembers<settingsModelType[K]>[L]>
-  }
+  [K in settingsModelKeys]: SettingDefaultTypes<settingsModelType[K]>
 }
 type settingsValueTypesUnion = settingsValueType[settingsModelKeys];
 
-Object.defineProperty(settingsModel, "defaultValues", {
-  get: function() {
-    let ret = {};
-    for (const key in this) {
-      const currSettings: string[] = this[key].settingNames;
-      ret[key] = Object.fromEntries(currSettings.map(d => [d, this[key][d]["default"]]));
-    }
-    return ret as settingsValueType;
-  }
-})
+const defaultSettings: settingsValueType = settingsModel.defaultValues;
 
-const defaultSettings: settingsValueType = (settingsModel as any).defaultValues;
+type SettingsValueKeys = keyof settingsValueType;
+type settingsValueTypesMerged = MergeUnions<settingsValueTypesUnion>;
+type SettingsValueNestedKeys = keyof settingsValueTypesMerged;
 
-export { defaultSettings, settingsValueType, settingsValueTypesUnion };
+
+export {
+  defaultSettings, settingsValueType, settingsValueTypesUnion,
+  SettingsValueKeys, SettingsValueNestedKeys, settingsValueTypesMerged,
+  settingsModelKeys, settingsModelType
+};
 export default settingsModel;

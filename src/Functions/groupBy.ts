@@ -10,7 +10,7 @@ export default function groupBy<T>(data: T[], key: string): Array<[string, T[]]>
   const groupedData = new Map<any, T[]>();
   for (let i = 0; i < data.length; i++) {
     const item: T = data[i];
-    const keyValue = item[key];
+    const keyValue = item[key as keyof T];
     if (!groupedData.has(keyValue)) {
         groupedData.set(keyValue, []);
     }

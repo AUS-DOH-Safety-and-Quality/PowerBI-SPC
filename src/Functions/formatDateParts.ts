@@ -6,6 +6,8 @@
  * implementation using native JavaScript Date methods.
  */
 
+import isNullOrUndefined from "./isNullOrUndefined";
+
 /**
  * Date format options matching a subset of Intl.DateTimeFormatOptions
  */
@@ -99,7 +101,7 @@ const monthLong: Record<"en-GB" | "en-US", string[]> = {
  * ```
  */
 export default function formatDateParts(
-  date: Date,
+  date: Date | undefined,
   locale: "en-GB" | "en-US",
   options: DateFormatOptions
 ): DatePartsRecord {
@@ -110,6 +112,10 @@ export default function formatDateParts(
     month: "",
     year: ""
   };
+
+  if (isNullOrUndefined(date)) {
+    return result;
+  }
 
   // Format weekday if requested
   if (options.weekday === "short") {

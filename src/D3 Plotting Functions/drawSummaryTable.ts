@@ -1,4 +1,4 @@
-import type { plotData, plotDataGrouped } from "../Classes/viewModelClass";
+import type { plotData, plotDataGrouped, summaryTableRowData } from "../Classes/viewModelClass";
 import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
@@ -78,8 +78,12 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
                           let currentTD = d3.select(event.target).select(function(){
                             return this.closest("td");
                           })
-                          let rowData = d3.select(currentTD.node().parentNode).datum() as plotData;
-                          currentTD.style("background-color", rowData.aesthetics?.["table_body_bg_colour"] ?? "inherit");
+                          let rowData = d3.select(currentTD.node().parentNode).datum();
+                          if ("table_body_bg_colour" in (rowData as plotDataGrouped).aesthetics) {
+                            currentTD.style("background-color", (rowData as plotDataGrouped).aesthetics.table_body_bg_colour ?? "inherit");
+                          } else {
+                            currentTD.style("background-color", "inherit");
+                          }
                         });
 
   if (tableSettings.table_text_overflow !== "none") {
@@ -99,7 +103,7 @@ function drawOuterBorder(selection: divBaseType, tableSettings: settingsValueTyp
             .style("border-color", tableSettings.table_outer_border_colour);
 
   ["top", "right", "bottom", "left"].forEach((side) => {
-    if (!tableSettings[`table_outer_border_${side}`]) {
+    if (!tableSettings[`table_outer_border_${side}` as keyof settingsValueType["summary_table"]]) {
       selection.select(".table-group").style(`border-${side}`, "none");
     }
   });
@@ -125,8 +129,8 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
   const tableCells = selection.select(".table-body")
             .selectAll('tr')
             .selectAll('td')
-            .data((d: plotData) => cols.map(col => {
-              return { column: col.name, value: d.table_row[col.name] }
+            .data(d => cols.map(col => {
+              return { column: col.name, value: (d as plotData).table_row[col.name as keyof summaryTableRowData] }
             }))
             .join('td');
 
@@ -146,20 +150,20 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
             .attr("width", `${thisSelDims.width * 0.5 * scaling}px`)
             .attr("viewBox", "0 0 378 378")
             .classed("rowsvg", true)
-            .call(initialiseIconSVG, d.value)
+            .call(initialiseIconSVG, d.value as string)
             .selectAll(".icongroup")
             .selectAll(`.${d.value}`)
-            .call(nhsIcons[d.value]);
+            .call(nhsIcons[d.value as keyof typeof nhsIcons]);
       }
     } else {
       const value: string = typeof d.value === "number"
         ? d.value.toFixed(inputSettings.spc.sig_figs)
-        : d.value;
+        : (d.value ?? "");
 
       currNode.text(value).classed("cell-text", true);
     }
     const tableAesthetics: settingsValueType["summary_table"]
-      = rowData.aesthetics?.["table_body_bg_colour"]
+      = ("table_body_bg_colour" in rowData.aesthetics)
                               ? rowData.aesthetics as any
                               : inputSettings.summary_table;
     currNode.style("background-color", tableAesthetics.table_body_bg_colour)

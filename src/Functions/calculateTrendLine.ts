@@ -21,22 +21,22 @@
  * // Showing an upward trend with slope ≈ 2
  * ```
  */
-export default function calculateTrendLine(values: number[]): number[] {
+export default function calculateTrendLine(values: readonly number[]): number[] {
   const n: number = values.length;
 
   // Handle edge case: empty input
   if (n === 0) return [];
 
   // Initialize accumulator variables for least squares calculation
-  let sumY = 0;   // Sum of y-values (data points)
-  let sumX = 0;   // Sum of x-values (positions: 1, 2, 3, ...)
-  let sumXY = 0;  // Sum of x·y products
-  let sumX2 = 0;  // Sum of x² (squared positions)
+  let sumY: number = 0;   // Sum of y-values (data points)
+  let sumX: number = 0;   // Sum of x-values (positions: 1, 2, 3, ...)
+  let sumXY: number = 0;  // Sum of x·y products
+  let sumX2: number = 0;  // Sum of x² (squared positions)
 
   // First pass: Calculate all sums needed for least squares regression
   for (let i = 0; i < n; i++) {
-    const x = i + 1;        // Position (1-indexed for better numerical properties)
-    const y = values[i];    // Data value at this position
+    const x: number = i + 1;        // Position (1-indexed for better numerical properties)
+    const y: number = values[i];    // Data value at this position
 
     sumX += x;
     sumY += y;
@@ -46,17 +46,17 @@ export default function calculateTrendLine(values: number[]): number[] {
 
   // Calculate slope using least squares formula
   // slope = (n·Σ(xy) - Σx·Σy) / (n·Σ(x²) - (Σx)²)
-  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const slope: number = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 
   // Calculate y-intercept
   // intercept = (Σy - slope·Σx) / n
-  const intercept = (sumY - slope * sumX) / n;
+  const intercept: number = (sumY - slope * sumX) / n;
 
   // Second pass: Generate trend line values using y = mx + b
-  const trendLine: number[] = [];
+  const trendLine: Array<number> = new Array(n);
   for (let i = 0; i < n; i++) {
     // Calculate predicted y-value for each x position
-    trendLine.push(slope * (i + 1) + intercept);
+    trendLine[i] = slope * (i + 1) + intercept;
   }
 
   return trendLine;

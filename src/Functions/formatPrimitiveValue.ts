@@ -8,7 +8,7 @@ export default function formatPrimitiveValue(rawValue: PrimitiveValue,
                                               config: { valueType: ValueTypeDescriptor,
                                                         dateSettings: settingsValueType["dates"]}): string {
   if (isNullOrUndefined(rawValue)) {
-    return null;
+    return "";
   }
 
   if (config.valueType.numeric) {

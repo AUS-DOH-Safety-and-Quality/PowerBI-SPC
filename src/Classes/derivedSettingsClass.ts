@@ -35,7 +35,7 @@ export default class derivedSettingsClass {
     denominator_gt_one: boolean
   }
 
-  update(inputSettingsSpc: settingsValueType["spc"]) {
+  constructor(inputSettingsSpc: settingsValueType["spc"]) {
     const chartType: string = inputSettingsSpc.chart_type;
     const pChartType: boolean = ["p", "pp"].includes(chartType);
     const percentSettingString: string = inputSettingsSpc.perc_labels;

@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 import settingsClass from "../Classes/settingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 
-export default function validateDataView(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
+export default function validateDataViewColumns(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
   // Show blank error messages for empty data or categories as settings are
   // bound to the input categories, and so cannot disable error messages
   if (isNullOrUndefined(inputDV?.[0]) || (inputDV?.[0]?.categorical?.categories?.[0]?.identity?.length === 0)) {
@@ -15,15 +15,15 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
   const numeratorsPresent: boolean
     = inputDV[0].categorical
                    ?.values
-                   ?.some(d => d.source?.roles?.numerators);
+                   ?.some(d => d.source?.roles?.numerators) ?? false;
 
   if (!numeratorsPresent) {
     return "No Numerators passed!";
   }
 
-  let needs_denominator: boolean;
-  let needs_sd: boolean;
-  let chart_type: string;
+  let needs_denominator: boolean = false;
+  let needs_sd: boolean = false;
+  let chart_type: string = inputSettingsClass.settings[0].spc.chart_type;
 
   if (inputSettingsClass?.derivedSettings.length > 0) {
     inputSettingsClass?.derivedSettings.forEach((d) => {
@@ -46,7 +46,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
     const denominatorsPresent: boolean
       = inputDV[0].categorical
                      ?.values
-                     ?.some(d => d.source?.roles?.denominators);
+                     ?.some(d => d.source?.roles?.denominators) ?? false;
 
     if (!denominatorsPresent) {
       return `Chart type '${chart_type}' requires denominators!`;
@@ -57,7 +57,7 @@ export default function validateDataView(inputDV: powerbi.DataView[], inputSetti
     const xbarSDPresent: boolean
       = inputDV[0].categorical
                      ?.values
-                     ?.some(d => d.source?.roles?.xbar_sds);
+                     ?.some(d => d.source?.roles?.xbar_sds) ?? false;
 
     if (!xbarSDPresent) {
       return `Chart type '${chart_type}' requires SDs!`;

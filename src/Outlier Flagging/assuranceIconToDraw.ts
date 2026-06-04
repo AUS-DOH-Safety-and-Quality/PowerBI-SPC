@@ -31,14 +31,14 @@ export default function assuranceIconToDraw(controlLimits: Readonly<controlLimit
     return "none";
   }
 
-  const alt_target: number = controlLimits.alt_targets![N];
+  const alt_target: number = controlLimits.alt_targets![N] as number;
   const impDirectionIncrease: boolean = imp_direction === "increase";
 
   // Target is above upper 99% limit
-  if (alt_target > controlLimits.ul99![N]) {
+  if (alt_target > (controlLimits.ul99![N] as number)) {
     return impDirectionIncrease ? "consistentFail" : "consistentPass";
   // Target is below lower 99% limit
-  } else if (alt_target < controlLimits.ll99![N]) {
+  } else if (alt_target < (controlLimits.ll99![N] as number)) {
     return impDirectionIncrease ? "consistentPass" : "consistentFail";
   // Target is within control limits (inconsistent)
   } else {

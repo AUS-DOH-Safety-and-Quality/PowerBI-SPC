@@ -1,8 +1,4 @@
-import {
-  numberOption, numberOptionMin,
-  numberOptionMinMax, toggleOption, textOption,
-  dropdownOption
-} from "./common";
+import { numberOption, toggleOption, textOption, dropdownOption } from "./common";
 
 const spcSettings = {
   description: "SPC Settings",
@@ -30,8 +26,8 @@ const spcSettings = {
         ]
       ),
       outliers_in_limits: toggleOption("Keep Outliers in Limit Calcs.", false),
-      multiplier: numberOptionMin("Multiplier", 1, 0),
-      sig_figs: numberOptionMinMax("Decimals to Report:", 2, 0, 20),
+      multiplier: numberOption("Multiplier", 1, { min: 0 }),
+      sig_figs: numberOption("Decimals to Report:", 2, { min: 0, max: 20 }),
       perc_labels: dropdownOption("Report as percentage", "Automatic", ["Automatic", "Yes", "No"]),
       split_on_click: toggleOption("Split Limits on Click", false),
       num_points_subset: numberOption("Subset Number of Points for Limit Calculations", undefined),

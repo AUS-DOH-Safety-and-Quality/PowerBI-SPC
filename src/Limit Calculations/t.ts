@@ -61,13 +61,13 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const limits: controlLimitsObject = iLimits(inputArgsCopy);
 
   // Limits & target are constant for i-chart, so only extract and back-transform once
-  const cl: number = Math.pow(limits.targets[0], 3.6);
-  const ll99: number = limits.ll99![0] < 0 ? 0 : Math.pow(limits.ll99![0], 3.6);
-  const ll95: number = limits.ll95![0] < 0 ? 0 : Math.pow(limits.ll95![0], 3.6);
-  const ll68: number = limits.ll68![0] < 0 ? 0 : Math.pow(limits.ll68![0], 3.6);
-  const ul68: number = Math.pow(limits.ul68![0], 3.6);
-  const ul95: number = Math.pow(limits.ul95![0], 3.6);
-  const ul99: number = Math.pow(limits.ul99![0], 3.6);
+  const cl: number = Math.pow(limits.targets[0] as number, 3.6);
+  const ll99: number = limits.ll99![0] as number < 0 ? 0 : Math.pow(limits.ll99![0] as number, 3.6);
+  const ll95: number = limits.ll95![0] as number < 0 ? 0 : Math.pow(limits.ll95![0] as number, 3.6);
+  const ll68: number = limits.ll68![0] as number < 0 ? 0 : Math.pow(limits.ll68![0] as number, 3.6);
+  const ul68: number = Math.pow(limits.ul68![0] as number, 3.6);
+  const ul95: number = Math.pow(limits.ul95![0] as number, 3.6);
+  const ul99: number = Math.pow(limits.ul99![0] as number, 3.6);
 
   let rtn: controlLimitsObject = {
     keys: args.keys,

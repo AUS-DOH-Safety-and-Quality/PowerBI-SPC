@@ -6,6 +6,6 @@ import isNullOrUndefined from "./isNullOrUndefined";
  * @param value The number to check.
  * @returns True if the value is a valid number, false otherwise.
  */
-export default function isValidNumber(value: number): boolean {
+export default function isValidNumber<T>(value: T): value is Extract<T, number> {
   return !isNullOrUndefined(value) && !Number.isNaN(value) && Number.isFinite(value);
 }

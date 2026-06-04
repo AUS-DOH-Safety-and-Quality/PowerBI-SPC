@@ -1,6 +1,7 @@
 import type { svgBaseType, Visual } from "../visual";
 import type { plotData } from "../Classes/viewModelClass";
 import type plotPropertiesClass from "../Classes/plotPropertiesClass";
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
   const plotProperties: plotPropertiesClass = visualObj.plotProperties;
@@ -32,12 +33,12 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
     }
     const plotPoints: plotData[] = visualObj.viewModel.plotPoints[0] as plotData[]
 
-    const boundRect = visualObj.svg.node().getBoundingClientRect();
+    const boundRect = (visualObj.svg.node() as SVGSVGElement).getBoundingClientRect();
     const xValue: number = (event.pageX - boundRect.left);
-    let indexNearestValue: number;
+    let indexNearestValue: number | undefined;
     let nearestDistance: number = Infinity;
-    let x_coord: number;
-    let y_coord: number;
+    let x_coord: number | undefined;
+    let y_coord: number | undefined;
     for (let i = 0; i < plotPoints.length; i++) {
       const curr_x: number = plotProperties.xScale(plotPoints[i].x);
       const curr_diff: number = Math.abs(curr_x - xValue);
@@ -47,6 +48,10 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
         x_coord = curr_x;
         y_coord = plotProperties.yScale(plotPoints[i].value);
       }
+    }
+
+    if (isNullOrUndefined(indexNearestValue) || isNullOrUndefined(x_coord) || isNullOrUndefined(y_coord)) {
+      return;
     }
 
     visualObj.host.tooltipService.show({

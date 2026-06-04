@@ -1,30 +1,17 @@
-const enum FormattingComponent {
-  AlignmentGroup = "AlignmentGroup",
-  ColorPicker = "ColorPicker",
-  ConditionalFormattingControl = "ConditionalFormattingControl",
-  DatePicker = "DatePicker",
-  Dropdown = "Dropdown",
-  DurationPicker = "DurationPicker",
-  EmptyControl = "EmptyControl",
-  ErrorRangeControl = "ErrorRangeControl",
-  FieldPicker = "FieldPicker",
-  FlagsSelection = "FlagsSelection",
-  FontControl = "FontControl",
-  FontPicker = "FontPicker",
-  GradientBar = "GradientBar",
-  ImageUpload = "ImageUpload",
-  Link = "Link",
-  ListEditor = "ListEditor",
-  MarginPadding = "MarginPadding",
-  NumUpDown = "NumUpDown",
-  ReadOnlyText = "ReadOnlyText",
-  SeriesDialogLink = "SeriesDialogLink",
-  ShapeMapSelector = "ShapeMapSelector",
-  Slider = "Slider",
-  TextArea = "TextArea",
-  TextInput = "TextInput",
-  ToggleSwitch = "ToggleSwitch",
-};
+import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import type powerbi from "powerbi-visuals-api";
+
+const FormattingComponent = {
+  AlignmentGroup: "AlignmentGroup" as powerbi.visuals.FormattingComponent.AlignmentGroup,
+  ColorPicker: "ColorPicker" as powerbi.visuals.FormattingComponent.ColorPicker,
+  Dropdown: "Dropdown" as powerbi.visuals.FormattingComponent.Dropdown,
+  FontPicker: "FontPicker" as powerbi.visuals.FormattingComponent.FontPicker,
+  NumUpDown: "NumUpDown" as powerbi.visuals.FormattingComponent.NumUpDown,
+  TextInput: "TextInput" as powerbi.visuals.FormattingComponent.TextInput,
+  ToggleSwitch: "ToggleSwitch" as powerbi.visuals.FormattingComponent.ToggleSwitch,
+} as const;
+
+type FormattingComponentKeys = keyof typeof FormattingComponent;
 
 const defaultColours: Record<string, string> = {
   improvement: "#00B0F0",
@@ -39,31 +26,29 @@ const defaultColours: Record<string, string> = {
 };
 
 type UndefinedOrNumT<T> = T extends undefined ? undefined | number : T;
+type NumOptionType<T> = {
+  displayName: string;
+  type: Extract<powerbi.visuals.FormattingComponent, "NumUpDown">
+  default: UndefinedOrNumT<T>;
+  options?: { minValue?: { value: number }; maxValue?: { value: number }; }
+};
 
-function numberOption<T>(displayName: string, defaultValue: T) {
-  return {
+function numberOption<T>(displayName: string, defaultValue: T, minMax?: { min?: number, max?: number }) {
+  const rtn: NumOptionType<T> = {
     displayName: displayName,
     type: FormattingComponent.NumUpDown,
     default: defaultValue as UndefinedOrNumT<T>
+  };
+  if (!isNullOrUndefined(minMax)) {
+    rtn.options = {};
+    if (!isNullOrUndefined(minMax.min)) {
+      rtn.options.minValue = { value: minMax.min };
+    }
+    if (!isNullOrUndefined(minMax.max)) {
+      rtn.options.maxValue = { value: minMax.max };
+    }
   }
-}
-
-function numberOptionMin<T>(displayName: string, defaultValue: T, minValue: number) {
-  return {
-    displayName: displayName,
-    type: FormattingComponent.NumUpDown,
-    default: defaultValue as UndefinedOrNumT<T>,
-    options: { minValue: { value: minValue } }
-  }
-}
-function numberOptionMinMax<T>(displayName: string, defaultValue: T,
-                            minValue: number, maxValue: number) {
-  return {
-    displayName: displayName,
-    type: FormattingComponent.NumUpDown,
-    default: defaultValue as UndefinedOrNumT<T>,
-    options: { minValue: { value: minValue }, maxValue: { value: maxValue } }
-  }
+  return rtn;
 }
 
 function toggleOption(displayName: string, defaultValue: boolean) {
@@ -124,7 +109,7 @@ function fontOption(displayName: string) {
 }
 
 function fontSizeOption(displayName: string) {
-  return numberOptionMinMax(displayName, 10, 0, 100);
+  return numberOption(displayName, 10, { min: 0, max: 100 });
 }
 
 type DropdownItem = { displayName: string; value: string; }
@@ -184,7 +169,7 @@ function borderStyleOption(displayName: string) {
 }
 
 function borderWidthOption(displayName: string) {
-  return numberOptionMin(displayName, 1, 0);
+  return numberOption(displayName, 1, { min: 0 });
 }
 
 function alignmentOption(displayName: string) {
@@ -214,8 +199,53 @@ function textTransformOption(displayName: string) {
   )
 }
 
+
+type ExpandRecursive<T> = T extends object
+  ? T extends infer O ? { [K in keyof O]: ExpandRecursive<O[K]> } : never
+  : T;
+
+type MergeUnions<T> = ExpandRecursive<(T extends any ? (x: T) => void : never) extends (x: infer R) => void
+  ? { [K in keyof R]: R[K] }
+  : never>;
+
+type settingsGroups<T> = Extract<keyof T, "settingsGroups">;
+type settingsGroupMembers<T> = MergeUnions<T[settingsGroups<T>][keyof T[settingsGroups<T>]]>;
+type DefaultTypes<T> = T[Extract<keyof T, "default">];
+
+type SettingDefaultTypes<T> = ExpandRecursive<{
+  [L in keyof settingsGroupMembers<T>]: DefaultTypes<settingsGroupMembers<T>[L]>
+}>;
+type SettingMembers<T> = ExpandRecursive<{
+  [L in keyof settingsGroupMembers<T>]: settingsGroupMembers<T>[L]
+}>;
+
+
+
+function addGetters<T extends { settingsGroups: Record<string, any> }>(
+  settingCategory: T): ExpandRecursive<T & SettingMembers<T> & { settingNames: string[]}> {
+  let inputClone = JSON.parse(JSON.stringify(settingCategory)) as T; // to avoid mutating original object, which can cause issues with imports
+  let settingNames: string[] = [];
+  for (const group in inputClone.settingsGroups) {
+    for (const setting in inputClone.settingsGroups[group]) {
+      settingNames.push(setting);
+      Object.defineProperty(inputClone, setting, {
+        get: function() {
+          return inputClone.settingsGroups[group][setting]
+        }
+      });
+    }
+  }
+  Object.defineProperty(inputClone, "settingNames", {
+    get: function() {
+      return settingNames;
+    }
+  });
+  return inputClone as unknown as ExpandRecursive<T & SettingMembers<T> & { settingNames: string[] }>;
+}
+
 export {
   FormattingComponent,
+  type FormattingComponentKeys,
   paddingOption,
   colourOption,
   fontOption,
@@ -223,8 +253,6 @@ export {
   lineTypeOption,
   toggleOption,
   numberOption,
-  numberOptionMin,
-  numberOptionMinMax,
   textOption,
   lineLabelPositionOption,
   dropdownOption,
@@ -232,5 +260,9 @@ export {
   borderWidthOption,
   alignmentOption,
   fontWeightOption,
-  textTransformOption
+  textTransformOption,
+  addGetters,
+  type SettingDefaultTypes,
+  type ExpandRecursive,
+  type MergeUnions
 };

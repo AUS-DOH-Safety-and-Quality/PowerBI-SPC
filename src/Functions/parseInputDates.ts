@@ -17,9 +17,9 @@ const monthNameToNumber: { [key: string]: number } = {
 };
 
 
-function temporalTypeToKey(inputType: powerbi.ValueTypeDescriptor, inputValue: powerbi.PrimitiveValue) {
+function temporalTypeToKey(inputType: { temporal?: boolean, category?: string}, inputValue: powerbi.PrimitiveValue) {
   if (!inputType.temporal) {
-    return null;
+    return [];
   }
 
   if (inputType?.["category"] === "DayOfMonth") {
@@ -31,7 +31,7 @@ function temporalTypeToKey(inputType: powerbi.ValueTypeDescriptor, inputValue: p
   } else if (inputType?.["category"] === "Years") {
     return ["year", <number>(inputValue)]
   } else {
-    return null
+    return []
   }
 }
 
@@ -44,14 +44,14 @@ type datePartsType = {
 
 export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[], idxs: number[]) {
   const n_keys: number = idxs.length;
-  let inputDates: Date[] = [];
+  let inputDates: (Date | undefined)[] = [];
   const inputQuarters: string[] = [];
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
     for (let i = 0; i < n_keys; i++) {
       const datePartsArray: (string | number)[][] = [];
       for (let j = 0; j < inputs.length; j++) {
-        datePartsArray.push(temporalTypeToKey(inputs[j].source.type, inputs[j].values[idxs[i]]));
+        datePartsArray.push(temporalTypeToKey(inputs[j].source.type! as unknown as { temporal?: boolean, category?: string}, inputs[j].values[idxs[i]]));
       }
       const datePartsObj: datePartsType = Object.fromEntries(datePartsArray);
       if (datePartsObj?.quarter) {
@@ -61,7 +61,7 @@ export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[]
     }
   } else {
     for (let i = 0; i < n_keys; i++) {
-      inputDates[i] = isNullOrUndefined(inputs?.[0]?.values[idxs[i]]) ? null : new Date(<Date>(inputs?.[0]?.values[idxs[i]]))
+      inputDates[i] = isNullOrUndefined(inputs?.[0]?.values[idxs[i]]) ? undefined : new Date(<Date>(inputs?.[0]?.values[idxs[i]]))
     }
   }
   return { dates: inputDates, quarters: inputQuarters }

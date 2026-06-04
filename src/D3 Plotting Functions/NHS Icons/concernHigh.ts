@@ -1,4 +1,4 @@
-import type { svgBaseType } from "../../visual";
+import type { BaseType, Selection } from "../D3 Modules";
 
 /**
  * Inline function to be called by D3 for rendering the Variation - Concern High icon.
@@ -12,7 +12,7 @@ import type { svgBaseType } from "../../visual";
 
 // ESLint errors due to number of lines in function, but would reduce readability to separate further
 
-export default function concernHigh(selection: svgBaseType): void {
+export default function concernHigh(selection: Selection<BaseType, unknown, SVGSVGElement | BaseType, unknown>): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")
             .append("g")

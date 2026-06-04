@@ -1,4 +1,5 @@
-import type { settingsValueType } from "../settings";
+import type { settingsValueType, SettingsValueKeys, SettingsValueNestedKeys } from "../settings";
+import getNested from "./getNested"
 
 const lineNameMap: Record<string, string> = {
   "ll99" : "99",
@@ -18,7 +19,7 @@ const lineNameMap: Record<string, string> = {
 export default function getAesthetic(type: string, group: string, aesthetic: string, inputSettings: settingsValueType): string | number {
   const mapName: string = group.includes("line") ? lineNameMap[type] : type;
   const settingName: string = aesthetic + "_" + mapName;
-  return inputSettings[group][settingName];
+  return getNested(inputSettings, group as SettingsValueKeys, settingName as SettingsValueNestedKeys) as string | number;
 }
 
 export { lineNameMap }
