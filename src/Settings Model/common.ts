@@ -1,32 +1,17 @@
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import type powerbi from "powerbi-visuals-api";
 
-const enum FormattingComponent {
-  AlignmentGroup = "AlignmentGroup",
-  ColorPicker = "ColorPicker",
-  ConditionalFormattingControl = "ConditionalFormattingControl",
-  DatePicker = "DatePicker",
-  Dropdown = "Dropdown",
-  DurationPicker = "DurationPicker",
-  EmptyControl = "EmptyControl",
-  ErrorRangeControl = "ErrorRangeControl",
-  FieldPicker = "FieldPicker",
-  FlagsSelection = "FlagsSelection",
-  FontControl = "FontControl",
-  FontPicker = "FontPicker",
-  GradientBar = "GradientBar",
-  ImageUpload = "ImageUpload",
-  Link = "Link",
-  ListEditor = "ListEditor",
-  MarginPadding = "MarginPadding",
-  NumUpDown = "NumUpDown",
-  ReadOnlyText = "ReadOnlyText",
-  SeriesDialogLink = "SeriesDialogLink",
-  ShapeMapSelector = "ShapeMapSelector",
-  Slider = "Slider",
-  TextArea = "TextArea",
-  TextInput = "TextInput",
-  ToggleSwitch = "ToggleSwitch",
-};
+const FormattingComponent = {
+  AlignmentGroup: "AlignmentGroup" as powerbi.visuals.FormattingComponent.AlignmentGroup,
+  ColorPicker: "ColorPicker" as powerbi.visuals.FormattingComponent.ColorPicker,
+  Dropdown: "Dropdown" as powerbi.visuals.FormattingComponent.Dropdown,
+  FontPicker: "FontPicker" as powerbi.visuals.FormattingComponent.FontPicker,
+  NumUpDown: "NumUpDown" as powerbi.visuals.FormattingComponent.NumUpDown,
+  TextInput: "TextInput" as powerbi.visuals.FormattingComponent.TextInput,
+  ToggleSwitch: "ToggleSwitch" as powerbi.visuals.FormattingComponent.ToggleSwitch,
+} as const;
+
+type FormattingComponentKeys = keyof typeof FormattingComponent;
 
 const defaultColours: Record<string, string> = {
   improvement: "#00B0F0",
@@ -43,7 +28,7 @@ const defaultColours: Record<string, string> = {
 type UndefinedOrNumT<T> = T extends undefined ? undefined | number : T;
 type NumOptionType<T> = {
   displayName: string;
-  type: FormattingComponent.NumUpDown;
+  type: Extract<powerbi.visuals.FormattingComponent, "NumUpDown">
   default: UndefinedOrNumT<T>;
   options?: { minValue?: { value: number }; maxValue?: { value: number }; }
 };
@@ -219,9 +204,9 @@ type ExpandRecursive<T> = T extends object
   ? T extends infer O ? { [K in keyof O]: ExpandRecursive<O[K]> } : never
   : T;
 
-type MergeUnions<T> = (T extends any ? (x: T) => void : never) extends (x: infer R) => void
+type MergeUnions<T> = ExpandRecursive<(T extends any ? (x: T) => void : never) extends (x: infer R) => void
   ? { [K in keyof R]: R[K] }
-  : never;
+  : never>;
 
 type settingsGroups<T> = Extract<keyof T, "settingsGroups">;
 type settingsGroupMembers<T> = MergeUnions<T[settingsGroups<T>][keyof T[settingsGroups<T>]]>;
@@ -260,6 +245,7 @@ function addGetters<T extends { settingsGroups: Record<string, any> }>(
 
 export {
   FormattingComponent,
+  type FormattingComponentKeys,
   paddingOption,
   colourOption,
   fontOption,

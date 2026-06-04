@@ -64,8 +64,13 @@ type settingsValueTypesUnion = settingsValueType[settingsModelKeys];
 const defaultSettings: settingsValueType = settingsModel.defaultValues;
 
 type SettingsValueKeys = keyof settingsValueType;
-type SettingsValueNestedKeys = keyof MergeUnions<settingsValueTypesUnion>;
+type settingsValueTypesMerged = MergeUnions<settingsValueTypesUnion>;
+type SettingsValueNestedKeys = keyof settingsValueTypesMerged;
 
 
-export { defaultSettings, settingsValueType, settingsValueTypesUnion, SettingsValueKeys, SettingsValueNestedKeys };
+export {
+  defaultSettings, settingsValueType, settingsValueTypesUnion,
+  SettingsValueKeys, SettingsValueNestedKeys, settingsValueTypesMerged,
+  settingsModelKeys, settingsModelType
+};
 export default settingsModel;

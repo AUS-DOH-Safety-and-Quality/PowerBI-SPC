@@ -16,7 +16,7 @@ import extractInputData from "../Functions/extractInputData";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
-import validateDataView from "../Functions/validateDataView";
+import validateDataViewColumns from "../Functions/validateDataViewColumns";
 import valueFormatter from "../Functions/valueFormatter";
 import calculateTrendLine from "../Functions/calculateTrendLine";
 import groupBy from "../Functions/groupBy";
@@ -26,6 +26,7 @@ import twoInThree from "../Outlier Flagging/twoInThree";
 import shift from "../Outlier Flagging/shift";
 import { lineNameMap } from "../Functions/getAesthetic";
 import isValidNumber from "../Functions/isValidNumber";
+import { default as updateOptionsUndefined, UpdateOptionsValidTypes } from "../Functions/updateOptionsUndefined";
 
 type LineSettingsKeys = keyof settingsValueType["lines"];
 
@@ -202,6 +203,12 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+    const updateOptionsStatus: UpdateOptionsValidTypes = updateOptionsUndefined(options);
+    if (updateOptionsStatus === UpdateOptionsValidTypes.Undefined) {
+      return { status: false, error: "" }
+    } else if (updateOptionsStatus === UpdateOptionsValidTypes.MissingNumerators) {
+      return { status: false, error: "No Numerators passed!" }
+    }
     if (isNullOrUndefined(this.colourPalette)) {
       this.colourPalette = {
         isHighContrast: host.colorPalette.isHighContrast,
@@ -253,7 +260,7 @@ export default class viewModelClass {
       res.type = "settings";
       return res;
     }
-    const checkDV: string = validateDataView(options.dataViews, this.inputSettings);
+    const checkDV: string = validateDataViewColumns(options.dataViews, this.inputSettings);
     if (checkDV !== "valid") {
       res.status = false;
       res.error = checkDV;

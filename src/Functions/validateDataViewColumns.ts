@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 import settingsClass from "../Classes/settingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 
-export default function validateDataView(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
+export default function validateDataViewColumns(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
   // Show blank error messages for empty data or categories as settings are
   // bound to the input categories, and so cannot disable error messages
   if (isNullOrUndefined(inputDV?.[0]) || (inputDV?.[0]?.categorical?.categories?.[0]?.identity?.length === 0)) {
