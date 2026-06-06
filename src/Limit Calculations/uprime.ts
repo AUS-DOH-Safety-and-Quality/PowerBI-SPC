@@ -58,19 +58,19 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
   const n_sub: number = subset_points.length;               // Number of subset points
 
   // Calculate centreline: overall rate = total nonconformities / total units (from subset)
-  let sum_numerators: number = 0;
-  let sum_denominators: number = 0;
+  let sum_numerators = 0;
+  let sum_denominators = 0;
   for (let i = 0; i < n_sub; i++) {
-    let idx = subset_points[i];
+    const idx = subset_points[i];
     sum_numerators += numerators[idx];
     sum_denominators += denominators[idx];
   }
   const cl: number = sum_numerators / sum_denominators;
 
   // Calculate standard deviations for each point (based on Poisson assumption)
-  let sd: number[] = new Array<number>(n);
+  const sd: number[] = new Array<number>(n);
   // Calculate values (rates) for all points
-  let val: number[] = new Array<number>(n);
+  const val: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
     val[i] = numerators[i] / denominators[i];
     sd[i] = Math.sqrt(cl / denominators[i]);
@@ -78,11 +78,11 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
 
   // Calculate z-scores for subset points: z = (u - ū) / σ
   // Calculate moving ranges of z-scores: MR_i = |z_i - z_{i-1}|
-  let consec_diff: number[] = new Array<number>(n_sub - 1);
-  let amr: number = 0;  // Running sum for average moving range
+  const consec_diff: number[] = new Array<number>(n_sub - 1);
+  let amr = 0;  // Running sum for average moving range
   let prevZ: number = (val[subset_points[0]] - cl) / sd[subset_points[0]];
   for (let i = 1; i < n_sub; i++) {
-    let currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]]
+    const currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]]
     consec_diff[i - 1] = Math.abs(currZ - prevZ);
     amr += consec_diff[i - 1];
     prevZ = currZ;
@@ -98,8 +98,8 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
     const consec_diff_ulim: number = amr * 3.267;
 
     // Recalculate AMR excluding values above the limit
-    let screened_amr: number = 0;
-    let screened_count: number = 0;
+    let screened_amr = 0;
+    let screened_count = 0;
     for (let i = 0; i < consec_diff.length; i++) {
       if (consec_diff[i] < consec_diff_ulim) {
         screened_amr += consec_diff[i];
@@ -114,7 +114,7 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
   const sigma_multiplier: number = amr / 1.128;
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: val,                                           // The rates (nonconformities per unit)
     numerators: args.numerators,                           // Original nonconformity counts

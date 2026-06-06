@@ -8,8 +8,8 @@
  * @returns An array containing `n` copies of the value `x`.
  */
 export default function rep<T>(x: T, n: number) : T[] {
-  let result: T[] = new Array<T>(n);
-  for (let i: number = 0; i < n; i++) {
+  const result: T[] = new Array<T>(n);
+  for (let i = 0; i < n; i++) {
     result[i] = x;
   }
   return result;

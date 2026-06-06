@@ -31,7 +31,7 @@ function tickSpec(start: number, stop: number, count: number) {
   return [i1, i2, inc];
 }
 
-type returnT<T, U> = T extends Array<any> ? U : T;
+type returnT<T, U> = T extends any[] ? U : T;
 
 export default function scaleLinear() {
   let domain: [number, number] = [0, 1];

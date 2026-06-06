@@ -12,15 +12,15 @@ import between from "./between";
 import isNullOrUndefined from "./isNullOrUndefined";
 import getNested from "./getNested"
 
-export type SettingsValidationT = { status: number, messages: string[][], error?: string };
-export type ConditionalReturnT<T extends settingsValueTypesUnion> = { values: T[] | undefined, validation: SettingsValidationT }
+export interface SettingsValidationT { status: number, messages: string[][], error?: string }
+export interface ConditionalReturnT<T extends settingsValueTypesUnion> { values: T[] | undefined, validation: SettingsValidationT }
 
 function getSettingValue<T>(settingObject: DataViewObjects, settingGroup: string, settingName: string, defaultValue: T): T {
   const propertyValue: powerbi.DataViewPropertyValue = settingObject?.[settingGroup]?.[settingName];
   if (isNullOrUndefined(propertyValue)) {
     return defaultValue;
   }
-  return ((<Fill>propertyValue)?.solid?.color ?? propertyValue) as T;
+  return ((propertyValue as Fill)?.solid?.color ?? propertyValue) as T;
 }
 
 export default function
@@ -41,7 +41,7 @@ export default function
   const validationRtn: SettingsValidationT
     = JSON.parse(JSON.stringify({ status: 0, messages: rep([], inputCategories.values.length) }));
   const n: number = idxs.length;
-  let rtn: T[] = new Array<T>(n);
+  const rtn: T[] = new Array<T>(n);
   for (let i = 0; i < n; i++) {
     const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
     rtn[i] = Object.fromEntries(
@@ -63,7 +63,7 @@ export default function
         }
         const defaultIsUndefined: boolean = isNullOrUndefined(defaultSetting);
         if (valid && !defaultIsUndefined) {
-          let message: string = "";
+          let message = "";
           if (valid instanceof Array) {
             if (!valid.includes(extractedSetting as string)) {
               message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`

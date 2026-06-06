@@ -23,7 +23,7 @@ describe("MR Chart Test", () => {
   });
 
   it("MR Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "mr";
     visual.update({
       dataViews: [ buildDataView({

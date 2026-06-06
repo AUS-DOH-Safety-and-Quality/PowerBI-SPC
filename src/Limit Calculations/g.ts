@@ -60,10 +60,10 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n_sub: number = subset_points.length;           // Number of points used for limit calculation
 
   // Array to store subset values for median calculation
-  let numerator_subset: number[] = new Array<number>(n_sub);
+  const numerator_subset: number[] = new Array<number>(n_sub);
 
   // Accumulator for mean calculation
-  let cl: number = 0;
+  let cl = 0;
 
   // Calculate sum of counts for subset points and store values for median
   for (let i = 0; i < n_sub; i++) {
@@ -85,7 +85,7 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: args.numerators,           // The plotted values (counts)
     targets: new Array<number>(n),     // Centreline (median for display)

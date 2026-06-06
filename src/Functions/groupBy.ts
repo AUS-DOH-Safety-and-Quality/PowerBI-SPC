@@ -6,7 +6,7 @@
  * @param key The key to group the objects by.
  * @returns An array of tuples, where each tuple contains a key and an array of objects with that key.
  */
-export default function groupBy<T>(data: T[], key: string): Array<[string, T[]]> {
+export default function groupBy<T>(data: T[], key: string): [string, T[]][] {
   const groupedData = new Map<any, T[]>();
   for (let i = 0; i < data.length; i++) {
     const item: T = data[i];

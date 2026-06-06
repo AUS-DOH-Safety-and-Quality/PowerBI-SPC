@@ -56,13 +56,13 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): controlLimi
                                  : numerators[subset_points[0]];
 
   // Accumulators for mean and average moving range
-  let cl: number = 0;                                   // Running sum for average moving range
-  let consec_diff: number[] = new Array<number>(n_sub - 1); // Store moving ranges for outlier screening
+  let cl = 0;                                   // Running sum for average moving range
+  const consec_diff: number[] = new Array<number>(n_sub - 1); // Store moving ranges for outlier screening
 
   // Calculate sum for mean and moving ranges: MR_i = |x_i - x_{i-1}|
   for (let i = 1; i < n_sub; i++) {
     // Get current value (raw or ratio)
-    let currVal: number = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
+    const currVal: number = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                    : numerators[subset_points[i]];
 
     // Calculate moving range (absolute difference from previous value)
@@ -77,7 +77,7 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): controlLimi
   const n_mr: number = n - 1; // Number of moving range points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys.slice(1),                                   // Exclude first key (n-1 points)
     values: new Array<number>(n_mr),                            // The moving ranges
     numerators: useRatio ? args.numerators.slice(1) : undefined,   // Original numerators (if ratio), exclude first

@@ -52,17 +52,17 @@ export default function uLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Calculate centreline: overall rate = total nonconformities / total units
-  let sum_numerators: number = 0;
-  let sum_denominators: number = 0;
+  let sum_numerators = 0;
+  let sum_denominators = 0;
   for (let i = 0; i < subset_points.length; i++) {
-    let idx = subset_points[i];
+    const idx = subset_points[i];
     sum_numerators += numerators[idx];
     sum_denominators += denominators[idx];
   }
   const cl: number = sum_numerators / sum_denominators;
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: new Array<number>(n),                          // The rates (nonconformities per unit)
     numerators: args.numerators,                           // Original nonconformity counts

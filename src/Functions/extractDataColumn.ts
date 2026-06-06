@@ -13,7 +13,7 @@ type TargetT = number[] | string[] | VisualTooltipDataItem[][];
 
 function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: number[]): (string | undefined)[] {
   const n_keys: number = idxs.length;
-  let ret = new Array<string | undefined>(n_keys);
+  const ret = new Array<string | undefined>(n_keys);
   // If only one input is passed and it is not a date type then just return the string values
   if (col.length === 1 && !(col[0].source.type?.temporal)) {
     for (let i = 0; i < n_keys; i++) {
@@ -35,8 +35,8 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settin
   const inputDates = parseInputDates(col, idxs);
   const formatOptions = dateSettingsToFormatOptions(inputSettings.dates);
   const locale = inputSettings.dates.date_format_locale as "en-GB" | "en-US";
-  let day_elem: string = locale === "en-GB" ? "day" : "month";
-  let month_elem: string = locale === "en-GB" ? "month" : "day";
+  const day_elem: string = locale === "en-GB" ? "day" : "month";
+  const month_elem: string = locale === "en-GB" ? "month" : "day";
 
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
@@ -60,11 +60,11 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: settingsValu
   // queries (e.g., Date Hierarchy + string) we first group the columns by their query name
   // then format each group separately before combining the results
   // Group the columns by their query name
-  const groupedCols: { [key: string]: powerbi.DataViewCategoryColumn[] } = {};
+  const groupedCols: Record<string, powerbi.DataViewCategoryColumn[]> = {};
   let queryNames: string[] = col.map(d => d.source?.queryName ?? "");
   // If any query names are duplicates (i.e., the same column passed multiple times),
   // prepend the index to the query name to make it unique
-  const uniqueQueryNames: Set<string> = new Set();
+  const uniqueQueryNames = new Set<string>();
   queryNames = queryNames.map((queryName, idx) => {
     if (uniqueQueryNames.has(queryName)) {
       // If the query name is already in the set, prepend the index to make it unique
@@ -112,21 +112,21 @@ function extractKeys(inputView: DataViewCategorical, inputSettings: settingsValu
 function extractTooltips(inputView: DataViewCategorical, inputSettings: settingsValueType, idxs: number[]): VisualTooltipDataItem[][] {
   const tooltipColumns = inputView.values!.filter(viewColumn => viewColumn.source.roles!.tooltips);
   const n_keys: number = idxs.length;
-  let ret: VisualTooltipDataItem[][] = new Array<VisualTooltipDataItem[]>(n_keys);
+  const ret: VisualTooltipDataItem[][] = new Array<VisualTooltipDataItem[]>(n_keys);
   for (let i = 0; i < n_keys; i++) {
     ret[i] = tooltipColumns.map(viewColumn => {
       const config = { valueType: viewColumn.source.type!, dateSettings: inputSettings.dates };
       const tooltipValueFormatted: string = formatPrimitiveValue(viewColumn?.values?.[idxs[i]], config)
-      return <VisualTooltipDataItem>{
+      return {
         displayName: viewColumn.source.displayName,
         value: tooltipValueFormatted
-      }
+      } as VisualTooltipDataItem
     })
   }
   return ret;
 }
 
-type ArrayUndefined<T> = T extends (infer U)[] ? Array<U | undefined> : T;
+type ArrayUndefined<T> = T extends (infer U)[] ? (U | undefined)[] : T;
 
 export default function extractDataColumn<T extends TargetT>(inputView: DataViewCategorical,
                                               name: string,
@@ -145,14 +145,14 @@ export default function extractDataColumn<T extends TargetT>(inputView: DataView
   }
   const n_keys: number = idxs.length;
   if (name === "groupings" || name === "labels") {
-    let ret = new Array<string | undefined>(n_keys);
+    const ret = new Array<string | undefined>(n_keys);
     for (let i = 0; i < n_keys; i++) {
       ret[i] = isNullOrUndefined(columnRaw?.[0]?.values?.[idxs[i]]) ? undefined : String(columnRaw[0].values[idxs[i]]);
     }
     return ret as ArrayUndefined<T>;
   }
   // Assumed that any other requested columns are numeric columns for plotting
-  let ret = new Array<number | undefined>(n_keys);
+  const ret = new Array<number | undefined>(n_keys);
   for (let i = 0; i < n_keys; i++) {
     ret[i] = isNullOrUndefined(columnRaw?.[0]?.values?.[idxs[i]]) ? undefined : Number(columnRaw[0].values[idxs[i]]);
   }

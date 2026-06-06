@@ -22,7 +22,7 @@ describe("G Chart Test", () => {
   });
 
   it("G Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "g";
     visual.update({
       dataViews: [ buildDataView({

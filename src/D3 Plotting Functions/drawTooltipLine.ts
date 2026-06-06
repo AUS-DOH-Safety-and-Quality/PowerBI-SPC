@@ -36,7 +36,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
     const boundRect = (visualObj.svg.node() as SVGSVGElement).getBoundingClientRect();
     const xValue: number = (event.pageX - boundRect.left);
     let indexNearestValue: number | undefined;
-    let nearestDistance: number = Infinity;
+    let nearestDistance = Infinity;
     let x_coord: number | undefined;
     let y_coord: number | undefined;
     for (let i = 0; i < plotPoints.length; i++) {

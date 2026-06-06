@@ -3,7 +3,7 @@ type ISelectionId = powerbi.visuals.ISelectionId;
 
 export default function identitySelected(identity: ISelectionId | ISelectionId[], selectionManager: powerbi.extensibility.ISelectionManager): boolean {
   const allSelectedIdentities = selectionManager.getSelectionIds() as ISelectionId[];
-  var identity_selected = false;
+  let identity_selected = false;
   for (const selected of allSelectedIdentities) {
     if (Array.isArray(identity)) {
       for (const d of identity) {

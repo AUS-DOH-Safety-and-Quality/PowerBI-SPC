@@ -52,7 +52,7 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Calculate the sum of counts for subset points to compute the centreline
-  let cl: number = 0;
+  let cl = 0;
   for (let i = 0; i < n_sub; i++) {
     cl += numerators[subset_points[i]];
   }
@@ -67,7 +67,7 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: args.numerators,       // The plotted values (counts)
     targets: new Array<number>(n), // Centreline (average count)

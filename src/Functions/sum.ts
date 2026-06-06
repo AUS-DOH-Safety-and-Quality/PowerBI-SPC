@@ -5,8 +5,8 @@
  * @returns {number} The sum of the input numbers. Returns 0 if the input array is empty.
  */
 export default function sum(values: readonly number[]): number {
-  let total: number = 0;
-  for (let i: number = 0; i < values.length; i++) {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
     total += values[i];
   }
   return total;

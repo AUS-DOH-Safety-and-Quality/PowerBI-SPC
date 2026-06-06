@@ -35,10 +35,10 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
 
   // Collect flags from either just the last point or all points
   const startIndex: number = flag_last ? outliers.astpoint.length - 1 : 0;
-  let improvementPresent: boolean = false;
-  let deteriorationPresent: boolean = false;
-  let neutralLowPresent: boolean = false;
-  let neutralHighPresent: boolean = false;
+  let improvementPresent = false;
+  let deteriorationPresent = false;
+  let neutralLowPresent = false;
+  let neutralHighPresent = false;
 
   for (let i: number = startIndex; i < outliers.astpoint.length; i++) {
     const flagsToCheck: readonly string[] = [outliers.astpoint[i], outliers.shift[i], outliers.trend[i], outliers.two_in_three[i]];
@@ -54,7 +54,7 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
     }
   }
 
-  let iconsPresent: string[] = new Array<string>();
+  const iconsPresent: string[] = new Array<string>();
 
   // Check for each type of variation and add appropriate icon
   if (improvementPresent) {

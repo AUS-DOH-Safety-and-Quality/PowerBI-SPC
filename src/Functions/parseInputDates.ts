@@ -1,7 +1,7 @@
 import type powerbi from "powerbi-visuals-api"
 import isNullOrUndefined from "./isNullOrUndefined";
 
-const monthNameToNumber: { [key: string]: number } = {
+const monthNameToNumber: Record<string, number> = {
   "January": 0,
   "February": 1,
   "March": 2,
@@ -23,19 +23,19 @@ function temporalTypeToKey(inputType: { temporal?: boolean, category?: string}, 
   }
 
   if (inputType?.["category"] === "DayOfMonth") {
-    return ["day", <number>(inputValue)]
+    return ["day", (inputValue as number)]
   } else if (inputType?.["category"] === "Months") {
-    return ["month", monthNameToNumber[<string>(inputValue)]]
+    return ["month", monthNameToNumber[(inputValue as string)]]
   } else if (inputType?.["category"] === "Quarters") {
-    return ["quarter", <string>inputValue]
+    return ["quarter", (inputValue as string)]
   } else if (inputType?.["category"] === "Years") {
-    return ["year", <number>(inputValue)]
+    return ["year", (inputValue as number)]
   } else {
     return []
   }
 }
 
-type datePartsType = {
+interface datePartsType {
   day?: number,
   month?: number,
   quarter?: string,
@@ -44,7 +44,7 @@ type datePartsType = {
 
 export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[], idxs: number[]) {
   const n_keys: number = idxs.length;
-  let inputDates: (Date | undefined)[] = [];
+  const inputDates: (Date | undefined)[] = [];
   const inputQuarters: string[] = [];
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
@@ -61,7 +61,7 @@ export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[]
     }
   } else {
     for (let i = 0; i < n_keys; i++) {
-      inputDates[i] = isNullOrUndefined(inputs?.[0]?.values[idxs[i]]) ? undefined : new Date(<Date>(inputs?.[0]?.values[idxs[i]]))
+      inputDates[i] = isNullOrUndefined(inputs?.[0]?.values[idxs[i]]) ? undefined : new Date((inputs?.[0]?.values[idxs[i]] as Date))
     }
   }
   return { dates: inputDates, quarters: inputQuarters }

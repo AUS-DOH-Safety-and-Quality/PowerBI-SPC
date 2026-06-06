@@ -19,7 +19,7 @@ export default function logcf(x: number, i: number, d: number, eps: number): num
   let b1: number = i * (c2 - i * x);
   let b2: number = d * d * x;
   let a2: number = c4 * c2 - b2;
-  const scalefactor: number = 1.157921e+77;
+  const scalefactor = 1.157921e+77;
 
   b2 = c4 * b1 - i * b2;
 

@@ -22,7 +22,7 @@ describe("T Chart Test", () => {
   });
 
   it("T Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "t";
     defaultSettingsCopy.spc.outliers_in_limits = false;
     visual.update({

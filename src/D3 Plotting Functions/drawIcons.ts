@@ -16,7 +16,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   const variation_location: string = nhsIconSettings.variation_icons_locations;
   const svg_width: number = visualObj.viewModel.svgWidth
   const svg_height: number = visualObj.viewModel.svgHeight
-  let numVariationIcons: number = 0;
+  let numVariationIcons = 0;
 
   if (draw_variation) {
     const variation_scaling: number = nhsIconSettings.variation_icons_scaling;

@@ -22,7 +22,7 @@ describe("P-Prime Chart Test", () => {
   });
 
   it("P-Prime Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "pp";
     visual.update({
       dataViews: [ buildDataView({

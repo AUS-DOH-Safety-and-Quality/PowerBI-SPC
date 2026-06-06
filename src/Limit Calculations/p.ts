@@ -58,8 +58,8 @@ export default function pLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n_sub: number = subset_points.length;         // Number of points used for limit calculation
 
   // Accumulators for calculating overall proportion
-  let sum_num: number = 0;  // Total defectives across all subgroups
-  let sum_den: number = 0;  // Total sample size across all subgroups
+  let sum_num = 0;  // Total defectives across all subgroups
+  let sum_den = 0;  // Total sample size across all subgroups
 
   // Sum up numerators and denominators for subset points
   for (let i = 0; i < n_sub; i++) {
@@ -77,7 +77,7 @@ export default function pLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: new Array<number>(n),      // The plotted values (proportions)
     numerators: args.numerators,        // Defective counts for reference

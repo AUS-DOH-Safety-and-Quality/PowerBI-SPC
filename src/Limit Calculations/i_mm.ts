@@ -62,7 +62,7 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Extract subset values and store for median calculation
-  let ratio_subset: number[] = new Array<number>(n_sub);
+  const ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
     ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                 : numerators[subset_points[i]];
@@ -72,7 +72,7 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
   const cl: number = median(ratio_subset);
 
   // Calculate moving ranges: MR_i = |x_i - x_{i-1}|
-  let consec_diff: number[] = new Array<number>(n_sub - 1);
+  const consec_diff: number[] = new Array<number>(n_sub - 1);
   for (let i = 1; i < n_sub; i++) {
     consec_diff[i - 1] = Math.abs(ratio_subset[i] - ratio_subset[i - 1]);
   }
@@ -87,7 +87,7 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
     const consec_diff_ulim: number = mmr * 3.267;
 
     // Collect valid moving ranges (below the limit)
-    let valid_diffs: number[] = [];
+    const valid_diffs: number[] = [];
     for (let i = 0; i < consec_diff.length; i++) {
       if (consec_diff[i] < consec_diff_ulim) {
         valid_diffs.push(consec_diff[i]);
@@ -107,7 +107,7 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: new Array<number>(n),                          // The plotted values
     numerators: useRatio ? args.numerators : undefined,    // Original numerators (if ratio)

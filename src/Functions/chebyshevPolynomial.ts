@@ -19,10 +19,10 @@ export default function chebyshevPolynomial(x: number, a: readonly number[], n: 
     throw new Error("chebyshevPolynomial: n must be in [1,1000]");
   }
   const twox: number = x * 2;
-  let b0: number = 0;
-  let b1: number = 0;
-  let b2: number = 0;
-  for (let i: number = 1; i <= n; i++) {
+  let b0 = 0;
+  let b1 = 0;
+  let b2 = 0;
+  for (let i = 1; i <= n; i++) {
     b2 = b1;
     b1 = b0;
     b0 = twox * b1 - b2 + a[n - i];

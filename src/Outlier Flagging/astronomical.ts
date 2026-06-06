@@ -14,7 +14,7 @@ import between from "../Functions/between"
  */
 export default function astronomical(val: readonly number[], ll99: readonly number[], ul99: readonly number[]): string[] {
   const n: number = val.length;
-  let rtn: string[] = new Array<string>(n);
+  const rtn: string[] = new Array<string>(n);
 
   for (let i = 0; i < n; i++) {
     // Check if point is outside 99% control limits

@@ -15,9 +15,9 @@ import sum from "../Functions/sum";
  */
 export default function twoInThree(val: readonly number[], ll95: readonly number[], ul95: readonly number[], highlight_series: boolean): string[] {
   const length: number = val.length;
-  let outside95: number[] = new Array<number>(length);
-  let two_in_three_detected: string[] = new Array<string>(length);
-  for (let i: number = 0; i < length; i++) {
+  const outside95: number[] = new Array<number>(length);
+  const two_in_three_detected: string[] = new Array<string>(length);
+  for (let i = 0; i < length; i++) {
     // Map each point to +1 (above upper), -1 (below lower), or 0 (within limits)
     outside95[i] = val[i] > ul95[i] ? 1 : (val[i] < ll95[i] ? -1 : 0);
 

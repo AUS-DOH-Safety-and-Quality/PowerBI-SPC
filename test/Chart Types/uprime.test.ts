@@ -22,7 +22,7 @@ describe("U-Prime Chart Test", () => {
   });
 
   it("U-Prime Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "up";
     visual.update({
       dataViews: [ buildDataView({

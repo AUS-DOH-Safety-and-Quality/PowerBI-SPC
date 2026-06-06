@@ -28,10 +28,10 @@ export default function calculateTrendLine(values: readonly number[]): number[] 
   if (n === 0) return [];
 
   // Initialize accumulator variables for least squares calculation
-  let sumY: number = 0;   // Sum of y-values (data points)
-  let sumX: number = 0;   // Sum of x-values (positions: 1, 2, 3, ...)
-  let sumXY: number = 0;  // Sum of x·y products
-  let sumX2: number = 0;  // Sum of x² (squared positions)
+  let sumY = 0;   // Sum of y-values (data points)
+  let sumX = 0;   // Sum of x-values (positions: 1, 2, 3, ...)
+  let sumXY = 0;  // Sum of x·y products
+  let sumX2 = 0;  // Sum of x² (squared positions)
 
   // First pass: Calculate all sums needed for least squares regression
   for (let i = 0; i < n; i++) {
@@ -53,7 +53,7 @@ export default function calculateTrendLine(values: readonly number[]): number[] 
   const intercept: number = (sumY - slope * sumX) / n;
 
   // Second pass: Generate trend line values using y = mx + b
-  const trendLine: Array<number> = new Array(n);
+  const trendLine = new Array<number>(n);
   for (let i = 0; i < n; i++) {
     // Calculate predicted y-value for each x position
     trendLine[i] = slope * (i + 1) + intercept;

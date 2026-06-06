@@ -69,10 +69,10 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLi
   const subset_points: readonly number[] = args.subset_points;   // Indices of points to use
 
   // Accumulators for pooled variance and grand mean calculations
-  let Nm1_sum: number = 0;           // Sum of degrees of freedom (n-1) across subgroups
-  let weighted_sd_sum: number = 0;   // Sum of (n-1) * variance for pooled variance
-  let weighted_mean_sum: number = 0; // Sum of n * mean for grand mean calculation
-  let total_count: number = 0;       // Total observations across all subgroups
+  let Nm1_sum = 0;           // Sum of degrees of freedom (n-1) across subgroups
+  let weighted_sd_sum = 0;   // Sum of (n-1) * variance for pooled variance
+  let weighted_mean_sum = 0; // Sum of n * mean for grand mean calculation
+  let total_count = 0;       // Total observations across all subgroups
 
   // Calculate pooled variance and grand mean components using only the subset points
   // Pooled variance formula: s_pooled² = Σ[(n_i - 1) * s_i²] / Σ(n_i - 1)
@@ -100,7 +100,7 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLi
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: args.numerators,           // The plotted values (subgroup means)
     targets: new Array<number>(n), // Centreline (grand mean)

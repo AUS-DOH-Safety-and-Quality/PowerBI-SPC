@@ -119,7 +119,7 @@ export default class settingsClass {
 
     for (const settingsModelKey in settingsModel) {
       const currCardName: settingsModelKeys = settingsModelKey as settingsModelKeys;
-      let curr_card: powerbi.visuals.FormattingCard = {
+      const curr_card: powerbi.visuals.FormattingCard = {
         description: settingsModel[currCardName].description,
         displayName: settingsModel[currCardName].displayName,
         uid: currCardName + "_card_uid",
@@ -130,7 +130,7 @@ export default class settingsClass {
       const currSettingsGroups = settingsModel[currCardName].settingsGroups as MergeUnions<settingsModelType[settingsModelKeys]["settingsGroups"]>;
       for (const settingsGroupKey in currSettingsGroups) {
         const currSettingsGroupName = settingsGroupKey as keyof typeof currSettingsGroups;
-        let curr_group: powerbi.visuals.FormattingGroup = {
+        const curr_group: powerbi.visuals.FormattingGroup = {
           displayName: currSettingsGroupName === "all" ? settingsModel[currCardName].displayName : currSettingsGroupName,
           uid: currCardName + "_" + currSettingsGroupName + "_uid",
           slices: []
@@ -144,9 +144,7 @@ export default class settingsClass {
             propertyName: currSettingName
           });
 
-          let currType = currSettings[currSettingName].type as FormattingComponentKeys;
-
-          let curr_slice: powerbi.visuals.SimpleVisualFormattingSlice = {
+          const curr_slice: powerbi.visuals.SimpleVisualFormattingSlice = {
             uid: currCardName + "_" + currSettingsGroupName + "_" + currSettingName + "_slice_uid",
             displayName: currSettings[currSettingName].displayName,
             control: {
@@ -159,7 +157,7 @@ export default class settingsClass {
                 },
                 value: {} as any
               }
-            } as Extract<powerbi.visuals.FormattingSimpleControl, {type: typeof currType}>
+            } as Extract<powerbi.visuals.FormattingSimpleControl, {type: FormattingComponentKeys}>
           };
 
           const currSettingValue = getNested(this.settings[0], currCardName, currSettingName);

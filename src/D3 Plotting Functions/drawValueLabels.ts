@@ -8,7 +8,7 @@ function getLabelAttributes(d: plotData, visualObj: Visual): {x: number, y: numb
   const plotHeight: number = visualObj.viewModel.svgHeight;
   const xAxisHeight: number = plotHeight - visualObj.plotProperties.yAxis.start_padding;
   const label_position: string = d.label.aesthetics.label_position;
-  let y_offset: number = d.label.aesthetics.label_y_offset;
+  const y_offset: number = d.label.aesthetics.label_y_offset;
   const label_initial: number = label_position === "top" ? (0 + y_offset) : (xAxisHeight - y_offset);
   const y: number = visualObj.plotProperties.yScale(d.value) as number;
   let side_length: number = label_position === "top" ? (y - label_initial) : (label_initial - y);
@@ -64,7 +64,7 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
     const angle = Math.atan2(e.sourceEvent.y - y_val, e.sourceEvent.x - x_val) * 180 / Math.PI;
     const distance = Math.sqrt(Math.pow(e.sourceEvent.y - y_val, 2) + Math.pow(e.sourceEvent.x - x_val, 2));
 
-    const marker_offset: number = 10;
+    const marker_offset = 10;
     const x_offset: number = marker_offset * Math.cos(angle * Math.PI / 180);
     const y_offset: number = marker_offset * Math.sin(angle * Math.PI / 180);
 

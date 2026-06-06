@@ -78,13 +78,13 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
 
   // Accumulators for mean and average moving range
   let cl: number = prevVal;                              // Running sum for mean calculation
-  let amr: number = 0;                                   // Running sum for average moving range
-  let consec_diff: number[] = new Array<number>(n_sub - 1); // Store moving ranges for outlier screening
+  let amr = 0;                                   // Running sum for average moving range
+  const consec_diff: number[] = new Array<number>(n_sub - 1); // Store moving ranges for outlier screening
 
   // Calculate sum for mean and moving ranges: MR_i = |x_i - x_{i-1}|
   for (let i = 1; i < n_sub; i++) {
     // Get current value (raw or ratio)
-    let currVal: number = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
+    const currVal: number = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                    : numerators[subset_points[i]];
 
     // Calculate moving range (absolute difference from previous value)
@@ -107,8 +107,8 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
     const consec_diff_ulim: number = amr * 3.267;
 
     // Recalculate AMR excluding values above the limit
-    let screened_amr: number = 0;
-    let screened_count: number = 0;
+    let screened_amr = 0;
+    let screened_count = 0;
     for (let i = 0; i < consec_diff.length; i++) {
       if (consec_diff[i] < consec_diff_ulim) {
         screened_amr += consec_diff[i];
@@ -125,7 +125,7 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: new Array<number>(n),                          // The plotted values
     numerators: useRatio ? args.numerators : undefined,    // Original numerators (if ratio)

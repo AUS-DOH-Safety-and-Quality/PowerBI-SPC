@@ -34,7 +34,7 @@ const settingsModel = {
   labels: addGetters(labelsSettings),
 
   get defaultValues(): settingsValueType {
-    let ret = {} as RecursivePartial<settingsValueType>;
+    const ret = {} as RecursivePartial<settingsValueType>;
     for (const key in this) {
       if (key === "defaultValues") continue; // to avoid infinite loop
       const currSettings = this[key as settingsModelKeys];

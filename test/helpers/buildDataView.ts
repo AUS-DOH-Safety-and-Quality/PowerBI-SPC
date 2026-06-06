@@ -8,7 +8,7 @@ import { type settingsValueType } from "../../src/settings";
 
 function buildColumn(displayName: string, queryName: string, values: any[], settings?: settingsValueType): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
   const roles = Object.fromEntries([[queryName, true]]);
-  var type;
+  let type;
   switch(typeof values[0]) {
     case "string":
       type = ValueType.fromDescriptor({ text: true });

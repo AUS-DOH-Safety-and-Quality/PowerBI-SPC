@@ -44,7 +44,7 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length;
 
   // Transform data: y = x^(1/3.6)
-  let val: number[] = new Array<number>(n);
+  const val: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
     val[i] = Math.pow(args.numerators[i], 1 / 3.6);
   }
@@ -69,7 +69,7 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const ul95: number = Math.pow(limits.ul95![0] as number, 3.6);
   const ul99: number = Math.pow(limits.ul99![0] as number, 3.6);
 
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: args.numerators,                          // The plotted values
     targets: new Array<number>(n),                         // Centreline (mean)

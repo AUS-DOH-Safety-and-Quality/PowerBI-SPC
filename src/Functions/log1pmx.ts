@@ -21,8 +21,8 @@ export default function log1pmx(x: number): number {
        // For very small x, use Taylor series expansion:
        // 2 * r * (1/1 + 1/3*y + 1/5*y^2 + ...) - x
       const coefs: readonly number[] = [2/3, 2/5, 2/7, 2/9];
-      let result: number = 0;
-      for (let i: number = 0; i < coefs.length; i++) {
+      let result = 0;
+      for (let i = 0; i < coefs.length; i++) {
         result = (result + coefs[i]) * y;
       }
       return r * (result - x);

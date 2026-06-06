@@ -33,7 +33,7 @@ const insideMap: Record<string, string> = {
   "speclimits_upper" : "below"
 }
 
-type lineLabelType = {
+interface lineLabelType {
   index: number;
   limit: number;
 }
@@ -121,7 +121,7 @@ export default function drawLineLabels(selection: svgBaseType, visualObj: Visual
       const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
       const bounds = (d3.select(this).node() as SVGGraphicsElement).getBoundingClientRect() as DOMRect;
       let position: string = lineSettings[`plot_label_position_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as string;
-      let vpadding: number = lineSettings[`plot_label_vpad_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as number;
+      const vpadding: number = lineSettings[`plot_label_vpad_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as number;
       if (["outside", "inside"].includes(position)) {
         position = position === "outside" ? outsideMap[lineGroup[0]] : insideMap[lineGroup[0]];
       }

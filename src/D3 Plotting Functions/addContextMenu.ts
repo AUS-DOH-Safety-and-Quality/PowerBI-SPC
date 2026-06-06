@@ -11,7 +11,7 @@ export default function addContextMenu(selection: svgBaseType | divBaseType, vis
   }
   selection.on('contextmenu', (event) => {
     const eventTarget: d3.BaseType = event.target as d3.BaseType;
-    const dataPoint: plotData = <plotData>(d3.select(eventTarget).datum());
+    const dataPoint: plotData = d3.select(eventTarget).datum() as plotData;
     visualObj.selectionManager.showContextMenu(dataPoint ? dataPoint.identity : {}, {
       x: event.clientX,
       y: event.clientY

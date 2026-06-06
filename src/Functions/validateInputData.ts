@@ -1,7 +1,7 @@
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import isNullOrUndefined from "./isNullOrUndefined";
 
-export type ValidationT = { status: number, messages: string[], error?: string };
+export interface ValidationT { status: number, messages: string[], error?: string }
 
 const enum ValidationFailTypes {
   Valid = 0,
@@ -90,9 +90,8 @@ export default function validateInputData(keys: (string | undefined)[],
                                           xbar_sds: (number | undefined)[] | undefined,
                                           chart_type_props: derivedSettingsClass["chart_type_props"],
                                           idxs: number[]): { status: number, messages: string[], error?: string } {
-  let allSameType: boolean = false;
-  let messages: string[] = new Array<string>();
-  let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
+  const messages: string[] = new Array<string>();
+  const all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
   const check_denom = chart_type_props.needs_denominator
                       || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators) && denominators.length > 0);
   const n: number = idxs.length;
@@ -102,11 +101,11 @@ export default function validateInputData(keys: (string | undefined)[],
     all_status.push(validation.type);
   }
 
-  let allSameTypeSet = new Set(all_status);
-  allSameType = allSameTypeSet.size === 1;
-  let commonType = Array.from(allSameTypeSet)[0];
+  const allSameTypeSet = new Set(all_status);
+  const allSameType = allSameTypeSet.size === 1;
+  const commonType = Array.from(allSameTypeSet)[0];
 
-  let validationRtn: ValidationT = {
+  const validationRtn: ValidationT = {
     status: (allSameType && commonType !== ValidationFailTypes.Valid) ? 1 : 0,
     messages: messages
   };

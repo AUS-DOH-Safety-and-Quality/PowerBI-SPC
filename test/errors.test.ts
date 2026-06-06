@@ -33,7 +33,7 @@ describe("Chart Errors", () => {
     expect_error(svgElement, 'No Numerators passed!');
 
     visual.update({
-      dataViews: [ buildDataView({ key: stringKeys, numerators: rep(<any>null, 7) }) ],
+      dataViews: [ buildDataView({ key: stringKeys, numerators: rep((null as any), 7) }) ],
       viewport: { width: 500, height: 500 },
       type:  2 /*powerbi.VisualUpdateType.Data*/
     });
@@ -49,7 +49,7 @@ describe("Chart Errors", () => {
     expect_error(svgElement, 'All numerators are not numbers!');
 
     visual.update({
-      dataViews: [ buildDataView({ key: rep(<any>null, 7), numerators: validNumerators }) ],
+      dataViews: [ buildDataView({ key: rep((null as any), 7), numerators: validNumerators }) ],
       viewport: { width: 500, height: 500 },
       type:  2 /*powerbi.VisualUpdateType.Data*/
     });

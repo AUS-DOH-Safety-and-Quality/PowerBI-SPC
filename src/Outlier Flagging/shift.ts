@@ -16,10 +16,10 @@ export default function shift(val: readonly number[], targets: readonly number[]
   const length: number = val.length;
 
   // Calculate sign of difference from target for each point (+1, -1, or 0)
-  let lagged_sign: number[] = new Array<number>(length);
-  let shift_detected: string[] = new Array<string>(length);
+  const lagged_sign: number[] = new Array<number>(length);
+  const shift_detected: string[] = new Array<string>(length);
 
-  for (let i: number = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     lagged_sign[i] = Math.sign(val[i] - targets[i]);
     const lagged_sign_sum: number = sum(lagged_sign.slice(Math.max(0, i - (n - 1)), i + 1));
     if (Math.abs(lagged_sign_sum) >= n) {

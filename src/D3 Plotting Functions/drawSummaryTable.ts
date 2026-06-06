@@ -58,7 +58,7 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
   const tableRows = selection
                         .select(".table-body")
                         .selectAll('tr')
-                        .data(<plotData[]>plotPoints)
+                        .data((plotPoints as plotData[]))
                         .join('tr')
                         .on("click", (event, d: plotData) => {
                           if (visualObj.host.hostCapabilities.allowInteractions) {
@@ -75,10 +75,10 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
                           }).style("background-color", "lightgray");
                         })
                         .on("mouseout", (event) => {
-                          let currentTD = d3.select(event.target).select(function(){
+                          const currentTD = d3.select(event.target).select(function(){
                             return this.closest("td");
                           })
-                          let rowData = d3.select(currentTD.node().parentNode).datum();
+                          const rowData = d3.select(currentTD.node().parentNode).datum();
                           if ("table_body_bg_colour" in (rowData as plotDataGrouped).aesthetics) {
                             currentTD.style("background-color", (rowData as plotDataGrouped).aesthetics.table_body_bg_colour ?? "inherit");
                           } else {

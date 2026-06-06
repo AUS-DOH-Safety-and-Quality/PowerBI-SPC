@@ -26,12 +26,12 @@ const defaultColours: Record<string, string> = {
 };
 
 type UndefinedOrNumT<T> = T extends undefined ? undefined | number : T;
-type NumOptionType<T> = {
+interface NumOptionType<T> {
   displayName: string;
   type: Extract<powerbi.visuals.FormattingComponent, "NumUpDown">
   default: UndefinedOrNumT<T>;
   options?: { minValue?: { value: number }; maxValue?: { value: number }; }
-};
+}
 
 function numberOption<T>(displayName: string, defaultValue: T, minMax?: { min?: number, max?: number }) {
   const rtn: NumOptionType<T> = {
@@ -112,7 +112,7 @@ function fontSizeOption(displayName: string) {
   return numberOption(displayName, 10, { min: 0, max: 100 });
 }
 
-type DropdownItem = { displayName: string; value: string; }
+interface DropdownItem { displayName: string; value: string; }
 const valueTransforms: Record<string, (x: string) => string> = {
   none: (x: string) => x,
   sentence: (x: string) => x.toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase())
@@ -132,7 +132,7 @@ function dropdownOption(displayName: string, defaultValue: string,
 
   const transformFun: (x: string) => string = valueTransforms[(displayTransform ?? "none")]
 
-  for (let i: number = 0; i < numValues; i++) {
+  for (let i = 0; i < numValues; i++) {
     rtn.items[i] = {
       displayName: displayNames ? displayNames[i] : transformFun(validValues[i]),
       value: validValues[i]
@@ -223,8 +223,8 @@ type SettingMembers<T> = ExpandRecursive<{
 
 function addGetters<T extends { settingsGroups: Record<string, any> }>(
   settingCategory: T): ExpandRecursive<T & SettingMembers<T> & { settingNames: string[]}> {
-  let inputClone = JSON.parse(JSON.stringify(settingCategory)) as T; // to avoid mutating original object, which can cause issues with imports
-  let settingNames: string[] = [];
+  const inputClone = JSON.parse(JSON.stringify(settingCategory)) as T; // to avoid mutating original object, which can cause issues with imports
+  const settingNames: string[] = [];
   for (const group in inputClone.settingsGroups) {
     for (const setting in inputClone.settingsGroups[group]) {
       settingNames.push(setting);

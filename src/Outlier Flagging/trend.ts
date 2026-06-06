@@ -13,9 +13,9 @@ import sum from "../Functions/sum";
  */
 export default function trend(val: readonly number[], n: number): string[] {
   const length: number = val.length;
-  let lagged_sign: number[] = new Array<number>(length);
-  let trend_detected: string[] = new Array<string>(length);
-  for (let i: number = 0; i < length; i++) {
+  const lagged_sign: number[] = new Array<number>(length);
+  const trend_detected: string[] = new Array<string>(length);
+  for (let i = 0; i < length; i++) {
     // Calculate sign of change from previous point (+1 increasing, -1 decreasing, 0 no change)
     lagged_sign[i] = (i === 0) ? 0 : Math.sign(val[i] - val[i - 1]);
 

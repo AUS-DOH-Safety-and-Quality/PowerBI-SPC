@@ -9,8 +9,8 @@ export default function mean(values: readonly number[]): number {
   if (n === 0) {
     return Number.NaN;
   }
-  let sum: number = 0;
-  for (let i: number = 0; i < n; i++) {
+  let sum = 0;
+  for (let i = 0; i < n; i++) {
     sum += values[i];
   }
   return sum / n;

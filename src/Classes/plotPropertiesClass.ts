@@ -13,7 +13,7 @@ import type derivedSettingsClass from "./derivedSettingsClass";
 import type { colourPaletteType } from "./viewModelClass";
 import scaleLinear from "../Functions/scaleLinear";
 
-export type axisProperties = {
+export interface axisProperties {
   lower: number,
   upper: number,
   start_padding: number,
@@ -29,7 +29,7 @@ export type axisProperties = {
   label_size: string,
   label_font: string,
   label_colour: string
-};
+}
 
 export default class plotPropertiesClass {
   displayPlot: boolean;

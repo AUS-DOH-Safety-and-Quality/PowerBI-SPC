@@ -23,7 +23,7 @@ describe("xbar Chart Test", () => {
   });
 
   it("Xbar Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "xbar";
     visual.update({
       dataViews: [ buildDataView({

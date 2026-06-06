@@ -60,8 +60,8 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n_sub: number = args.subset_points.length;  // Number of points used for limit calculation
 
   // Accumulators for pooled variance calculation
-  let Nm1_sum: number = 0;           // Sum of degrees of freedom (n-1) across subgroups
-  let weighted_sd_sum: number = 0;   // Sum of (n-1) * variance for pooled variance
+  let Nm1_sum = 0;           // Sum of degrees of freedom (n-1) across subgroups
+  let weighted_sd_sum = 0;   // Sum of (n-1) * variance for pooled variance
 
   // Calculate pooled variance components using only the subset points
   // The pooled variance formula is: s_pooled² = Σ[(n_i - 1) * s_i²] / Σ(n_i - 1)
@@ -81,7 +81,7 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: args.numerators,              // The plotted values (subgroup SDs)
     targets: new Array<number>(n), // Centreline (pooled SD)

@@ -42,7 +42,7 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): controlLim
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Extract subset values and store for median calculation
-  let ratio_subset: number[] = new Array<number>(n_sub);
+  const ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
     ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
                                 : numerators[subset_points[i]];
@@ -54,7 +54,7 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): controlLim
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for values and centreline
-  let rtn: controlLimitsObject = {
+  const rtn: controlLimitsObject = {
     keys: args.keys,
     values: new Array<number>(n),                          // The plotted values
     numerators: useRatio ? args.numerators : undefined,    // Original numerators (if ratio)

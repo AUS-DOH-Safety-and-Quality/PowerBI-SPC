@@ -22,7 +22,7 @@ describe("I Chart Test", () => {
   });
 
   it("I Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "i";
     visual.update({
       dataViews: [ buildDataView({

@@ -22,10 +22,10 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
         const currLine: string = currLineDataFull[0];
         const currLineData: lineData[] = currLineDataFull[1].filter((d: lineData) => between(d.x, xlower, xupper));
         const n: number = currLineData.length;
-        let yValidStatus: boolean[] = new Array<boolean>(n);
-        let anyValid: boolean = false;
-        let xValues: number[] = new Array<number>(n);
-        let yValues: number[] = new Array<number>(n);
+        const yValidStatus: boolean[] = new Array<boolean>(n);
+        let anyValid = false;
+        const xValues: number[] = new Array<number>(n);
+        const yValues: number[] = new Array<number>(n);
 
         for (let i = 0; i < n; i++) {
           const currPoint: lineData = currLineData[i];

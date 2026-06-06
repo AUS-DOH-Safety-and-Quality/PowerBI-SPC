@@ -1,7 +1,7 @@
 import type { svgBaseType } from "../visual";
 
 export default function initialiseSVG(selection: svgBaseType,
-                                      removeAll: boolean = false) {
+                                      removeAll = false) {
   if (removeAll) {
     selection.selectChildren().remove();
   }

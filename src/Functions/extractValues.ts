@@ -15,7 +15,7 @@ export default function extractValues<T>(valuesArray: readonly T[] | undefined |
       return idx >= 0 && idx < valuesArray.length && !isNullOrUndefined(idx);
     });
     const n: number = validIndexArray.length;
-    let result: T[] = new Array<T>(n);
+    const result: T[] = new Array<T>(n);
     for (let i = 0; i < n; i++) {
       result[i] = valuesArray[validIndexArray[i]];
     }

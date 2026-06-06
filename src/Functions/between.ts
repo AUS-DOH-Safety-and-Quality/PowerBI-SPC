@@ -11,7 +11,7 @@ import isNullOrUndefined from "./isNullOrUndefined";
  *            false otherwise.
  */
 export default function between<T>(x: T, lower: T, upper: T): boolean {
-  let is_between: boolean = true;
+  let is_between = true;
   if (!isNullOrUndefined(lower)) {
     is_between = is_between && (x >= lower);
   }

@@ -21,8 +21,8 @@ export default function validateDataViewColumns(inputDV: powerbi.DataView[], inp
     return "No Numerators passed!";
   }
 
-  let needs_denominator: boolean = false;
-  let needs_sd: boolean = false;
+  let needs_denominator = false;
+  let needs_sd = false;
   let chart_type: string = inputSettingsClass.settings[0].spc.chart_type;
 
   if (inputSettingsClass?.derivedSettings.length > 0) {

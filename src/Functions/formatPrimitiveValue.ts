@@ -12,8 +12,8 @@ export default function formatPrimitiveValue(rawValue: PrimitiveValue,
   }
 
   if (config.valueType.numeric) {
-    return (<number>rawValue).toString()
+    return (rawValue as number).toString()
   } else {
-    return <string>rawValue
+    return rawValue as string
   }
 }

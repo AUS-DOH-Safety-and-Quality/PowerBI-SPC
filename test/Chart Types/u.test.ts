@@ -22,7 +22,7 @@ describe("U Chart Test", () => {
   });
 
   it("U Chart can be created", () => {
-    let defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
+    const defaultSettingsCopy = JSON.parse(JSON.stringify(defaultSettings));
     defaultSettingsCopy.spc.chart_type = "u";
     defaultSettingsCopy.spc.multiplier = 10000;
     visual.update({
