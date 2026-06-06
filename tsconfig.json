@@ -18,8 +18,9 @@
         "target": "es2015",
         "module": "es2015",
         "sourceMap": false,
+        "rootDir": "./",
         "outDir": "./.tmp/build/",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "declaration": true,
         "lib": [
             "es2019",

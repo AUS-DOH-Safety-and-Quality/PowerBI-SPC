@@ -21,7 +21,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
   }
 
   const yAxisProperties: axisProperties = visualObj.plotProperties.yAxis;
-  const yAxis: d3.Axis<d3.NumberValue> = d3.axisLeft(visualObj.plotProperties.yScale);
+  const yAxis: d3.Axis<number> = d3.axisLeft(visualObj.plotProperties.yScale);
   const yaxis_sig_figs: number | undefined = visualObj.viewModel.inputSettings.settings[0].y_axis.ylimit_sig_figs;
   const sig_figs: number = isNullOrUndefined(yaxis_sig_figs) ? visualObj.viewModel.inputSettings.settings[0].spc.sig_figs : yaxis_sig_figs;
   const displayPlot: boolean = visualObj.plotProperties.displayPlot;
@@ -33,7 +33,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
     if (visualObj.viewModel.inputData.length > 0 && visualObj.viewModel.inputData[0]) {
       const derivedSettings = visualObj.viewModel.inputSettings.derivedSettings[0];
       yAxis.tickFormat(
-        (d: d3.NumberValue) => {
+        (d: number) => {
           return derivedSettings.percentLabels
             ? d.valueOf().toFixed(sig_figs) + "%"
             : d.valueOf().toFixed(sig_figs);

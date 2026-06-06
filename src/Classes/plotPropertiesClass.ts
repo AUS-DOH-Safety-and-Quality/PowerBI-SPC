@@ -11,6 +11,7 @@ import type { plotData, controlLimitsObject } from "./viewModelClass";
 import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import type { colourPaletteType } from "./viewModelClass";
+import scaleLinear from "../Functions/scaleLinear";
 
 export type axisProperties = {
   lower: number,
@@ -34,20 +35,20 @@ export default class plotPropertiesClass {
   displayPlot: boolean;
   xAxis: axisProperties;
   yAxis: axisProperties;
-  xScale: d3.ScaleLinear<number, number, never>;
-  yScale: d3.ScaleLinear<number, number, never>;
+  xScale: d3.AxisScale<number>;
+  yScale: d3.AxisScale<number>;
 
   // Separate function so that the axis can be re-calculated on changes to padding
   initialiseScale(svgWidth: number, svgHeight: number): void {
-    this.xScale = d3.scaleLinear()
+    this.xScale = scaleLinear()
                     .domain([this.xAxis.lower, this.xAxis.upper])
                     .range([this.xAxis.start_padding,
-                            svgWidth - this.xAxis.end_padding]);
+                            svgWidth - this.xAxis.end_padding]) as unknown as d3.AxisScale<number>;
 
-    this.yScale = d3.scaleLinear()
+    this.yScale = scaleLinear()
                     .domain([this.yAxis.lower, this.yAxis.upper])
                     .range([svgHeight - this.yAxis.start_padding,
-                            this.yAxis.end_padding]);
+                            this.yAxis.end_padding]) as unknown as d3.AxisScale<number>;
   }
   constructor() {
     const dummyAxisProperties: axisProperties = {
@@ -71,8 +72,8 @@ export default class plotPropertiesClass {
 
     this.xAxis = dummyAxisProperties;
     this.yAxis = dummyAxisProperties;
-    this.xScale = d3.scaleLinear().domain([0, 1]).range([0, 1]);
-    this.yScale = d3.scaleLinear().domain([0, 1]).range([0, 1]);
+    this.xScale = scaleLinear().domain([0, 1]).range([0, 1]) as unknown as d3.AxisScale<number>;
+    this.yScale = scaleLinear().domain([0, 1]).range([0, 1]) as unknown as d3.AxisScale<number>;
   }
 
   update(options: VisualUpdateOptions, viewModel: viewModelClass): void {
