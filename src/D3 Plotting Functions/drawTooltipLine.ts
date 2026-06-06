@@ -40,7 +40,7 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
     let x_coord: number | undefined;
     let y_coord: number | undefined;
     for (let i = 0; i < plotPoints.length; i++) {
-      const curr_x: number = plotProperties.xScale(plotPoints[i].x);
+      const curr_x: number = plotProperties.xScale(plotPoints[i].x) as number;
       const curr_diff: number = Math.abs(curr_x - xValue);
       if (curr_diff < nearestDistance) {
         nearestDistance = curr_diff;

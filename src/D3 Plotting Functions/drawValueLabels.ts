@@ -10,10 +10,10 @@ function getLabelAttributes(d: plotData, visualObj: Visual): {x: number, y: numb
   const label_position: string = d.label.aesthetics.label_position;
   let y_offset: number = d.label.aesthetics.label_y_offset;
   const label_initial: number = label_position === "top" ? (0 + y_offset) : (xAxisHeight - y_offset);
-  const y: number = visualObj.plotProperties.yScale(d.value);
+  const y: number = visualObj.plotProperties.yScale(d.value) as number;
   let side_length: number = label_position === "top" ? (y - label_initial) : (label_initial - y);
-  const x_val = visualObj.plotProperties.xScale(d.x);
-  const y_val = visualObj.plotProperties.yScale(d.value);
+  const x_val = visualObj.plotProperties.xScale(d.x) as number;
+  const y_val = visualObj.plotProperties.yScale(d.value) as number;
 
   const theta: number = d.label.angle ?? (d.label.aesthetics.label_angle_offset + label_direction_mult * 90);
   side_length = d.label.distance ?? (Math.min(side_length, d.label.aesthetics.label_line_max_length));
@@ -59,8 +59,8 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   const dragFun = d3.drag().on("drag", function(e) {
     const d = e.subject;
     // Get the angle and distance of label from the point
-    const x_val = visualObj.plotProperties.xScale(d.x);
-    const y_val = visualObj.plotProperties.yScale(d.value);
+    const x_val = visualObj.plotProperties.xScale(d.x) as number;
+    const y_val = visualObj.plotProperties.yScale(d.value) as number;
     const angle = Math.atan2(e.sourceEvent.y - y_val, e.sourceEvent.x - x_val) * 180 / Math.PI;
     const distance = Math.sqrt(Math.pow(e.sourceEvent.y - y_val, 2) + Math.pow(e.sourceEvent.x - x_val, 2));
 
@@ -126,8 +126,8 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
                 .style("fill", d.label.aesthetics.label_colour);
 
               const markerSize: number = Math.pow(d.label.aesthetics.label_marker_size, 2);
-              const markerX = visualObj.plotProperties.xScale(d.x) + marker_offset * Math.cos(angleToRadians);
-              const markerY = visualObj.plotProperties.yScale(d.value) + marker_offset * Math.sin(angleToRadians);
+              const markerX = visualObj.plotProperties.xScale(d.x) as number + marker_offset * Math.cos(angleToRadians);
+              const markerY = visualObj.plotProperties.yScale(d.value) as number + marker_offset * Math.sin(angleToRadians);
 
               lineElement
                 .attr("x1", x)

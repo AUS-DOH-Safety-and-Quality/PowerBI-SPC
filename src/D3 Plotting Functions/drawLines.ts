@@ -30,8 +30,8 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
         for (let i = 0; i < n; i++) {
           const currPoint: lineData = currLineData[i];
 
-          xValues[i] = visualObj.plotProperties.xScale(currPoint.x);
-          yValues[i] = visualObj.plotProperties.yScale(currPoint.line_value as number);
+          xValues[i] = visualObj.plotProperties.xScale(currPoint.x) as number;
+          yValues[i] = visualObj.plotProperties.yScale(currPoint.line_value as number) as number;
           yValidStatus[i] = !isNullOrUndefined(currPoint.line_value) && between(currPoint.line_value, ylower, yupper);
           anyValid = anyValid || yValidStatus[i];
         }
@@ -58,8 +58,8 @@ export default function drawLines(selection: svgBaseType, visualObj: Visual) {
           .attr("stroke-width", (d: lineData) => getAesthetic(currLine, "lines", "width", { lines: d.aesthetics } as settingsValueType))
           .attr("stroke-dasharray", (d: lineData) => getAesthetic(currLine, "lines", "type", { lines: d.aesthetics } as settingsValueType))
           .attr("stroke-dashoffset", (_, idx: number) => {
-              const prev_x: number = visualObj.plotProperties.xScale(currLineData[0].x);
-              const curr_x: number = visualObj.plotProperties.xScale(currLineData[idx].x);
+              const prev_x: number = visualObj.plotProperties.xScale(currLineData[0].x) as number;
+              const curr_x: number = visualObj.plotProperties.xScale(currLineData[idx].x) as number;
               return curr_x - prev_x
           })
       })
