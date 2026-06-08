@@ -407,6 +407,9 @@ export default class viewModelClass {
       controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
         const allInner: controlLimitsObject = all;
         Object.entries(all).forEach((entry, idx) => {
+          if (isNullOrUndefined(entry[1])) {
+            return;
+          }
           const newValues = entry[1].concat(Object.entries(curr)[idx][1]);
           (allInner[entry[0] as keyof controlLimitsObject] as typeof newValues) = newValues;
         })
