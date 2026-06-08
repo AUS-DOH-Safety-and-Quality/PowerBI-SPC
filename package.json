@@ -10,13 +10,11 @@
   },
   "dependencies": {
     "d3-axis": "3.0.0",
-    "d3-drag": "3.0.0",
     "d3-selection": "3.0.0",
     "d3-shape": "3.2.0"
   },
   "devDependencies": {
     "@types/d3-axis": "3.0.6",
-    "@types/d3-drag": "3.0.7",
     "@types/d3-selection": "3.0.11",
     "@types/d3-shape": "3.1.8",
     "@typescript-eslint/eslint-plugin": "8.60.1",
