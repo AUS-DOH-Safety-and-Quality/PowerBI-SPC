@@ -56,39 +56,20 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
     selection.append("g").classed("text-labels", true);
   }
 
-  const dragFun = d3.drag().on("drag", function(e) {
-    const d = e.subject;
-    // Get the angle and distance of label from the point
-    const x_val = visualObj.plotProperties.xScale(d.x) as number;
-    const y_val = visualObj.plotProperties.yScale(d.value) as number;
-    const angle = Math.atan2(e.sourceEvent.y - y_val, e.sourceEvent.x - x_val) * 180 / Math.PI;
-    const distance = Math.sqrt(Math.pow(e.sourceEvent.y - y_val, 2) + Math.pow(e.sourceEvent.x - x_val, 2));
-
-    const marker_offset: number = 10;
-    const x_offset: number = marker_offset * Math.cos(angle * Math.PI / 180);
-    const y_offset: number = marker_offset * Math.sin(angle * Math.PI / 180);
-
-    e.subject.label.angle = angle;
-    e.subject.label.distance = distance;
-    d3.select(this)
-      .select("text")
-      .attr("x", e.sourceEvent.x)
-      .attr("y", e.sourceEvent.y);
-
-    let line_offset: number = d.label.aesthetics.label_line_offset;
-    line_offset = d.label.aesthetics.label_position === "top" ? line_offset : -(line_offset + d.label.aesthetics.label_size / 2);
-
-    d3.select(this)
-      .select("line")
-      .attr("x1", e.sourceEvent.x)
-      .attr("y1", e.sourceEvent.y + line_offset)
-      .attr("x2", x_val + x_offset)
-      .attr("y2", y_val + y_offset);
-
-    d3.select(this)
-      .select("path")
-      .attr("transform", `translate(${x_val + x_offset}, ${y_val + y_offset}) rotate(${angle - 90})`);
-  });
+  /**
+   * Convert screen coordinates (clientX/clientY) to SVG coordinates.
+   * Works with any SVG element and handles transforms applied to the SVG.
+   */
+  function screenToSvg(clientX: number, clientY: number, svg: SVGSVGElement) {
+    const point = svg.createSVGPoint();
+    point.x = clientX;
+    point.y = clientY;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, y: 0 };
+    const inv = ctm.inverse();
+    const transformed = point.matrixTransform(inv);
+    return { x: transformed.x, y: transformed.y };
+  }
 
   selection.select(".text-labels")
             .selectAll(".text-group-inner")
@@ -147,7 +128,57 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
                 .style("stroke", d.label.aesthetics.label_marker_outline_colour);
 
               if (!visualObj.viewModel.headless) {
-                textGroup.call(dragFun as (x: d3.Selection<d3.BaseType | SVGGElement, unknown, null, undefined>) => void);
+                // Enable native pointer interactions for dragging
+                const x_val = visualObj.plotProperties.xScale(d.x) as number;
+                const y_val = visualObj.plotProperties.yScale(d.value) as number;
+                const marker_offset = 10;
+                const svgEl = visualObj.svg.node() as SVGSVGElement;
+
+                textGroup
+                  .style("touch-action", "none")
+                  .on("pointerdown", function(event: PointerEvent) {
+                    const g = this as SVGGElement;
+                    g.setPointerCapture(event.pointerId);
+                    const onMove = (e: PointerEvent) => {
+                      const { x, y } = screenToSvg(e.clientX, e.clientY, svgEl);
+                      const angle = Math.atan2(y - y_val, x - x_val) * 180 / Math.PI;
+                      const distance = Math.sqrt(Math.pow(y - y_val, 2) + Math.pow(x - x_val, 2));
+                      d.label.angle = angle;
+                      d.label.distance = distance;
+                      const x_offset = marker_offset * Math.cos(angle * Math.PI / 180);
+                      const y_offset = marker_offset * Math.sin(angle * Math.PI / 180);
+                      let line_offset = d.label.aesthetics.label_line_offset;
+                      line_offset = d.label.aesthetics.label_position === "top"
+                        ? line_offset
+                        : -(line_offset + d.label.aesthetics.label_size / 2);
+                      textGroup
+                        .select("text")
+                        .attr("x", x)
+                        .attr("y", y);
+                      textGroup
+                        .select("line")
+                        .attr("x1", x)
+                        .attr("y1", y + line_offset)
+                        .attr("x2", x_val + x_offset)
+                        .attr("y2", y_val + y_offset);
+                      textGroup
+                        .select("path")
+                        .attr(
+                          "transform",
+                          `translate(${x_val + x_offset}, ${y_val + y_offset}) rotate(${angle - 90})`
+                        );
+                    };
+                    const onUp = (e: PointerEvent) => {
+                      const g2 = this as SVGGElement;
+                      g2.releasePointerCapture(e.pointerId);
+                      g2.removeEventListener("pointermove", onMove);
+                      g2.removeEventListener("pointerup", onUp);
+                      g2.removeEventListener("pointercancel", onUp);
+                    };
+                    (this as SVGGElement).addEventListener("pointermove", onMove);
+                    (this as SVGGElement).addEventListener("pointerup", onUp);
+                    (this as SVGGElement).addEventListener("pointercancel", onUp);
+                  });
               }
             });
 }
