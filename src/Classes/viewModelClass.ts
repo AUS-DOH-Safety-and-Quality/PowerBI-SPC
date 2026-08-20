@@ -227,28 +227,24 @@ export default class viewModelClass {
     const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles!.indicator) ?? [];
     this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
 
-    const n_indicators: number = indicator_cols?.length;
     const n_values: number = options.dataViews[0]?.categorical?.categories?.[0]?.values?.length ?? 1;
     const res: viewModelValidationT = { status: true };
     const idx_per_indicator = new Array<number[]>();
-    idx_per_indicator.push([0]);
     this.groupNames = new Array<string[]>();
-    this.groupNames.push(indicator_cols?.map(d => <string>d.values[0]) ?? []);
-    let curr_grp: number = 0;
 
-    for (let i = 1; i < n_values; i++) {
-      let same_indicator: boolean = true;
-      for (let j = 0; j < n_indicators; j++) {
-        same_indicator = same_indicator && (indicator_cols?.[j].values[i] === indicator_cols?.[j].values[i-1]);
+    // Group rows by the full combination of indicator-column values wherever they occur, not just consecutive runs
+    const groupIndexByKey = new Map<string, number>();
+    for (let i = 0; i < n_values; i++) {
+      const rowValues: string[] = indicator_cols?.map(d => <string>d.values[i]) ?? [];
+      const key: string = rowValues.map(v => String(v)).join("");
+      let grp: number | undefined = groupIndexByKey.get(key);
+      if (grp === undefined) {
+        grp = idx_per_indicator.length;
+        groupIndexByKey.set(key, grp);
+        idx_per_indicator.push([]);
+        this.groupNames.push(rowValues);
       }
-
-      if (same_indicator) {
-        idx_per_indicator[curr_grp].push(i);
-      } else {
-        idx_per_indicator.push([i]);
-        this.groupNames.push(indicator_cols?.map(d => <string>d.values[i]) ?? []);
-        curr_grp += 1;
-      }
+      idx_per_indicator[grp].push(i);
     }
 
     if (options.type === 2 || this.firstRun) {
@@ -285,6 +281,10 @@ export default class viewModelClass {
       this.identities = new Array<ISelectionId[]>();
       this.tableColumns = new Array<{ name: string; label: string; }[]>();
 
+      // Maps a raw row index to its position within the flattened all-groups row-index list
+      const messagePositionByRowIndex = new Map<number, number>();
+      idx_per_indicator.flat().forEach((rawRowIdx, position) => messagePositionByRowIndex.set(rawRowIdx, position));
+
       // Loop through each indicator group
       idx_per_indicator.forEach((group_idxs, idx) => {
         // Determine which settings to use
@@ -297,7 +297,8 @@ export default class viewModelClass {
           settings,
           derivedSettings,
           this.inputSettings.validationStatus.messages,
-          group_idxs
+          group_idxs,
+          messagePositionByRowIndex
         );
         this.inputData.push(inpData);
 
@@ -494,6 +495,9 @@ export default class viewModelClass {
       })
     }
 
+    // Set unconditionally (not inside the filtered loop below) since columns don't vary by group
+    this.tableColumns[0] = tableColumnsDef;
+
     // Process each indicator group
     for (let i: number = 0; i < this.groupNames.length; i++) {
       // Skip if no data for this group
@@ -578,8 +582,6 @@ export default class viewModelClass {
         aesthetics: this.inputSettings.settings[i].summary_table,
         highlighted: this.inputData[i].anyHighlights
       })
-
-      this.tableColumns[i] = tableColumnsDef;
     }
   }
 

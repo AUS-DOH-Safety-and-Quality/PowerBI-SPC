@@ -54,6 +54,9 @@ export default class settingsClass {
     });
 
     const all_idxs: number[] = groupIdxs.flat();
+    // Maps a raw row index to its position in all_idxs, since condFormatting.values is indexed by position
+    const positionInAllIdxs = new Map<number, number>();
+    all_idxs.forEach((rawRowIdx, position) => positionInAllIdxs.set(rawRowIdx, position));
     // Get the names of all classes in settingsObject which have values to be updated
     const allSettingGroups: string[] = Object.keys(this.settings[0]);
 
@@ -83,7 +86,7 @@ export default class settingsClass {
         groupIdxs.forEach((idx, idx_idx) => {
           (this.settings[idx_idx] as any)[settingGroup][settingName]
             = condFormatting?.values
-              ? condFormatting?.values[idx[0]][settingName as keyof settingsValueTypesUnion]
+              ? condFormatting?.values[positionInAllIdxs.get(idx[0])!][settingName as keyof settingsValueTypesUnion]
               : getNested(defaultSettings, settingGroup as SettingsValueKeys, settingName as SettingsValueNestedKeys)
         })
       })

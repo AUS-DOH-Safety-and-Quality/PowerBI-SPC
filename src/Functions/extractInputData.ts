@@ -63,7 +63,9 @@ export default function extractInputData(inputView: DataViewCategorical,
                                           inputSettings: settingsValueType,
                                           derivedSettings: derivedSettingsClass,
                                           validationMessages: string[][],
-                                          idxs: number[]): dataObject {
+                                          idxs: number[],
+                                          // Maps a raw row index to its position within validationMessages
+                                          messagePositionByRowIndex: Map<number, number>): dataObject {
   const numerators: (number | undefined)[] = extractDataColumn<number[]>(inputView, "numerators", inputSettings, idxs) as (number | undefined)[];
   const denominators: (number | undefined)[] | undefined = extractDataColumn<number[]>(inputView, "denominators", inputSettings, idxs);
   const xbar_sds: (number | undefined)[] | undefined = extractDataColumn<number[]>(inputView, "xbar_sds", inputSettings, idxs);
@@ -100,8 +102,9 @@ export default function extractInputData(inputView: DataViewCategorical,
       valid_keys.push({ x: valid_x, id: i, label: x_axis_use_date ? keys![idx] as string : valid_x.toString() });
       valid_x += 1;
 
-      if (settingsMessages[i].length > 0) {
-        settingsMessages[i].forEach(setting_removal_message => {
+      const messagePosition: number = messagePositionByRowIndex.get(i)!;
+      if (settingsMessages[messagePosition].length > 0) {
+        settingsMessages[messagePosition].forEach(setting_removal_message => {
           removalMessages.push(
             `Conditional formatting for ${groupVarName} ${keys![idx]} ignored due to: ${setting_removal_message}.`
           )}
