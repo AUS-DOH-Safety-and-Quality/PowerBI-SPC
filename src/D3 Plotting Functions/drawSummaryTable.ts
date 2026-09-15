@@ -5,6 +5,9 @@ import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
 import type { settingsValueType } from "../settings";
 import identitySelected from "../Functions/identitySelected";
+import valueFormatter from "../Functions/valueFormatter";
+
+const integerFormattedColumns = new Set(["numerator", "denominator"]);
 
 function drawTableHeaders(selection: divBaseType, cols: { name: string; label: string; }[],
                           tableSettings: settingsValueType["summary_table"], maxWidth: number) {
@@ -125,7 +128,8 @@ function drawOuterBorder(selection: divBaseType, tableSettings: settingsValueTyp
 }
 
 function drawTableCells(selection: divBaseType, cols: { name: string; label: string; }[],
-                        inputSettings: settingsValueType, showGrouped: boolean) {
+                        inputSettings: settingsValueType, showGrouped: boolean,
+                        formatValues: ReturnType<typeof valueFormatter>) {
   const tableCells = selection.select(".table-body")
             .selectAll('tr')
             .selectAll('td')
@@ -156,8 +160,9 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
             .call(nhsIcons[d.value as keyof typeof nhsIcons]);
       }
     } else {
+      // Grouped rows are pre-formatted strings; ungrouped rows still carry raw numbers here
       const value: string = typeof d.value === "number"
-        ? d.value.toFixed(inputSettings.spc.sig_figs)
+        ? formatValues(d.value, integerFormattedColumns.has(d.column) ? "integer" : "value")
         : (d.value ?? "");
 
       currNode.text(value).classed("cell-text", true);
@@ -213,7 +218,8 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .call(drawTableRows, visualObj, plotPoints, tableSettings, maxWidth);
 
   if (plotPoints.length > 0) {
-    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.showGrouped)
+    const formatValues = valueFormatter(visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.inputSettings.derivedSettings[0]);
+    selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.showGrouped, formatValues)
   }
 
   selection.call(drawOuterBorder, tableSettings);
