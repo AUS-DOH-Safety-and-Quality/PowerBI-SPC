@@ -8,15 +8,13 @@ import extractValues from "../Functions/extractValues";
 import extractConditionalFormatting from "../Functions/extractConditionalFormatting";
 import validateInputData from "../Functions/validateInputData";
 import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import seq from "../Functions/seq";
-import between from "../Functions/between";
 import type { settingsValueType } from "../settings";
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import type { ValidationT } from "./validateInputData";
 
 export type dataObject = {
-  limitInputArgs: controlLimitsArgs;
+  limitInputArgs: Omit<controlLimitsArgs, "subset_points">;
   spcSettings: settingsValueType["spc"];
   highlights?: PrimitiveValue[];
   anyHighlights: boolean;
@@ -38,7 +36,7 @@ export type dataObject = {
 
 function invalidInputData(inputValidStatus: ValidationT): dataObject {
   return {
-    limitInputArgs: {} as controlLimitsArgs,
+    limitInputArgs: {} as dataObject["limitInputArgs"],
     spcSettings: {} as settingsValueType["spc"],
     highlights: [],
     anyHighlights: false,
@@ -144,17 +142,6 @@ export default function extractInputData(inputView: DataViewCategorical,
   }
 
   const curr_highlights = isNullOrUndefined(highlights) ? undefined : extractValues(highlights, valid_ids);
-  const num_points_subset: number | undefined = spcSettings[0].num_points_subset;
-  let subset_points: number[];
-  if (isNullOrUndefined(num_points_subset) || !between(num_points_subset, 1, valid_ids.length)) {
-    subset_points = seq(0, valid_ids.length - 1);
-  } else {
-    if (spcSettings[0].subset_points_from === "Start") {
-      subset_points = seq(0, spcSettings[0].num_points_subset! - 1);
-    } else {
-      subset_points = seq(valid_ids.length - spcSettings[0].num_points_subset!, valid_ids.length - 1);
-    }
-  }
   const valid_labels: string[] | undefined = isNullOrUndefined(labels) ? undefined : extractValues(labels, valid_ids) as string[];
   return {
     limitInputArgs: {
@@ -162,8 +149,7 @@ export default function extractInputData(inputView: DataViewCategorical,
       numerators: extractValues(numerators, valid_ids) as number[],
       denominators: isNullOrUndefined(denominators) ? undefined : extractValues(denominators, valid_ids),
       xbar_sds: isNullOrUndefined(xbar_sds) ? undefined : extractValues(xbar_sds, valid_ids),
-      outliers_in_limits: spcSettings[0].outliers_in_limits,
-      subset_points: subset_points
+      outliers_in_limits: spcSettings[0].outliers_in_limits
     },
     spcSettings: spcSettings[0],
     tooltips: isNullOrUndefined(tooltips) ? undefined : extractValues(tooltips, valid_ids),

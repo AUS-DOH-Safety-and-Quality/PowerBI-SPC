@@ -65,6 +65,9 @@
         "subset_points_from": {
           "type": { "enumeration" : [ ] }
         },
+        "subset_rebaselines": {
+          "type": { "bool": false }
+        },
         "ll_truncate": {
           "type": { "numeric": true }
         },
