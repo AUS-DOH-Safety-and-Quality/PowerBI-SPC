@@ -68,19 +68,30 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): control
   const cl: number = sum_numerators / sum_denominators;
 
   if (cl === 0 || cl === 1) {
-    return {
+    const rtn: controlLimitsObject = {
       keys: args.keys,
-      values: numerators.map((value, i) => value / denominators[i]),
+      values: new Array<number>(n),
       numerators: args.numerators,
       denominators: args.denominators,
-      targets: new Array<number>(n).fill(cl),
-      ll99: new Array<number>(n).fill(cl),
-      ll95: new Array<number>(n).fill(cl),
-      ll68: new Array<number>(n).fill(cl),
-      ul68: new Array<number>(n).fill(cl),
-      ul95: new Array<number>(n).fill(cl),
-      ul99: new Array<number>(n).fill(cl)
+      targets: new Array<number>(n),
+      ll99: new Array<number>(n),
+      ll95: new Array<number>(n),
+      ll68: new Array<number>(n),
+      ul68: new Array<number>(n),
+      ul95: new Array<number>(n),
+      ul99: new Array<number>(n)
     };
+    for (let i = 0; i < n; i++) {
+      rtn.values[i] = numerators[i] / denominators[i];
+      rtn.targets[i] = cl;
+      rtn.ll99![i] = cl;
+      rtn.ll95![i] = cl;
+      rtn.ll68![i] = cl;
+      rtn.ul68![i] = cl;
+      rtn.ul95![i] = cl;
+      rtn.ul99![i] = cl;
+    }
+    return rtn;
   }
 
   // Pre-calculate p̄(1 - p̄) for sigma calculation

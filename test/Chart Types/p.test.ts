@@ -56,6 +56,14 @@ describe("P Chart Test", () => {
     const renderingFinished = vi.spyOn(host.eventService, "renderingFinished");
     const chart = new Visual({ element: chartElement, host });
     const counts = [10, 20, 50, 100];
+    const chartKeys = new Array<string>(counts.length);
+    const numerators = new Array<number>(counts.length);
+    const expectedValues = new Array<number>(counts.length);
+    for (let i = 0; i < counts.length; i++) {
+      chartKeys[i] = keys[i];
+      numerators[i] = counts[i] * proportion;
+      expectedValues[i] = expected;
+    }
     const settings = {
       ...defaultSettings,
       spc: { ...defaultSettings.spc, chart_type: "p", perc_labels }
@@ -64,8 +72,8 @@ describe("P Chart Test", () => {
     try {
       chart.update({
         dataViews: [buildDataView({
-          key: keys.slice(0, counts.length),
-          numerators: counts.map(count => count * proportion),
+          key: chartKeys,
+          numerators,
           denominators: counts
         }, settings)],
         viewport: { width: 500, height: 500 },
@@ -77,7 +85,7 @@ describe("P Chart Test", () => {
       expect(chartElement.querySelector(".errormessage")).toBeNull();
       const limits = chart.viewModel.controlLimits[0];
       for (const line of ["values", "targets", "ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const) {
-        expect(limits[line]).toEqual(counts.map(() => expected));
+        expect(limits[line]).toEqual(expectedValues);
       }
       expect(chartElement.querySelector("svg")!.outerHTML).not.toMatch(/NaN|Infinity/);
 
@@ -85,15 +93,17 @@ describe("P Chart Test", () => {
       expect(dots).toHaveLength(counts.length);
       const yAxis = chart.plotProperties.yAxis;
       const middleY = (500 - yAxis.start_padding + yAxis.end_padding) / 2;
-      dots.forEach(dot => {
-        const transform = dot.transform.baseVal.consolidate()!.matrix;
+      for (let i = 0; i < dots.length; i++) {
+        const transform = dots[i].transform.baseVal.consolidate()!.matrix;
         expect(transform.e).toBeGreaterThanOrEqual(0);
         expect(transform.e).toBeLessThanOrEqual(500);
         expect(transform.f).toBeCloseTo(middleY, 5);
-      });
+      }
       const paths = chartElement.querySelectorAll(".linesgroup path");
       expect(paths.length).toBeGreaterThan(0);
-      paths.forEach(path => expect(path.getAttribute("d")).toBeTruthy());
+      for (let i = 0; i < paths.length; i++) {
+        expect(paths[i].getAttribute("d")).toBeTruthy();
+      }
       expect(chartElement.querySelectorAll(".yaxisgroup .tick")).toHaveLength(1);
     } finally {
       renderingFailed.mockRestore();
