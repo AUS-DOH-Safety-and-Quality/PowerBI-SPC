@@ -40,7 +40,7 @@ export default function scaleLinear() {
   function scale(x: number) {
     const [d0, d1] = domain;
     const [r0, r1] = range;
-    return r0 + (r1 - r0) * ((x - d0) / (d1 - d0));
+    return r0 + (r1 - r0) * (d0 === d1 ? 0.5 : (x - d0) / (d1 - d0));
   };
 
   scale.domain = function<T>(newDomain: T): returnT<T, typeof scale> {

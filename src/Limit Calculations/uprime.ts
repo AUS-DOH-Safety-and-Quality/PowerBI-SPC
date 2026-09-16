@@ -67,6 +67,22 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
   }
   const cl: number = sum_numerators / sum_denominators;
 
+  if (cl === 0) {
+    return {
+      keys: args.keys,
+      values: numerators.map((value, i) => value / denominators[i]),
+      numerators: args.numerators,
+      denominators: args.denominators,
+      targets: new Array<number>(n).fill(cl),
+      ll99: new Array<number>(n).fill(cl),
+      ll95: new Array<number>(n).fill(cl),
+      ll68: new Array<number>(n).fill(cl),
+      ul68: new Array<number>(n).fill(cl),
+      ul95: new Array<number>(n).fill(cl),
+      ul99: new Array<number>(n).fill(cl)
+    };
+  }
+
   // Calculate standard deviations for each point (based on Poisson assumption)
   let sd: number[] = new Array<number>(n);
   // Calculate values (rates) for all points
@@ -82,7 +98,7 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
   let amr: number = 0;  // Running sum for average moving range
   let prevZ: number = (val[subset_points[0]] - cl) / sd[subset_points[0]];
   for (let i = 1; i < n_sub; i++) {
-    let currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]]
+    let currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]];
     consec_diff[i - 1] = Math.abs(currZ - prevZ);
     amr += consec_diff[i - 1];
     prevZ = currZ;
@@ -93,7 +109,7 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): control
 
   // Optional outlier screening for moving range calculation
   // If outliers_in_limits is false, screen out extreme moving ranges
-  if (!args.outliers_in_limits) {
+  if (!args.outliers_in_limits && amr > 0) {
     // Upper limit for moving range: MR_limit = 3.267 × AMR (D4 constant for n=2)
     const consec_diff_ulim: number = amr * 3.267;
 

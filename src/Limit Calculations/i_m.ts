@@ -84,7 +84,7 @@ export default function imLimits(args: Readonly<controlLimitsArgs>): controlLimi
 
   // Optional outlier screening for moving range calculation
   // If outliers_in_limits is false, screen out extreme moving ranges
-  if (!args.outliers_in_limits) {
+  if (!args.outliers_in_limits && amr > 0) {
     // Upper limit for moving range: MR_limit = 3.267 × AMR (D4 constant for n=2)
     const consec_diff_ulim: number = amr * 3.267;
 
