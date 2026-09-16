@@ -26,6 +26,8 @@ import twoInThree from "../Outlier Flagging/twoInThree";
 import shift from "../Outlier Flagging/shift";
 import { lineNameMap } from "../Functions/getAesthetic";
 import isValidNumber from "../Functions/isValidNumber";
+import seq from "../Functions/seq";
+import between from "../Functions/between";
 import { default as updateOptionsUndefined, UpdateOptionsValidTypes } from "../Functions/updateOptionsUndefined";
 
 type LineSettingsKeys = keyof settingsValueType["lines"];
@@ -378,49 +380,37 @@ export default class viewModelClass {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
       = limitFunctions[inputSettings.spc.chart_type as keyof typeof limitFunctions];
 
-    inputData.limitInputArgs.outliers_in_limits = inputSettings.spc.outliers_in_limits;
-    let controlLimits: controlLimitsObject;
-    if (groupStartEndIndexes.length > 1) {
-      const groupedData: dataObject[] = groupStartEndIndexes.map((indexes) => {
-        // Force a deep copy
-        let data: dataObject = JSON.parse(JSON.stringify(inputData));
-        let limitKeys: Exclude<(keyof controlLimitsArgs), "outliers_in_limits">[] = Object.keys(data.limitInputArgs) as Exclude<(keyof controlLimitsArgs), "outliers_in_limits">[];
-        limitKeys.forEach(key => {
-          if (Array.isArray(data.limitInputArgs[key])) {
-            const groupVal = data.limitInputArgs[key].slice(indexes[0], indexes[1]);
-            (data.limitInputArgs[key] as typeof groupVal) = groupVal;
-            // Special case for subset points - need to re-index so that
-            //   the indexes are relative to the new subset
-            if (key === "subset_points") {
-              data.limitInputArgs[key] = (data.limitInputArgs[key] as number[]).map((d: number) => d - indexes[0]);
-            }
-          }
-        });
-        return data;
-      })
-
-      const calcLimitsGrouped: controlLimitsObject[] = groupedData.map(d => {
-        const currLimits = limitFunction(d.limitInputArgs);
-        currLimits.trend_line = calculateTrendLine(currLimits.values);
-        return currLimits;
+    const { num_points_subset, subset_points_from, subset_rebaselines } = inputSettings.spc;
+    const args = inputData.limitInputArgs;
+    const calcLimitsGrouped: controlLimitsObject[] = groupStartEndIndexes.map(([start, end], groupIndex) => {
+      const n: number = end - start;
+      const applySubset: boolean = groupIndex === 0 || subset_rebaselines;
+      const subsetCount: number = applySubset && !isNullOrUndefined(num_points_subset) && between(num_points_subset, 1, n)
+        ? num_points_subset : n;
+      const subsetStart: number = subset_points_from === "Start" ? 0 : n - subsetCount;
+      const currLimits = limitFunction({
+        keys: args.keys.slice(start, end),
+        numerators: args.numerators.slice(start, end),
+        denominators: args.denominators?.slice(start, end),
+        xbar_sds: args.xbar_sds?.slice(start, end),
+        outliers_in_limits: inputSettings.spc.outliers_in_limits,
+        subset_points: seq(subsetStart, subsetStart + subsetCount - 1)
       });
+      currLimits.trend_line = calculateTrendLine(currLimits.values);
+      return currLimits;
+    });
 
-      controlLimits = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
-        const allInner: controlLimitsObject = all;
-        Object.entries(all).forEach((entry, idx) => {
-          if (isNullOrUndefined(entry[1])) {
-            return;
-          }
-          const newValues = entry[1].concat(Object.entries(curr)[idx][1]);
-          (allInner[entry[0] as keyof controlLimitsObject] as typeof newValues) = newValues;
-        })
-        return allInner;
+    const controlLimits: controlLimitsObject = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
+      const allInner: controlLimitsObject = all;
+      Object.entries(all).forEach((entry, idx) => {
+        if (isNullOrUndefined(entry[1])) {
+          return;
+        }
+        const newValues = entry[1].concat(Object.entries(curr)[idx][1]);
+        (allInner[entry[0] as keyof controlLimitsObject] as typeof newValues) = newValues;
       })
-    } else {
-      // Calculate control limits using user-specified type
-      controlLimits = limitFunction(inputData.limitInputArgs);
-      controlLimits.trend_line = calculateTrendLine(controlLimits.values);
-    }
+      return allInner;
+    })
 
     controlLimits.alt_targets = inputData.alt_targets;
     controlLimits.speclimits_lower = inputData.speclimits_lower;
