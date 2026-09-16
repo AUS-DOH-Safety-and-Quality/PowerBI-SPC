@@ -32,7 +32,7 @@ const spcSettings = {
       split_on_click: toggleOption("Split Limits on Click", false),
       num_points_subset: numberOption("Subset Number of Points for Limit Calculations", undefined),
       subset_points_from: dropdownOption("Subset Points From", "Start", ["Start", "End"]),
-      subset_rebaselines: toggleOption("Subset Points After Re-Baseline", true),
+      subset_rebaselines: toggleOption("Subset Points After Each Re-Baseline", true),
       ttip_show_date: toggleOption("Show Date in Tooltip", true),
       ttip_label_date: textOption("Date Tooltip Label", "Automatic"),
       ttip_show_numerator: toggleOption("Show Numerator in Tooltip", true),
