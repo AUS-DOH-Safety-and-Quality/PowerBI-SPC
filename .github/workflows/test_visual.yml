@@ -38,7 +38,7 @@ jobs:
 
     - name: Test if package can be built
       run: |
-        pbiviz package
+        npm run package
 
     - name: Run unit tests
       run: |

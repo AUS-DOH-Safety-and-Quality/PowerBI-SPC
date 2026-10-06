@@ -3,7 +3,7 @@ import {
   fontOption, fontSizeOption, colourOption, dropdownOption,
   borderStyleOption, borderWidthOption, alignmentOption,
   fontWeightOption, textTransformOption
-} from "./common";
+} from "powerbi-visuals-core/settings";
 
 const summaryTableSettings = {
   description: "Summary Table Settings",

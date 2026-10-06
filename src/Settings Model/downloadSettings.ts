@@ -1,4 +1,4 @@
-import { toggleOption } from "./common";
+import { toggleOption } from "powerbi-visuals-core/settings";
 
 const downloadSettings = {
   description: "Download Options",

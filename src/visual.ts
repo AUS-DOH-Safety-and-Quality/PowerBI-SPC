@@ -21,7 +21,7 @@ import plotPropertiesClass from "./Classes/plotPropertiesClass";
 import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
 import getAesthetic from "./Functions/getAesthetic";
-import identitySelected from "./Functions/identitySelected";
+import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
@@ -34,7 +34,10 @@ export class Visual implements powerbi.extensibility.IVisual {
   plotProperties: plotPropertiesClass;
   selectionManager: powerbi.extensibility.ISelectionManager;
 
-  constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
+  constructor(options: powerbi.extensibility.visual.VisualConstructorOptions | undefined) {
+    if (options === undefined) {
+      throw new Error("Visual constructor options are required.");
+    }
     this.tableDiv = d3.select(options.element).append("div")
                                               .style("overflow", "auto");
 
@@ -71,7 +74,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         this.plotProperties.displayPlot = false;
         this.resizeCanvas(options.viewport.width, options.viewport.height);
         if (this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true) {
-          this.svg.call(drawErrors, options, this.viewModel.colourPalette, update_status?.error ?? "", update_status?.type ?? "");
+          this.svg.call(drawErrors, options, this.viewModel.colourPalette, update_status.error ?? "", update_status.type);
         } else {
           this.svg.call(initialiseSVG, true);
         }
@@ -163,9 +166,11 @@ export class Visual implements powerbi.extensibility.IVisual {
     const anyHighlights: boolean = this.viewModel.inputData.length > 0
       && this.viewModel.inputData.some(d => d.anyHighlights);
     const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
+    const selected = selectedKeys(allSelectionIDs);
 
     const dotsSelection: d3.Selection<d3.BaseType | SVGPathElement, plotData, d3.BaseType, unknown> = this.svg.selectAll(".dotsgroup").selectChildren();
-    const linesSelection: d3.Selection<d3.BaseType | SVGGElement, [string, lineData[]], d3.BaseType, unknown> = this.svg.selectAll(".linesgroup").selectChildren();
+    // Only the line groups carry line data; the label texts are Core-drawn and unbound
+    const linesSelection: d3.Selection<d3.BaseType | SVGGElement, [string, lineData[]], d3.BaseType, unknown> = this.svg.selectAll(".linesgroup").selectChildren("g");
     const tableSelection: d3.Selection<d3.BaseType | HTMLTableRowElement, plotDataGrouped, d3.BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
 
     // Set all elements to their default opacity before applying highlights
@@ -182,7 +187,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       });
       dotsSelection.nodes().forEach(currentDotNode => {
         const dot: plotData = d3.select(currentDotNode).datum() as plotData;
-        const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
+        const currentPointSelected: boolean = identitySelected(dot.identity, selected);
         const currentPointHighlighted: boolean = dot.highlighted;
         const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
         d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
@@ -191,7 +196,7 @@ export class Visual implements powerbi.extensibility.IVisual {
 
       tableSelection.nodes().forEach(currentTableNode => {
         const dot: plotDataGrouped = d3.select(currentTableNode).datum() as plotDataGrouped;
-        const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
+        const currentPointSelected: boolean = identitySelected(dot.identity, selected);
         const currentPointHighlighted: boolean = dot.highlighted;
         const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity_selected"] : dot.aesthetics["table_opacity_unselected"];
         d3.select(currentTableNode).style("opacity", newTableOpacity);

@@ -1,36 +1,17 @@
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import type { svgBaseType } from "../visual";
+import type { colourPaletteType } from "../Classes/viewModelClass";
+import { drawErrorMessage, type ErrorKind } from "powerbi-visuals-core/rendering";
 import initialiseSVG from "./initialiseSVG";
-import { type colourPaletteType } from "../Classes/viewModelClass";
 
-export default function drawErrors(selection: svgBaseType,
-                                    options: VisualUpdateOptions,
-                                    colourPalette: colourPaletteType,
-                                    message: string,
-                                    type: string) {
+export default function drawErrors(selection: svgBaseType, options: VisualUpdateOptions,
+                                    colourPalette: colourPaletteType, message: string, kind: ErrorKind | undefined) {
   selection.call(initialiseSVG, true);
-  const errMessageSVG = selection.append("g").classed("errormessage", true);
-
-  if (type !== "") {
-    const preamble: Record<string, string> = {
-      "internal": "Internal Error! Please file a bug report with the following text:",
-      "settings": "Invalid settings provided for all observations! First error:"
-    }
-    errMessageSVG.append('text')
-                .attr("x",options.viewport.width / 2)
-                .attr("y",options.viewport.height / 3)
-                .style("text-anchor", "middle")
-                .text(preamble[type])
-                .style("font-size", "10px")
-                .style("fill", colourPalette.foregroundColour)
-  }
-
-  errMessageSVG.append('text')
-                .attr("x",options.viewport.width / 2)
-                .attr("y",options.viewport.height / 2)
-                .style("text-anchor", "middle")
-                .text(message)
-                .style("font-size", "10px")
-                .style("fill", colourPalette.foregroundColour);
+  const svg = selection.node();
+  if (svg === null) return;
+  drawErrorMessage(svg, {
+    width: options.viewport.width, height: options.viewport.height,
+    message, kind, colour: colourPalette.foregroundColour
+  });
 }

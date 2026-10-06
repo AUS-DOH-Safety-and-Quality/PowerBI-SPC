@@ -1,6 +1,6 @@
-import { toggleOption, numberOption, dropdownOption } from "./common";
+import { toggleOption, numberOption, dropdownOption } from "powerbi-visuals-core/settings";
 
-const iconLocations: string[] = ["Top Right", "Bottom Right", "Top Left", "Bottom Left"];
+const iconLocations = ["Top Right", "Bottom Right", "Top Left", "Bottom Left"] as const;
 
 const nhsIconsSettings = {
   description: "NHS Icons Settings",

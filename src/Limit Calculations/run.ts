@@ -1,6 +1,6 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import median from "../Functions/median";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import { median } from "powerbi-visuals-core/math";
 
 /**
  * Calculates control limits for a run chart (median-only chart with no control limits).

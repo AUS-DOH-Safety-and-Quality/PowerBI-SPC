@@ -3,15 +3,18 @@
   "scripts": {
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
+    "prepackage": "npm run typecheck",
     "package": "pbiviz package",
-    "build": "pbiviz package",
+    "build": "npm run package",
     "eslint": "npx eslint .",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "d3-axis": "3.0.0",
     "d3-selection": "3.0.0",
-    "d3-shape": "3.2.0"
+    "d3-shape": "3.2.0",
+    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#f0802da0f8fcc04ddc2deb51e2d009706d7aa5c3"
   },
   "devDependencies": {
     "@types/d3-axis": "3.0.6",

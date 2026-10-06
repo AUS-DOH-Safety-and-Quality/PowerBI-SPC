@@ -1,31 +1,24 @@
 import type { svgBaseType, Visual } from "../visual";
 import type { plotData } from "../Classes/viewModelClass";
 import type plotPropertiesClass from "../Classes/plotPropertiesClass";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import { drawCrosshairs } from "powerbi-visuals-core/rendering";
 
 export default function drawTooltipLine(selection: svgBaseType, visualObj: Visual) {
   const plotProperties: plotPropertiesClass = visualObj.plotProperties;
-  const colour: string = visualObj.viewModel.colourPalette.isHighContrast
-    ? visualObj.viewModel.colourPalette.foregroundColour
-    : "black";
-  const xAxisLine = selection
-            .select(".ttip-line-x")
-            .attr("x1", 0)
-            .attr("x2", 0)
-            .attr("y1", plotProperties.yAxis.end_padding)
-            .attr("y2", visualObj.viewModel.svgHeight - plotProperties.yAxis.start_padding)
-            .attr("stroke-width", "1px")
-            .attr("stroke", colour)
-            .style("stroke-opacity", 0);
-  const yAxisLine = selection
-            .select(".ttip-line-y")
-            .attr("x1", plotProperties.xAxis.start_padding)
-            .attr("x2", visualObj.viewModel.svgWidth - plotProperties.xAxis.end_padding)
-            .attr("y1", 0)
-            .attr("y2", 0)
-            .attr("stroke-width", "1px")
-            .attr("stroke", colour)
-            .style("stroke-opacity", 0);
+  const vertical = selection.select<SVGLineElement>(".ttip-line-x").node();
+  const horizontal = selection.select<SVGLineElement>(".ttip-line-y").node();
+  if (vertical === null || horizontal === null) return;
+  const crosshairs = drawCrosshairs({
+    vertical, horizontal,
+    left: plotProperties.xAxis.start_padding,
+    right: visualObj.viewModel.svgWidth - plotProperties.xAxis.end_padding,
+    top: plotProperties.yAxis.end_padding,
+    bottom: visualObj.viewModel.svgHeight - plotProperties.yAxis.start_padding,
+    colour: visualObj.viewModel.colourPalette.isHighContrast
+      ? visualObj.viewModel.colourPalette.foregroundColour
+      : "black"
+  });
 
   selection.on("mousemove", (event) => {
     if (!plotProperties.displayPlot) {
@@ -60,19 +53,13 @@ export default function drawTooltipLine(selection: svgBaseType, visualObj: Visua
       coordinates: [x_coord, y_coord],
       isTouchEvent: false
     });
-    xAxisLine.style("stroke-opacity", 0.4)
-              .attr("x1", x_coord)
-              .attr("x2", x_coord);
-    yAxisLine.style("stroke-opacity", 0.4)
-              .attr("y1", y_coord)
-              .attr("y2", y_coord);
+    crosshairs.show(x_coord, y_coord);
   })
   .on("mouseleave", () => {
     if (!plotProperties.displayPlot) {
       return;
     }
     visualObj.host.tooltipService.hide({ immediately: true, isTouchEvent: false });
-    xAxisLine.style("stroke-opacity", 0);
-    yAxisLine.style("stroke-opacity", 0);
+    crosshairs.hide();
   });
 }

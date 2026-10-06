@@ -1,4 +1,4 @@
-import lgamma from "../Functions/lgamma";
+import { lgamma } from "powerbi-visuals-core/math";
 
 /**
  * Calculates the c4 bias correction factor for sample standard deviation.

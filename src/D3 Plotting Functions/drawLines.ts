@@ -2,8 +2,8 @@ import * as d3 from "./D3 Modules";
 import type { settingsValueType } from "../settings";
 import type { lineData } from "../Classes/viewModelClass";
 import getAesthetic from "../Functions/getAesthetic";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import between from "../Functions/between";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import { between } from "powerbi-visuals-core/math";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawLines(selection: svgBaseType, visualObj: Visual) {

@@ -1,3 +1,4 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 /**
  * Date formatting module compatible with QuickJS (no Intl support)
  *
@@ -6,7 +7,6 @@
  * implementation using native JavaScript Date methods.
  */
 
-import isNullOrUndefined from "./isNullOrUndefined";
 
 /**
  * Date format options matching a subset of Intl.DateTimeFormatOptions

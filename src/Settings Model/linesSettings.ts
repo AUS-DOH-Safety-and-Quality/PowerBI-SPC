@@ -3,7 +3,7 @@ import {
   colourOption, numberOption,
   fontOption, fontSizeOption, textOption,
   lineLabelPositionOption
-} from "./common";
+} from "powerbi-visuals-core/settings";
 
 const linesSettings = {
   description: "Line Settings",

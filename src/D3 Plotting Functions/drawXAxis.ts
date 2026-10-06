@@ -3,21 +3,21 @@ import type { axisProperties } from "../Classes/plotPropertiesClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
-  const xAxisGroup = selection.select(".xaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
-  const xAxisLabel = selection.select(".xaxislabel") as d3.Selection<SVGTextElement, unknown, null, undefined>;
+  const existingGroup = selection.select<SVGGElement>(".xaxisgroup");
+  const existingLabel = selection.select<SVGTextElement>(".xaxislabel");
   if (!visualObj.viewModel.inputSettings.settings[0].x_axis.xlimit_show) {
     // X Axis plotting is disabled, so remove any existing axis and return early
-    xAxisGroup.remove();
-    xAxisLabel.remove();
+    existingGroup.remove();
+    existingLabel.remove();
     selection.selectAll(".xgridline").remove();
     return;
   }
-  // If the groups have been removed, re-add them
-  if (xAxisGroup.empty()) {
-    selection.append('g').classed("xaxisgroup", true);
-  }
-  if (xAxisLabel.empty()) {
-    selection.append('text').classed('xaxislabel', true);
+  // Re-added axis elements go back beneath the lines and dots
+  const xAxisGroup = existingGroup.empty()
+    ? selection.insert<SVGGElement>("g", ".linesgroup").classed("xaxisgroup", true)
+    : existingGroup;
+  if (existingLabel.empty()) {
+    selection.insert("text", ".linesgroup").classed("xaxislabel", true);
   }
 
   const xAxisProperties: axisProperties = visualObj.plotProperties.xAxis;

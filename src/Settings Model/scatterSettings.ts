@@ -1,4 +1,4 @@
-import { colourOption, numberOption, toggleOption, dropdownOption } from "./common";
+import { colourOption, numberOption, toggleOption, dropdownOption } from "powerbi-visuals-core/settings";
 
 const scatterSettings = {
   description: "Scatter Settings",

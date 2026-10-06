@@ -1,5 +1,5 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { settingsValueType } from "../settings"
-import isNullOrUndefined from "./isNullOrUndefined"
 import type { DateFormatOptions } from "./formatDateParts"
 
 /**

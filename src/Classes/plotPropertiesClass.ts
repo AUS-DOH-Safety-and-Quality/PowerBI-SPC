@@ -1,9 +1,7 @@
 import * as d3 from "../D3 Plotting Functions/D3 Modules";
-import min from "../Functions/min";
-import max from "../Functions/max";
+import { min, max } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
-import isValidNumber from "../Functions/isValidNumber";
+import { isNullOrUndefined, isValidNumber } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import type { settingsValueType } from "../settings";
@@ -11,7 +9,7 @@ import type { plotData, controlLimitsObject } from "./viewModelClass";
 import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import type { colourPaletteType } from "./viewModelClass";
-import scaleLinear from "../Functions/scaleLinear";
+import { scaleLinear } from "powerbi-visuals-core/math";
 
 export type axisProperties = {
   lower: number,

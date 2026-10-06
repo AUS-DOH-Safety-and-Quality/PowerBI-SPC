@@ -1,7 +1,7 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
-import isNullOrUndefined from "./isNullOrUndefined";
 
-export type ValidationT = { status: number, messages: string[], error?: string };
+export type ValidationT = { status: 0; messages: string[] } | { status: 1; messages: string[]; error: string };
 
 const enum ValidationFailTypes {
   Valid = 0,
@@ -82,100 +82,30 @@ function validateInputDataImpl(key: string | undefined,
   return rtn;
 }
 
-// ESLint errors due to number of lines in function, but would reduce readability to separate further
-
-export default function validateInputData(keys: (string | undefined)[],
-                                          numerators: (number | undefined)[],
-                                          denominators: (number | undefined)[] | undefined,
-                                          xbar_sds: (number | undefined)[] | undefined,
-                                          chart_type_props: derivedSettingsClass["chart_type_props"],
-                                          idxs: number[]): { status: number, messages: string[], error?: string } {
-  let allSameType: boolean = false;
-  let messages: string[] = new Array<string>();
-  let all_status: ValidationFailTypes[] = new Array<ValidationFailTypes>();
+export default function validateInputData(keys: readonly (string | undefined)[],
+                                          numerators: readonly (number | undefined)[],
+                                          denominators: readonly (number | undefined)[] | undefined,
+                                          xbar_sds: readonly (number | undefined)[] | undefined,
+                                          chart_type_props: derivedSettingsClass["chart_type_props"]): ValidationT {
+  const messages = new Array<string>(keys.length);
   const check_denom = chart_type_props.needs_denominator
-                      || (chart_type_props.denominator_optional && !isNullOrUndefined(denominators) && denominators.length > 0);
-  const n: number = idxs.length;
-  for (let i = 0; i < n; i++) {
-    const validation = validateInputDataImpl(keys[i], numerators?.[i], denominators?.[i], xbar_sds?.[i], chart_type_props,  check_denom);
-    messages.push(validation.message);
-    all_status.push(validation.type);
+    || (chart_type_props.denominator_optional && denominators !== undefined && denominators.length > 0);
+  let anyValid = false;
+  let allSameType = true;
+  let commonType: ValidationFailTypes | undefined;
+  for (let i = 0; i < keys.length; i++) {
+    const validation = validateInputDataImpl(keys[i], numerators[i], denominators?.[i], xbar_sds?.[i], chart_type_props, check_denom);
+    messages[i] = validation.message;
+    if (i === 0) commonType = validation.type;
+    else if (validation.type !== commonType) allSameType = false;
+    if (validation.type === ValidationFailTypes.Valid) anyValid = true;
   }
-
-  let allSameTypeSet = new Set(all_status);
-  allSameType = allSameTypeSet.size === 1;
-  let commonType = Array.from(allSameTypeSet)[0];
-
-  let validationRtn: ValidationT = {
-    status: (allSameType && commonType !== ValidationFailTypes.Valid) ? 1 : 0,
-    messages: messages
-  };
-
-  // If all data has failed, but for different reasons, return a generic error
-  if (validationRtn.status === 0) {
-    const allInvalid: boolean = all_status.every(d => d !== ValidationFailTypes.Valid);
-    if (allInvalid) {
-      validationRtn.status = 1; // All data invalid
-      validationRtn.error = "No valid data found!";
-      return validationRtn;
-    }
-  }
-
-  if (allSameType && commonType !== ValidationFailTypes.Valid) {
-    switch(commonType) {
-      case ValidationFailTypes.GroupingMissing: {
-        validationRtn.error = "Grouping missing"
-        break;
-      }
-      case ValidationFailTypes.DateMissing: {
-        validationRtn.error = "All dates/IDs are missing or null!"
-        break;
-      }
-      case ValidationFailTypes.NumeratorMissing: {
-        validationRtn.error = "All numerators are missing or null!"
-        break;
-      }
-      case ValidationFailTypes.NumeratorNaN: {
-        validationRtn.error = "All numerators are not numbers!"
-        break;
-      }
-      case ValidationFailTypes.NumeratorNegative: {
-        validationRtn.error = "All numerators are negative!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorMissing: {
-        validationRtn.error = "All denominators missing or null!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorNaN: {
-        validationRtn.error = "All denominators are not numbers!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorNegative: {
-        validationRtn.error = "All denominators are negative!"
-        break;
-      }
-      case ValidationFailTypes.DenominatorLessThanNumerator: {
-        validationRtn.error = "All denominators are smaller than numerators!";
-        break;
-      }
-      case ValidationFailTypes.SDMissing: {
-        validationRtn.error = "All SDs missing or null!";
-        break;
-      }
-      case ValidationFailTypes.SDNaN: {
-        validationRtn.error = "All SDs are not numbers!";
-        break;
-      }
-      case ValidationFailTypes.SDNegative: {
-        validationRtn.error = "All SDs are negative!";
-        break;
-      }
-      case ValidationFailTypes.DenominatorLessThanOne: {
-        validationRtn.error = "All denominators are less than or equal to one!";
-        break;
-      }
-    }
-  }
-  return validationRtn;
+  if (anyValid) return { status: 0, messages };
+  const errors = ["", "Grouping missing", "All dates/IDs are missing or null!",
+    "All numerators are missing or null!", "All numerators are negative!",
+    "All denominators missing or null!", "All denominators are negative!",
+    "All denominators are smaller than numerators!", "All SDs missing or null!", "All SDs are negative!",
+    "All numerators are not numbers!", "All denominators are not numbers!", "All SDs are not numbers!",
+    "All denominators are less than or equal to one!"];
+  return { status: 1, messages, error: allSameType && commonType !== undefined ? errors[commonType] : "No valid data found!" };
 }

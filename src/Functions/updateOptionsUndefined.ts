@@ -1,6 +1,6 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import isNullOrUndefined from "./isNullOrUndefined";
 
 const enum UpdateOptionsValidTypes {
   Valid = 1,

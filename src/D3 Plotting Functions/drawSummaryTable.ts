@@ -1,12 +1,14 @@
+import type powerbi from "powerbi-visuals-api";
 import type { plotData, plotDataGrouped, summaryTableRowData } from "../Classes/viewModelClass";
 import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
 import type { settingsValueType } from "../settings";
-import identitySelected from "../Functions/identitySelected";
+import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
 import valueFormatter from "../Functions/valueFormatter";
 
+type ISelectionId = powerbi.visuals.ISelectionId;
 const integerFormattedColumns = new Set(["numerator", "denominator"]);
 
 function drawTableHeaders(selection: divBaseType, cols: { name: string; label: string; }[],
@@ -65,7 +67,7 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
                         .join('tr')
                         .on("click", (event, d: plotData) => {
                           if (visualObj.host.hostCapabilities.allowInteractions) {
-                            const alreadySel: boolean = identitySelected(d.identity, visualObj.selectionManager);
+                            const alreadySel: boolean = identitySelected(d.identity, selectedKeys(visualObj.selectionManager.getSelectionIds() as ISelectionId[]));
                             visualObj.selectionManager
                                       .select(d.identity, alreadySel || event.ctrlKey || event.metaKey)
                                       .then(() => visualObj.updateHighlighting());

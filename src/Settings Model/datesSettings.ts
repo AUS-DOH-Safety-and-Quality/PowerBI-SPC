@@ -1,4 +1,4 @@
-import { dropdownOption } from "./common";
+import { dropdownOption } from "powerbi-visuals-core/settings";
 
 const datesSettings = {
   description: "Date Settings",

@@ -1,8 +1,9 @@
 import { defaultSettings } from "../../src/settings";
-import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
+import { testDom } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import rep from "../../src/Functions/rep";
+import keyedHost from "../helpers/keyedHost";
+import { rep } from "powerbi-visuals-core/math";
 import { type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 
@@ -17,7 +18,7 @@ const indicator: string[] = rep("Team A", 4).concat(rep("Team B", 4)).concat(rep
 
 describe("Summary Table - style, decimal and opacity/selection formatting", () => {
   const element = testDom("500", "500");
-  const visual = new Visual({ element: element, host: createVisualHost({}) });
+  const visual = new Visual({ element: element, host: keyedHost() });
   const visualClassElement: Element = document.body.querySelector('.visual') as Element;
   const tableDivElement: Element = visualClassElement.querySelector('div') as Element;
 

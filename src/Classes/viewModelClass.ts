@@ -1,3 +1,4 @@
+import { groupCategoryRows, indexColumnsByRole } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -10,33 +11,32 @@ import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
 import getAesthetic from "../Functions/getAesthetic";
 import checkFlagDirection from "../Outlier Flagging/checkFlagDirection";
-import rep from "../Functions/rep";
+import { rep, between } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { isNullOrUndefined, isValidNumber, groupBy, pickRows } from "powerbi-visuals-core/data";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
 import valueFormatter from "../Functions/valueFormatter";
 import calculateTrendLine from "../Functions/calculateTrendLine";
-import groupBy from "../Functions/groupBy";
 import astronomical from "../Outlier Flagging/astronomical";
 import trend from "../Outlier Flagging/trend";
 import twoInThree from "../Outlier Flagging/twoInThree";
 import shift from "../Outlier Flagging/shift";
 import { lineNameMap } from "../Functions/getAesthetic";
-import isValidNumber from "../Functions/isValidNumber";
-import seq from "../Functions/seq";
-import between from "../Functions/between";
+import { sequence } from "powerbi-visuals-core/math";
 import { default as updateOptionsUndefined, UpdateOptionsValidTypes } from "../Functions/updateOptionsUndefined";
 
 type LineSettingsKeys = keyof settingsValueType["lines"];
+
+import type { ErrorKind } from "powerbi-visuals-core/rendering";
 
 export type viewModelValidationT = {
   status: boolean,
   error?: string,
   warning?: string,
-  type?: string
+  type?: ErrorKind
 }
 
 export type lineData = {
@@ -205,6 +205,7 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+    // Finding 34: read before any early return so error rendering is themed
     this.colourPalette = {
       isHighContrast: host.colorPalette.isHighContrast,
       foregroundColour: host.colorPalette.foreground.value,
@@ -218,57 +219,45 @@ export default class viewModelClass {
     } else if (updateOptionsStatus === UpdateOptionsValidTypes.MissingNumerators) {
       return { status: false, error: "No Numerators passed!" }
     }
-
     this.svgWidth = options.viewport.width;
     this.svgHeight = options.viewport.height;
     this.headless = (options as VisualUpdateOptions & { headless?: boolean })?.headless ?? false;
     this.frontend = (options as VisualUpdateOptions & { frontend?: boolean })?.frontend ?? false;
 
-    const indicator_cols: powerbi.DataViewCategoryColumn[] = options.dataViews[0]?.categorical?.categories?.filter(d => d.source.roles!.indicator) ?? [];
-    this.indicatorVarNames = indicator_cols?.map(d => d.source.displayName) ?? [];
+    const inputView = options.dataViews[0].categorical!;
+    const columns = { categories: indexColumnsByRole(inputView.categories ?? []), values: indexColumnsByRole(inputView.values ?? []) };
+    const indicator_cols = columns.categories.indicator ?? [];
+    this.indicatorVarNames = new Array<string>(indicator_cols.length);
+    for (let i = 0; i < indicator_cols.length; i++) this.indicatorVarNames[i] = indicator_cols[i].source.displayName;
 
     const n_values: number = options.dataViews[0]?.categorical?.categories?.[0]?.values?.length ?? 1;
     const res: viewModelValidationT = { status: true };
-    const idx_per_indicator = new Array<number[]>();
-    this.groupNames = new Array<string[]>();
+    const indicatorGroups = groupCategoryRows(indicator_cols, n_values);
+    const idx_per_indicator = indicatorGroups.rows;
+    this.groupNames = indicatorGroups.names;
 
-    // Group rows by the full combination of indicator-column values wherever they occur, not just consecutive runs
-    const groupIndexByKey = new Map<string, number>();
-    for (let i = 0; i < n_values; i++) {
-      const rowValues: string[] = indicator_cols?.map(d => <string>d.values[i]) ?? [];
-      const key: string = rowValues.map(v => String(v)).join("");
-      let grp: number | undefined = groupIndexByKey.get(key);
-      if (grp === undefined) {
-        grp = idx_per_indicator.length;
-        groupIndexByKey.set(key, grp);
-        idx_per_indicator.push([]);
-        this.groupNames.push(rowValues);
-      }
-      idx_per_indicator[grp].push(i);
-    }
-
-    if (options.type === 2 || this.firstRun) {
+    if ((options.type & 2) !== 0 || this.firstRun) {
       this.inputSettings.update(options.dataViews[0], idx_per_indicator);
     }
-    if (this.inputSettings.validationStatus.error !== "") {
+    if (this.inputSettings.validationStatus.status !== 0) {
       res.status = false;
       res.error = this.inputSettings.validationStatus.error;
       res.type = "settings";
       return res;
     }
-    const checkDV: string = validateDataViewColumns(options.dataViews, this.inputSettings);
+    const checkDV: string = validateDataViewColumns(options.dataViews, this.inputSettings, columns.values);
     if (checkDV !== "valid") {
       res.status = false;
       res.error = checkDV;
       return res;
     }
 
-    let invalidData: boolean = false;
+    const inputErrors: string[] = [];
 
     // Only re-construct data and re-calculate limits if they have changed
-    if (options.type === 2 || this.firstRun) {
+    if ((options.type & 2) !== 0 || this.firstRun) {
       // Handle split indexes (only for first indicator in single mode)
-      const hasIndicator: boolean = options.dataViews[0].categorical!.categories!.some(d => d.source.roles!.indicator);
+      const hasIndicator = indicator_cols.length > 0;
       const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       const split_indexes: number[] = JSON.parse(split_indexes_str);
       this.splitIndexes = hasIndicator ? [] : split_indexes;
@@ -281,52 +270,53 @@ export default class viewModelClass {
       this.identities = new Array<ISelectionId[]>();
       this.tableColumns = new Array<{ name: string; label: string; }[]>();
 
-      // Maps a raw row index to its position within the flattened all-groups row-index list
-      const messagePositionByRowIndex = new Map<number, number>();
-      idx_per_indicator.flat().forEach((rawRowIdx, position) => messagePositionByRowIndex.set(rawRowIdx, position));
+      const messagePositionByRowIndex = this.inputSettings.messagePositionByRowIndex;
 
       // Loop through each indicator group
-      idx_per_indicator.forEach((group_idxs, idx) => {
+      for (let idx = 0; idx < idx_per_indicator.length; idx++) {
+        const group_idxs = idx_per_indicator[idx];
         // Determine which settings to use
         const settings = this.inputSettings.settings[idx];
         const derivedSettings = this.inputSettings.derivedSettings[idx];
 
         // Extract data for this indicator
-        const inpData: dataObject = extractInputData(
-          options.dataViews[0].categorical!,
+        const extraction = extractInputData(
+          inputView,
+          columns,
           settings,
           derivedSettings,
           this.inputSettings.validationStatus.messages,
           group_idxs,
           messagePositionByRowIndex
         );
+        if (extraction.status !== "valid") {
+          inputErrors.push(extraction.error);
+          continue;
+        }
+        const inpData = extraction.data;
         this.inputData.push(inpData);
 
-        if (inpData.validationStatus.status !== 0) {
-          invalidData = true;
-          return;
-        }
-
-        const groupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
-        const limits: controlLimitsObject = this.calculateLimits(inpData, groupStartEnd, settings);
+        const inputGroupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
+        const limits: controlLimitsObject = this.calculateLimits(inpData, inputGroupStartEnd, settings);
+        const groupStartEnd: number[][] = this.getResultGroupIndexes(limits.keys, inputGroupStartEnd);
         const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
         this.scaleAndTruncateLimits(limits, settings, derivedSettings);
 
         // Create selection identities
-        const identities = group_idxs.map(i => {
-          return host.createSelectionIdBuilder()
-            .withCategory(options.dataViews[0].categorical!.categories![0], i)
-            .createSelectionId();
-        });
+        const keys = inpData.limitInputArgs.keys;
+        const identities = new Array<ISelectionId>(keys.length);
+        for (let i = 0; i < keys.length; i++) {
+          identities[i] = host.createSelectionIdBuilder().withCategory(inpData.categories, keys[i].id).createSelectionId();
+        }
 
         // Push to arrays
         this.groupStartEndIndexes.push(groupStartEnd);
         this.controlLimits.push(limits);
         this.outliers.push(outliers);
         this.identities.push(identities);
-      });
+      }
 
-      if (!invalidData) {
+      if (inputErrors.length === 0) {
         // Initialize plot data based on mode
         if (this.showGrouped) {
           this.initialisePlotDataGrouped();
@@ -337,17 +327,19 @@ export default class viewModelClass {
       }
     }
 
-    this.firstRun = false;
-
-    // Validation (unified for all indicators)
-    if (invalidData) {
-      res.status = false;
-      res.error = this.inputData
-        .filter(d => d.validationStatus.status !== 0)
-        .map(d => d.validationStatus.error)
-        .join("\n");
-      return res;
+    if (inputErrors.length > 0) {
+      this.inputData = [];
+      this.controlLimits = [];
+      this.groupStartEndIndexes = [];
+      this.outliers = [];
+      this.identities = [];
+      this.plotPoints = [];
+      this.groupedLines = [];
+      this.tickLabels = [];
+      this.firstRun = true;
+      return { status: false, error: inputErrors.join("\n") };
     }
+    this.firstRun = false;
 
     if (this.inputData.some(d => d.warningMessage !== "")) {
       res.warning = this.inputData
@@ -374,6 +366,18 @@ export default class viewModelClass {
     return groupStartEndIndexes;
   }
 
+  // Input-position ranges to result-position ranges; a segment can return fewer points (moving ranges)
+  getResultGroupIndexes(keys: readonly controlLimitsObject["keys"][number][], inputGroupStartEnd: readonly (readonly number[])[]): number[][] {
+    const result = new Array<number[]>(inputGroupStartEnd.length);
+    let position = 0;
+    for (let i = 0; i < inputGroupStartEnd.length; i++) {
+      const start = position;
+      while (position < keys.length && keys[position].x < inputGroupStartEnd[i][1]) position++;
+      result[i] = [start, position];
+    }
+    return result;
+  }
+
   calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsValueType): controlLimitsObject {
     const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
       = limitFunctions[inputSettings.spc.chart_type as keyof typeof limitFunctions];
@@ -392,7 +396,7 @@ export default class viewModelClass {
         denominators: args.denominators?.slice(start, end),
         xbar_sds: args.xbar_sds?.slice(start, end),
         outliers_in_limits: inputSettings.spc.outliers_in_limits,
-        subset_points: seq(subsetStart, subsetStart + subsetCount - 1)
+        subset_points: sequence(subsetStart, subsetCount, 1)
       });
       currLimits.trend_line = calculateTrendLine(currLimits.values);
       return currLimits;
@@ -410,9 +414,12 @@ export default class viewModelClass {
       return allInner;
     })
 
-    controlLimits.alt_targets = inputData.alt_targets;
-    controlLimits.speclimits_lower = inputData.speclimits_lower;
-    controlLimits.speclimits_upper = inputData.speclimits_upper;
+    // Per-row inputs join through each returned key's position (moving ranges drop a key per segment)
+    const positions = new Array<number>(controlLimits.keys.length);
+    for (let i = 0; i < positions.length; i++) positions[i] = controlLimits.keys[i].x;
+    controlLimits.alt_targets = inputData.alt_targets === undefined ? undefined : pickRows(inputData.alt_targets, positions);
+    controlLimits.speclimits_lower = inputData.speclimits_lower === undefined ? undefined : pickRows(inputData.speclimits_lower, positions);
+    controlLimits.speclimits_upper = inputData.speclimits_upper === undefined ? undefined : pickRows(inputData.speclimits_upper, positions);
 
     for (const key in controlLimits) {
       const keyTyped: keyof controlLimitsObject = key as keyof controlLimitsObject;
@@ -636,7 +643,7 @@ export default class viewModelClass {
 
     for (let i: number = 0; i < controlLimits.keys.length; i++) {
       const index: number = controlLimits.keys[i].x;
-      const aesthetics: settingsValueType["scatter"] = inputData.scatter_formatting[i];
+      const aesthetics: settingsValueType["scatter"] = inputData.scatter_formatting[index];
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
@@ -693,7 +700,7 @@ export default class viewModelClass {
         aesthetics: aesthetics,
         table_row: table_row,
         identity: host.createSelectionIdBuilder()
-                      .withCategory(inputData.categories, inputData.limitInputArgs.keys[i].id)
+                      .withCategory(inputData.categories, controlLimits.keys[i].id)
                       .createSelectionId(),
         highlighted: !isNullOrUndefined(inputData.highlights?.[index]),
         tooltip: buildTooltip(table_row, inputData?.tooltips?.[index],
@@ -752,9 +759,12 @@ export default class viewModelClass {
     }
 
     const nLimits = controlLimits.keys.length;
+    const groups = this.groupStartEndIndexes[0];
+    const isGroupStart = new Array<boolean>(nLimits).fill(false);
+    for (let i = 1; i < groups.length; i++) isGroupStart[groups[i][0]] = true;
 
     for (let i: number = 0; i < nLimits; i++) {
-      const isRebaselinePoint: boolean = this.splitIndexes.includes(i - 1) || (inputData.groupingIndexes?.includes(i - 1) ?? false);
+      const isRebaselinePoint: boolean = isGroupStart[i];
       let isNewAltTarget: boolean = false;
       if (i > 0 && settings.lines.show_alt_target && !isNullOrUndefined(controlLimits.alt_targets)) {
         isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
@@ -770,7 +780,7 @@ export default class viewModelClass {
             x: controlLimits.keys[i].x,
             line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? undefined : controlLimits[label as Exclude<keyof controlLimitsObject, "keys">]?.[i],
             group: label,
-            aesthetics: inputData.line_formatting[i]
+            aesthetics: inputData.line_formatting[controlLimits.keys[i].x]
           })
         }
 
@@ -778,7 +788,7 @@ export default class viewModelClass {
           x: controlLimits.keys[i].x,
           line_value: controlLimits[label as Exclude<keyof controlLimitsObject, "keys">]?.[i],
           group: label,
-          aesthetics: inputData.line_formatting[i]
+          aesthetics: inputData.line_formatting[controlLimits.keys[i].x]
         })
       })
     }

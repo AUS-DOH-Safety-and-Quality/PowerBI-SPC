@@ -1,6 +1,6 @@
 import type { plotData } from "../Classes/viewModelClass";
-import between from "../Functions/between";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { between } from "powerbi-visuals-core/math";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
 import plotPropertiesClass from "../Classes/plotPropertiesClass";

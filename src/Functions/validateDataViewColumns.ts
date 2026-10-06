@@ -1,8 +1,9 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import type { RoleColumns } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 import settingsClass from "../Classes/settingsClass";
-import isNullOrUndefined from "./isNullOrUndefined";
 
-export default function validateDataViewColumns(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass): string {
+export default function validateDataViewColumns(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass, valueColumns: RoleColumns<powerbi.DataViewValueColumn>): string {
   // Show blank error messages for empty data or categories as settings are
   // bound to the input categories, and so cannot disable error messages
   if (isNullOrUndefined(inputDV?.[0]) || (inputDV?.[0]?.categorical?.categories?.[0]?.identity?.length === 0)) {
@@ -12,12 +13,7 @@ export default function validateDataViewColumns(inputDV: powerbi.DataView[], inp
     return ""; //"No grouping/ID variable passed!";
   }
 
-  const numeratorsPresent: boolean
-    = inputDV[0].categorical
-                   ?.values
-                   ?.some(d => d.source?.roles?.numerators) ?? false;
-
-  if (!numeratorsPresent) {
+  if (valueColumns.numerators === undefined) {
     return "No Numerators passed!";
   }
 
@@ -26,7 +22,8 @@ export default function validateDataViewColumns(inputDV: powerbi.DataView[], inp
   let chart_type: string = inputSettingsClass.settings[0].spc.chart_type;
 
   if (inputSettingsClass?.derivedSettings.length > 0) {
-    inputSettingsClass?.derivedSettings.forEach((d) => {
+    for (let i = 0; i < inputSettingsClass.derivedSettings.length; i++) {
+      const d = inputSettingsClass.derivedSettings[i];
       if (d.chart_type_props.needs_denominator) {
         chart_type = d.chart_type_props.name;
         needs_denominator = true;
@@ -35,7 +32,7 @@ export default function validateDataViewColumns(inputDV: powerbi.DataView[], inp
         chart_type = d.chart_type_props.name;
         needs_sd = true;
       }
-    });
+    }
   } else {
     chart_type = inputSettingsClass.settings[0].spc.chart_type;
     needs_denominator = inputSettingsClass.derivedSettings[0].chart_type_props.needs_denominator;
@@ -43,23 +40,13 @@ export default function validateDataViewColumns(inputDV: powerbi.DataView[], inp
   }
 
   if (needs_denominator) {
-    const denominatorsPresent: boolean
-      = inputDV[0].categorical
-                     ?.values
-                     ?.some(d => d.source?.roles?.denominators) ?? false;
-
-    if (!denominatorsPresent) {
+    if (valueColumns.denominators === undefined) {
       return `Chart type '${chart_type}' requires denominators!`;
     }
   }
 
   if (needs_sd) {
-    const xbarSDPresent: boolean
-      = inputDV[0].categorical
-                     ?.values
-                     ?.some(d => d.source?.roles?.xbar_sds) ?? false;
-
-    if (!xbarSDPresent) {
+    if (valueColumns.xbar_sds === undefined) {
       return `Chart type '${chart_type}' requires SDs!`;
     }
   }

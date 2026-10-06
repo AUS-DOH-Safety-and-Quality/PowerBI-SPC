@@ -1,5 +1,5 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 
 /**
  * Calculates control limits for a Moving Range (MR) chart.

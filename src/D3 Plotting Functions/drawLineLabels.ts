@@ -1,135 +1,61 @@
 import type { svgBaseType, Visual } from "../visual";
 import { lineNameMap } from "../Functions/getAesthetic";
 import valueFormatter from "../Functions/valueFormatter";
-import * as d3 from "./D3 Modules";
-import type { lineData } from "../Classes/viewModelClass";
-import { type settingsValueType } from "../settings";
-
-const positionOffsetMap: Record<string, number> = {
-  "above": -1,
-  "below": 1,
-  "beside": -1
-}
-
-const outsideMap: Record<string, string> = {
-  "ll99" : "below",
-  "ll95" : "below",
-  "ll68" : "below",
-  "ul68" : "above",
-  "ul95" : "above",
-  "ul99" : "above",
-  "speclimits_lower" : "below",
-  "speclimits_upper" : "above"
-}
-
-const insideMap: Record<string, string> = {
-  "ll99" : "above",
-  "ll95" : "above",
-  "ll68" : "above",
-  "ul68" : "below",
-  "ul95" : "below",
-  "ul99" : "below",
-  "speclimits_lower" : "above",
-  "speclimits_upper" : "below"
-}
-
-type lineLabelType = {
-  index: number;
-  limit: number;
-}
+import type { settingsValueType } from "../settings";
+import { drawLineLabels, type LineLabel, type LineLabelPosition } from "powerbi-visuals-core/rendering";
 
 type LineSettingsKey = keyof settingsValueType["lines"];
+// Lower boundary lines place outside labels below the line (finding 18)
+const lowerLines = new Set(["ll99", "ll95", "ll68", "speclimits_lower"]);
 
-export default function drawLineLabels(selection: svgBaseType, visualObj: Visual) {
-  if (visualObj.viewModel.groupedLines.length === 0) {
-    // No lines being rendered, so remove any existing labels and return early
-    selection
-      .select(".linesgroup")
-      .selectAll("text")
-      .data([])
-      .join("text")
-      .remove();
+function lineSetting<T>(lineSettings: settingsValueType["lines"], name: string): T {
+  return lineSettings[name as LineSettingsKey] as T;
+}
+
+// Selects which line ends are labelled; Core places and draws them
+export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
+  const group = selection.select<SVGGElement>(".linesgroup").node();
+  if (group === null) return;
+  const lines = visualObj.viewModel.groupedLines;
+  if (lines.length === 0) {
+    drawLineLabels(group, []);
     return;
   }
-  const lineSettings = visualObj.viewModel.inputSettings.settings[0].lines;
-  const rebaselinePoints: number[] = new Array<number>();
-  visualObj.viewModel.groupedLines[0][1].forEach((d: lineData, idx: number) => {
-    if (d.line_value === null) {
-      rebaselinePoints.push(idx - 1);
+  const inputSettings = visualObj.viewModel.inputSettings;
+  const lineSettings = inputSettings.settings[0].lines;
+  const firstLine = lines[0][1];
+  // Each gap marker starts a new segment, so the point before it ends the previous one (finding 37)
+  const rebaselinePoints: number[] = [];
+  for (let i = 0; i < firstLine.length; i++) {
+    if (firstLine[i].line_value === undefined) rebaselinePoints.push(i - 1);
+  }
+  rebaselinePoints.push(firstLine.length - 1);
+  const lastIndex = firstLine.length - 1;
+  const formatValue = valueFormatter(inputSettings.settings[0], inputSettings.derivedSettings[0]);
+  const labels: LineLabel[] = [];
+  for (let r = 0; r < rebaselinePoints.length; r++) {
+    const index = rebaselinePoints[r];
+    for (let l = 0; l < lines.length; l++) {
+      const [name, points] = lines[l];
+      const key = lineNameMap[name];
+      const showN = rebaselinePoints.length - Math.min(rebaselinePoints.length, lineSetting<number>(lineSettings, `plot_label_show_n_${key}`));
+      const eligible = r >= showN || lineSetting<boolean>(lineSettings, `plot_label_show_all_${key}`) || index === lastIndex;
+      if (!eligible || !lineSetting<boolean>(lineSettings, `plot_label_show_${key}`)) continue;
+      const point = points[index];
+      labels.push({
+        text: lineSetting<string>(lineSettings, `plot_label_prefix_${key}`) + formatValue(point.line_value, "value"),
+        x: visualObj.plotProperties.xScale(point.x) as number,
+        y: visualObj.plotProperties.yScale(point.line_value as number) as number,
+        position: lineSetting<LineLabelPosition>(lineSettings, `plot_label_position_${key}`),
+        lower: lowerLines.has(name),
+        hpad: lineSetting<number>(lineSettings, `plot_label_hpad_${key}`),
+        vpad: lineSetting<number>(lineSettings, `plot_label_vpad_${key}`),
+        lineWidth: lineSetting<number>(lineSettings, `width_${key}`),
+        size: lineSetting<number>(lineSettings, `plot_label_size_${key}`),
+        font: lineSetting<string>(lineSettings, `plot_label_font_${key}`),
+        colour: lineSetting<string>(lineSettings, `plot_label_colour_${key}`)
+      });
     }
-    if (idx === visualObj.viewModel.groupedLines[0][1].length - 1) {
-      rebaselinePoints.push(idx);
-    }
-  });
-  const limits: string[] = visualObj.viewModel.groupedLines.map(d => d[0]);
-  const labelsToPlot: lineLabelType[] = new Array<lineLabelType>();
-  rebaselinePoints.forEach((d: number, rb_idx: number) => {
-    limits.forEach((limit: string, idx: number) => {
-      const lastIndex: number = rebaselinePoints[rebaselinePoints.length - 1];
-      const showN: number = rebaselinePoints.length - Math.min(rebaselinePoints.length, lineSettings[`plot_label_show_n_${lineNameMap[limit]}` as LineSettingsKey] as number);
-      const showLabel: boolean = lineSettings[`plot_label_show_all_${lineNameMap[limit]}` as LineSettingsKey] as boolean
-        || (d == lastIndex);
-      if (rb_idx >= showN) {
-        labelsToPlot.push({index: d, limit: idx});
-      } else if (showLabel) {
-        labelsToPlot.push({index: d, limit: idx});
-      }
-    });
-  });
-  const formatValue = valueFormatter(visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.inputSettings.derivedSettings[0]);
-  selection
-    .select(".linesgroup")
-    .selectAll("text")
-    .data(labelsToPlot)
-    .join("text")
-    .text((d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return lineSettings[`plot_label_show_${lineNameMap[lineGroup[0]]}` as LineSettingsKey]
-              ? lineSettings[`plot_label_prefix_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] + formatValue(lineGroup[1][d.index].line_value, "value")
-              : "";
-    })
-    .attr("x", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return visualObj.plotProperties.xScale(lineGroup[1][d.index].x) as number
-    })
-    .attr("y", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return visualObj.plotProperties.yScale(lineGroup[1][d.index].line_value as number) as number
-    })
-    .attr("fill", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return lineSettings[`plot_label_colour_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as string
-    })
-    .attr("font-size", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return `${lineSettings[`plot_label_size_${lineNameMap[lineGroup[0]]}` as LineSettingsKey]}px`
-    })
-    .attr("font-family", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return lineSettings[`plot_label_font_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as string
-    })
-    .attr("text-anchor", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      return lineSettings[`plot_label_position_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] === "beside" ? "start" : "end"
-    })
-    .attr("dx", (d: lineLabelType) => {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      const offset = (lineSettings[`plot_label_position_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] === "beside" ? 1 : -1) * (lineSettings[`plot_label_hpad_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as number);
-      return `${offset}px`;
-    })
-    .attr("dy", function(d: lineLabelType) {
-      const lineGroup: [string, lineData[]] = visualObj.viewModel.groupedLines[d.limit];
-      const bounds = (d3.select(this).node() as SVGGraphicsElement).getBoundingClientRect() as DOMRect;
-      let position: string = lineSettings[`plot_label_position_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as string;
-      let vpadding: number = lineSettings[`plot_label_vpad_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as number;
-      if (["outside", "inside"].includes(position)) {
-        position = position === "outside" ? outsideMap[lineGroup[0]] : insideMap[lineGroup[0]];
-      }
-      const heightMap: Record<string, number> = {
-        "above": -(lineSettings[`width_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as number),
-        "below": (lineSettings[`plot_label_size_${lineNameMap[lineGroup[0]]}` as LineSettingsKey] as number),
-        "beside": bounds.height / 4
-      }
-      return `${positionOffsetMap[position] * vpadding + heightMap[position]}px`;
-    });
+  }
+  drawLineLabels(group, labels);
 }

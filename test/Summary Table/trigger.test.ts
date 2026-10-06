@@ -2,7 +2,7 @@ import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import rep from "../../src/Functions/rep";
+import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
 
 // S Chart dataset (36 points) - used for the "chart only" case

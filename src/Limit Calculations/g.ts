@@ -1,5 +1,5 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
-import median from "../Functions/median";
+import { median } from "powerbi-visuals-core/math";
 
 /**
  * Calculates control limits for a G-chart (Geometric chart).

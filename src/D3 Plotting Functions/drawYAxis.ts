@@ -1,24 +1,24 @@
 import * as d3 from "./D3 Modules";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { axisProperties } from "../Classes/plotPropertiesClass";
 import type { svgBaseType, Visual } from "../visual";
 
 export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
-  const yAxisGroup = selection.select(".yaxisgroup") as d3.Selection<SVGGElement, unknown, null, undefined>;
-  const yAxisLabel = selection.select(".yaxislabel") as d3.Selection<SVGTextElement, unknown, null, undefined>;
+  const existingGroup = selection.select<SVGGElement>(".yaxisgroup");
+  const existingLabel = selection.select<SVGTextElement>(".yaxislabel");
   if (!visualObj.viewModel.inputSettings.settings[0].y_axis.ylimit_show) {
     // Y Axis plotting is disabled, so remove any existing axis and return early
-    yAxisGroup.remove();
-    yAxisLabel.remove();
+    existingGroup.remove();
+    existingLabel.remove();
     selection.selectAll(".ygridline").remove();
     return;
   }
-  // If the groups have been removed, re-add them
-  if (yAxisGroup.empty()) {
-    selection.append('g').classed("yaxisgroup", true);
-  }
-  if (yAxisLabel.empty()) {
-    selection.append('text').classed('yaxislabel', true);
+  // Re-added axis elements go back beneath the lines and dots
+  const yAxisGroup = existingGroup.empty()
+    ? selection.insert<SVGGElement>("g", ".linesgroup").classed("yaxisgroup", true)
+    : existingGroup;
+  if (existingLabel.empty()) {
+    selection.insert("text", ".linesgroup").classed("yaxislabel", true);
   }
 
   const yAxisProperties: axisProperties = visualObj.plotProperties.yAxis;

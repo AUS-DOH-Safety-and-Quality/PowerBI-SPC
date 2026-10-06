@@ -1,4 +1,4 @@
-import between from "../Functions/between"
+import { between } from "powerbi-visuals-core/math"
 
 /**
  * Detects astronomical points (single points outside 99% control limits).

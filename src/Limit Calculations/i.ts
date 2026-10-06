@@ -1,5 +1,5 @@
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 
 /**
  * Calculates control limits for an I-chart (Individuals chart), also known as an XmR chart.

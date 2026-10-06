@@ -1,12 +1,11 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { settingsValueType } from "../settings";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
-import isNullOrUndefined from "./isNullOrUndefined";
 import valueFormatter from "./valueFormatter";
 import type { summaryTableRowData } from "../Classes/viewModelClass";
 
-type LinesKeys = keyof settingsValueType["lines"];
 
 /**
  * Builds the tooltip data for a specific index in the chart.
@@ -78,14 +77,16 @@ export default function buildTooltip(table_row: summaryTableRowData,
     }
   }
   if (derivedSettings.chart_type_props.has_control_limits) {
-    ["99", "95", "68"].forEach(limit => {
-      if (inputSettings.lines[`ttip_show_${limit}` as LinesKeys] && inputSettings.lines[`show_${limit}` as LinesKeys]) {
+    const levels = ["99", "95", "68"] as const;
+    for (let i = 0; i < levels.length; i++) {
+      const limit = levels[i];
+      if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
-          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper` as LinesKeys]}${inputSettings.lines[`ttip_label_${limit}` as LinesKeys]}`,
-          value: formatValues(table_row[`ul${limit}` as keyof summaryTableRowData], "value")
+          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_upper`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
+          value: formatValues(table_row[`ul${limit}`], "value")
         })
       }
-    })
+    }
   }
   if (inputSettings.lines.show_target && inputSettings.lines.ttip_show_target) {
     tooltip.push({
@@ -100,14 +101,16 @@ export default function buildTooltip(table_row: summaryTableRowData,
     })
   }
   if (derivedSettings.chart_type_props.has_control_limits) {
-    ["68", "95", "99"].forEach(limit => {
-      if (inputSettings.lines[`ttip_show_${limit}` as LinesKeys] && inputSettings.lines[`show_${limit}` as LinesKeys]) {
+    const levels = ["68", "95", "99"] as const;
+    for (let i = 0; i < levels.length; i++) {
+      const limit = levels[i];
+      if (inputSettings.lines[`ttip_show_${limit}`] && inputSettings.lines[`show_${limit}`]) {
         tooltip.push({
-          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower` as LinesKeys]}${inputSettings.lines[`ttip_label_${limit}` as LinesKeys]}`,
-          value: formatValues(table_row[`ll${limit}` as keyof summaryTableRowData], "value")
+          displayName: `${inputSettings.lines[`ttip_label_${limit}_prefix_lower`]}${inputSettings.lines[`ttip_label_${limit}`]}`,
+          value: formatValues(table_row[`ll${limit}`], "value")
         })
       }
-    })
+    }
   }
 
   if ([table_row.astpoint, table_row.trend, table_row.shift, table_row.two_in_three].some(d => d !== "none")){

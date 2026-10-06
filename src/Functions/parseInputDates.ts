@@ -1,5 +1,5 @@
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api"
-import isNullOrUndefined from "./isNullOrUndefined";
 
 const monthNameToNumber: { [key: string]: number } = {
   "January": 0,

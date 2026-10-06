@@ -1,4 +1,4 @@
-import sum from "../Functions/sum";
+import { sum } from "powerbi-visuals-core/math";
 
 /**
  * Detects two-in-three rule violations (2 out of 3 consecutive points outside 95% limits).

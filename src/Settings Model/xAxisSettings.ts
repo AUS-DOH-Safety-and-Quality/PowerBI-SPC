@@ -2,7 +2,7 @@ import {
   dropdownOption,
   toggleOption, numberOption,
   fontOption, fontSizeOption, textOption, colourOption
-} from "./common";
+} from "powerbi-visuals-core/settings";
 
 const xAxisSettings = {
   description: "X Axis Settings",

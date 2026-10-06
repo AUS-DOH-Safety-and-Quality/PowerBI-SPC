@@ -2,7 +2,7 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import rep from "../../src/Functions/rep";
+import { rep } from "powerbi-visuals-core/math";
 import { type plotData, type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 

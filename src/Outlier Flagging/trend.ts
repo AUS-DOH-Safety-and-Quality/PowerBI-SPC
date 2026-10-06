@@ -1,4 +1,4 @@
-import sum from "../Functions/sum";
+import { sum } from "powerbi-visuals-core/math";
 
 /**
  * Detects trend rule violations (n consecutive points consistently increasing or decreasing).

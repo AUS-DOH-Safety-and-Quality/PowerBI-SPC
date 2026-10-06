@@ -1,7 +1,7 @@
 import type { controlLimitsObject } from "../Classes/viewModelClass";
 import type { settingsValueType } from "../settings";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
-import isNullOrUndefined from "../Functions/isNullOrUndefined";
+import { isNullOrUndefined } from "powerbi-visuals-core/data";
 
 /**
  * Determines which assurance icon to display based on the relationship between
