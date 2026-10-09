@@ -39,9 +39,9 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
     const threeSigma: number = 3 * sigma;
 
     rtn.targets[i] = cl;
-    rtn.ll99[i] = cl - threeSigma;
-    rtn.ll95[i] = cl - twoSigma;
-    rtn.ll68[i] = cl - sigma;
+    rtn.ll99[i] = Math.max(0, cl - threeSigma);
+    rtn.ll95[i] = Math.max(0, cl - twoSigma);
+    rtn.ll68[i] = Math.max(0, cl - sigma);
     rtn.ul68[i] = cl + sigma;
     rtn.ul95[i] = cl + twoSigma;
     rtn.ul99[i] = cl + threeSigma;

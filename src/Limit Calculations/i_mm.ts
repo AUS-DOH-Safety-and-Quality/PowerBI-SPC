@@ -2,7 +2,7 @@ import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelCl
 import plottedValues from "./plottedValues";
 import { median } from "powerbi-visuals-core/math";
 
-/** I chart with a median centreline; sigma = median moving range / d2 (1.128 for n = 2). */
+/** I chart with a median centreline; sigma = median moving range / 0.954 (Wheeler, median-range d4 for n = 2). */
 export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
   const plotted = plottedValues(args);
   const n_sub: number = args.subset_points.length;
@@ -21,8 +21,8 @@ export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
   let mmr: number = median(consec_diff);
 
   if (!args.outliers_in_limits) {
-    // D4 = 3.267 for n = 2
-    const consec_diff_ulim: number = mmr * 3.267;
+    // Median-range D4 = 3.865 for n = 2
+    const consec_diff_ulim: number = mmr * 3.865;
     let valid_diffs: number[] = [];
     for (let i = 0; i < consec_diff.length; i++) {
       if (consec_diff[i] < consec_diff_ulim) {
@@ -34,7 +34,7 @@ export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
     }
   }
 
-  const sigma: number = mmr / 1.128;
+  const sigma: number = mmr / 0.954;
 
   const n: number = args.keys.length;
   const rtn = {

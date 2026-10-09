@@ -139,7 +139,7 @@ describe.each(chartTypes)("%s chart with denominators", chart_type => {
             const n = input.denominators[i];
             sigmas[i] = input.sCentre * Math.sqrt(1 - c4[n] ** 2) / c4[n];
           }
-          expected = limitsAround(input.numerators, input.sCentre, sigmas);
+          expected = limitsAround(input.numerators, input.sCentre, sigmas, 0);
           break;
         case "mr":
           expected = limitsAround([0, 0, 0], 0, [0, 0, 0]);
@@ -186,7 +186,7 @@ const meanRangeSigmas = new Array<number>(4);
 const medianRangeSigmas = new Array<number>(4);
 for (let i = 0; i < 4; i++) {
   meanRangeSigmas[i] = (13 / 60) / 1.128;
-  medianRangeSigmas[i] = 0.25 / 1.128;
+  medianRangeSigmas[i] = 0.25 / 0.954;
 }
 const movingRangeLimits: ExpectedLimits = {
   values: [0.25, 0, 0.4], targets: new Array<number>(3),
@@ -221,7 +221,7 @@ const references = [
   },
   {
     chart_type: "s", input: { numerators: [1, 2, 3, 4], denominators: [2, 3, 4, 5] },
-    expected: limitsAround([1, 2, 3, 4], Math.sqrt(10), [2.389134418141634, 1.652995900585246, 1.334530798056653, 1.147904543980176])
+    expected: limitsAround([1, 2, 3, 4], Math.sqrt(10), [2.389134418141634, 1.652995900585246, 1.334530798056653, 1.147904543980176], 0)
   }
 ] satisfies ({ chart_type: settingsValueType["spc"]["chart_type"] } & Record<string, unknown>)[];
 

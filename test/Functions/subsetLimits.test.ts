@@ -272,3 +272,23 @@ it.each([true, false])("calculates subset limits with outliers_in_limits=%s", ke
   expectLimits(limits, repEach([31.8, 73.6], 6), rangeSigmas(ranges, 6));
   expect(limits.values).toEqual(values);
 });
+
+it.each([
+  { from: "Start", centre: 5 },
+  { from: "End", centre: 9 }
+] as const)("plots every moving range with the centreline from the $from subset", ({ from, centre }) => {
+  const limits = calculateLimits({
+    chart_type: "mr",
+    num_points_subset: 5,
+    subset_points_from: from
+  });
+
+  // Subset ranges are [2, 4, 6, 8] from the start and [12, 6, 8, 10] from the end.
+  expect(limits.values).toEqual([2, 4, 6, 8, 4, 6, 8, 12, 6, 8, 10]);
+  expect(limits.targets).toEqual(rep(centre, 11));
+  for (let i = 0; i < 11; i++) {
+    expect(limits.ul99![i]).toBeCloseTo(centre * 3.267, 10);
+  }
+  expect(limits.ll99).toEqual(rep(0, 11));
+  expect(keyIds(limits)).toEqual(sequence(1, 11, 1));
+});
