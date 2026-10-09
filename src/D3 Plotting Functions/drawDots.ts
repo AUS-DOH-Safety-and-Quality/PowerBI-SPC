@@ -3,6 +3,7 @@ import { between } from "powerbi-visuals-core/math";
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { svgBaseType, Visual } from "../visual";
 import * as d3 from "./D3 Modules"
+import { screenToSvg } from "powerbi-visuals-core/rendering";
 import plotPropertiesClass from "../Classes/plotPropertiesClass";
 
 export default function drawDots(selection: svgBaseType, visualObj: Visual) {
@@ -91,9 +92,11 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
           return;
         }
         // Pointer coordinates relative to the SVG, matching drawTooltipLine
-        const boundRect = (visualObj.svg.node() as SVGSVGElement).getBoundingClientRect();
-        const x = event.clientX - boundRect.left;
-        const y = event.clientY - boundRect.top;
+        const node = visualObj.svg.node();
+        if (node === null) {
+          return;
+        }
+        const { x, y } = screenToSvg(node, event.clientX, event.clientY);
 
         visualObj.host.tooltipService.show({
           dataItems: d.tooltip,

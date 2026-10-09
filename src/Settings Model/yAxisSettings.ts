@@ -1,5 +1,5 @@
 import {
-  dropdownOption,
+  dropdownOption, fontStyleOption,
   colourOption, numberOption,
   toggleOption, fontOption, fontSizeOption, textOption
 } from "powerbi-visuals-core/settings";
@@ -30,7 +30,7 @@ const yAxisSettings = {
       ylimit_label_font: fontOption("Label Font"),
       ylimit_label_size: fontSizeOption("Label Font Size"),
       ylimit_label_colour: colourOption("Label Font Colour", "standard"),
-      ylimit_label_style: dropdownOption("Label Font Style", "normal", ["normal", "italic"], "sentence"),
+      ylimit_label_style: fontStyleOption("Label Font Style"),
       ylimit_label_align: dropdownOption("Label Alignment", "center", ["bottom", "center", "top"], "sentence")
     },
     "Gridlines": {

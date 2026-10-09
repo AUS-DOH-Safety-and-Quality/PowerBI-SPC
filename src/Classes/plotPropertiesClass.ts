@@ -10,6 +10,7 @@ import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import type { colourPaletteType } from "./viewModelClass";
 import { scaleLinear } from "powerbi-visuals-core/math";
+import type { AxisLabelAlign } from "powerbi-visuals-core/rendering";
 
 export type axisProperties = {
   lower: number,
@@ -29,7 +30,7 @@ export type axisProperties = {
   label_font: string,
   label_colour: string,
   label_style: string,
-  label_align: string,
+  label_align: AxisLabelAlign,
   grid_show: boolean,
   grid_colour: string,
   grid_width: number

@@ -1,6 +1,7 @@
 import * as d3 from "./D3 Modules";
 import type { axisProperties } from "../Classes/plotPropertiesClass";
 import type { svgBaseType, Visual } from "../visual";
+import { drawGridlines, axisLabelPlacement } from "powerbi-visuals-core/rendering";
 
 export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
   const existingGroup = selection.select<SVGGElement>(".xaxisgroup");
@@ -67,25 +68,21 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
 
   xAxisGroup.selectAll(".tick line")
       .style("stroke", xAxisProperties.tick_marks ? "currentColor" : "none");
-  const xTicks = xAxisProperties.grid_show ? xAxisGroup.selectAll<SVGGElement, number>(".tick").data() : [];
-  selection.select(".gridgroup")
-      .selectAll(".xgridline")
-      .data(xTicks)
-      .join("line")
-      .classed("xgridline", true)
-      .attr("x1", d => visualObj.plotProperties.xScale(d)!)
-      .attr("x2", d => visualObj.plotProperties.xScale(d)!)
-      .attr("y1", xAxisHeight)
-      .attr("y2", visualObj.plotProperties.yAxis.end_padding)
-      .style("stroke", displayPlot ? xAxisProperties.grid_colour : "#FFFFFF")
-      .style("stroke-width", xAxisProperties.grid_width);
+  const gridGroup = selection.select<SVGGElement>(".gridgroup").node();
+  if (gridGroup !== null) {
+    drawGridlines({
+      container: gridGroup, className: "xgridline", orientation: "vertical",
+      values: xAxisProperties.grid_show ? xAxisGroup.selectAll<SVGGElement, number>(".tick").data() : [],
+      scale: (value: number) => visualObj.plotProperties.xScale(value) as number,
+      from: xAxisHeight, to: visualObj.plotProperties.yAxis.end_padding,
+      colour: displayPlot ? xAxisProperties.grid_colour : "#FFFFFF",
+      width: xAxisProperties.grid_width
+    });
+  }
 
-  const labelPosition: Record<string, { x: number; anchor: string }> = {
-      left: { x: visualObj.plotProperties.xAxis.start_padding, anchor: "start" },
-      center: { x: visualObj.viewModel.svgWidth / 2, anchor: "middle" },
-      right: { x: visualObj.viewModel.svgWidth - visualObj.plotProperties.xAxis.end_padding, anchor: "end" }
-  };
-  const textX: number = labelPosition[xAxisProperties.label_align].x;
+  const label = axisLabelPlacement(xAxisProperties.label_align, xAxisProperties.start_padding,
+                                   visualObj.viewModel.svgWidth - xAxisProperties.end_padding);
+  const textX: number = label.position;
   let textY: number;
 
   if (visualObj.viewModel.frontend) {
@@ -107,7 +104,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
   selection.select(".xaxislabel")
             .attr("x", textX)
             .attr("y", textY)
-            .style("text-anchor", labelPosition[xAxisProperties.label_align].anchor)
+            .style("text-anchor", label.anchor)
             .text(xAxisProperties.label)
             .style("font-size", xAxisProperties.label_size)
             .style("font-style", xAxisProperties.label_style)
