@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import type { plotData } from "../src/Classes/viewModelClass";
@@ -189,6 +189,26 @@ describe("renderer boundaries", () => {
     const yAxis = visual.plotProperties.yAxis;
     expect(Number(must(element.querySelector(".xaxislabel")).getAttribute("x"))).toBeCloseTo((xAxis.start_padding + 500 - xAxis.end_padding) / 2, 6);
     expect(Number(must(element.querySelector(".yaxislabel")).getAttribute("y"))).toBeCloseTo((500 - yAxis.start_padding + yAxis.end_padding) / 2, 6);
+    element.remove();
+  });
+
+  it("draws a download link that exports the table rows as CSV", () => {
+    const host = createVisualHost({});
+    const exportVisualsContent = vi.fn();
+    Object.assign(host, { downloadService: { exportVisualsContent } });
+    const element = testDom("500", "500");
+    const visual = render(element, settingsWith({ download_options: { show_button: true } }), host);
+    const button = must(element.querySelector<SVGTextElement>(".download-btn-group"));
+    expect(button.textContent).toBe("Download");
+    button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(exportVisualsContent).toHaveBeenCalledTimes(1);
+    const lines: string[] = exportVisualsContent.mock.calls[0][0].split("\n");
+    expect(lines[0].startsWith("date,numerator,denominator,value,")).toBe(true);
+    expect(lines).toHaveLength(keys.length + 1);
+    // An individuals chart without denominators leaves the numerator and denominator columns blank
+    expect(lines[1].split(",").slice(0, 4)).toEqual(["1", "", "", "10"]);
+    update(visual, settingsWith({}));
+    expect(element.querySelector(".download-btn-group")).toBeNull();
     element.remove();
   });
 

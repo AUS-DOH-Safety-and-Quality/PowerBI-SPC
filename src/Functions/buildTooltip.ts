@@ -3,7 +3,6 @@ import type powerbi from "powerbi-visuals-api";
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 import type { settingsValueType } from "../settings";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
-import valueFormatter from "./valueFormatter";
 import type { summaryTableRowData } from "../Classes/viewModelClass";
 
 
@@ -27,7 +26,7 @@ export default function buildTooltip(table_row: summaryTableRowData,
 
   const ast_limit: string = inputSettings.outliers.astronomical_limit;
   const two_in_three_limit: string = inputSettings.outliers.two_in_three_limit;
-  const formatValues = valueFormatter(inputSettings, derivedSettings);
+  const formatValues = derivedSettings.formatValue;
 
   const tooltip: VisualTooltipDataItem[] = new Array<VisualTooltipDataItem>();
   if (inputSettings.spc.ttip_show_date) {

@@ -1,4 +1,4 @@
-import { c4, c5 } from "../Functions/sampleConstants";
+import { c4, c5 } from "powerbi-visuals-core/math";
 import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**

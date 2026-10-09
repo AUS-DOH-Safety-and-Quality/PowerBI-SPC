@@ -1,29 +1,25 @@
-import type { summaryTableRowData, plotData } from "../Classes/viewModelClass";
+import type { plotData } from "../Classes/viewModelClass";
 import type { svgBaseType, Visual } from "../visual";
+import { toCsv } from "powerbi-visuals-core/data";
+import { drawDownloadButton } from "powerbi-visuals-core/rendering";
 
-export default function drawDownloadButton(selection: svgBaseType, visualObj: Visual) {
-  if (!(visualObj.viewModel.inputSettings.settings[0].download_options.show_button)) {
-    selection.select(".download-btn-group").remove();
+export default function drawDownload(selection: svgBaseType, visualObj: Visual): void {
+  const svg = selection.node();
+  if (svg === null) {
     return;
   }
-  if (selection.select(".download-btn-group").empty()) {
-    selection.append("text").classed("download-btn-group", true);
-  }
-  const table_rows: summaryTableRowData[] = (visualObj.viewModel.plotPoints[0] as plotData[]).map(d => d.table_row);
-  const csv_rows: string[] = new Array<string>();
-  csv_rows.push(Object.keys(table_rows[0]).join(","));
-  table_rows.forEach(row => {
-    csv_rows.push(Object.values(row).join(","));
+  const viewModel = visualObj.viewModel;
+  drawDownloadButton(svg, {
+    visible: viewModel.inputSettings.settings[0].download_options.show_button,
+    x: viewModel.svgWidth - 50,
+    y: viewModel.svgHeight - 5,
+    onClick: () => {
+      const points = viewModel.plotPoints[0] as plotData[];
+      const rows = new Array<plotData["table_row"]>(points.length);
+      for (let i = 0; i < points.length; i++) {
+        rows[i] = points[i].table_row;
+      }
+      visualObj.host.downloadService.exportVisualsContent(toCsv(rows), "chartdata.csv", "csv", "csv file");
+    }
   });
-  selection.select(".download-btn-group")
-            .attr("x", visualObj.viewModel.svgWidth - 50)
-            .attr("y", visualObj.viewModel.svgHeight - 5)
-            .text("Download")
-            .style("font-size", "10px")
-            .style("text-decoration", "underline")
-            .on("click", () => {
-              visualObj.host.downloadService
-                       .exportVisualsContent(csv_rows.join("\n"),
-                                              "chartdata.csv", "csv", "csv file");
-            })
 }

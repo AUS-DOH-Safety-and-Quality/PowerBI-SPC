@@ -22,6 +22,7 @@ import viewModelClass, { type plotData, type viewModelValidationT } from "./Clas
 import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
 import getAesthetic from "./Functions/getAesthetic";
 import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
+import { adjustPaddingForOverflow, highlightOpacity } from "powerbi-visuals-core/rendering";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
@@ -128,29 +129,22 @@ export class Visual implements powerbi.extensibility.IVisual {
     if (this.viewModel.headless) {
       return;
     }
-    const svgWidth: number = this.viewModel.svgWidth;
-    const svgHeight: number = this.viewModel.svgHeight;
-    const svgBBox: DOMRect = (this.svg.node() as SVGSVGElement).getBBox();
-    const overflowLeft: number = Math.abs(Math.min(0, svgBBox.x));
-    const overflowRight: number = Math.max(0, svgBBox.width + svgBBox.x - svgWidth);
-    const overflowTop: number = Math.abs(Math.min(0, svgBBox.y));
-    const overflowBottom: number = Math.max(0, svgBBox.height + svgBBox.y - svgHeight);
-    if (overflowLeft > 0) {
-      this.plotProperties.xAxis.start_padding += overflowLeft + this.plotProperties.xAxis.start_padding;
+    const node = this.svg.node();
+    if (node === null) {
+      return;
     }
-    if (overflowRight > 0) {
-      this.plotProperties.xAxis.end_padding += overflowRight + this.plotProperties.xAxis.end_padding;
+    const { xAxis, yAxis } = this.plotProperties;
+    const padding = adjustPaddingForOverflow(node.getBBox(), this.viewModel.svgWidth, this.viewModel.svgHeight,
+      { left: xAxis.start_padding, right: xAxis.end_padding, top: yAxis.end_padding, bottom: yAxis.start_padding });
+    if (padding === undefined) {
+      return;
     }
-    if (overflowTop > 0) {
-      this.plotProperties.yAxis.end_padding += overflowTop + this.plotProperties.yAxis.end_padding;
-    }
-    if (overflowBottom > 0) {
-      this.plotProperties.yAxis.start_padding += overflowBottom + this.plotProperties.yAxis.start_padding;
-    }
-    if (overflowLeft > 0 || overflowRight > 0 || overflowTop > 0 || overflowBottom > 0) {
-      this.plotProperties.initialiseScale(svgWidth, svgHeight);
-      this.drawVisual();
-    }
+    xAxis.start_padding = padding.left;
+    xAxis.end_padding = padding.right;
+    yAxis.end_padding = padding.top;
+    yAxis.start_padding = padding.bottom;
+    this.plotProperties.initialiseScale(this.viewModel.svgWidth, this.viewModel.svgHeight);
+    this.drawVisual();
   }
 
   resizeCanvas(width: number, height: number): void {
@@ -173,35 +167,14 @@ export class Visual implements powerbi.extensibility.IVisual {
     const linesSelection: d3.Selection<d3.BaseType | SVGGElement, [string, lineData[]], d3.BaseType, unknown> = this.svg.selectAll(".linesgroup").selectChildren("g");
     const tableSelection: d3.Selection<d3.BaseType | HTMLTableRowElement, plotDataGrouped, d3.BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
 
-    // Set all elements to their default opacity before applying highlights
-    linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings[0])
-    });
-    dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
-    dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
-    tableSelection.style("opacity", (d: plotDataGrouped) => d.aesthetics.table_opacity);
-
-    if (anyHighlights || (allSelectionIDs.length > 0)) {
-      linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings[0])
-      });
-      dotsSelection.nodes().forEach(currentDotNode => {
-        const dot: plotData = d3.select(currentDotNode).datum() as plotData;
-        const currentPointSelected: boolean = identitySelected(dot.identity, selected);
-        const currentPointHighlighted: boolean = dot.highlighted;
-        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
-        d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
-        d3.select(currentDotNode).style("stroke-opacity", newDotOpacity);
-      })
-
-      tableSelection.nodes().forEach(currentTableNode => {
-        const dot: plotDataGrouped = d3.select(currentTableNode).datum() as plotDataGrouped;
-        const currentPointSelected: boolean = identitySelected(dot.identity, selected);
-        const currentPointHighlighted: boolean = dot.highlighted;
-        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity_selected"] : dot.aesthetics["table_opacity_unselected"];
-        d3.select(currentTableNode).style("opacity", newTableOpacity);
-      })
-    }
+    const active = anyHighlights || allSelectionIDs.length > 0;
+    const settings = this.viewModel.inputSettings.settings[0];
+    linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => getAesthetic(d[0], "lines", active ? "opacity_unselected" : "opacity", settings));
+    const dotOpacity = (d: plotData) => highlightOpacity(d.aesthetics, active, identitySelected(d.identity, selected) || d.highlighted);
+    dotsSelection.style("fill-opacity", dotOpacity).style("stroke-opacity", dotOpacity);
+    tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({
+      opacity: d.aesthetics.table_opacity, opacity_selected: d.aesthetics.table_opacity_selected, opacity_unselected: d.aesthetics.table_opacity_unselected
+    }, active, identitySelected(d.identity, selected) || d.highlighted));
   }
 
   public getFormattingModel(): powerbi.visuals.FormattingModel {

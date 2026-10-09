@@ -1,4 +1,4 @@
-import { groupCategoryRows, indexColumnsByRole } from "powerbi-visuals-core/powerbi";
+import { groupCategoryRows, indexColumnsByRole, readColourPalette, type ColourPalette } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -10,20 +10,14 @@ import { type settingsValueType } from "../settings";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
 import getAesthetic from "../Functions/getAesthetic";
-import checkFlagDirection from "../Outlier Flagging/checkFlagDirection";
-import { rep, between } from "powerbi-visuals-core/math";
+import { rep, between, calculateTrendLine } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
-import { isNullOrUndefined, isValidNumber, groupBy, pickRows } from "powerbi-visuals-core/data";
+import { isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection, type OutlierStatus } from "powerbi-visuals-core/data";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
-import valueFormatter from "../Functions/valueFormatter";
-import calculateTrendLine from "../Functions/calculateTrendLine";
-import astronomical from "../Outlier Flagging/astronomical";
-import trend from "../Outlier Flagging/trend";
-import twoInThree from "../Outlier Flagging/twoInThree";
-import shift from "../Outlier Flagging/shift";
+import { astronomical, shift, trend, twoInThree } from "powerbi-visuals-core/spc";
 import { lineNameMap } from "../Functions/getAesthetic";
 import { sequence } from "powerbi-visuals-core/math";
 import { default as updateOptionsUndefined, UpdateOptionsValidTypes } from "../Functions/updateOptionsUndefined";
@@ -148,14 +142,6 @@ export type outliersObject = {
   shift: string[];
 }
 
-export type colourPaletteType = {
-  isHighContrast: boolean,
-  foregroundColour: string,
-  backgroundColour: string,
-  foregroundSelectedColour: string,
-  hyperlinkColour: string
-};
-
 export default class viewModelClass {
   inputData: dataObject[];
   inputSettings: settingsClass;
@@ -167,7 +153,7 @@ export default class viewModelClass {
   splitIndexes: number[];
   groupStartEndIndexes: number[][][];
   firstRun: boolean;
-  colourPalette: colourPaletteType;
+  colourPalette: ColourPalette;
   tableColumns: { name: string; label: string; }[][];
   svgWidth: number;
   svgHeight: number;
@@ -194,7 +180,7 @@ export default class viewModelClass {
     this.groupStartEndIndexes = new Array<number[][]>();
     this.identities = new Array<ISelectionId[]>();
     this.tableColumns = new Array<{ name: string; label: string; }[]>();
-    this.colourPalette = {} as colourPaletteType;
+    this.colourPalette = {} as ColourPalette;
     this.headless = false;
     this.frontend = false;
     this.tickLabels = [];
@@ -206,13 +192,7 @@ export default class viewModelClass {
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
     // Finding 34: read before any early return so error rendering is themed
-    this.colourPalette = {
-      isHighContrast: host.colorPalette.isHighContrast,
-      foregroundColour: host.colorPalette.foreground.value,
-      backgroundColour: host.colorPalette.background.value,
-      foregroundSelectedColour: host.colorPalette.foregroundSelected.value,
-      hyperlinkColour: host.colorPalette.hyperlink.value
-    };
+    this.colourPalette = readColourPalette(host);
     const updateOptionsStatus: UpdateOptionsValidTypes = updateOptionsUndefined(options);
     if (updateOptionsStatus === UpdateOptionsValidTypes.Undefined) {
       return { status: false, error: "" }
@@ -499,7 +479,7 @@ export default class viewModelClass {
       if (isNullOrUndefined(this.inputData[i]?.categories)) {
         continue;
       }
-      const formatValues = valueFormatter(this.inputSettings.settings[i], this.inputSettings.derivedSettings[i]);
+      const formatValues = this.inputSettings.derivedSettings[i].formatValue;
       const varIconFilter: string = this.inputSettings.settings[i].summary_table.table_variation_filter;
       const assIconFilter: string = this.inputSettings.settings[i].summary_table.table_assurance_filter;
       const limits: controlLimitsObject = this.controlLimits[i];
@@ -857,11 +837,11 @@ export default class viewModelClass {
     const shift_n: number = inputSettings.outliers.shift_n;
     const ast_specification: boolean = inputSettings.outliers.astronomical_limit === "Specification";
     const two_in_three_specification: boolean = inputSettings.outliers.two_in_three_limit === "Specification";
-    const outliers = {
-      astpoint: rep("none", controlLimits.values.length),
-      two_in_three: rep("none", controlLimits.values.length),
-      trend: rep("none", controlLimits.values.length),
-      shift: rep("none", controlLimits.values.length)
+    const outliers: Record<keyof outliersObject, OutlierStatus[]> = {
+      astpoint: rep<OutlierStatus>("none", controlLimits.values.length),
+      two_in_three: rep<OutlierStatus>("none", controlLimits.values.length),
+      trend: rep<OutlierStatus>("none", controlLimits.values.length),
+      shift: rep<OutlierStatus>("none", controlLimits.values.length)
     }
     for (let i: number = 0; i < groupStartEndIndexes.length; i++) {
       const start: number = groupStartEndIndexes[i][0];
@@ -905,12 +885,17 @@ export default class viewModelClass {
           .forEach((flag, idx) => outliers.shift[start + idx] = flag)
       }
     }
-    Object.keys(outliers).forEach(key => {
-      for (let i = 0; i < outliers[key as keyof outliersObject].length; i++) {
-        outliers[key as keyof outliersObject][i] = checkFlagDirection(outliers[key as keyof outliersObject][i],
-                                                                      { process_flag_type, improvement_direction });
+    const flagSettings = { process_flag_type, improvement_direction };
+    const names = ["astpoint", "two_in_three", "trend", "shift"] as const;
+    const result = {} as outliersObject;
+    for (let k = 0; k < names.length; k++) {
+      const raw = outliers[names[k]];
+      const flagged = new Array<string>(raw.length);
+      for (let i = 0; i < raw.length; i++) {
+        flagged[i] = checkFlagDirection(raw[i], flagSettings);
       }
-    })
-    return outliers;
+      result[names[k]] = flagged;
+    }
+    return result;
   }
 }

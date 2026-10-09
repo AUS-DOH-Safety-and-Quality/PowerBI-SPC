@@ -8,7 +8,7 @@ import type { settingsValueType } from "../settings";
 import type { plotData, controlLimitsObject } from "./viewModelClass";
 import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
-import type { colourPaletteType } from "./viewModelClass";
+import type { ColourPalette } from "powerbi-visuals-core/powerbi";
 import { scaleLinear } from "powerbi-visuals-core/math";
 import type { AxisLabelAlign } from "powerbi-visuals-core/rendering";
 
@@ -93,7 +93,7 @@ export default class plotPropertiesClass {
     const inputData: dataObject = viewModel.inputData[0];
     const inputSettings: settingsValueType = viewModel.inputSettings.settings[0];
     const derivedSettings: derivedSettingsClass = viewModel.inputSettings.derivedSettings[0];
-    const colorPalette: colourPaletteType = viewModel.colourPalette;
+    const colorPalette: ColourPalette = viewModel.colourPalette;
 
     this.displayPlot = plotPoints.length > 0;
 

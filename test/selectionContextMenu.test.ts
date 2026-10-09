@@ -4,7 +4,7 @@ import { Visual } from "../src/visual";
 import type { plotData } from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
 import buildDataView from "./helpers/buildDataView";
-import keyedHost from "./helpers/keyedHost";
+import { keyedHost } from "powerbi-visuals-core/testing";
 import addContextMenu from "../src/D3 Plotting Functions/addContextMenu";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];

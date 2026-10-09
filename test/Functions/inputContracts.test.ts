@@ -10,7 +10,6 @@ import viewModelClass from "../../src/Classes/viewModelClass";
 import extractInputData from "../../src/Functions/extractInputData";
 import extractKeys from "../../src/Functions/extractKeys";
 import validateInputData from "../../src/Functions/validateInputData";
-import valueFormatter from "../../src/Functions/valueFormatter";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 
@@ -130,10 +129,10 @@ describe("input row contracts", () => {
     const settings = createDefaultValues(settingsModel);
     settings.spc.sig_figs = 2;
     settings.spc.chart_type = "i";
-    let formatter = valueFormatter(settings, new derivedSettingsClass(settings.spc));
+    let formatter = new derivedSettingsClass(settings.spc).formatValue;
     expect(formatter(12.625, "integer")).toBe("12.63");
     settings.spc.chart_type = "p";
-    formatter = valueFormatter(settings, new derivedSettingsClass(settings.spc));
+    formatter = new derivedSettingsClass(settings.spc).formatValue;
     expect(formatter(12.625, "integer")).toBe("13");
     expect(formatter(12.625, "value")).toBe("12.63%");
     expect(formatter(undefined, "value")).toBe("");

@@ -1,6 +1,5 @@
 import type { svgBaseType, Visual } from "../visual";
 import { lineNameMap } from "../Functions/getAesthetic";
-import valueFormatter from "../Functions/valueFormatter";
 import type { settingsValueType } from "../settings";
 import { drawLineLabels, type LineLabel, type LineLabelPosition } from "powerbi-visuals-core/rendering";
 
@@ -31,7 +30,7 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   }
   rebaselinePoints.push(firstLine.length - 1);
   const lastIndex = firstLine.length - 1;
-  const formatValue = valueFormatter(inputSettings.settings[0], inputSettings.derivedSettings[0]);
+  const formatValue = inputSettings.derivedSettings[0].formatValue;
   const labels: LineLabel[] = [];
   for (let r = 0; r < rebaselinePoints.length; r++) {
     const index = rebaselinePoints[r];

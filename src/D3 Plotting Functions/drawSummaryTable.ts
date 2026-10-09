@@ -6,7 +6,7 @@ import * as nhsIcons from "./NHS Icons"
 import * as d3 from "./D3 Modules";
 import type { settingsValueType } from "../settings";
 import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
-import valueFormatter from "../Functions/valueFormatter";
+import type { ValueFormatter } from "powerbi-visuals-core/data";
 
 type ISelectionId = powerbi.visuals.ISelectionId;
 const integerFormattedColumns = new Set(["numerator", "denominator"]);
@@ -131,7 +131,7 @@ function drawOuterBorder(selection: divBaseType, tableSettings: settingsValueTyp
 
 function drawTableCells(selection: divBaseType, cols: { name: string; label: string; }[],
                         inputSettings: settingsValueType, showGrouped: boolean,
-                        formatValues: ReturnType<typeof valueFormatter>) {
+                        formatValues: ValueFormatter) {
   const tableCells = selection.select(".table-body")
             .selectAll('tr')
             .selectAll('td')
@@ -220,7 +220,7 @@ export default function drawSummaryTable(selection: divBaseType, visualObj: Visu
             .call(drawTableRows, visualObj, plotPoints, tableSettings, maxWidth);
 
   if (plotPoints.length > 0) {
-    const formatValues = valueFormatter(visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.inputSettings.derivedSettings[0]);
+    const formatValues = visualObj.viewModel.inputSettings.derivedSettings[0].formatValue;
     selection.call(drawTableCells, cols, visualObj.viewModel.inputSettings.settings[0], visualObj.viewModel.showGrouped, formatValues)
   }
 
