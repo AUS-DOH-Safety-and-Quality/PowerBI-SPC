@@ -90,10 +90,10 @@ export default function drawDots(selection: svgBaseType, visualObj: Visual) {
         if (!plotProperties.displayPlot) {
           return;
         }
-        // Get screen coordinates of mouse pointer, tooltip will
-        //   be displayed at these coordinates
-        const x = event.pageX;
-        const y = event.pageY;
+        // Pointer coordinates relative to the SVG, matching drawTooltipLine
+        const boundRect = (visualObj.svg.node() as SVGSVGElement).getBoundingClientRect();
+        const x = event.clientX - boundRect.left;
+        const y = event.clientY - boundRect.top;
 
         visualObj.host.tooltipService.show({
           dataItems: d.tooltip,
