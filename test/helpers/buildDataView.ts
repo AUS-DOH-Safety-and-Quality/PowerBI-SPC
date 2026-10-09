@@ -1,25 +1,13 @@
 import powerbi from "powerbi-visuals-api";
 import DataView = powerbi.DataView;
 
-import { valueType } from "powerbi-visuals-utils-typeutils";
-import ValueType = valueType.ValueType;
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import { type settingsValueType } from "../../src/settings";
 
 function buildColumn(displayName: string, queryName: string, values: any[],
                       settings?: settingsValueType | (settingsValueType | undefined)[]): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
   const roles = Object.fromEntries([[queryName, true]]);
-  var type;
-  switch(typeof values[0]) {
-    case "string":
-      type = ValueType.fromDescriptor({ text: true });
-      break;
-    case "number":
-      type = ValueType.fromDescriptor({ numeric: true });
-      break;
-    default:
-      type = ValueType.fromDescriptor({ text: true });
-  }
+  const type: powerbi.ValueTypeDescriptor = typeof values[0] === "number" ? { numeric: true } : { text: true };
   // A single settings object is repeated across every row; an array is passed through as-is (per-row settings)
   const objects: (settingsValueType | undefined)[] = Array.isArray(settings)
     ? settings

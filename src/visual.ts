@@ -1,8 +1,8 @@
 "use strict";
 
 import type powerbi from "powerbi-visuals-api";
+import { select, type Selection, type BaseType } from "powerbi-visuals-core/rendering";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import * as d3 from "./D3 Plotting Functions/D3 Modules";
 import drawLines from "./D3 Plotting Functions/drawLines";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import addContextMenu from "./D3 Plotting Functions/addContextMenu";
@@ -20,8 +20,8 @@ import {
   type ErrorKind, type PlotContext, type PlotFrame
 } from "powerbi-visuals-core/rendering";
 
-export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
-export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
+export type svgBaseType = Selection<SVGSVGElement, unknown, null, undefined>;
+export type divBaseType = Selection<HTMLDivElement, unknown, null, undefined>;
 
 export class Visual implements powerbi.extensibility.IVisual {
   host: powerbi.extensibility.visual.IVisualHost;
@@ -42,10 +42,10 @@ export class Visual implements powerbi.extensibility.IVisual {
     if (options === undefined) {
       throw new Error("Visual constructor options are required.");
     }
-    this.tableDiv = d3.select(options.element).append("div")
+    this.tableDiv = select(options.element).append("div")
                                               .style("overflow", "auto");
 
-    this.svg = d3.select(options.element).append("svg");
+    this.svg = select(options.element).append("svg");
     this.host = options.host;
     this.viewModel = new viewModelClass();
 
@@ -246,7 +246,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         dotOpacities: point => point.aesthetics
       });
     }
-    const tableSelection: d3.Selection<d3.BaseType | HTMLTableRowElement, plotDataGrouped, d3.BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
+    const tableSelection: Selection<BaseType | HTMLTableRowElement, plotDataGrouped, BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
     tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({
       opacity: d.aesthetics.table_opacity, opacity_selected: d.aesthetics.table_opacity_selected, opacity_unselected: d.aesthetics.table_opacity_unselected
     }, active, identitySelected(d.identity, selected) || d.highlighted));

@@ -1,4 +1,4 @@
-import type { BaseType, Selection } from "../D3 Modules";
+import type { BaseType, Selection } from "powerbi-visuals-core/rendering";
 
 /**
  * Inline function to be called by D3 for rendering the Assurance - Pass icon.

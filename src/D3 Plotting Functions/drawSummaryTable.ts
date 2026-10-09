@@ -1,9 +1,9 @@
 import type powerbi from "powerbi-visuals-api";
+import { select } from "powerbi-visuals-core/rendering";
 import type { plotData, plotDataGrouped, summaryTableRowData } from "../Classes/viewModelClass";
 import type { divBaseType, Visual } from "../visual";
 import initialiseIconSVG from "./initialiseIconSVG";
 import * as nhsIcons from "./NHS Icons"
-import * as d3 from "./D3 Modules";
 import type { settingsValueType } from "../settings";
 import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
 import type { ValueFormatter } from "powerbi-visuals-core/data";
@@ -75,15 +75,15 @@ function drawTableRows(selection: divBaseType, visualObj: Visual,
                           }
                         })
                         .on("mouseover", (event) => {
-                          d3.select(event.target).select(function(){
+                          select(event.target as Element).select(function(){
                             return this.closest("td");
                           }).style("background-color", "lightgray");
                         })
                         .on("mouseout", (event) => {
-                          let currentTD = d3.select(event.target).select(function(){
+                          let currentTD = select(event.target as Element).select(function(){
                             return this.closest("td");
                           })
-                          let rowData = d3.select(currentTD.node().parentNode).datum();
+                          let rowData = select(currentTD.node()!.parentElement).datum();
                           if ("table_body_bg_colour" in (rowData as plotDataGrouped).aesthetics) {
                             currentTD.style("background-color", (rowData as plotDataGrouped).aesthetics.table_body_bg_colour ?? "inherit");
                           } else {
@@ -144,8 +144,8 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
   const thisSelDims = (tableCells.node() as SVGGElement).getBoundingClientRect()
 
   tableCells.each(function(d) {
-    const currNode = d3.select(this);
-    const parentNode = d3.select(currNode.property("parentNode"));
+    const currNode = select(this);
+    const parentNode = select(currNode.property("parentNode"));
     const rowData = parentNode.datum() as plotData;
     if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
       // Only attempt to draw icon if one is specified

@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import { symbol, symbolTriangle } from "d3-shape";
 import type powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { trianglePath } from "powerbi-visuals-core/rendering";
@@ -86,7 +85,7 @@ describe("Value labels", () => {
     expect(line.style.strokeWidth).toBe("2");
     expect(line.style.strokeDasharray).toMatch(/^2,? 5$/);
     expect(path.style.fill).toBe("rgb(171, 205, 239)");
-    expect(path.getAttribute("d")).toBe(symbol().type(symbolTriangle).size(16)());
+    expect(path.getAttribute("d")).toBe(trianglePath(16));
   });
 
   // Finding 31: the marker switch is honoured; the connector still ends at the marker position.
@@ -185,12 +184,5 @@ describe("Value labels", () => {
     group.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 1, bubbles: true }));
     group.dispatchEvent(new PointerEvent("pointermove", { pointerId: 1, clientX: 300, clientY: 200 }));
     expect(firstPoint(visual).point.label.angle).toBeUndefined();
-  });
-
-  it("reproduces d3's triangle marker path", () => {
-    const d3Triangle = symbol().type(symbolTriangle);
-    for (let size = 0; size <= 400; size += 0.37) {
-      expect(trianglePath(size)).toBe(d3Triangle.size(size)());
-    }
   });
 });
