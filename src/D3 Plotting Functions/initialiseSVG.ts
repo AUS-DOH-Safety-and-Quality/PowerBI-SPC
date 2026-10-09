@@ -7,6 +7,7 @@ export default function initialiseSVG(selection: svgBaseType,
   }
   selection.append('line').classed("ttip-line-x", true)
   selection.append('line').classed("ttip-line-y", true)
+  selection.append('g').classed("gridgroup", true);
   selection.append('g').classed("xaxisgroup", true)
   selection.append('text').classed('xaxislabel', true)
   selection.append('g').classed("yaxisgroup", true)

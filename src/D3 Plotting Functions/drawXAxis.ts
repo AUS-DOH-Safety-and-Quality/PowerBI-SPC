@@ -9,6 +9,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
     // X Axis plotting is disabled, so remove any existing axis and return early
     xAxisGroup.remove();
     xAxisLabel.remove();
+    selection.selectAll(".xgridline").remove();
     return;
   }
   // If the groups have been removed, re-add them
@@ -21,6 +22,7 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
 
   const xAxisProperties: axisProperties = visualObj.plotProperties.xAxis;
   const xAxis: d3.Axis<number> = d3.axisBottom(visualObj.plotProperties.xScale);
+  xAxis.tickSizeOuter(xAxisProperties.tick_marks ? 6 : 0);
 
   if (xAxisProperties.ticks) {
     if (xAxisProperties.tick_count) {
@@ -40,6 +42,12 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
   const plotHeight: number = visualObj.viewModel.svgHeight;
   const xAxisHeight: number = plotHeight - visualObj.plotProperties.yAxis.start_padding;
   const displayPlot: boolean = visualObj.plotProperties.displayPlot;
+  const tickOffsets: Record<number, { anchor: string; dx: string; dy: string }> = {
+    "-1": { anchor: "end", dx: "-.8em", dy: "-.15em" },
+    "0": { anchor: "middle", dx: "0em", dy: ".71em" },
+    "1": { anchor: "start", dx: ".8em", dy: ".15em" }
+  };
+  const tickOffset = tickOffsets[Math.sign(xAxisProperties.tick_rotation)];
   xAxisGroup
       .call(xAxis)
       .attr("color", displayPlot ? xAxisProperties.colour : "#FFFFFF")
@@ -47,17 +55,37 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
       .attr("transform", `translate(0, ${xAxisHeight})`)
       .selectAll(".tick text")
       // Right-align
-      .style("text-anchor", xAxisProperties.tick_rotation < 0.0 ? "end" : "start")
+      .style("text-anchor", tickOffset.anchor)
       // Rotate tick labels
-      .attr("dx", xAxisProperties.tick_rotation < 0.0 ? "-.8em" : ".8em")
-      .attr("dy", xAxisProperties.tick_rotation < 0.0 ? "-.15em" : ".15em")
+      .attr("dx", tickOffset.dx)
+      .attr("dy", tickOffset.dy)
       .attr("transform","rotate(" + xAxisProperties.tick_rotation + ")")
       // Scale font
       .style("font-size", xAxisProperties.tick_size)
       .style("font-family", xAxisProperties.tick_font)
       .style("fill", displayPlot ? xAxisProperties.tick_colour : "#FFFFFF");
 
-  const textX: number = visualObj.viewModel.svgWidth / 2;
+  xAxisGroup.selectAll(".tick line")
+      .style("stroke", xAxisProperties.tick_marks ? "currentColor" : "none");
+  const xTicks = xAxisProperties.grid_show ? xAxisGroup.selectAll<SVGGElement, number>(".tick").data() : [];
+  selection.select(".gridgroup")
+      .selectAll(".xgridline")
+      .data(xTicks)
+      .join("line")
+      .classed("xgridline", true)
+      .attr("x1", d => visualObj.plotProperties.xScale(d)!)
+      .attr("x2", d => visualObj.plotProperties.xScale(d)!)
+      .attr("y1", xAxisHeight)
+      .attr("y2", visualObj.plotProperties.yAxis.end_padding)
+      .style("stroke", displayPlot ? xAxisProperties.grid_colour : "#FFFFFF")
+      .style("stroke-width", xAxisProperties.grid_width);
+
+  const labelPosition: Record<string, { x: number; anchor: string }> = {
+      left: { x: visualObj.plotProperties.xAxis.start_padding, anchor: "start" },
+      center: { x: visualObj.viewModel.svgWidth / 2, anchor: "middle" },
+      right: { x: visualObj.viewModel.svgWidth - visualObj.plotProperties.xAxis.end_padding, anchor: "end" }
+  };
+  const textX: number = labelPosition[xAxisProperties.label_align].x;
   let textY: number;
 
   if (visualObj.viewModel.frontend) {
@@ -71,16 +99,18 @@ export default function drawXAxis(selection: svgBaseType, visualObj: Visual) {
                 .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
       return;
     }
-    const xAxisCoordinates: DOMRect = xAxisNode.getBoundingClientRect() as DOMRect;
-    textY = plotHeight - ((plotHeight - xAxisCoordinates.bottom) / 2);
+    const svgTop = visualObj.svg.node()!.getBoundingClientRect().top;
+    const xAxisBottom = xAxisNode.getBoundingClientRect().bottom - svgTop;
+    textY = plotHeight - ((plotHeight - xAxisBottom) / 2);
   }
 
   selection.select(".xaxislabel")
             .attr("x", textX)
             .attr("y", textY)
-            .style("text-anchor", "middle")
+            .style("text-anchor", labelPosition[xAxisProperties.label_align].anchor)
             .text(xAxisProperties.label)
             .style("font-size", xAxisProperties.label_size)
+            .style("font-style", xAxisProperties.label_style)
             .style("font-family", xAxisProperties.label_font)
             .style("fill", displayPlot ? xAxisProperties.label_colour : "#FFFFFF");
 }

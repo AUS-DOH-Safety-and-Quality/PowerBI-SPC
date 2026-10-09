@@ -10,6 +10,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
     // Y Axis plotting is disabled, so remove any existing axis and return early
     yAxisGroup.remove();
     yAxisLabel.remove();
+    selection.selectAll(".ygridline").remove();
     return;
   }
   // If the groups have been removed, re-add them
@@ -22,6 +23,7 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
 
   const yAxisProperties: axisProperties = visualObj.plotProperties.yAxis;
   const yAxis: d3.Axis<number> = d3.axisLeft(visualObj.plotProperties.yScale);
+  yAxis.tickSizeOuter(yAxisProperties.tick_marks ? 6 : 0);
   const yaxis_sig_figs: number | undefined = visualObj.viewModel.inputSettings.settings[0].y_axis.ylimit_sig_figs;
   const sig_figs: number = isNullOrUndefined(yaxis_sig_figs) ? visualObj.viewModel.inputSettings.settings[0].spc.sig_figs : yaxis_sig_figs;
   const displayPlot: boolean = visualObj.plotProperties.displayPlot;
@@ -58,30 +60,51 @@ export default function drawYAxis(selection: svgBaseType, visualObj: Visual) {
       .style("font-family", yAxisProperties.tick_font)
       .style("fill", displayPlot ? yAxisProperties.tick_colour : "#FFFFFF");
 
-    let textX: number;
-    const textY: number = visualObj.viewModel.svgHeight / 2;
-    if (visualObj.viewModel.frontend) {
-      // Non-PBI fronted doesn't have good bbox/boundingClientRect support
-      // so use padding as best approximation
-      textX = visualObj.plotProperties.xAxis.start_padding / 2;
-    } else {
-      const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
-      if (!yAxisNode) {
-        selection.select(".yaxislabel")
-                  .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
-        return;
-      }
-      const yAxisCoordinates: DOMRect = yAxisNode.getBoundingClientRect() as DOMRect;
-      textX = yAxisCoordinates.x * 0.7;
-    }
+  yAxisGroup.selectAll(".tick line")
+      .style("stroke", yAxisProperties.tick_marks ? "currentColor" : "none");
+  const yTicks = yAxisProperties.grid_show ? yAxisGroup.selectAll<SVGGElement, number>(".tick").data() : [];
+  selection.select(".gridgroup")
+      .selectAll(".ygridline")
+      .data(yTicks)
+      .join("line")
+      .classed("ygridline", true)
+      .attr("x1", visualObj.plotProperties.xAxis.start_padding)
+      .attr("x2", visualObj.viewModel.svgWidth - visualObj.plotProperties.xAxis.end_padding)
+      .attr("y1", d => visualObj.plotProperties.yScale(d)!)
+      .attr("y2", d => visualObj.plotProperties.yScale(d)!)
+      .style("stroke", displayPlot ? yAxisProperties.grid_colour : "#FFFFFF")
+      .style("stroke-width", yAxisProperties.grid_width);
 
-    selection.select(".yaxislabel")
-        .attr("x", textX)
-        .attr("y", textY)
-        .attr("transform", `rotate(-90, ${textX}, ${textY})`)
-        .text(yAxisProperties.label)
-        .style("text-anchor", "middle")
-        .style("font-size", yAxisProperties.label_size)
-        .style("font-family", yAxisProperties.label_font)
-        .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
+  let textX: number;
+  const labelPosition: Record<string, { y: number; anchor: string }> = {
+    bottom: { y: visualObj.viewModel.svgHeight - yAxisProperties.start_padding, anchor: "start" },
+    center: { y: visualObj.viewModel.svgHeight / 2, anchor: "middle" },
+    top: { y: yAxisProperties.end_padding, anchor: "end" }
+  };
+  const textY: number = labelPosition[yAxisProperties.label_align].y;
+  if (visualObj.viewModel.frontend) {
+    // Non-PBI fronted doesn't have good bbox/boundingClientRect support
+    // so use padding as best approximation
+    textX = visualObj.plotProperties.xAxis.start_padding / 2;
+  } else {
+    const yAxisNode: SVGGElement = selection.selectAll(".yaxisgroup").node() as SVGGElement;
+    if (!yAxisNode) {
+      selection.select(".yaxislabel")
+                .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
+      return;
+    }
+    const svgLeft = visualObj.svg.node()!.getBoundingClientRect().left;
+    textX = (yAxisNode.getBoundingClientRect().x - svgLeft) * 0.7;
+  }
+
+  selection.select(".yaxislabel")
+      .attr("x", textX)
+      .attr("y", textY)
+      .attr("transform", `rotate(-90, ${textX}, ${textY})`)
+      .text(yAxisProperties.label)
+      .style("text-anchor", labelPosition[yAxisProperties.label_align].anchor)
+      .style("font-size", yAxisProperties.label_size)
+      .style("font-style", yAxisProperties.label_style)
+      .style("font-family", yAxisProperties.label_font)
+      .style("fill", displayPlot ? yAxisProperties.label_colour : "#FFFFFF");
 }

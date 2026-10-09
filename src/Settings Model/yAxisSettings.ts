@@ -1,4 +1,5 @@
 import {
+  dropdownOption,
   colourOption, numberOption,
   toggleOption, fontOption, fontSizeOption, textOption
 } from "./common";
@@ -17,6 +18,7 @@ const yAxisSettings = {
     },
     "Ticks": {
       ylimit_ticks: toggleOption("Draw Ticks", true),
+      ylimit_tick_marks: toggleOption("Draw Tick Marks", true),
       ylimit_tick_count: numberOption("Maximum Ticks", 10, { min: 0, max: 100 }),
       ylimit_tick_font: fontOption("Tick Font"),
       ylimit_tick_size: fontSizeOption("Tick Font Size"),
@@ -27,7 +29,14 @@ const yAxisSettings = {
       ylimit_label: textOption("Label", ""),
       ylimit_label_font: fontOption("Label Font"),
       ylimit_label_size: fontSizeOption("Label Font Size"),
-      ylimit_label_colour: colourOption("Label Font Colour", "standard")
+      ylimit_label_colour: colourOption("Label Font Colour", "standard"),
+      ylimit_label_style: dropdownOption("Label Font Style", "normal", ["normal", "italic"], "sentence"),
+      ylimit_label_align: dropdownOption("Label Alignment", "center", ["bottom", "center", "top"], "sentence")
+    },
+    "Gridlines": {
+      ylimit_grid_show: toggleOption("Show Gridlines", false),
+      ylimit_grid_colour: colourOption("Gridline Colour", "lightgray"),
+      ylimit_grid_width: numberOption("Gridline Width", 1, { min: 0 })
     }
   }
 };

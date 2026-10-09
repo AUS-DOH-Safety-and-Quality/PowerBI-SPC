@@ -205,20 +205,18 @@ export default class viewModelClass {
   }
 
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+    this.colourPalette = {
+      isHighContrast: host.colorPalette.isHighContrast,
+      foregroundColour: host.colorPalette.foreground.value,
+      backgroundColour: host.colorPalette.background.value,
+      foregroundSelectedColour: host.colorPalette.foregroundSelected.value,
+      hyperlinkColour: host.colorPalette.hyperlink.value
+    };
     const updateOptionsStatus: UpdateOptionsValidTypes = updateOptionsUndefined(options);
     if (updateOptionsStatus === UpdateOptionsValidTypes.Undefined) {
       return { status: false, error: "" }
     } else if (updateOptionsStatus === UpdateOptionsValidTypes.MissingNumerators) {
       return { status: false, error: "No Numerators passed!" }
-    }
-    if (isNullOrUndefined(this.colourPalette)) {
-      this.colourPalette = {
-        isHighContrast: host.colorPalette.isHighContrast,
-        foregroundColour: host.colorPalette.foreground.value,
-        backgroundColour: host.colorPalette.background.value,
-        foregroundSelectedColour: host.colorPalette.foregroundSelected.value,
-        hyperlinkColour: host.colorPalette.hyperlink.value
-      }
     }
 
     this.svgWidth = options.viewport.width;

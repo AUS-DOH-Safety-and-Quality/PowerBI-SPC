@@ -5,7 +5,7 @@ type DataViewObjects = powerbi.DataViewObjects;
 type Fill = powerbi.Fill;
 import {
   default as settingsModel, defaultSettings, type settingsValueTypesUnion,
-  type settingsValueType, type SettingsValueKeys, type SettingsValueNestedKeys
+  type settingsValueType, type SettingsValueKeys, type SettingsValueNestedKeys, type settingsValueTypesMerged
 } from "../settings";
 import rep from "./rep";
 import between from "./between";
@@ -37,54 +37,66 @@ export default function
   const inputCategories: DataViewCategoryColumn = (categoricalView.categories as DataViewCategoryColumn[])[0];
   const settingNames = Object.keys(inputSettings[settingGroupName as keyof settingsValueType]);
 
-  // Force a deep copy to avoid JS's absurd pass-by-reference handling
-  const validationRtn: SettingsValidationT
-    = JSON.parse(JSON.stringify({ status: 0, messages: rep([], inputCategories.values.length) }));
-  const n: number = idxs.length;
-  let rtn: T[] = new Array<T>(n);
-  for (let i = 0; i < n; i++) {
-    const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
-    rtn[i] = Object.fromEntries(
-      settingNames.map(settingName => {
-        const defaultSetting = getNested(defaultSettings, settingGroupName as SettingsValueKeys, settingName as SettingsValueNestedKeys);
-
-        let extractedSetting = getSettingValue(inpObjects!, settingGroupName, settingName, defaultSetting);
-        // PBI passes empty string when clearing conditional formatting
-        // for dropdown setting using the eraser button, so just reset to default
-        extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
-
-        // New API has numeric min/max under 'options' member
-        const settingEntry = getNested(settingsModel, settingGroupName as SettingsValueKeys, settingName as SettingsValueNestedKeys);
-        let valid: string[] | { minValue?: { value: number }; maxValue?: { value: number }; } | undefined = undefined;
-        if ("valid" in settingEntry) {
-          valid = settingEntry.valid
-        } else if ("options" in settingEntry) {
-          valid = settingEntry.options
-        }
-        const defaultIsUndefined: boolean = isNullOrUndefined(defaultSetting);
-        if (valid && !defaultIsUndefined) {
-          let message: string = "";
-          if (valid instanceof Array) {
-            if (!valid.includes(extractedSetting as string)) {
-              message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`
-            }
-          } else if ((!isNullOrUndefined(valid?.minValue) || !isNullOrUndefined(valid?.maxValue)) && !between(extractedSetting, valid?.minValue?.value, valid?.maxValue?.value)) {
-            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid?.minValue?.value} and ${valid?.maxValue?.value}`
-          }
-          if (message !== "") {
-            extractedSetting = defaultSetting;
-            validationRtn.messages[i].push(message);
-          }
-        }
-        return [ settingName, extractedSetting ];
-      })
-    ) as T
+  const settingSpecs = new Array<{
+    settingName: SettingsValueNestedKeys;
+    defaultSetting: settingsValueTypesMerged[SettingsValueNestedKeys];
+    valid: string[] | { minValue?: { value: number }; maxValue?: { value: number }; } | undefined;
+    defaultIsUndefined: boolean;
+  }>(settingNames.length);
+  for (let j = 0; j < settingNames.length; j++) {
+    const settingName = settingNames[j] as SettingsValueNestedKeys;
+    const defaultSetting = getNested(defaultSettings, settingGroupName as SettingsValueKeys, settingName);
+    const settingEntry = getNested(settingsModel, settingGroupName as SettingsValueKeys, settingName);
+    const valid = "valid" in settingEntry ? settingEntry.valid : "options" in settingEntry ? settingEntry.options : undefined;
+    settingSpecs[j] = { settingName, defaultSetting, valid, defaultIsUndefined: isNullOrUndefined(defaultSetting) };
   }
 
-  const validationMessages = validationRtn.messages.filter(d => d.length > 0);
-  if (!validationRtn.messages.some(d => d.length === 0)) {
+  const n: number = idxs.length;
+  const validationRtn: SettingsValidationT = { status: 0, messages: new Array<string[]>(n) };
+  const rtn: T[] = new Array<T>(n);
+  let allInvalid = n > 0;
+  let defaultFormatting: { values: T; messages: string[] } | undefined;
+  for (let i = 0; i < n; i++) {
+    const inpObjects = inputCategories.objects ? inputCategories.objects[idxs[i]] : null;
+    const usesDefaults = !inpObjects?.[settingGroupName];
+    if (usesDefaults && defaultFormatting) {
+      rtn[i] = { ...defaultFormatting.values };
+      validationRtn.messages[i] = defaultFormatting.messages.slice();
+      if (defaultFormatting.messages.length === 0) allInvalid = false;
+      continue;
+    }
+    const messages: string[] = [];
+    validationRtn.messages[i] = messages;
+    const row = {} as T;
+    for (let j = 0; j < settingSpecs.length; j++) {
+      const { settingName, defaultSetting, valid, defaultIsUndefined } = settingSpecs[j];
+      let extractedSetting = getSettingValue(inpObjects!, settingGroupName, settingName, defaultSetting);
+      // Power BI uses an empty string when clearing conditional formatting.
+      extractedSetting = extractedSetting === "" ? defaultSetting : extractedSetting;
+      if (valid && !defaultIsUndefined) {
+        let message = "";
+        if (valid instanceof Array) {
+          if (!valid.includes(extractedSetting as string)) {
+            message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are: ${valid.join(", ")}`;
+          }
+        } else if ((!isNullOrUndefined(valid.minValue) || !isNullOrUndefined(valid.maxValue)) && !between(extractedSetting, valid.minValue?.value, valid.maxValue?.value)) {
+          message = `${extractedSetting} is not a valid value for ${settingName}. Valid values are between ${valid.minValue?.value} and ${valid.maxValue?.value}`;
+        }
+        if (message !== "") {
+          extractedSetting = defaultSetting;
+          messages.push(message);
+        }
+      }
+      row[settingName as keyof T] = extractedSetting as T[keyof T];
+    }
+    if (usesDefaults) defaultFormatting = { values: row, messages };
+    rtn[i] = row;
+    if (messages.length === 0) allInvalid = false;
+  }
+
+  if (allInvalid) {
     validationRtn.status = 1;
-    validationRtn.error = `${validationMessages[0][0]}`;
+    validationRtn.error = validationRtn.messages[0][0];
   }
 
   return { values: rtn as T[] | undefined, validation: validationRtn };

@@ -794,6 +794,9 @@
         "xlimit_ticks": {
           "type" : { "bool" : true }
         },
+        "xlimit_tick_marks": {
+          "type" : { "bool" : true }
+        },
         "xlimit_tick_font": {
           "type": { "formatting": { "fontFamily": true } }
         },
@@ -821,6 +824,21 @@
         "xlimit_label_colour":{
           "type": { "fill": { "solid": { "color": true } } }
         },
+        "xlimit_label_style": {
+          "type": { "enumeration" : [ ] }
+        },
+        "xlimit_label_align": {
+          "type": { "enumeration" : [ ] }
+        },
+        "xlimit_grid_show": {
+          "type" : { "bool" : true }
+        },
+        "xlimit_grid_colour":{
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "xlimit_grid_width": {
+          "type": { "numeric": true }
+        },
         "xlimit_l": {
           "type": { "numeric": true }
         },
@@ -838,6 +856,9 @@
           "type": { "fill": { "solid": { "color": true } } }
         },
         "ylimit_ticks": {
+          "type" : { "bool" : true }
+        },
+        "ylimit_tick_marks": {
           "type" : { "bool" : true }
         },
         "ylimit_sig_figs": {
@@ -869,6 +890,21 @@
         },
         "ylimit_label_colour":{
           "type": { "fill": { "solid": { "color": true } } }
+        },
+        "ylimit_label_style": {
+          "type": { "enumeration" : [ ] }
+        },
+        "ylimit_label_align": {
+          "type": { "enumeration" : [ ] }
+        },
+        "ylimit_grid_show": {
+          "type" : { "bool" : true }
+        },
+        "ylimit_grid_colour":{
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "ylimit_grid_width": {
+          "type": { "numeric": true }
         },
         "limit_multiplier": {
           "type": { "numeric": true }
