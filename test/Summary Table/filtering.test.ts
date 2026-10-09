@@ -103,6 +103,31 @@ describe("Summary Table - variation and assurance filters", () => {
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(2);
   });
 
+  // Mixed flags an improvement (50) and a deterioration (-30) before its last point
+  it.each([
+    { filter: "improvement", kept: ["Mixed"] },
+    { filter: "deterioration", kept: ["Mixed"] },
+    { filter: "special", kept: ["Mixed"] },
+    { filter: "neutral", kept: [] },
+    { filter: "common", kept: ["Stable"] }
+  ])("table_variation_filter='$filter' considers every variation icon of a group", ({ filter, kept }) => {
+    const settings = cloneSettings();
+    settings.spc.chart_type = "i";
+    settings.outliers.astronomical = true;
+    settings.nhs_icons.flag_last_point = false;
+    settings.summary_table.table_variation_filter = filter;
+    const mixedValues: number[] = [10, 10, 11, 10, 9, 10, 50, 10, 11, 10, 9, 10, -30, 10, 10];
+    const keys: string[] = stableKeys.concat(prefixedKeys("m", mixedValues.length));
+    const indicator: string[] = rep("Stable", stableValues.length).concat(rep("Mixed", mixedValues.length));
+    visual.update({
+      dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: stableValues.concat(mixedValues) }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+
+    expect(columnValues(visual.viewModel.groupedRows, "Indicator")).toEqual(kept);
+  });
+
   const highVolumeNumerators: number[] = [17,12,27,20,20,18,22,19,19,24,17,16,24,19,19,22,25,19,17,6,25,17,11,14];
   const lowVolumeNumerators: number[] = [9,11,7,13,5,5,3,5,9,4,5,9];
   const cKeys: string[] = prefixedKeys("h", highVolumeNumerators.length).concat(prefixedKeys("l", lowVolumeNumerators.length));

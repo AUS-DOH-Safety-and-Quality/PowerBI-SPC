@@ -4,6 +4,7 @@ import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { Visual } from "../../src/visual";
 import buildDataView, { sequentialKeys } from "../helpers/buildDataView";
+import { rep } from "powerbi-visuals-core/math";
 
 const chartTypes = ["p", "pp", "u", "up", "i", "i_m", "i_mm", "mr", "run", "xbar", "s"] as const;
 const limitNames = ["ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
@@ -222,6 +223,15 @@ const references = [
   {
     chart_type: "s", input: { numerators: [1, 2, 3, 4], denominators: [2, 3, 4, 5] },
     expected: limitsAround([1, 2, 3, 4], Math.sqrt(10), [2.389134418141634, 1.652995900585246, 1.334530798056653, 1.147904543980176], 0)
+  },
+  // Constant subgroup size uses the mean SD (qicharts2 qic.xbar / qic.s), not the pooled SD
+  {
+    chart_type: "xbar", input: { numerators: [10, 12, 11, 13], denominators: [5, 5, 5, 5], xbar_sds: [1, 3, 2, 2] },
+    expected: limitsAround([10, 12, 11, 13], 11.5, rep(0.95153286194814457, 4))
+  },
+  {
+    chart_type: "s", input: { numerators: [1, 3, 2, 2], denominators: [5, 5, 5, 5] },
+    expected: limitsAround([1, 3, 2, 2], 2, rep(0.72599857908685583, 4), 0)
   }
 ] satisfies ({ chart_type: settingsValueType["spc"]["chart_type"] } & Record<string, unknown>)[];
 

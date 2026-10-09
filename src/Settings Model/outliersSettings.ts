@@ -15,7 +15,7 @@ const outliersSettings = {
     },
     "Shifts": {
       shift: toggleOption("Highlight Shifts", false),
-      shift_n: numberOption("Shift Points", 7, { min: 1 }),
+      shift_n: numberOption("Shift Points", 7, { min: 1, integer: true }),
       shift_colour_improvement: colourOption("Imp. Shift Colour", "improvement"),
       shift_colour_deterioration: colourOption("Det. Shift Colour", "deterioration"),
       shift_colour_neutral_low: colourOption("Neutral (Low) Shift Colour", "neutral_low"),
@@ -23,7 +23,7 @@ const outliersSettings = {
     },
     "Trends": {
       trend: toggleOption("Highlight Trends", false),
-      trend_n: numberOption("Trend Points", 5, { min: 1 }),
+      trend_n: numberOption("Trend Points", 5, { min: 2, integer: true }),
       trend_colour_improvement: colourOption("Imp. Trend Colour", "improvement"),
       trend_colour_deterioration: colourOption("Det. Trend Colour", "deterioration"),
       trend_colour_neutral_low: colourOption("Neutral (Low) Trend Colour", "neutral_low"),

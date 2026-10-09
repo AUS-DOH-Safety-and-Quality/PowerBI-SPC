@@ -33,6 +33,20 @@ export default class settingsClass {
         this.validationStatus = { status: 1, messages: this.validationStatus.messages,
           error: "Flagging against specification limits requires the specification lines to be shown" };
       }
+      const row = this.settings[i];
+      const bounds: [string, number | undefined, string, number | undefined][] = [
+        ["ll_truncate", row.spc.ll_truncate, "ul_truncate", row.spc.ul_truncate],
+        ["xlimit_l", row.x_axis.xlimit_l, "xlimit_u", row.x_axis.xlimit_u],
+        ["ylimit_l", row.y_axis.ylimit_l, "ylimit_u", row.y_axis.ylimit_u]
+      ];
+      for (let b = 0; b < bounds.length; b++) {
+        const lower = bounds[b][1];
+        const upper = bounds[b][3];
+        if (lower !== undefined && upper !== undefined && lower >= upper) {
+          this.validationStatus = { status: 1, messages: this.validationStatus.messages,
+            error: `${bounds[b][0]} (${lower}) must be below ${bounds[b][2]} (${upper})` };
+        }
+      }
       this.derivedSettings[i] = new derivedSettingsClass(this.settings[i].spc);
     }
   }

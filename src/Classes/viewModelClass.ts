@@ -15,6 +15,7 @@ import { isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
+import axisRanges from "../Functions/axisRanges";
 import { astronomical, shift, trend, twoInThree } from "powerbi-visuals-core/spc";
 import lineKeys, { type LineName } from "../Functions/lineKeys";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
@@ -139,6 +140,7 @@ const limitSeries = Object.keys({
   speclimits_upper: true,
   trend_line: true
 } satisfies Record<LimitSeries, true>) as LimitSeries[];
+const limitLines = ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;
 
 /** Calculators return only the series their chart defines */
 export type CalculatedLimits = Pick<controlLimitsObject, "keys" | "values"> & Partial<Pick<controlLimitsObject, LimitSeries>>;
@@ -163,6 +165,15 @@ function copyInto<T>(target: T[], source: readonly T[], offset: number): void {
   for (let i = 0; i < source.length; i++) {
     target[offset + i] = source[i];
   }
+}
+
+function anyIcon(icons: readonly NhsIconName[], names: readonly NhsIconName[]): boolean {
+  for (let i = 0; i < icons.length; i++) {
+    if (names.includes(icons[i])) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export default class viewModelClass {
@@ -297,8 +308,10 @@ export default class viewModelClass {
         const inputGroupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
         const limits: controlLimitsObject = this.calculateLimits(inpData, inputGroupStartEnd, settings);
         const groupStartEnd: number[][] = this.getResultGroupIndexes(limits.keys, inputGroupStartEnd);
+        // Flags compare display units (as specification limits are entered) against the untruncated limits
+        this.scaleLimits(limits, settings, derivedSettings);
         const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
-        this.scaleAndTruncateLimits(limits, settings, derivedSettings);
+        this.truncateLimits(limits, settings);
 
         const keys = inpData.limitInputArgs.keys;
         const identities = new Array<ISelectionId>(keys.length);
@@ -345,6 +358,17 @@ export default class viewModelClass {
     }
     if (warnings.length > 0) {
       res.warning = warnings.join("\n");
+    }
+
+    // An explicit axis limit can still invert against the automatic one; the grouped table has no axes
+    if (!this.showGrouped) {
+      const axes = axisRanges(this);
+      if (axes.x.lower > axes.x.upper) {
+        return { status: false, type: "settings", error: `The x-axis lower limit (${axes.x.lower}) is above the upper limit (${axes.x.upper})` };
+      }
+      if (axes.y.lower > axes.y.upper) {
+        return { status: false, type: "settings", error: `The y-axis lower limit (${axes.y.lower}) is above the upper limit (${axes.y.upper})` };
+      }
     }
 
     return res;
@@ -539,13 +563,13 @@ export default class viewModelClass {
       const lastIndex: number = limits.keys.length - 1;
       const varIcons = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
       if (varIconFilter !== "all") {
-        if (varIconFilter === "improvement" && !(["improvementHigh", "improvementLow"].includes(varIcons[0]))) {
+        if (varIconFilter === "improvement" && !anyIcon(varIcons, ["improvementHigh", "improvementLow"])) {
           continue;
         }
-        if (varIconFilter === "deterioration" && !(["concernHigh", "concernLow"].includes(varIcons[0]))) {
+        if (varIconFilter === "deterioration" && !anyIcon(varIcons, ["concernHigh", "concernLow"])) {
           continue;
         }
-        if (varIconFilter === "neutral" && !(["neutralHigh", "neutralLow"].includes(varIcons[0]))) {
+        if (varIconFilter === "neutral" && !anyIcon(varIcons, ["neutralHigh", "neutralLow"])) {
           continue;
         }
         if (varIconFilter === "common" && varIcons[0] !== "commonCause") {
@@ -806,28 +830,20 @@ export default class viewModelClass {
     this.groupedLines = groupBy(formattedLines, "group");
   }
 
-  scaleAndTruncateLimits(controlLimits: controlLimitsObject,
-                          inputSettings: settingsValueType,
-                          derivedSettings: derivedSettingsClass): void {
+  scaleLimits(controlLimits: controlLimitsObject,
+              inputSettings: settingsValueType,
+              derivedSettings: derivedSettingsClass): void {
     const multiplier: number = derivedSettings.multiplier;
-    let lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "targets"];
+    let lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "targets", "trend_line"];
 
     if (derivedSettings.chart_type_props.has_control_limits) {
-      lines_to_scale = lines_to_scale.concat(["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"]);
+      lines_to_scale = lines_to_scale.concat(limitLines);
     }
-
-    let lines_to_truncate: Exclude<keyof controlLimitsObject, "keys">[] = lines_to_scale;
-    if (inputSettings.lines.show_alt_target) {
-      lines_to_truncate = lines_to_truncate.concat(["alt_targets"]);
-      if (inputSettings.lines.multiplier_alt_target) {
-        lines_to_scale = lines_to_scale.concat(["alt_targets"]);
-      }
+    if (inputSettings.lines.show_alt_target && inputSettings.lines.multiplier_alt_target) {
+      lines_to_scale = lines_to_scale.concat(["alt_targets"]);
     }
-    if (inputSettings.lines.show_specification) {
-      lines_to_truncate = lines_to_truncate.concat(["speclimits_lower", "speclimits_upper"]);
-      if (inputSettings.lines.multiplier_specification) {
-        lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
-      }
+    if (inputSettings.lines.show_specification && inputSettings.lines.multiplier_specification) {
+      lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
     }
 
     for (let l = 0; l < lines_to_scale.length; l++) {
@@ -839,19 +855,19 @@ export default class viewModelClass {
         }
       }
     }
+  }
 
-    for (let l = 0; l < lines_to_truncate.length; l++) {
-      const series = controlLimits[lines_to_truncate[l]];
+  /** Truncation applies to the control limits only, in display units */
+  truncateLimits(controlLimits: controlLimitsObject, inputSettings: settingsValueType): void {
+    const ll_truncate = inputSettings.spc.ll_truncate;
+    const ul_truncate = inputSettings.spc.ul_truncate;
+    for (let l = 0; l < limitLines.length; l++) {
+      const series = controlLimits[limitLines[l]];
       for (let i: number = 0; i < series.length; i++) {
         const value = series[i];
         if (value !== undefined) {
-          const lower_trunc: number = isValidNumber(inputSettings.spc.ll_truncate)
-            ? Math.max(inputSettings.spc.ll_truncate, value)
-            : value;
-          const upper_trunc: number = isValidNumber(inputSettings.spc.ul_truncate)
-            ? Math.min(inputSettings.spc.ul_truncate, lower_trunc)
-            : lower_trunc;
-          series[i] = upper_trunc;
+          const lower_trunc: number = isValidNumber(ll_truncate) ? Math.max(ll_truncate, value) : value;
+          series[i] = isValidNumber(ul_truncate) ? Math.min(ul_truncate, lower_trunc) : lower_trunc;
         }
       }
     }

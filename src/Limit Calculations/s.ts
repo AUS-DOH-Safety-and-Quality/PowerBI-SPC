@@ -1,23 +1,12 @@
 import { c4, c5 } from "powerbi-visuals-core/math";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import withinGroupSd from "./withinGroupSd";
 
-/** S chart: pooled-SD centreline with sigma = s * c5(n) / c4(n). */
+/** S chart: within-group SD centreline (withinGroupSd) with sigma = s * c5(n) / c4(n). */
 export default function sLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   const group_sd: readonly number[] = args.numerators;
   const count_per_group: readonly number[] = args.denominators!;
-  const n_sub: number = args.subset_points.length;
-
-  let Nm1_sum: number = 0;
-  let weighted_sd_sum: number = 0;
-  for (let i = 0; i < n_sub; i++) {
-    const curr_count: number = count_per_group[args.subset_points[i]];
-    const curr_sd: number = group_sd[args.subset_points[i]];
-    const Nm1: number = curr_count - 1;
-
-    Nm1_sum += Nm1;
-    weighted_sd_sum += Nm1 * Math.pow(curr_sd, 2);
-  }
-  const cl: number = Math.sqrt(weighted_sd_sum / Nm1_sum);
+  const cl: number = withinGroupSd(group_sd, count_per_group, args.subset_points);
 
   const n: number = args.keys.length;
   const rtn = {

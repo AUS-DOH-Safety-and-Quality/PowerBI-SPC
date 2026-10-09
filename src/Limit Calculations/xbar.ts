@@ -1,7 +1,8 @@
 import { a3 } from "powerbi-visuals-core/math";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import withinGroupSd from "./withinGroupSd";
 
-/** X-bar chart (S method): size-weighted grand mean centreline with a pooled within-group SD. */
+/** X-bar chart (S method): size-weighted grand mean centreline; within-group SD per withinGroupSd. */
 export default function xbarLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   const count_per_group: readonly number[] = args.denominators!;
   const group_means: readonly number[] = args.numerators;
@@ -9,22 +10,14 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): Calculate
   const n_sub: number = args.subset_points.length;
   const subset_points: readonly number[] = args.subset_points;
 
-  let Nm1_sum: number = 0;
-  let weighted_sd_sum: number = 0;
   let weighted_mean_sum: number = 0;
   let total_count: number = 0;
   for (let i = 0; i < n_sub; i++) {
     const curr_count: number = count_per_group[subset_points[i]];
-    const curr_mean: number = group_means[subset_points[i]];
-    const curr_sd: number = group_sd[subset_points[i]];
-    const Nm1: number = curr_count - 1;
-
-    Nm1_sum += Nm1;
-    weighted_sd_sum += Nm1 * Math.pow(curr_sd, 2);
-    weighted_mean_sum += curr_count * curr_mean;
+    weighted_mean_sum += curr_count * group_means[subset_points[i]];
     total_count += curr_count;
   }
-  const sd: number = Math.sqrt(weighted_sd_sum / Nm1_sum);
+  const sd: number = withinGroupSd(group_sd, count_per_group, subset_points);
   const cl: number = weighted_mean_sum / total_count;
 
   const n: number = args.keys.length;

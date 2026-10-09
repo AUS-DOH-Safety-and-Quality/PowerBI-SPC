@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createVisualHost } from "powerbi-visuals-utils-testutils";
-import viewModelClass, { type controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { type controlLimitsObject } from "../../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { rep, sequence } from "powerbi-visuals-core/math";
-import buildDataView, { sequentialKeys } from "../helpers/buildDataView";
+import viewModelLimits from "../helpers/calculateLimits";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48, 60, 66, 74, 84];
 
@@ -53,24 +52,7 @@ function calculateLimits(
     ...defaultSettings,
     spc: { ...defaultSettings.spc, chart_type: "i", outliers_in_limits: true, ...spc }
   };
-  const dataView = buildDataView({
-    key: sequentialKeys(values.length),
-    numerators: values,
-    denominators,
-    xbar_sds,
-    groupings
-  }, settings);
-  dataView.metadata.objects = {
-    split_indexes_storage: { split_indexes: JSON.stringify(splitIndexes) }
-  };
-  const viewModel = new viewModelClass();
-  const result = viewModel.update({
-    dataViews: [dataView],
-    viewport: { width: 500, height: 500 },
-    type: 2
-  }, createVisualHost({}));
-  expect(result.status).toBe(true);
-  return viewModel.controlLimits[0];
+  return viewModelLimits(settings, { numerators: values, denominators, xbar_sds, groupings }, splitIndexes);
 }
 
 const bands = [["ll68", "ul68", 1], ["ll95", "ul95", 2], ["ll99", "ul99", 3]] as const;

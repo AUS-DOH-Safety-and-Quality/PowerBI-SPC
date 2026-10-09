@@ -19,6 +19,7 @@ export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; 
 
   const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
   let maxValue: number = Number.NEGATIVE_INFINITY;
+  let minValue: number = Number.POSITIVE_INFINITY;
   let maxValueOrLimit: number = Number.NEGATIVE_INFINITY;
   let minValueOrLimit: number = Number.POSITIVE_INFINITY;
   let maxTarget: number = Number.NEGATIVE_INFINITY;
@@ -30,6 +31,7 @@ export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; 
     const altTarget = controlLimits.alt_targets[i];
     const target = controlLimits.targets[i];
     maxValue = finiteMax(maxValue, value);
+    minValue = finiteMin(minValue, value);
     maxValueOrLimit = finiteMax(maxValueOrLimit, value);
     maxValueOrLimit = finiteMax(maxValueOrLimit, controlLimits.ul99[i]);
     maxValueOrLimit = finiteMax(maxValueOrLimit, controlLimits.speclimits_upper[i]);
@@ -54,11 +56,11 @@ export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; 
   const lowerLimitRaw: number = minTarget - (minTarget - minValueOrLimit) * limitMultiplier;
   const multiplier: number = derivedSettings.multiplier;
 
-  // Assume that observed values > 100% are intentional, and do not truncate
+  // Assume that observed values above 100% or below 0% are intentional, and do not truncate
   const yUpperLimit: number = inputSettings.y_axis.ylimit_u
     ?? ((derivedSettings.percentLabels && !(maxValue > (1 * multiplier))) ? Math.min(upperLimitRaw, 1 * multiplier) : upperLimitRaw);
   const yLowerLimit: number = inputSettings.y_axis.ylimit_l
-    ?? (derivedSettings.percentLabels ? Math.max(lowerLimitRaw, 0) : lowerLimitRaw);
+    ?? ((derivedSettings.percentLabels && !(minValue < 0)) ? Math.max(lowerLimitRaw, 0) : lowerLimitRaw);
 
   return {
     x: {
