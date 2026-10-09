@@ -56,11 +56,12 @@ export class Visual implements powerbi.extensibility.IVisual {
     if (svg !== null) {
       initialiseSvg(svg);
     }
+    // Collapsed borders stay behind when the sticky header scrolls, so cells draw their own
     const table = this.tableDiv.append("table")
                                 .classed("table-group", true)
-                                .style("border-collapse", "collapse")
-                                .style("width", "100%")
-                                .style("height", "100%");
+                                .style("border-collapse", "separate")
+                                .style("border-spacing", "0")
+                                .style("width", "100%");
 
     table.append("thead").append("tr").classed("table-header", true);
     table.append('tbody').classed("table-body", true);

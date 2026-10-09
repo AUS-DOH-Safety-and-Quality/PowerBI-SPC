@@ -18,7 +18,7 @@ describe("specification limit tooltips", () => {
     const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
     expect(result.status).toBe(true);
     const tooltip = viewModel.plotPoints[0].tooltip;
-    expect(tooltip).toContainEqual(expect.objectContaining({ displayName: "Max specification Limit" }));
-    expect(tooltip).toContainEqual(expect.objectContaining({ displayName: "Min specification Limit" }));
+    expect(tooltip).toContainEqual(expect.objectContaining({ displayName: "Max Specification Limit" }));
+    expect(tooltip).toContainEqual(expect.objectContaining({ displayName: "Min Specification Limit" }));
   });
 });

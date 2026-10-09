@@ -71,7 +71,7 @@ const linesSettings = {
       type: "10 10",
       colour: "limits",
       rebaselines: true,
-      tooltipLabel: "specification Limit",
+      tooltipLabel: "Specification Limit",
       tooltipPrefixes: true
     }, {
       specification_upper: numberOption("Upper Specification Limit:", undefined),
@@ -85,7 +85,7 @@ const linesSettings = {
       type: "10 0",
       colour: "common_cause",
       rebaselines: true,
-      tooltipLabel: "Centerline"
+      tooltipLabel: "Trend"
     })
   }
 };

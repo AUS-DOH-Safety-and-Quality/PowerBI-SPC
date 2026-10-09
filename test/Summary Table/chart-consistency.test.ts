@@ -73,7 +73,7 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
     expect(cellText).toBe("55.00%");
   });
 
-  it("regression: the chart tooltip includes the Upper 68% control limit, matching the summary table's ucl68 value", () => {
+  it("regression: the chart tooltip includes the Upper 68% control limit, matching the summary table's ul68 value", () => {
     const settings = cloneSettings();
     settings.spc.chart_type = "p";
     settings.lines.show_68 = true;
@@ -106,10 +106,10 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
       type: 2
     });
     const colNames: string[] = columnNames(visual);
-    const ucl68Idx: number = colNames.indexOf("ucl68");
-    expect(ucl68Idx).toBeGreaterThanOrEqual(0);
+    const ul68Idx: number = colNames.indexOf("ul68");
+    expect(ul68Idx).toBeGreaterThanOrEqual(0);
     const testGroupRow = tableRow(tableDivElement, "Test Group");
-    expect(testGroupRow.querySelectorAll('td')[ucl68Idx].textContent).toBe(upper68TooltipEntry!.value);
+    expect(testGroupRow.querySelectorAll('td')[ul68Idx].textContent).toBe(upper68TooltipEntry!.value);
   });
 
   // Remove visual element from DOM to avoid interfering with other tests

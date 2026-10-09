@@ -51,7 +51,7 @@ describe("Summary Table - variation and assurance filters", () => {
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Extreme");
-    expect(rows[0].table_row.variation).toBe("improvementHigh");
+    expect(rows[0].variation_icons).toEqual(["improvementHigh"]);
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(1);
   });
 
@@ -69,7 +69,7 @@ describe("Summary Table - variation and assurance filters", () => {
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Stable");
-    expect(rows[0].table_row.variation).toBe("commonCause");
+    expect(rows[0].variation_icons).toEqual(["commonCause"]);
   });
 
   it("table_variation_filter='deterioration' excludes both groups when neither shows deterioration", () => {

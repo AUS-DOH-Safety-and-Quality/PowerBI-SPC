@@ -68,13 +68,15 @@ export type summaryTableRowDataGrouped = {
   denominator: string;
   target: string;
   alt_target: string;
-  ucl99: string;
-  ucl95: string;
-  ucl68: string;
-  lcl68: string;
-  lcl95: string;
-  lcl99: string;
-  variation: NhsIconName;
+  ul99: string;
+  ul95: string;
+  ul68: string;
+  ll68: string;
+  ll95: string;
+  ll99: string;
+  speclimits_lower: string;
+  speclimits_upper: string;
+  trend_line: string;
   assurance: NhsIconName | "none";
 }
 
@@ -97,6 +99,7 @@ export type plotData = {
 
 export type plotDataGrouped = {
   table_row: summaryTableRowDataGrouped;
+  variation_icons: NhsIconName[];
   identity: ISelectionId[];
   aesthetics: settingsValueType["summary_table"];
   highlighted: boolean;
@@ -174,6 +177,54 @@ function anyIcon(icons: readonly NhsIconName[], names: readonly NhsIconName[]): 
     }
   }
   return false;
+}
+
+/** Columns both tables share, labelled and ordered as in the tooltip: limits top to bottom around the targets */
+function lineColumns(settings: settingsValueType, hasDenominators: boolean,
+                     hasControlLimits: boolean): { name: string; label: string; }[] {
+  const lines = settings.lines;
+  const columns = new Array<{ name: string; label: string; }>();
+  if (lines.show_main) {
+    columns.push({ name: "value", label: "Value" });
+  }
+  if (hasDenominators && settings.spc.ttip_show_numerator) {
+    columns.push({ name: "numerator", label: "Numerator" });
+  }
+  if (hasDenominators && settings.spc.ttip_show_denominator) {
+    columns.push({ name: "denominator", label: "Denominator" });
+  }
+  if (lines.show_trend) {
+    columns.push({ name: "trend_line", label: lines.ttip_label_trend });
+  }
+  if (lines.show_specification) {
+    columns.push({
+      name: "speclimits_upper",
+      label: `${lines.ttip_label_specification_prefix_upper}${lines.ttip_label_specification}`
+    }, {
+      name: "speclimits_lower",
+      label: `${lines.ttip_label_specification_prefix_lower}${lines.ttip_label_specification}`
+    });
+  }
+  const levels = ["99", "95", "68"] as const;
+  for (let l = 0; l < levels.length; l++) {
+    const level = levels[l];
+    if (hasControlLimits && lines[`show_${level}`]) {
+      columns.push({ name: `ul${level}`, label: `${lines[`ttip_label_${level}_prefix_upper`]}${lines[`ttip_label_${level}`]}` });
+    }
+  }
+  if (lines.show_target) {
+    columns.push({ name: "target", label: lines.ttip_label_target });
+  }
+  if (lines.show_alt_target) {
+    columns.push({ name: "alt_target", label: lines.ttip_label_alt_target });
+  }
+  for (let l = levels.length - 1; l >= 0; l--) {
+    const level = levels[l];
+    if (hasControlLimits && lines[`show_${level}`]) {
+      columns.push({ name: `ll${level}`, label: `${lines[`ttip_label_${level}_prefix_lower`]}${lines[`ttip_label_${level}`]}` });
+    }
+  }
+  return columns;
 }
 
 export default class viewModelClass {
@@ -493,42 +544,13 @@ export default class viewModelClass {
     }
     tableColumnsDef.push({ name: "latest_date", label: "Latest Date" });
 
-    const lineSettings = this.inputSettings.settings[0].lines;
-    if (lineSettings.show_main) {
-      tableColumnsDef.push({ name: "value", label: "Value" });
+    let anyDenominators: boolean = false;
+    let anyControlLimits: boolean = false;
+    for (let i = 0; i < this.inputData.length; i++) {
+      anyDenominators = anyDenominators || this.inputData[i].limitInputArgs.denominators !== undefined;
+      anyControlLimits = anyControlLimits || this.inputSettings.derivedSettings[i].chart_type_props.has_control_limits;
     }
-    if (this.inputSettings.settings[0].spc.ttip_show_numerator) {
-      tableColumnsDef.push({ name: "numerator", label: "Numerator" });
-    }
-    if (this.inputSettings.settings[0].spc.ttip_show_denominator) {
-      tableColumnsDef.push({ name: "denominator", label: "Denominator" });
-    }
-    if (lineSettings.show_target) {
-      tableColumnsDef.push({ name: "target", label: lineSettings.ttip_label_target });
-    }
-    if (lineSettings.show_alt_target) {
-      tableColumnsDef.push({ name: "alt_target", label: lineSettings.ttip_label_alt_target });
-    }
-    // Upper limits run outermost-first and lower limits innermost-first
-    const limitLevels = ["99", "95", "68"] as const;
-    for (let l = 0; l < limitLevels.length; l++) {
-      const limit = limitLevels[l];
-      if (lineSettings[`show_${limit}`]) {
-        tableColumnsDef.push({
-          name: `ucl${limit}`,
-          label: `${lineSettings[`ttip_label_${limit}_prefix_upper`]}${lineSettings[`ttip_label_${limit}`]}`
-        })
-      }
-    }
-    for (let l = limitLevels.length - 1; l >= 0; l--) {
-      const limit = limitLevels[l];
-      if (lineSettings[`show_${limit}`]) {
-        tableColumnsDef.push({
-          name: `lcl${limit}`,
-          label: `${lineSettings[`ttip_label_${limit}_prefix_lower`]}${lineSettings[`ttip_label_${limit}`]}`
-        })
-      }
-    }
+    tableColumnsDef.push(...lineColumns(this.inputSettings.settings[0], anyDenominators, anyControlLimits));
     const nhsIconSettings: settingsValueType["nhs_icons"] = this.inputSettings.settings[0].nhs_icons;
     if (nhsIconSettings.show_variation_icons) {
       tableColumnsDef.push({ name: "variation", label: "Variation" });
@@ -615,19 +637,22 @@ export default class viewModelClass {
         denominator: formatValues(limits.denominators[lastIndex], "integer"),
         target: formatValues(limits.targets[lastIndex], "value"),
         alt_target: formatValues(limits.alt_targets[lastIndex], "value"),
-        ucl99: formatValues(limits.ul99[lastIndex], "value"),
-        ucl95: formatValues(limits.ul95[lastIndex], "value"),
-        ucl68: formatValues(limits.ul68[lastIndex], "value"),
-        lcl68: formatValues(limits.ll68[lastIndex], "value"),
-        lcl95: formatValues(limits.ll95[lastIndex], "value"),
-        lcl99: formatValues(limits.ll99[lastIndex], "value"),
-        variation: varIcons[0],
+        ul99: formatValues(limits.ul99[lastIndex], "value"),
+        ul95: formatValues(limits.ul95[lastIndex], "value"),
+        ul68: formatValues(limits.ul68[lastIndex], "value"),
+        ll68: formatValues(limits.ll68[lastIndex], "value"),
+        ll95: formatValues(limits.ll95[lastIndex], "value"),
+        ll99: formatValues(limits.ll99[lastIndex], "value"),
+        speclimits_lower: formatValues(limits.speclimits_lower[lastIndex], "value"),
+        speclimits_upper: formatValues(limits.speclimits_upper[lastIndex], "value"),
+        trend_line: formatValues(limits.trend_line[lastIndex], "value"),
         assurance: assIcon,
         ...tooltipColumns
       };
 
       this.groupedRows.push({
         table_row,
+        variation_icons: varIcons,
         identity: this.identities[i],
         aesthetics: this.inputSettings.settings[i].summary_table,
         highlighted: this.inputData[i].anyHighlights
@@ -649,37 +674,8 @@ export default class viewModelClass {
     this.tableColumns[0] = new Array<{ name: string; label: string; }>();
 
     this.tableColumns[0].push({ name: "date", label: "Date" });
-    this.tableColumns[0].push({ name: "value", label: "Value" });
-
-    if (inputData.limitInputArgs.denominators !== undefined) {
-      this.tableColumns[0].push({ name: "numerator", label: "Numerator" });
-      this.tableColumns[0].push({ name: "denominator", label: "Denominator" });
-    }
-    if (settings.lines.show_target) {
-      this.tableColumns[0].push({ name: "target", label: "Target" });
-    }
-    if (settings.lines.show_alt_target) {
-      this.tableColumns[0].push({ name: "alt_target", label: "Alt. Target" });
-    }
-    if (settings.lines.show_specification) {
-      this.tableColumns[0].push({ name: "speclimits_lower", label: "Spec. Lower" },
-                             { name: "speclimits_upper", label: "Spec. Upper" });
-    }
-    if (settings.lines.show_trend) {
-      this.tableColumns[0].push({ name: "trend_line", label: "Trend Line" });
-    }
-    if (derivedSettings.chart_type_props.has_control_limits) {
-      if (settings.lines.show_99) {
-        this.tableColumns[0].push({ name: "ll99", label: "LL 99%" },
-                               { name: "ul99", label: "UL 99%" });
-      }
-      if (settings.lines.show_95) {
-        this.tableColumns[0].push({ name: "ll95", label: "LL 95%" }, { name: "ul95", label: "UL 95%" });
-      }
-      if (settings.lines.show_68) {
-        this.tableColumns[0].push({ name: "ll68", label: "LL 68%" }, { name: "ul68", label: "UL 68%" });
-      }
-    }
+    this.tableColumns[0].push(...lineColumns(settings, inputData.limitInputArgs.denominators !== undefined,
+                                             derivedSettings.chart_type_props.has_control_limits));
 
     if (settings.outliers.astronomical) {
       this.tableColumns[0].push({ name: "astpoint", label: "Ast. Point" });

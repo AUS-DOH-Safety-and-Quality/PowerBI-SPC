@@ -79,10 +79,10 @@ describe("Summary Table - combining indicators of different chart types", () => 
     expect(countSite.numerator).toBe("");
     expect(countSite.denominator).toBe("");
 
-    expect(trendSite.ucl99).toBe("");
-    expect(trendSite.ucl95).toBe("");
-    expect(trendSite.lcl95).toBe("");
-    expect(trendSite.lcl99).toBe("");
+    expect(trendSite.ul99).toBe("");
+    expect(trendSite.ul95).toBe("");
+    expect(trendSite.ll95).toBe("");
+    expect(trendSite.ll99).toBe("");
     expect(trendSite.value).not.toBe("");
     expect(trendSite.target).not.toBe("");
     expect(trendSite.assurance).toBe("none");
@@ -112,11 +112,11 @@ describe("Summary Table - combining indicators of different chart types", () => 
     });
     const colNames: string[] = columnNames(visual);
     const valueIdx: number = colNames.indexOf("value");
-    const ucl99Idx: number = colNames.indexOf("ucl99");
+    const ul99Idx: number = colNames.indexOf("ul99");
     const proportionRow = tableRow(tableDivElement, "Proportion Site");
 
     expect(proportionRow.querySelectorAll('td')[valueIdx].textContent).toBe(isolatedValueTooltip);
-    expect(proportionRow.querySelectorAll('td')[ucl99Idx].textContent).toBe(`${isolatedUl99!.toFixed(2)}%`);
+    expect(proportionRow.querySelectorAll('td')[ul99Idx].textContent).toBe(`${isolatedUl99!.toFixed(2)}%`);
   });
 
   it("assurance filtering excludes chart types without control limits from pass/fail/inconsistent, but not from 'all'/'any'", () => {

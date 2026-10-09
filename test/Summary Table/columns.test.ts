@@ -46,9 +46,10 @@ describe("Summary Table - column presence, order and content driven by settings"
     });
 
     const colNames: string[] = columnNames(visual);
+    // No denominators, so no numerator or denominator columns
     expect(colNames).toEqual([
-      "Indicator", "latest_date", "value", "numerator", "denominator",
-      "target", "ucl99", "ucl95", "lcl95", "lcl99"
+      "Indicator", "latest_date", "value",
+      "ul99", "ul95", "target", "ll95", "ll99"
     ]);
 
     const headerLabels = tableDivElement.querySelectorAll('.table-header th text');
@@ -68,6 +69,18 @@ describe("Summary Table - column presence, order and content driven by settings"
     const ward2Row = tableRow(tableDivElement, "Ward 2");
     expect(ward1Row.querySelectorAll('td')[1].textContent).toBe(cKeys[17]);
     expect(ward2Row.querySelectorAll('td')[1].textContent).toBe(cKeys[35]);
+  });
+
+  it("Run Chart: grouped table has no control limit columns, as in the single-indicator table", () => {
+    const settings = cloneSettings();
+    settings.spc.chart_type = "run";
+    const indicator: string[] = rep("Ward 1", 18).concat(rep("Ward 2", cKeys.length - 18));
+    visual.update({
+      dataViews: [ buildDataView({ key: cKeys, indicator: indicator, numerators: cNumerators }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+    expect(columnNames(visual)).toEqual(["Indicator", "latest_date", "value", "target"]);
   });
 
   it("U Chart: disabling numerator/denominator tooltips removes those columns", () => {
@@ -228,6 +241,74 @@ describe("Summary Table - column presence, order and content driven by settings"
     const colNames: string[] = columnNames(visual);
     expect(colNames.slice(0, 2)).toEqual(["Indicator", "Indicator 2"]);
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(4);
+  });
+
+  it("labels and orders the shared columns alike in both tables, as the tooltip does", () => {
+    const settings = cloneSettings();
+    settings.spc.chart_type = "p";
+    settings.summary_table.show_table = true;
+    settings.lines.show_68 = true;
+    settings.lines.show_alt_target = true;
+    settings.lines.alt_target = 20;
+    settings.lines.show_specification = true;
+    settings.lines.specification_upper = 40;
+    settings.lines.specification_lower = 10;
+    settings.lines.show_trend = true;
+    const ownColumns = new Set(["date", "latest_date", "Indicator", "astpoint", "trend", "shift"]);
+    function sharedColumns(): { name: string; label: string; }[] {
+      const columns = visual.viewModel.tableColumns[0];
+      const shared: { name: string; label: string; }[] = [];
+      for (let i = 0; i < columns.length; i++) {
+        if (!ownColumns.has(columns[i].name)) {
+          shared.push(columns[i]);
+        }
+      }
+      return shared;
+    }
+
+    visual.update({
+      dataViews: [ buildDataView({ key: pKeys, numerators: pNumerators, denominators: pDenominators }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+    const single = sharedColumns();
+    const tooltip = visual.viewModel.plotPoints[0].tooltip;
+    const names: string[] = [];
+    const labels: string[] = [];
+    for (let i = 0; i < single.length; i++) {
+      names.push(single[i].name);
+      labels.push(single[i].label);
+    }
+    expect(names).toEqual([
+      "value", "numerator", "denominator", "trend_line", "speclimits_upper", "speclimits_lower",
+      "ul99", "ul95", "ul68", "target", "alt_target", "ll68", "ll95", "ll99"
+    ]);
+    expect(new Set(labels).size).toBe(labels.length);
+
+    // Same order as the tooltip, for the entries both show
+    const tooltipLabels: string[] = [];
+    for (let i = 0; i < tooltip.length; i++) {
+      if (labels.includes(tooltip[i].displayName!)) {
+        tooltipLabels.push(tooltip[i].displayName!);
+      }
+    }
+    const tableLabels: string[] = [];
+    for (let i = 0; i < labels.length; i++) {
+      if (tooltipLabels.includes(labels[i])) {
+        tableLabels.push(labels[i]);
+      }
+    }
+    expect(tableLabels.length).toBe(names.length - 1);
+    expect(tableLabels).toEqual(tooltipLabels);
+
+    const indicator: string[] = rep("Site A", 18).concat(rep("Site B", pKeys.length - 18));
+    visual.update({
+      dataViews: [ buildDataView({ key: pKeys, indicator: indicator, numerators: pNumerators, denominators: pDenominators }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+    expect(visual.viewModel.showGrouped).toBe(true);
+    expect(sharedColumns()).toEqual(single);
   });
 
   // Remove visual element from DOM to avoid interfering with other tests

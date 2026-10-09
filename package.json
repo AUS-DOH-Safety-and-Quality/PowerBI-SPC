@@ -11,7 +11,7 @@
     "typecheck": "tsc -p tsconfig.test.json --noEmit"
   },
   "dependencies": {
-    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#b969a99"
+    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#f7a6470"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "5.0.3",
