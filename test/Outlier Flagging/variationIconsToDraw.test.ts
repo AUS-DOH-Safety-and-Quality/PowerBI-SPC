@@ -4,7 +4,6 @@ import type { settingsValueType } from "../../src/settings";
 import { describe, it, expect } from "vitest";
 
 describe("variationIconsToDraw", () => {
-    // Helper to create mock outliers object
     const createOutliers = (
         astpoint: string[],
         shift: string[],
@@ -17,7 +16,6 @@ describe("variationIconsToDraw", () => {
         two_in_three
     } as outliersObject);
 
-    // Helper to create mock settings
     const createSettings = (improvement_direction: string, flag_last_point: boolean): settingsValueType => ({
         outliers: {
             improvement_direction: improvement_direction
@@ -294,7 +292,6 @@ describe("variationIconsToDraw", () => {
 
             const result = variationIconsToDraw(outliers, settings);
 
-            // Should only return one instance of improvementHigh
             expect(result).toEqual(["improvementHigh"]);
         });
 

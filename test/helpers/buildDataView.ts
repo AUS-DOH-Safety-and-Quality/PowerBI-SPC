@@ -2,6 +2,7 @@ import powerbi from "powerbi-visuals-api";
 import DataView = powerbi.DataView;
 
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import { rep } from "powerbi-visuals-core/math";
 import type { PrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { cells } from "powerbi-visuals-core/testing";
 import { type settingsValueType } from "../../src/settings";
@@ -10,10 +11,9 @@ function buildColumn(displayName: string, queryName: string, values: PrimitiveVa
                       settings?: settingsValueType | (settingsValueType | undefined)[]): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
   const roles = Object.fromEntries([[queryName, true]]);
   const type: powerbi.ValueTypeDescriptor = typeof values[0] === "number" ? { numeric: true } : { text: true };
-  // A single settings object is repeated across every row; an array is passed through as-is (per-row settings)
   const objects: (settingsValueType | undefined)[] = Array.isArray(settings)
     ? settings
-    : values.map(() => settings);
+    : rep(settings, values.length);
   return {
     source: {
       displayName: displayName,
@@ -26,9 +26,16 @@ function buildColumn(displayName: string, queryName: string, values: PrimitiveVa
   };
 }
 
+export function sequentialKeys(n: number): string[] {
+  const keys = new Array<string>(n);
+  for (let i = 0; i < n; i++) {
+    keys[i] = String(i + 1);
+  }
+  return keys;
+}
+
 export default function buildDataView(args: {
                                         key?: PrimitiveValue[], indicator?: string[], indicator2?: string[],
-                                        // Additional named grouping columns, e.g. [{ name: "Cohort", values: [...] }]
                                         indicators?: { name: string, values: string[] }[],
                                         numerators?: PrimitiveValue[], denominators?: PrimitiveValue[], xbar_sds?: PrimitiveValue[],
                                         groupings?: PrimitiveValue[], tooltips?: PrimitiveValue[], labels?: PrimitiveValue[]
@@ -54,11 +61,11 @@ export default function buildDataView(args: {
     metadata_columns.push(indicatorColumn2.source);
   }
   if (!isNullOrUndefined(args?.indicators)) {
-    args.indicators!.forEach(ind => {
-      const indicatorColumn = buildColumn(ind.name, "indicator", ind.values);
+    for (let i = 0; i < args.indicators.length; i++) {
+      const indicatorColumn = buildColumn(args.indicators[i].name, "indicator", args.indicators[i].values);
       categories.push(indicatorColumn as powerbi.DataViewCategoryColumn);
       metadata_columns.push(indicatorColumn.source);
-    });
+    }
   }
 
   if (!isNullOrUndefined(args?.numerators)) {

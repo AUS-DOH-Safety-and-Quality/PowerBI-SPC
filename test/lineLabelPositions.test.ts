@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import { defaultSettings, type settingsValueType } from "../src/settings";
-import buildDataView from "./helpers/buildDataView";
+import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48, 60, 66, 74, 84];
 
-// Core finding 18: outside/inside on non-interval lines place labels above/below.
+// Outside/inside on non-interval lines place labels above/below.
 describe("line label positions", () => {
   it("places outside and inside labels on main and target lines with finite offsets", () => {
     const settings: settingsValueType = {
@@ -22,7 +22,7 @@ describe("line label positions", () => {
     const element = testDom("500", "500");
     const visual = new Visual({ element, host: createVisualHost({}) });
     visual.update({
-      dataViews: [buildDataView({ key: numerators.map((_, i) => String(i + 1)), numerators }, settings)],
+      dataViews: [buildDataView({ key: sequentialKeys(numerators.length), numerators }, settings)],
       viewport: { width: 500, height: 500 },
       type: 2
     });

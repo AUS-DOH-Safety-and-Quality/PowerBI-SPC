@@ -1,121 +1,40 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import averageMovingRange from "./averageMovingRange";
 import plottedValues from "./plottedValues";
 import { median } from "powerbi-visuals-core/math";
 
-/**
- * Calculates control limits for an I-mR chart using the median instead of mean.
- *
- * The I-mR chart (Individuals-Moving Range chart using median) is a variation of the
- * standard I-chart that uses the median as the centreline instead of the mean. This
- * makes the chart more robust to outliers and extreme values.
- *
- * **Centreline Calculation:**
- * The centreline is the median of all individual observations (x̃) rather than the mean.
- *
- * If denominators are provided, each value is calculated as the ratio: $x_i = \frac{numerator_i}{denominator_i}$
- *
- * **Sigma (Standard Deviation) Calculation:**
- * The standard deviation is estimated from the average moving range (AMR):
- *
- * $$\sigma = \frac{\overline{MR}}{d_2} = \frac{\overline{MR}}{1.128}$$
- *
- * where the moving range is the absolute difference between consecutive observations:
- *
- * $$MR_i = |x_i - x_{i-1}|$$
- *
- * $$\overline{MR} = \frac{\sum_{i=2}^{n} MR_i}{n-1}$$
- *
- * and $d_2 = 1.128$ is the expected value of the range for a sample size of 2.
- *
- * Optionally, outliers can be screened from the moving range calculation using:
- * $MR_{limit} = 3.267 \times \overline{MR}$ (the upper limit for moving range).
- *
- * **Control Limits:**
- * - Upper Control Limit (3σ): $UCL = \tilde{x} + 3\sigma = \tilde{x} + \frac{3 \times \overline{MR}}{1.128}$
- * - Lower Control Limit (3σ): $LCL = \tilde{x} - 3\sigma = \tilde{x} - \frac{3 \times \overline{MR}}{1.128}$
- *
- * @param args - The control limits calculation arguments
- * @param args.numerators - Array of individual measurements (or numerators if using ratios)
- * @param args.denominators - Optional array of denominators for ratio calculations
- * @param args.keys - Array of key objects containing x-position, id, and label for each point
- * @param args.subset_points - Array of indices indicating which points to include in limit calculations
- * @param args.outliers_in_limits - If false, screens out extreme moving ranges before calculating sigma
- *
- * @returns A controlLimitsObject containing:
- *   - keys: The input keys passed through
- *   - values: The individual values (or ratios) plotted on the chart
- *   - numerators/denominators: The original values if using ratios
- *   - targets: The centreline (median) for each point
- *   - ll99/ul99: Lower/Upper 3-sigma control limits
- *   - ll95/ul95: Lower/Upper 2-sigma warning limits
- *   - ll68/ul68: Lower/Upper 1-sigma limits
- */
+/** I chart with a median centreline; sigma = average moving range / d2 (1.128 for n = 2). */
 export default function imLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
-  // Determine if we're calculating ratios (numerator/denominator) or raw values
-  const { values, numerators, denominators } = plottedValues(args);
+  const plotted = plottedValues(args);
+  const n_sub: number = args.subset_points.length;
+  const subset_points: readonly number[] = args.subset_points;
 
-  // Extract input arrays from arguments
-  const n_sub: number = args.subset_points.length;          // Number of points used for limit calculation
-  const subset_points: readonly number[] = args.subset_points; // Indices of points to include
-
-  // Extract subset values and store for median calculation
   let ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
-    ratio_subset[i] = values[subset_points[i]];
+    ratio_subset[i] = plotted.values[subset_points[i]];
   }
-
-  // Calculate median (centreline)
   const cl: number = median(ratio_subset);
 
-  // Calculate moving ranges: MR_i = |x_i - x_{i-1}|
   let consec_diff: number[] = new Array<number>(n_sub - 1);
-  let amr: number = 0;  // Running sum for average moving range
-
   for (let i = 1; i < n_sub; i++) {
     consec_diff[i - 1] = Math.abs(ratio_subset[i] - ratio_subset[i - 1]);
-    amr += consec_diff[i - 1];
   }
 
-  // Calculate initial average moving range: AMR = Σ|x_i - x_{i-1}| / (n-1)
-  amr /= (n_sub - 1);
+  const sigma: number = averageMovingRange(consec_diff, args.outliers_in_limits) / 1.128;
 
-  // Optional outlier screening for moving range calculation
-  // If outliers_in_limits is false, screen out extreme moving ranges
-  if (!args.outliers_in_limits && amr > 0) {
-    // Upper limit for moving range: MR_limit = 3.267 × AMR (D4 constant for n=2)
-    const consec_diff_ulim: number = amr * 3.267;
-
-    // Recalculate AMR excluding values above the limit
-    let screened_amr: number = 0;
-    let screened_count: number = 0;
-    for (let i = 0; i < consec_diff.length; i++) {
-      if (consec_diff[i] < consec_diff_ulim) {
-        screened_amr += consec_diff[i];
-        screened_count += 1;
-      }
-    }
-    amr = screened_amr / screened_count; // Recalculated AMR without outliers
-  }
-
-  // Calculate sigma from average moving range: σ = AMR / d2
-  // d2 = 1.128 is the expected value of the range for sample size n=2
-  const sigma: number = amr / 1.128;
-
-  const n: number = args.keys.length; // Total number of data points
-
-  // Initialize the return object with arrays for all limit lines
+  const n: number = args.keys.length;
   const rtn = {
     keys: args.keys,
-    values,
-    numerators,
-    denominators,
-    targets: new Array<number>(n),                         // Centreline (median)
-    ll99: new Array<number>(n),                            // Lower 3-sigma limit
-    ll95: new Array<number>(n),                            // Lower 2-sigma limit
-    ll68: new Array<number>(n),                            // Lower 1-sigma limit
-    ul68: new Array<number>(n),                            // Upper 1-sigma limit
-    ul95: new Array<number>(n),                            // Upper 2-sigma limit
-    ul99: new Array<number>(n)                             // Upper 3-sigma limit
+    values: plotted.values,
+    numerators: plotted.numerators,
+    denominators: plotted.denominators,
+    targets: new Array<number>(n),
+    ll99: new Array<number>(n),
+    ll95: new Array<number>(n),
+    ll68: new Array<number>(n),
+    ul68: new Array<number>(n),
+    ul95: new Array<number>(n),
+    ul99: new Array<number>(n)
   }
 
   const twoSigma: number = 2 * sigma;
@@ -127,17 +46,14 @@ export default function imLimits(args: Readonly<controlLimitsArgs>): CalculatedL
   const ul95: number = cl + twoSigma;
   const ul99: number = cl + threeSigma;
 
-  // Calculate control limits for each point
-  // I-mR chart has constant limits (same sigma for all points)
   for (let i = 0; i < n; i++) {
-
-    rtn.targets[i] = cl;               // Centreline: x̃ (median)
-    rtn.ll99[i] = ll99;      // LCL: x̃ - 3σ
-    rtn.ll95[i] = ll95;      // 2σ lower limit: x̃ - 2σ
-    rtn.ll68[i] = ll68;      // 1σ lower limit: x̃ - σ
-    rtn.ul68[i] = ul68;      // 1σ upper limit: x̃ + σ
-    rtn.ul95[i] = ul95;      // 2σ upper limit: x̃ + 2σ
-    rtn.ul99[i] = ul99;      // UCL: x̃ + 3σ
+    rtn.targets[i] = cl;
+    rtn.ll99[i] = ll99;
+    rtn.ll95[i] = ll95;
+    rtn.ll68[i] = ll68;
+    rtn.ul68[i] = ul68;
+    rtn.ul95[i] = ul95;
+    rtn.ul99[i] = ul99;
   }
 
   return rtn;

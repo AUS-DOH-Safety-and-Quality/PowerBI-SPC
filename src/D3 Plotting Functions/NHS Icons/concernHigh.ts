@@ -1,17 +1,9 @@
 import type { BaseType, Selection } from "powerbi-visuals-core/rendering";
 
 /**
- * Inline function to be called by D3 for rendering the Variation - Concern High icon.
- * The code below is a translation from HTML to D3 syntax of the SVG file:
- * https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/variation/concern_high.svg
- *
- * This function does not return a value, it is meant to be called as part of chaining D3 syntax
- *
- * @param selection The D3 parent object to which the icon's SVG code will be added
+ * Variation - Concern High icon, translated to D3 from the NHSRplotthedots SVG.
+ * @see https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/variation/concern_high.svg
  */
-
-// ESLint errors due to number of lines in function, but would reduce readability to separate further
-
 export default function concernHigh(selection: Selection<BaseType, unknown, SVGSVGElement | BaseType, unknown>): void {
   selection.append("g")
             .attr("clip-path","url(#clip2)")

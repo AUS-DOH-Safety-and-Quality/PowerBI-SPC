@@ -2,6 +2,7 @@ import { defaultSettings } from "../../src/settings";
 import { testDom } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
+import { columnNames, tableRow } from "../helpers/summaryTable";
 import { keyedHost } from "powerbi-visuals-core/testing";
 import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
@@ -10,7 +11,7 @@ function cloneSettings() {
   return JSON.parse(JSON.stringify(defaultSettings));
 }
 
-// Small "run" chart dataset (no control limits) - 3 indicator groups
+/** Small "run" chart dataset (no control limits) - 3 indicator groups */
 const keys: string[] = ["1","2","3","4","5","6","7","8","9","10","11","12"];
 const numerators: number[] = [12.111, 14.222, 9.333, 13.444, 15.555, 8.666, 10.777, 16.888, 7.999, 11.1, 12.2, 9.9];
 const indicator: string[] = rep("Team A", 4).concat(rep("Team B", 4)).concat(rep("Team C", 4));
@@ -134,10 +135,9 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     const valueIdx: number = colNames.indexOf("value");
-    const rows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
-    const teamARow = rows.find(r => r.querySelector('td')!.textContent === "Team A")!;
+    const teamARow = tableRow(tableDivElement, "Team A");
     const expectedValue: string = numerators[3].toFixed(4);
     expect(teamARow.querySelectorAll('td')[valueIdx].textContent).toBe(expectedValue);
   });
@@ -154,12 +154,13 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
       type: 2
     });
 
-    const rows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
+    const rows = tableDivElement.querySelectorAll<HTMLElement>('tbody tr');
     expect(rows.length).toBe(3);
     // No selection yet: every row uses the default table_opacity
-    rows.forEach(row => expect(row.style.opacity).toBe("0.77"));
+    for (let i = 0; i < rows.length; i++) {
+      expect(rows[i].style.opacity).toBe("0.77");
+    }
 
-    // Select the first group's underlying identity and re-derive highlighting
     const plotPoints = visual.viewModel.groupedRows;
     const selectedIdentity = plotPoints[0].identity[0];
     visual.selectionManager.select(selectedIdentity, false);
@@ -173,8 +174,10 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
     // Clearing the selection restores the default opacity across all rows
     visual.selectionManager.clear();
     visual.updateHighlighting();
-    const rowsAfterClear: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
-    rowsAfterClear.forEach(row => expect(row.style.opacity).toBe("0.77"));
+    const rowsAfterClear = tableDivElement.querySelectorAll<HTMLElement>('tbody tr');
+    for (let i = 0; i < rowsAfterClear.length; i++) {
+      expect(rowsAfterClear[i].style.opacity).toBe("0.77");
+    }
   });
 
   // Remove visual element from DOM to avoid interfering with other tests

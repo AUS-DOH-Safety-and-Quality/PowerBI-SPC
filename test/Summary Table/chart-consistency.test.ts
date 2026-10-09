@@ -2,6 +2,9 @@ import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
+import findBy from "../helpers/findBy";
+import { columnNames, tableRow } from "../helpers/summaryTable";
+import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
@@ -28,21 +31,25 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
     });
 
     const lastPoint = visual.viewModel.plotPoints[keys.length - 1];
-    const valueTooltipEntry = lastPoint.tooltip.find(t => t.displayName === "Proportion")!;
+    const valueTooltipEntry = findBy(lastPoint.tooltip, "displayName", "Proportion")!;
     expect(valueTooltipEntry).toBeTruthy();
     expect(valueTooltipEntry.value).toMatch(/%$/);
 
     const groupedSettings = cloneSettings();
     groupedSettings.spc.chart_type = "p";
-    const indicator = keys.map((_, i) => i < 4 ? "Group A" : "Group B");
+    const indicator = rep("Group A", 4).concat(rep("Group B", keys.length - 4));
     visual.update({
-      dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators, denominators: denominators }, groupedSettings) ],
+      dataViews: [ buildDataView({
+        key: keys,
+        indicator: indicator,
+        numerators: numerators,
+        denominators: denominators
+      }, groupedSettings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const groupBRow = Array.from(tableDivElement.querySelectorAll('tbody tr'))
-      .find(r => r.querySelector('td')!.textContent === "Group B")!;
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const groupBRow = tableRow(tableDivElement, "Group B");
+    const colNames: string[] = columnNames(visual);
     const valueIdx: number = colNames.indexOf("value");
     expect(groupBRow.querySelectorAll('td')[valueIdx].textContent).toBe(valueTooltipEntry.value);
   });
@@ -57,7 +64,7 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     const valueIdx: number = colNames.indexOf("value");
     const lastRow = tableDivElement.querySelectorAll('tbody tr')[keys.length - 1];
     const cellText = lastRow.querySelectorAll('td')[valueIdx].textContent;
@@ -77,7 +84,7 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
     });
 
     const lastPoint = visual.viewModel.plotPoints[keys.length - 1];
-    const upper68TooltipEntry = lastPoint.tooltip.find(t => t.displayName === "Upper 68% Limit");
+    const upper68TooltipEntry = findBy(lastPoint.tooltip, "displayName", "Upper 68% Limit");
     expect(upper68TooltipEntry).toBeTruthy();
 
     // Dummy second group appended purely to trigger grouped mode; Test Group's last point is unchanged
@@ -87,17 +94,21 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
     const groupedKeys: string[] = keys.concat(["9", "10"]);
     const groupedNumerators: number[] = numerators.concat([5, 6]);
     const groupedDenominators: number[] = denominators.concat([20, 20]);
-    const indicator: string[] = keys.map(() => "Test Group").concat(["Dummy Group", "Dummy Group"]);
+    const indicator: string[] = rep("Test Group", keys.length).concat(["Dummy Group", "Dummy Group"]);
     visual.update({
-      dataViews: [ buildDataView({ key: groupedKeys, indicator: indicator, numerators: groupedNumerators, denominators: groupedDenominators }, groupedSettings) ],
+      dataViews: [ buildDataView({
+        key: groupedKeys,
+        indicator: indicator,
+        numerators: groupedNumerators,
+        denominators: groupedDenominators
+      }, groupedSettings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     const ucl68Idx: number = colNames.indexOf("ucl68");
     expect(ucl68Idx).toBeGreaterThanOrEqual(0);
-    const testGroupRow = Array.from(tableDivElement.querySelectorAll('tbody tr'))
-      .find(r => r.querySelector('td')!.textContent === "Test Group")!;
+    const testGroupRow = tableRow(tableDivElement, "Test Group");
     expect(testGroupRow.querySelectorAll('td')[ucl68Idx].textContent).toBe(upper68TooltipEntry!.value);
   });
 

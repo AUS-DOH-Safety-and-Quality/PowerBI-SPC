@@ -72,9 +72,6 @@ export class Visual implements powerbi.extensibility.IVisual {
       // Remove printed error if refreshing after a previous error run
       this.svg.select(".errormessage").remove();
 
-      // This step handles the updating of both the input data and settings
-      // If there are any errors or failures, the update exits early sets the
-      // update status to false
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
       if (!update_status.status) {
         this.currentPlotProperties = undefined;
@@ -128,8 +125,12 @@ export class Visual implements powerbi.extensibility.IVisual {
       return;
     }
     drawErrorMessage(svg, {
-      width: options.viewport.width, height: options.viewport.height,
-      message, kind, show, colour: this.viewModel.colourPalette.foregroundColour
+      width: options.viewport.width,
+      height: options.viewport.height,
+      message,
+      kind,
+      show,
+      colour: this.viewModel.colourPalette.foregroundColour
     });
   }
 
@@ -189,7 +190,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     drawPlotValueLabels(svg, context, viewModel.inputData[0].anyLabels);
   }
 
-  // Toggles a limit split at the point; persisting it triggers the update that recalculates the limits
+  /** Toggles a limit split at the point; persisting it triggers the update that recalculates the limits */
   toggleSplit(point: plotData): void {
     const splitIndexes = this.viewModel.splitIndexes;
     const xIndex = splitIndexes.indexOf(point.x);
@@ -235,20 +236,28 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   updateHighlighting(): void {
     const viewModel = this.viewModel;
-    const anyHighlights: boolean = viewModel.inputData.some(d => d.anyHighlights);
-    const { active, selected } = selectionState(this.selectionManager, anyHighlights);
+    let anyHighlights: boolean = false;
+    for (let i = 0; i < viewModel.inputData.length && !anyHighlights; i++) {
+      anyHighlights = viewModel.inputData[i].anyHighlights;
+    }
+    const state = selectionState(this.selectionManager, anyHighlights);
+    const active = state.active;
+    const selected = state.selected;
     const settings = viewModel.inputSettings.settings[0];
     const svg = this.svg.node();
     if (svg !== null) {
       highlightPlot<plotData>(svg, {
-        active, selected,
+        active,
+        selected,
         lineOpacity: line => lineOpacity(settings.lines, lineKeys[line.name as LineName], active),
         dotOpacities: point => point.aesthetics
       });
     }
     const tableSelection: Selection<BaseType | HTMLTableRowElement, plotDataGrouped, BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
     tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({
-      opacity: d.aesthetics.table_opacity, opacity_selected: d.aesthetics.table_opacity_selected, opacity_unselected: d.aesthetics.table_opacity_unselected
+      opacity: d.aesthetics.table_opacity,
+      opacity_selected: d.aesthetics.table_opacity_selected,
+      opacity_unselected: d.aesthetics.table_opacity_unselected
     }, active, identitySelected(d.identity, selected) || d.highlighted));
   }
 

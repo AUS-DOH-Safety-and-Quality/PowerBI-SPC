@@ -150,7 +150,9 @@ it("preserves blank limit tooltip prefixes through settings reading and renderin
     const tooltip = visual.viewModel.plotPoints[0].tooltip;
     let matchingLimits = 0;
     for (let i = 0; i < tooltip.length; i++) {
-      if (tooltip[i].displayName === "95% Limit") matchingLimits++;
+      if (tooltip[i].displayName === "95% Limit") {
+        matchingLimits++;
+      }
       expect(tooltip[i].displayName).not.toBe("Lower 95% Limit");
       expect(tooltip[i].displayName).not.toBe("Upper 95% Limit");
     }

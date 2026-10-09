@@ -18,10 +18,7 @@ describe("Chart Initialisation", () => {
   const tableDivElement: Element = visualClassElement.querySelector('div') as Element;
 
   it("Visual can be created", () => {
-    // Expect that the visual element has been created
     expect(visualClassElement).toBeTruthy();
-
-    // Expect that the visual element contains both an SVG for the chart and a div for the table
     expect(svgElement).toBeTruthy();
     expect(tableDivElement?.querySelector('table')).toBeTruthy();
   });
@@ -40,14 +37,12 @@ describe("Chart Initialisation", () => {
     expect(tableDivElement.getAttribute('style')).toContain('height: 0%');
     expect(tableDivElement.getAttribute('style')).toContain('width: 0%');
 
-    // Pass indicator groupings with data
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys, indicator: stringGrouping, numerators: validNumerators }) ],
       viewport: { width: 500, height: 500 },
       type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
-    // Expect that the table div element now has 100% height and width, while the SPC chart is hidden
     expect(svgElement.getAttribute('width')).toBe('0');
     expect(svgElement.getAttribute('height')).toBe('0');
     expect(tableDivElement.getAttribute('style')).toContain('height: 100%');

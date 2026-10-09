@@ -1,6 +1,6 @@
 import { limitLineKeys } from "powerbi-visuals-core/settings";
 
-// Line names to their `createLineGroup` keys
+/** Line names to their `createLineGroup` keys */
 const lineKeys = {
   ...limitLineKeys,
   targets: "target",

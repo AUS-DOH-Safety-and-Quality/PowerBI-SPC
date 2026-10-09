@@ -18,7 +18,9 @@ function extract(view: powerbi.DataView, indices: number[], chart: "i" | "p" | "
   const settings = createDefaultValues(settingsModel);
   settings.spc.chart_type = chart;
   const validated = validateDataView([view], ["numerators"]);
-  if (validated.status !== "valid") return validated;
+  if (validated.status !== "valid") {
+    return validated;
+  }
   const positions = new Map<number, number>();
   const messages: string[][] = [];
   for (let i = 0; i < indices.length; i++) {
@@ -37,11 +39,18 @@ describe("input row contracts", () => {
       settings.scatter.size = i + 1;
       rows.push(settings);
     }
-    const view = buildDataView({ key: ["A", "B", "C", "D"], numerators: [1, null, 3, 4],
-      labels: [null, "removed", "C label"], tooltips: [0, "removed", false], groupings: ["one", "one", null, "two"] }, rows);
+    const view = buildDataView({
+      key: ["A", "B", "C", "D"],
+      numerators: [1, null, 3, 4],
+      labels: [null, "removed", "C label"],
+      tooltips: [0, "removed", false],
+      groupings: ["one", "one", null, "two"]
+    }, rows);
     view.categorical!.values![0].highlights = [0, 2];
     const result = extract(view, [3, 1, 0, 2, 5, 3]);
-    if (result.status !== "valid") throw new Error(result.error);
+    if (result.status !== "valid") {
+      throw new Error(result.error);
+    }
     expect(result.data.limitInputArgs.keys).toEqual([
       { x: 0, id: 3, label: "D" }, { x: 1, id: 0, label: "A" },
       { x: 2, id: 2, label: "C" }, { x: 3, id: 3, label: "D" }
@@ -65,7 +74,9 @@ describe("input row contracts", () => {
 
   it("reads absent optional columns as blank rows and present empty columns the same way", () => {
     const absent = extract(buildDataView({ key: ["A", "B"], numerators: [1, 2] }), [0, 1]);
-    if (absent.status !== "valid") throw new Error(absent.error);
+    if (absent.status !== "valid") {
+      throw new Error(absent.error);
+    }
     expect(absent.data.labels).toEqual([undefined, undefined]);
     expect(absent.data.tooltips).toEqual([[], []]);
     expect(absent.data.highlights).toEqual([undefined, undefined]);
@@ -75,7 +86,9 @@ describe("input row contracts", () => {
     const view = buildDataView({ key: ["A", "B"], numerators: [1, 2], labels: [], tooltips: [] });
     view.categorical!.values![0].highlights = [];
     const present = extract(view, [0, 1]);
-    if (present.status !== "valid") throw new Error(present.error);
+    if (present.status !== "valid") {
+      throw new Error(present.error);
+    }
     expect(present.data.labels).toEqual([undefined, undefined]);
     expect(present.data.highlights).toEqual([undefined, undefined]);
     expect(present.data.anyLabels).toBe(false);
@@ -84,8 +97,15 @@ describe("input row contracts", () => {
   });
 
   it("narrows required numerics and returns errors without fabricated data", () => {
-    const valid = extract(buildDataView({ key: ["A", "B", "C"], numerators: [1, 2, 3], denominators: [10, null, 20], xbar_sds: [1, 2, 3] }), [0, 1, 2], "xbar");
-    if (valid.status !== "valid") throw new Error(valid.error);
+    const valid = extract(buildDataView({
+      key: ["A", "B", "C"],
+      numerators: [1, 2, 3],
+      denominators: [10, null, 20],
+      xbar_sds: [1, 2, 3]
+    }), [0, 1, 2], "xbar");
+    if (valid.status !== "valid") {
+      throw new Error(valid.error);
+    }
     expect(valid.data.limitInputArgs.numerators).toEqual([1, 3]);
     expect(valid.data.limitInputArgs.denominators).toEqual([10, 20]);
     expect(valid.data.limitInputArgs.xbar_sds).toEqual([1, 3]);
@@ -111,7 +131,13 @@ describe("input row contracts", () => {
   it("retains scalar key conversion, duplicate query groups and complete date hierarchies", () => {
     const settings = createDefaultValues(settingsModel);
     const column = (queryName: string, values: PrimitiveValue[], category?: string): powerbi.DataViewCategoryColumn => ({
-      source: { displayName: queryName, queryName, roles: { key: true }, type: category === undefined ? { text: true } : { temporal: true, category } as unknown as powerbi.ValueTypeDescriptor }, values: cells(values)
+      source: {
+        displayName: queryName,
+        queryName,
+        roles: { key: true },
+        type: category === undefined ? { text: true } : { temporal: true, category } as unknown as powerbi.ValueTypeDescriptor
+      },
+      values: cells(values)
     });
     expect(extractKeys([column("key", [0, false, null, ""])], settings, [1, 0, 3, 2])).toEqual(["false", "0", "", undefined]);
     expect(extractKeys([column("key", ["A", "B"]), column("key", ["X", "Y"])], settings, [1, 0])).toEqual(["B Y", "A X"]);

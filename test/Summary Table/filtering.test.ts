@@ -2,12 +2,21 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
+import { columnValues } from "../helpers/summaryTable";
 import { rep } from "powerbi-visuals-core/math";
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
   return JSON.parse(JSON.stringify(defaultSettings));
+}
+
+function prefixedKeys(prefix: string, n: number): string[] {
+  const keys = new Array<string>(n);
+  for (let i = 0; i < n; i++) {
+    keys[i] = `${prefix}${i}`;
+  }
+  return keys;
 }
 
 describe("Summary Table - variation and assurance filters", () => {
@@ -18,8 +27,8 @@ describe("Summary Table - variation and assurance filters", () => {
 
   const stableValues: number[] = [10, 11, 9, 10, 11, 9, 10, 11, 9, 10, 11, 9];
   const outlierValues: number[] = [10, 11, 9, 10, 11, 9, 10, 11, 9, 10, 11, 1000];
-  const stableKeys: string[] = stableValues.map((_, i) => `s${i}`);
-  const outlierKeys: string[] = outlierValues.map((_, i) => `o${i}`);
+  const stableKeys: string[] = prefixedKeys("s", stableValues.length);
+  const outlierKeys: string[] = prefixedKeys("o", outlierValues.length);
 
   function buildVariationDataView(settings: settingsValueType) {
     const keys: string[] = stableKeys.concat(outlierKeys);
@@ -96,7 +105,7 @@ describe("Summary Table - variation and assurance filters", () => {
 
   const highVolumeNumerators: number[] = [17,12,27,20,20,18,22,19,19,24,17,16,24,19,19,22,25,19,17,6,25,17,11,14];
   const lowVolumeNumerators: number[] = [9,11,7,13,5,5,3,5,9,4,5,9];
-  const cKeys: string[] = highVolumeNumerators.map((_, i) => `h${i}`).concat(lowVolumeNumerators.map((_, i) => `l${i}`));
+  const cKeys: string[] = prefixedKeys("h", highVolumeNumerators.length).concat(prefixedKeys("l", lowVolumeNumerators.length));
   const cNumerators: number[] = highVolumeNumerators.concat(lowVolumeNumerators);
   const cIndicator: string[] = rep("High Volume", highVolumeNumerators.length).concat(rep("Low Volume", lowVolumeNumerators.length));
 
@@ -120,8 +129,10 @@ describe("Summary Table - variation and assurance filters", () => {
 
     const allRows = visual.viewModel.groupedRows;
     expect(allRows.length).toBe(2);
-    const categories: Map<string, string> = new Map(allRows.map(r => [r.table_row["Indicator"] as string, r.table_row.assurance]));
-    expect(new Set(categories.values()).size).toBeGreaterThan(1);
+    const names: string[] = columnValues(allRows, "Indicator");
+    const assurances: string[] = columnValues(allRows, "assurance");
+    const categories: string[] = Array.from(new Set(assurances));
+    expect(categories.length).toBeGreaterThan(1);
 
     const filterKeywordFor: Record<string, string | undefined> = {
       consistentPass: "pass",
@@ -130,7 +141,8 @@ describe("Summary Table - variation and assurance filters", () => {
       none: undefined
     };
 
-    for (const category of new Set(categories.values())) {
+    for (let c = 0; c < categories.length; c++) {
+      const category = categories[c];
       const filterKeyword: string | undefined = filterKeywordFor[category];
       if (isNullOrUndefined(filterKeyword)) {
         continue;
@@ -143,11 +155,13 @@ describe("Summary Table - variation and assurance filters", () => {
         type: 2
       });
 
-      const expectedGroups: string[] = Array.from(categories.entries())
-        .filter(([, cat]) => cat === category)
-        .map(([name]) => name);
-      const filteredRows = visual.viewModel.groupedRows;
-      expect(filteredRows.map(r => r.table_row["Indicator"]).sort()).toEqual(expectedGroups.sort());
+      const expectedGroups: string[] = [];
+      for (let i = 0; i < names.length; i++) {
+        if (assurances[i] === category) {
+          expectedGroups.push(names[i]);
+        }
+      }
+      expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(expectedGroups.sort());
       expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(expectedGroups.length);
     }
   });
@@ -161,7 +175,12 @@ describe("Summary Table - variation and assurance filters", () => {
       type: 2
     });
     const allRows = visual.viewModel.groupedRows;
-    const expectedGroups: string[] = allRows.filter(r => r.table_row.assurance !== "inconsistent").map(r => r.table_row["Indicator"] as string);
+    const expectedGroups: string[] = [];
+    for (let i = 0; i < allRows.length; i++) {
+      if (allRows[i].table_row.assurance !== "inconsistent") {
+        expectedGroups.push(allRows[i].table_row["Indicator"]);
+      }
+    }
 
     const filterSettings = buildAssuranceSettings();
     filterSettings.summary_table.table_assurance_filter = "any";
@@ -170,8 +189,7 @@ describe("Summary Table - variation and assurance filters", () => {
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const filteredRows = visual.viewModel.groupedRows;
-    expect(filteredRows.map(r => r.table_row["Indicator"]).sort()).toEqual(expectedGroups.sort());
+    expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(expectedGroups.sort());
   });
 
   // Regression: filtering down to a single surviving group crashed if it wasn't the first in the data
@@ -180,12 +198,18 @@ describe("Summary Table - variation and assurance filters", () => {
     const groupMidNumerators: number[] = [20, 21, 19, 20, 21, 19, 20, 21];
     const groupHighNumerators: number[] = [45, 46, 44, 45, 46, 44, 45, 46];
     const denominators: number[] = rep(100, 8);
-    const pKeys: string[] = groupLowNumerators.map((_, i) => `l${i}`)
-      .concat(groupMidNumerators.map((_, i) => `m${i}`))
-      .concat(groupHighNumerators.map((_, i) => `h${i}`));
+    const pKeys: string[] = prefixedKeys("l", groupLowNumerators.length)
+      .concat(prefixedKeys("m", groupMidNumerators.length))
+      .concat(prefixedKeys("h", groupHighNumerators.length));
     const pNumerators: number[] = groupLowNumerators.concat(groupMidNumerators).concat(groupHighNumerators);
     const pDenominators: number[] = denominators.concat(denominators).concat(denominators);
     const pIndicator: string[] = rep("Low Site", 8).concat(rep("Mid Site", 8)).concat(rep("High Site", 8));
+    const pArgs = {
+      key: pKeys,
+      indicator: pIndicator,
+      numerators: pNumerators,
+      denominators: pDenominators
+    };
 
     it("keeps rendering correctly when the single surviving group is not the first indicator in the data", () => {
       const element2 = testDom("500", "500");
@@ -200,7 +224,7 @@ describe("Summary Table - variation and assurance filters", () => {
       settings.summary_table.table_assurance_filter = "pass";
 
       visual2.update({
-        dataViews: [ buildDataView({ key: pKeys, indicator: pIndicator, numerators: pNumerators, denominators: pDenominators }, settings) ],
+        dataViews: [ buildDataView(pArgs, settings) ],
         viewport: { width: 500, height: 500 },
         type: 2
       });
@@ -228,7 +252,7 @@ describe("Summary Table - variation and assurance filters", () => {
       settings.summary_table.table_assurance_filter = "fail";
 
       visual.update({
-        dataViews: [ buildDataView({ key: pKeys, indicator: pIndicator, numerators: pNumerators, denominators: pDenominators }, settings) ],
+        dataViews: [ buildDataView(pArgs, settings) ],
         viewport: { width: 500, height: 500 },
         type: 2
       });

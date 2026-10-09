@@ -16,7 +16,9 @@ describe("setting definitions", () => {
     expect(defaultSettings.spc.num_points_subset).toBeUndefined();
     const pane = new settingsClass().getFormattingModel();
     expect(pane.cards).toHaveLength(12);
-    for (let i = 0; i < pane.cards.length; i++) expect(pane.cards[i].displayName).toBeTruthy();
+    for (let i = 0; i < pane.cards.length; i++) {
+      expect(pane.cards[i].displayName).toBeTruthy();
+    }
   });
 
   it("keeps visual instances and interleaved indicator settings independent", () => {

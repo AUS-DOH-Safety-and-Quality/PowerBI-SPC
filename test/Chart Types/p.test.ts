@@ -84,8 +84,9 @@ describe("P Chart Test", () => {
       expect(renderingFinished).toHaveBeenCalledOnce();
       expect(chartElement.querySelector(".errormessage")).toBeNull();
       const limits = chart.viewModel.controlLimits[0];
-      for (const line of ["values", "targets", "ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const) {
-        expect(limits[line]).toEqual(expectedValues);
+      const lines = ["values", "targets", "ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
+      for (let l = 0; l < lines.length; l++) {
+        expect(limits[lines[l]]).toEqual(expectedValues);
       }
       expect(chartElement.querySelector("svg")!.outerHTML).not.toMatch(/NaN|Infinity/);
 

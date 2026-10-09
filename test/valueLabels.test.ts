@@ -5,7 +5,7 @@ import { trianglePath } from "powerbi-visuals-core/rendering";
 import { Visual } from "../src/visual";
 import type { plotData } from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
-import buildDataView from "./helpers/buildDataView";
+import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 const labels = ["One", "", "Three", "Four", "Five", "Six", "Seven", "Eight"];
@@ -16,7 +16,7 @@ function labelledView(overrides: Partial<settingsValueType["labels"]>): powerbi.
     spc: { ...defaultSettings.spc, chart_type: "i" },
     labels: { ...defaultSettings.labels, ...overrides }
   };
-  return buildDataView({ key: numerators.map((_, i) => String(i + 1)), numerators, labels }, settings);
+  return buildDataView({ key: sequentialKeys(numerators.length), numerators, labels }, settings);
 }
 
 function render(element: HTMLElement, overrides: Partial<settingsValueType["labels"]>, visual = new Visual({ element, host: createVisualHost({}) })): Visual {
@@ -29,7 +29,9 @@ function labelGroups(element: HTMLElement): NodeListOf<SVGGElement> {
 }
 
 function attribute(element: Element | null, name: string): number {
-  if (element === null) throw new Error(`Missing element for ${name}`);
+  if (element === null) {
+    throw new Error(`Missing element for ${name}`);
+  }
   return Number(element.getAttribute(name));
 }
 
@@ -38,14 +40,16 @@ function firstPoint(visual: Visual): { point: plotData; x: number; y: number } {
   return { point, x: visual.plotProperties.xScale(point.x) as number, y: visual.plotProperties.yScale(point.value) as number };
 }
 
-// Changeset 6: value labels render through Core's shared implementation.
+// Value labels render through Core's shared implementation.
 describe("Value labels", () => {
   it("labels points above by default, skips empty labels and anchors the connector at the point", () => {
     const element = testDom("500", "500");
     const visual = render(element, {});
     const groups = labelGroups(element);
     expect(groups).toHaveLength(labels.length - 1);
-    const { x, y } = firstPoint(visual);
+    const first = firstPoint(visual);
+    const x = first.x;
+    const y = first.y;
     const text = groups[0].querySelector("text");
     expect(text?.textContent).toBe("One");
     expect(attribute(text, "x")).toBeCloseTo(x, 6);
@@ -59,7 +63,7 @@ describe("Value labels", () => {
   it("labels points below with the bottom placement and honours the vertical offset", () => {
     const element = testDom("500", "500");
     const visual = render(element, { label_position: "bottom", label_y_offset: 40 });
-    const { y } = firstPoint(visual);
+    const y = firstPoint(visual).y;
     const axisY = visual.viewModel.svgHeight - visual.plotProperties.yAxis.start_padding;
     const text = labelGroups(element)[0].querySelector("text");
     expect(attribute(text, "y")).toBeGreaterThan(y);
@@ -77,7 +81,9 @@ describe("Value labels", () => {
     const text = group.querySelector("text");
     const line = group.querySelector("line");
     const path = group.querySelector("path");
-    if (text === null || line === null || path === null) throw new Error("Missing label elements");
+    if (text === null || line === null || path === null) {
+      throw new Error("Missing label elements");
+    }
     expect(text.style.fontSize).toBe("13px");
     expect(text.style.fontFamily).toContain("Arial Black");
     expect(text.style.fill).toBe("rgb(18, 52, 86)");
@@ -88,7 +94,7 @@ describe("Value labels", () => {
     expect(path.getAttribute("d")).toBe(trianglePath(16));
   });
 
-  // Finding 31: the marker switch is honoured; the connector still ends at the marker position.
+  // The marker switch is honoured; the connector still ends at the marker position.
   it("omits the marker when the marker switch is off", () => {
     const element = testDom("500", "500");
     render(element, { label_marker_show: false });
@@ -113,7 +119,10 @@ describe("Value labels", () => {
   it("redraws a label at its stored angle and distance", () => {
     const element = testDom("500", "500");
     const visual = render(element, {});
-    const { point, x, y } = firstPoint(visual);
+    const first = firstPoint(visual);
+    const point = first.point;
+    const x = first.x;
+    const y = first.y;
     point.label.angle = 0;
     point.label.distance = 7;
     visual.drawVisual();
@@ -129,9 +138,14 @@ describe("Value labels", () => {
     try {
       const visual = render(element, { label_marker_offset: 20 });
       const svg = element.querySelector("svg");
-      if (svg === null) throw new Error("Missing svg");
+      if (svg === null) {
+        throw new Error("Missing svg");
+      }
       const group = labelGroups(element)[0];
-      const { point, x: pointX, y: pointY } = firstPoint(visual);
+      const first = firstPoint(visual);
+      const point = first.point;
+      const pointX = first.x;
+      const pointY = first.y;
       expect(group.style.touchAction).toBe("none");
 
       group.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 1, bubbles: true }));
@@ -143,7 +157,9 @@ describe("Value labels", () => {
       svgPoint.x = clientX;
       svgPoint.y = clientY;
       const ctm = svg.getScreenCTM();
-      if (ctm === null) throw new Error("Missing CTM");
+      if (ctm === null) {
+        throw new Error("Missing CTM");
+      }
       const expected = svgPoint.matrixTransform(ctm.inverse());
       group.dispatchEvent(new PointerEvent("pointermove", { pointerId: 1, clientX, clientY }));
       const expectedAngle = Math.atan2(expected.y - pointY, expected.x - pointX) * 180 / Math.PI;
@@ -152,7 +168,7 @@ describe("Value labels", () => {
       const text = group.querySelector("text");
       expect(attribute(text, "x")).toBeCloseTo(expected.x, 6);
       expect(attribute(text, "y")).toBeCloseTo(expected.y, 6);
-      // Finding 32: the marker keeps the configured offset (20 + font size 10 / 2) while dragging
+      // The marker keeps the configured offset (20 + font size 10 / 2) while dragging
       const line = group.querySelector("line");
       const radians = expectedAngle * Math.PI / 180;
       expect(attribute(line, "x2")).toBeCloseTo(pointX + 25 * Math.cos(radians), 6);

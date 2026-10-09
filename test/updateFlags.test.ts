@@ -6,9 +6,12 @@ import { describe, it, expect } from "vitest";
 
 const keys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const first: number[] = [742731.43, 263501, 283085.78, 300263.49, 376074.57, 814724.34, 570921.34];
-const second: number[] = first.map(d => d * 2);
+const second = new Array<number>(first.length);
+for (let i = 0; i < first.length; i++) {
+  second[i] = first[i] * 2;
+}
 
-// Core finding 11: any update carrying the Data bit rebuilds settings and data, including combined
+// Any update carrying the Data bit rebuilds settings and data, including combined
 // Data | Resize (6) and All (62) updates; a Resize-only update (4) reuses the existing observations.
 describe("combined update types", () => {
   const element = testDom("500", "500");

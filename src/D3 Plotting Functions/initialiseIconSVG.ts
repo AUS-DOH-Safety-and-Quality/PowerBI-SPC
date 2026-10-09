@@ -13,15 +13,7 @@ export function iconTransformSpec(svg_width: number, svg_height: number, locatio
   return `scale(${scaling_factor}) translate(${icon_x}, ${icon_y})`;
 }
 
-/**
- * This method initialises a plotting space for rendering a given NHS SVG icon.
- * The method uses the current number of the icon (i.e., whether it's the first,
- * second, etc.) to appropriately place the plotting space.
- *
- * This method is intended to be called inline, followed by a call to the appropriate
- * icon rendering function from the "Icons" folder.
- *
- */
+/** Defines the filter and clip paths the NHS icon drawings reference by id. */
 export default function initialiseIconSVG(selection: svgBaseType, icon_name: string, transform_spec?: string): void {
   const icon_group = selection.append('g')
                                 .classed("icongroup", true)

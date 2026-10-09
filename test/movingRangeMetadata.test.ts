@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import viewModelClass from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
-import buildDataView from "./helpers/buildDataView";
+import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
+import findBy from "./helpers/findBy";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 
-// Core finding 25: a moving-range point carries the metadata of the observation ending the range,
+// A moving-range point carries the metadata of the observation ending the range,
 // so every per-row input joins through the returned key's position, not the shortened result index.
 describe("moving-range per-row metadata", () => {
   it("joins formatting, targets, specification limits, labels and tooltips through the ending observation", () => {
@@ -61,7 +62,7 @@ describe("moving-range per-row metadata", () => {
     }
   });
 
-  // Core finding 29: outlier groups and rebaseline gaps follow the shortened result, not input positions.
+  // Outlier groups and rebaseline gaps follow the shortened result, not input positions.
   it("groups outlier rules and rebaseline gaps by the returned points of each segment", () => {
     const observations = [10, 14, 12, 15, 30, 31, 33, 36, 40];
     const settings: settingsValueType = {
@@ -69,7 +70,7 @@ describe("moving-range per-row metadata", () => {
       spc: { ...defaultSettings.spc, chart_type: "mr" },
       outliers: { ...defaultSettings.outliers, trend: true, trend_n: 4 }
     };
-    const dataView = buildDataView({ key: observations.map((_, i) => String(i + 1)), numerators: observations }, settings);
+    const dataView = buildDataView({ key: sequentialKeys(observations.length), numerators: observations }, settings);
     dataView.metadata.objects = { split_indexes_storage: { split_indexes: "[3]" } };
     const viewModel = new viewModelClass();
     viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
@@ -80,10 +81,14 @@ describe("moving-range per-row metadata", () => {
     expect(trend.slice(0, 3)).toEqual(["none", "none", "none"]);
     expect(trend.slice(3)).not.toEqual(["none", "none", "none", "none"]);
     const gaps: number[] = [];
-    const values = viewModel.groupedLines.find(d => d[0] === "values");
-    if (values === undefined) throw new Error("Missing main line");
+    const values = findBy(viewModel.groupedLines, 0, "values");
+    if (values === undefined) {
+      throw new Error("Missing main line");
+    }
     for (let i = 0; i < values[1].length; i++) {
-      if (values[1][i].line_value === undefined) gaps.push(values[1][i].x);
+      if (values[1][i].line_value === undefined) {
+        gaps.push(values[1][i].x);
+      }
     }
     expect(gaps).toEqual([5]);
   });

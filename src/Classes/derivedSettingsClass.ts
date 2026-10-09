@@ -39,8 +39,8 @@ export default class derivedSettingsClass {
 
   constructor(inputSettingsSpc: settingsValueType["spc"]) {
     const chartType: string = inputSettingsSpc.chart_type;
-    const { multiplier, percentLabels } = resolvePercentScaling(["p", "pp"].includes(chartType),
-                                                                inputSettingsSpc.perc_labels, inputSettingsSpc.multiplier);
+    const scaling = resolvePercentScaling(["p", "pp"].includes(chartType),
+                                          inputSettingsSpc.perc_labels, inputSettingsSpc.multiplier);
 
     this.chart_type_props = {
       name: chartType,
@@ -57,10 +57,10 @@ export default class derivedSettingsClass {
       denominator_gt_one: ["xbar", "s"].includes(chartType)
     }
 
-    this.multiplier = multiplier
-    this.percentLabels = percentLabels
+    this.multiplier = scaling.multiplier
+    this.percentLabels = scaling.percentLabels
     const decimalPlaces = inputSettingsSpc.sig_figs;
     this.formatValue = createValueFormatter(decimalPlaces, this.chart_type_props.integer_num_den ? 0 : decimalPlaces,
-                                            percentLabels ? "%" : "");
+                                            scaling.percentLabels ? "%" : "");
   }
 }

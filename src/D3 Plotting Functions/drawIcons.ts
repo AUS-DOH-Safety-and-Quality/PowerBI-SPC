@@ -21,12 +21,13 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
   if (draw_variation) {
     const variation_scaling: number = nhsIconSettings.variation_icons_scaling;
     const variationIconsPresent = variationIconsToDraw(visualObj.viewModel.outliers[0], visualObj.viewModel.inputSettings.settings[0]);
-    variationIconsPresent.forEach((icon, idx) => {
+    for (let idx = 0; idx < variationIconsPresent.length; idx++) {
+      const icon = variationIconsPresent[idx];
       selection
           .call(initialiseIconSVG, icon, iconTransformSpec(svg_width, svg_height, variation_location, variation_scaling, idx))
           .selectAll(`.${icon}`)
           .call(nhsIcons[icon])
-    })
+    }
     numVariationIcons = variationIconsPresent.length;
   }
 

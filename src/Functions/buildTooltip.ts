@@ -48,17 +48,19 @@ export default function buildTooltip(table_row: summaryTableRowData,
 
   const patterns: string[] = new Array<string>();
   if (table_row.astpoint !== "none") {
-    // Note if flagged according to non-default limit
     let flag_text: string = "Astronomical Point";
     if (ast_limit !== "3 Sigma") {
       flag_text = `${flag_text} (${ast_limit})`;
     }
     patterns.push(flag_text)
   }
-  if (table_row.trend !== "none") { patterns.push("Trend") }
-  if (table_row.shift !== "none") { patterns.push("Shift") }
+  if (table_row.trend !== "none") {
+    patterns.push("Trend")
+  }
+  if (table_row.shift !== "none") {
+    patterns.push("Shift")
+  }
   if (table_row.two_in_three !== "none") {
-    // Note if flagged according to non-default limit
     let flag_text: string = "Two-in-Three";
     if (two_in_three_limit !== "2 Sigma") {
       flag_text = `${flag_text} (${two_in_three_limit})`;

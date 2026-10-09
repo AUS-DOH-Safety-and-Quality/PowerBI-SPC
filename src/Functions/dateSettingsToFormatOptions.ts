@@ -2,15 +2,6 @@ import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { settingsValueType } from "../settings"
 import type { DateFormatOptions } from "./formatDateParts"
 
-/**
- * Mapping from user-friendly visual settings to date formatter weekday options.
- *
- * Maps PowerBI visual dropdown options to weekday format values:
- * - "DD" → null (no weekday, just day number)
- * - "Thurs DD" → "short" (abbreviated weekday name)
- * - "Thursday DD" → "long" (full weekday name)
- * - "(blank)" → null (omit day entirely)
- */
 const weekdayDateMap: Record<string, "long" | "short" | null> = {
   "DD" : null,
   "Thurs DD" : "short",
@@ -18,15 +9,6 @@ const weekdayDateMap: Record<string, "long" | "short" | null> = {
   "(blank)" : null
 }
 
-/**
- * Mapping from user-friendly visual settings to date formatter month options.
- *
- * Maps PowerBI visual dropdown options to month format values:
- * - "MM" → "2-digit" (e.g., "01", "12")
- * - "Mon" → "short" (e.g., "Jan", "Dec")
- * - "Month" → "long" (e.g., "January", "December")
- * - "(blank)" → null (omit month entirely)
- */
 const monthDateMap: Record<string, "2-digit" | "short" | "long" | null> = {
   "MM" : "2-digit",
   "Mon" : "short",
@@ -34,26 +16,12 @@ const monthDateMap: Record<string, "2-digit" | "short" | "long" | null> = {
   "(blank)" : null
 }
 
-/**
- * Mapping from user-friendly visual settings to date formatter year options.
- *
- * Maps PowerBI visual dropdown options to year format values:
- * - "YYYY" → "numeric" (e.g., "2024")
- * - "YY" → "2-digit" (e.g., "24")
- * - "(blank)" → null (omit year entirely)
- */
 const yearDateMap: Record<string, "numeric" | "2-digit" | null> = {
   "YYYY" : "numeric",
   "YY" : "2-digit",
   "(blank)" : null
 }
 
-/**
- * Mapping from user-friendly visual settings to date formatter day options.
- *
- * Maps PowerBI visual dropdown options to day format values.
- * All non-blank options produce "2-digit" day format (e.g., "01", "15", "31").
- */
 const dayDateMap: Record<string, "2-digit" | null> = {
   "DD" : "2-digit",
   "Thurs DD" : "2-digit",
@@ -61,10 +29,6 @@ const dayDateMap: Record<string, "2-digit" | null> = {
   "(blank)" : null
 }
 
-/**
- * Central lookup table mapping date format option names to their respective
- * setting-to-value translation maps.
- */
 const dateOptionsLookup = {
   "weekday" : weekdayDateMap,
   "day" : dayDateMap,
@@ -73,70 +37,27 @@ const dateOptionsLookup = {
 }
 
 /**
- * Converts PowerBI SPC visual date settings into DateFormatOptions format.
- *
- * This function transforms user-friendly date format settings from the PowerBI visual
- * (e.g., "MM", "YYYY", "Thursday DD") into the appropriate options object for the
- * custom date formatting function, enabling locale-aware date formatting.
- *
- * Key behaviors:
- * - Filters out locale and delimiter settings (handled separately)
- * - Maps visual setting keys to date format option keys
- * - Translates visual setting values to valid format values
- * - Automatically includes weekday format when day format includes weekday name
- * - Omits date components when set to "(blank)"
- *
- * @param date_settings - The date configuration from the visual's settings object
- * @returns DateFormatOptions object suitable for use with formatDateParts()
- *
- * @example
- * ```typescript
- * const settings = {
- *   date_format_day: "Thursday DD",
- *   date_format_month: "Month",
- *   date_format_year: "YYYY",
- *   date_format_delim: "/",
- *   date_format_locale: "en-GB"
- * };
- *
- * const options = dateSettingsToFormatOptions(settings);
- * // Returns: { weekday: "long", day: "2-digit", month: "long", year: "numeric" }
- *
- * const result = formatDateParts(new Date("2024-01-15"), "en-GB", options);
- * // Returns: { weekday: "Monday", day: "15", month: "January", year: "2024" }
- * ```
+ * formatDateParts options from the visual's date settings; "(blank)" omits a part,
+ * and "Thurs DD" / "Thursday DD" also request the weekday name.
  */
 export default function dateSettingsToFormatOptions(date_settings: settingsValueType["dates"]): DateFormatOptions {
-  // Array to collect [key, value] pairs for the options object
   const formatOpts: string[][] = new Array<string[]>();
-
-  // Iterate through all date settings
-  Object.keys(date_settings).forEach((key) => {
-    // Skip locale and delimiter - these are handled separately by the formatter
+  const keys = Object.keys(date_settings);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    // Locale and delimiter are applied by the caller
     if (key !== "date_format_locale" && key !== "date_format_delim") {
-      // Remove "date_format_" prefix to get the Intl option name (e.g., "day", "month", "year")
       const formattedKey = key.replace("date_format_", "");
-
-      // Get the appropriate mapping for this date component
       const lookup = dateOptionsLookup[formattedKey as keyof typeof dateOptionsLookup];
       const dateSettingValue = date_settings[key as keyof typeof date_settings];
-
-      // Translate the visual setting value to the Intl API value
       const val = lookup[dateSettingValue as keyof typeof lookup];
-
-      // Only include non-null values (null means "(blank)" was selected)
       if (!isNullOrUndefined(val)) {
         formatOpts.push([formattedKey, val])
-
-        // Special case: when day format includes weekday name, also add weekday option
-        // This handles "Thurs DD" and "Thursday DD" formats
         if (formattedKey === "day" && dateSettingValue !== "DD" && !isNullOrUndefined(weekdayDateMap[dateSettingValue])) {
           formatOpts.push(["weekday", weekdayDateMap[dateSettingValue]])
         }
       }
     }
-  })
-
-  // Convert array of [key, value] pairs to an object
+  }
   return Object.fromEntries(formatOpts);
 }

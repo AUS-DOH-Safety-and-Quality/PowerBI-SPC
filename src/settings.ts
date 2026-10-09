@@ -18,7 +18,9 @@ const settingsModel = {
   scatter: defineCard(scatterSettings),
   lines: defineCard(linesSettings),
   x_axis: createAxisCard("x", { tickRotation: -35 }),
-  y_axis: createAxisCard("y", { tickRotation: 0 }, { limit_multiplier: numberOption("Axis Scaling Factor", 1.5, { min: 0 }) }),
+  y_axis: createAxisCard("y", { tickRotation: 0 }, {
+    limit_multiplier: numberOption("Axis Scaling Factor", 1.5, { min: 0 })
+  }),
   dates: defineCard(datesSettings),
   summary_table: defineCard(summaryTableSettings),
   download_options: createDownloadCard(),

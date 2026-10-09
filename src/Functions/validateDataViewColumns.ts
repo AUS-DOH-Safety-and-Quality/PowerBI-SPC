@@ -2,7 +2,7 @@ import type { RoleColumns } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 import settingsClass from "../Classes/settingsClass";
 
-// Chart-type requirements only; the presence of data, keys and numerators is checked by Core first
+/** Chart-type requirements only; the presence of data, keys and numerators is checked by Core first */
 export default function validateDataViewColumns(inputSettingsClass: settingsClass, valueColumns: RoleColumns<powerbi.DataViewValueColumn>): string {
   let needs_denominator: boolean = false;
   let needs_sd: boolean = false;

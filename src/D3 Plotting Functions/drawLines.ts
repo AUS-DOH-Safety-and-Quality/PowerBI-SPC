@@ -11,7 +11,8 @@ export default function drawPlotLines(selection: svgBaseType, visualObj: Visual)
   const grouped = visualObj.viewModel.groupedLines;
   const lines = new Array<PlotLine>(grouped.length);
   for (let i = 0; i < grouped.length; i++) {
-    const [name, points] = grouped[i];
+    const name = grouped[i][0];
+    const points = grouped[i][1];
     const key = lineKeys[name];
     // Each point carries its own row's line settings, so rebaselined segments may differ
     lines[i] = { name, points, style: index => lineStyle(points[index].aesthetics, key) };

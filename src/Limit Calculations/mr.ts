@@ -1,90 +1,37 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import plottedValues from "./plottedValues";
 
-/**
- * Calculates control limits for a Moving Range (MR) chart.
- *
- * The MR chart displays the absolute difference between consecutive observations
- * and is typically paired with an I-chart (Individuals chart). It monitors the
- * variation or spread in the process over time.
- *
- * **Centreline Calculation:**
- * The centreline (MR̄) is the mean of the moving ranges:
- *
- * $$\overline{MR} = \frac{\sum_{i=2}^{n} |x_i - x_{i-1}|}{n-1}$$
- *
- * where $MR_i = |x_i - x_{i-1}|$ is the moving range (absolute difference between consecutive values).
- *
- * If denominators are provided, each value is calculated as the ratio before computing moving ranges:
- * $x_i = \frac{numerator_i}{denominator_i}$
- *
- * **Control Limits:**
- * - Upper Control Limit (3σ): $UCL = D_4 \times \overline{MR} = 3.267 \times \overline{MR}$
- * - Lower Control Limit: $LCL = 0$ (moving ranges cannot be negative)
- * - 2σ limits: $\overline{MR} \times \frac{2 \times 3.267}{3} = 2.178 \times \overline{MR}$
- * - 1σ limits: $\overline{MR} \times \frac{1 \times 3.267}{3} = 1.089 \times \overline{MR}$
- *
- * where $D_4 = 3.267$ is the control chart constant for a moving range of size 2.
- *
- * @param args - The control limits calculation arguments
- * @param args.numerators - Array of individual measurements (or numerators if using ratios)
- * @param args.denominators - Optional array of denominators for ratio calculations
- * @param args.keys - Array of key objects containing x-position, id, and label for each point
- * @param args.subset_points - Array of indices indicating which points to include in limit calculations
- *
- * @returns A controlLimitsObject containing:
- *   - keys: The input keys excluding the first point (n-1 points)
- *   - values: The moving ranges (n-1 values)
- *   - numerators/denominators: The original values if using ratios, excluding first point
- *   - targets: The centreline (average moving range) for each point
- *   - ll99/ll95/ll68: Lower limits (all zero, as moving ranges cannot be negative)
- *   - ul68/ul95/ul99: Upper 1σ, 2σ, and 3σ control limits
- */
+/** MR chart: upper limits are k/3 of D4 (3.267 for n = 2) times the mean moving range; lower limits are 0. */
 export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
-  // Determine if we're calculating ratios (numerator/denominator) or raw values
-  const { values, numerators, denominators } = plottedValues(args);
+  const plotted = plottedValues(args);
+  const n_sub: number = args.subset_points.length;
+  const n: number = args.keys.length;
+  const subset_points: readonly number[] = args.subset_points;
 
-  // Extract input arrays from arguments
-  const n_sub: number = args.subset_points.length;          // Number of points used for limit calculation
-  const n: number = args.keys.length;                       // Total number of data points
-  const subset_points: readonly number[] = args.subset_points; // Indices of points to include
-
-  // Initialize with first value (for moving range calculation we need previous value)
-  let prevVal: number = values[subset_points[0]];
-
-  // Accumulators for mean and average moving range
-  let cl: number = 0;                                   // Running sum for average moving range
-  let consec_diff: number[] = new Array<number>(n_sub - 1); // Store moving ranges for outlier screening
-
-  // Calculate sum for mean and moving ranges: MR_i = |x_i - x_{i-1}|
+  let prevVal: number = plotted.values[subset_points[0]];
+  let cl: number = 0;
+  let consec_diff: number[] = new Array<number>(n_sub - 1);
   for (let i = 1; i < n_sub; i++) {
-    // Get current value (raw or ratio)
-    let currVal: number = values[subset_points[i]];
-
-    // Calculate moving range (absolute difference from previous value)
+    let currVal: number = plotted.values[subset_points[i]];
     consec_diff[i - 1] = Math.abs(currVal - prevVal);
-    cl += consec_diff[i - 1];  // Accumulate for AMR
-    prevVal = currVal;           // Update previous value for next iteration
+    cl += consec_diff[i - 1];
+    prevVal = currVal;
   }
-
-  // Calculate initial average moving range: AMR = Σ|x_i - x_{i-1}| / (n-1)
   cl /= (n_sub - 1);
 
-  const n_mr: number = n - 1; // Number of moving range points
-
-  // Initialize the return object with arrays for all limit lines
+  const n_mr: number = n - 1;
   const rtn = {
-    keys: args.keys.slice(1),                                   // Exclude first key (n-1 points)
-    values: new Array<number>(n_mr),                            // The moving ranges
-    numerators: numerators?.slice(1),
-    denominators: denominators?.slice(1),
-    targets: new Array<number>(n_mr),                           // Centreline (mean moving range)
-    ll99: new Array<number>(n_mr),                              // Lower 3σ limit (always 0)
-    ll95: new Array<number>(n_mr),                              // Lower 2σ limit (always 0)
-    ll68: new Array<number>(n_mr),                              // Lower 1σ limit (always 0)
-    ul68: new Array<number>(n_mr),                              // Upper 1σ limit
-    ul95: new Array<number>(n_mr),                              // Upper 2σ limit
-    ul99: new Array<number>(n_mr)                               // Upper 3σ limit
+    keys: args.keys.slice(1),
+    values: new Array<number>(n_mr),
+    numerators: plotted.numerators?.slice(1),
+    denominators: plotted.denominators?.slice(1),
+    targets: new Array<number>(n_mr),
+    ll99: new Array<number>(n_mr),
+    ll95: new Array<number>(n_mr),
+    ll68: new Array<number>(n_mr),
+    ul68: new Array<number>(n_mr),
+    ul95: new Array<number>(n_mr),
+    ul99: new Array<number>(n_mr)
   }
 
   const sigma: number = 3.267 / 3;
@@ -94,17 +41,15 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedL
   const ul95: number = cl * twoSigma;
   const ul99: number = cl * threeSigma;
 
-  // Populate arrays with moving ranges and control limits
-  // Moving ranges cannot be negative, so lower limits are always 0
   for (let i = 0; i < n_mr; i++) {
     rtn.values[i] = consec_diff[i];
-    rtn.targets[i] = cl;                        // Centreline: MR̄
-    rtn.ll99[i] = 0;                            // LCL: 0
-    rtn.ll95[i] = 0;                            // 2σ lower: 0
-    rtn.ll68[i] = 0;                            // 1σ lower: 0
-    rtn.ul68[i] = ul68;         // 1σ upper: 1.089 × MR̄
-    rtn.ul95[i] = ul95;         // 2σ upper: 2.178 × MR̄
-    rtn.ul99[i] = ul99;                   // UCL: 3.267 × MR̄ (D4 constant)
+    rtn.targets[i] = cl;
+    rtn.ll99[i] = 0;
+    rtn.ll95[i] = 0;
+    rtn.ll68[i] = 0;
+    rtn.ul68[i] = ul68;
+    rtn.ul95[i] = ul95;
+    rtn.ul99[i] = ul99;
   }
 
   return rtn;

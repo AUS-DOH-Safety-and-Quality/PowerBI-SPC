@@ -105,11 +105,12 @@ function drawOuterBorder(selection: divBaseType, tableSettings: settingsValueTyp
             .style("border-style", tableSettings.table_outer_border_style)
             .style("border-color", tableSettings.table_outer_border_colour);
 
-  ["top", "right", "bottom", "left"].forEach((side) => {
-    if (!tableSettings[`table_outer_border_${side}` as keyof settingsValueType["summary_table"]]) {
-      selection.select(".table-group").style(`border-${side}`, "none");
+  const sides = ["top", "right", "bottom", "left"];
+  for (let i = 0; i < sides.length; i++) {
+    if (!tableSettings[`table_outer_border_${sides[i]}` as keyof settingsValueType["summary_table"]]) {
+      selection.select(".table-group").style(`border-${sides[i]}`, "none");
     }
-  });
+  }
 
   selection.selectAll("th:first-child")
            .style("border-left", "inherit");
@@ -133,10 +134,14 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
   const tableCells = selection.select(".table-body")
             .selectAll<HTMLTableRowElement, plotData | plotDataGrouped>('tr')
             .selectAll<HTMLTableCellElement, unknown>('td')
-            .data(d => cols.map(col => {
+            .data(d => {
               const row: Readonly<Record<string, string | number | undefined>> = d.table_row;
-              return { column: col.name, value: row[col.name] }
-            }))
+              const cells = new Array<{ column: string; value: string | number | undefined }>(cols.length);
+              for (let i = 0; i < cols.length; i++) {
+                cells[i] = { column: cols[i].name, value: row[cols[i].name] };
+              }
+              return cells;
+            })
             .join('td');
 
   const draw_icons: boolean = inputSettings.nhs_icons.show_variation_icons || inputSettings.nhs_icons.show_assurance_icons;
@@ -146,7 +151,6 @@ function drawTableCells(selection: divBaseType, cols: { name: string; label: str
     const currNode = select(this);
     const rowData = select<HTMLElement | null, plotData | plotDataGrouped>(this.parentElement).datum();
     if (showGrouped && draw_icons && (d.column === "variation" || d.column === "assurance")) {
-      // Only attempt to draw icon if one is specified
       const icon = d.value;
       if (typeof icon === "string" && isNhsIcon(icon)) {
         const scaling = inputSettings.nhs_icons[`${d.column}_icons_scaling`];

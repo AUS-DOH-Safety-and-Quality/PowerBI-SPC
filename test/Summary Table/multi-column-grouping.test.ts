@@ -1,11 +1,23 @@
 import { defaultSettings, type settingsValueType } from "../../src/settings";
+import type { plotDataGrouped, summaryTableRowDataGrouped } from "../../src/Classes/viewModelClass";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
+import { columnNames, columnValues, groupedRow } from "../helpers/summaryTable";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
   return JSON.parse(JSON.stringify(defaultSettings));
+}
+
+function rowsFor(rows: plotDataGrouped[], indicator: string, cohort: string): plotDataGrouped[] {
+  const matches: plotDataGrouped[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].table_row["Indicator"] === indicator && rows[i].table_row["Cohort"] === cohort) {
+      matches.push(rows[i]);
+    }
+  }
+  return matches;
 }
 
 describe("Summary Table - multiple grouping columns (indicator + cohort)", () => {
@@ -39,7 +51,10 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(4);
 
-    const byCombo = new Map(rows.map(r => [`${r.table_row["Indicator"]}|${r.table_row["Cohort"]}`, r.table_row]));
+    const byCombo = new Map<string, summaryTableRowDataGrouped>();
+    for (let i = 0; i < rows.length; i++) {
+      byCombo.set(`${rows[i].table_row["Indicator"]}|${rows[i].table_row["Cohort"]}`, rows[i].table_row);
+    }
     expect(byCombo.get("Ward A|2023")!.latest_date).toBe(keys[1]);
     expect(byCombo.get("Ward A|2023")!.value).toBe("11.00");
     expect(byCombo.get("Ward A|2024")!.latest_date).toBe(keys[3]);
@@ -49,14 +64,13 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     expect(byCombo.get("Ward B|2024")!.latest_date).toBe(keys[7]);
     expect(byCombo.get("Ward B|2024")!.value).toBe("41.00");
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     expect(colNames.slice(0, 2)).toEqual(["Indicator", "Cohort"]);
-    const bodyRows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
+    const bodyRows = tableDivElement.querySelectorAll('tbody tr');
     expect(bodyRows.length).toBe(4);
-    bodyRows.forEach(row => {
-      const cells = row.querySelectorAll('td');
-      expect(cells.length).toBe(colNames.length);
-    });
+    for (let i = 0; i < bodyRows.length; i++) {
+      expect(bodyRows[i].querySelectorAll('td').length).toBe(colNames.length);
+    }
   });
 
   it("a repeated (indicator, cohort) combination that is not contiguous is still merged into a single row using all of its points", () => {
@@ -81,14 +95,14 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(2);
 
-    const wardARows = rows.filter(r => r.table_row["Indicator"] === "Ward A" && r.table_row["Cohort"] === "2023");
+    const wardARows = rowsFor(rows, "Ward A", "2023");
     expect(wardARows.length).toBe(1);
     expect(wardARows[0].table_row.latest_date).toBe(keys[5]);
     expect(wardARows[0].table_row.value).toBe("31.00");
     // Mean of all four points (10, 11, 30, 31), not just the last run (30, 31)
     expect(Number(wardARows[0].table_row.target)).toBeCloseTo(20.5, 2);
 
-    const wardBRows = rows.filter(r => r.table_row["Indicator"] === "Ward B" && r.table_row["Cohort"] === "2023");
+    const wardBRows = rowsFor(rows, "Ward B", "2023");
     expect(wardBRows.length).toBe(1);
     expect(wardBRows[0].table_row.latest_date).toBe(keys[3]);
     expect(wardBRows[0].table_row.value).toBe("21.00");
@@ -121,7 +135,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(8);
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     expect(colNames.slice(0, 3)).toEqual(["Indicator", "Cohort", "Region"]);
     const bodyRows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
     expect(bodyRows.length).toBe(8);
@@ -130,8 +144,8 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
   it("groups purely by the varying column when one grouping column is constant across all rows", () => {
     const keys: string[] = ["1", "2", "3", "4", "5", "6"];
     const numerators: number[] = [10, 11, 20, 21, 30, 31];
-    const indicator: string[] = ["Ward A", "Ward A", "Ward A", "Ward A", "Ward A", "Ward A"]; // constant
-    const cohort: string[] = ["2022", "2022", "2023", "2023", "2024", "2024"]; // varies
+    const indicator: string[] = ["Ward A", "Ward A", "Ward A", "Ward A", "Ward A", "Ward A"];
+    const cohort: string[] = ["2022", "2022", "2023", "2023", "2024", "2024"];
     const settings = cloneSettings();
     settings.spc.chart_type = "i";
 
@@ -149,8 +163,8 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     expect(visual.viewModel.showGrouped).toBe(true);
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(3);
-    rows.forEach(r => expect(r.table_row["Indicator"]).toBe("Ward A"));
-    expect(rows.map(r => r.table_row["Cohort"]).sort()).toEqual(["2022", "2023", "2024"]);
+    expect(columnValues(rows, "Indicator")).toEqual(["Ward A", "Ward A", "Ward A"]);
+    expect(columnValues(rows, "Cohort").sort()).toEqual(["2022", "2023", "2024"]);
   });
 
   it("variation filtering narrows rows correctly when grouped by two columns, including when the excluded row is the first combination in the data", () => {
@@ -210,8 +224,8 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(2);
 
-    const wardA = rows.find(r => r.table_row["Indicator"] === "Ward A")!;
-    const wardB = rows.find(r => r.table_row["Indicator"] === "Ward B")!;
+    const wardA = groupedRow(rows, "Ward A");
+    const wardB = groupedRow(rows, "Ward B");
 
     expect(wardA.table_row.value).toBe("32");
     // Should be sig_figs=4, not "21" which is what Ward A's sig_figs=0 would produce

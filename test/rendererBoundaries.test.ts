@@ -2,21 +2,24 @@ import { describe, expect, it, vi } from "vitest";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import { defaultSettings, type settingsValueType } from "../src/settings";
-import buildDataView from "./helpers/buildDataView";
+import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
-const keys = numerators.map((_, i) => String(i + 1));
+const keys = sequentialKeys(numerators.length);
 const viewport = { width: 500, height: 500 };
 
 function must<T>(value: T | null | undefined): T {
-  if (value === null || value === undefined) throw new Error("Missing element");
+  if (value === null || value === undefined) {
+    throw new Error("Missing element");
+  }
   return value;
 }
 
 function settingsWith(overrides: { [K in keyof settingsValueType]?: Partial<settingsValueType[K]> }): settingsValueType {
   const result: settingsValueType = { ...defaultSettings, spc: { ...defaultSettings.spc, chart_type: "i" } };
-  for (const card in overrides) {
-    const key = card as keyof settingsValueType;
+  const cards = Object.keys(overrides) as (keyof settingsValueType)[];
+  for (let i = 0; i < cards.length; i++) {
+    const key = cards[i];
     (result as Record<string, object>)[key] = { ...result[key], ...overrides[key] };
   }
   return result;
@@ -36,7 +39,7 @@ function precedes(first: Element, second: Element): boolean {
   return (first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
 }
 
-// Changeset 8: renderer prerequisites and the shared line-label, error and crosshair boundaries
+// Renderer prerequisites and the shared line-label, error and crosshair boundaries
 describe("renderer boundaries", () => {
   it("re-adds hidden axes with ticks, beneath the lines and dots", () => {
     const element = testDom("500", "500");
@@ -58,7 +61,7 @@ describe("renderer boundaries", () => {
     element.remove();
   });
 
-  // Finding 34: the host palette is read on every update
+  // The host palette is read on every update
   it("applies the host palette, including high contrast, to points and error text", () => {
     const host = createVisualHost({});
     const palette = host.colorPalette as { isHighContrast: boolean; foreground: { value: string } };
@@ -105,10 +108,10 @@ describe("renderer boundaries", () => {
     element.remove();
   });
 
-  // Finding 37: segment-end labels follow the "last N" and "all re-baselines" settings
+  // Segment-end labels follow the "last N" and "all re-baselines" settings
   it("labels the end of each rebaseline segment when requested", () => {
     const split = [10, 12, 16, 22, 30, 34, 40, 48, 52];
-    const splitKeys = split.map((_, i) => String(i + 1));
+    const splitKeys = sequentialKeys(split.length);
     function labelsFor(lines: Partial<settingsValueType["lines"]>): { element: HTMLElement; visual: Visual; texts: NodeListOf<SVGTextElement> } {
       const element = testDom("500", "500");
       const visual = new Visual({ element, host: createVisualHost({}) });
@@ -126,7 +129,11 @@ describe("renderer boundaries", () => {
     expect(all.texts).toHaveLength(2);
     const points = all.visual.viewModel.groupedLines[0][1];
     let gap = -1;
-    for (let i = 0; i < points.length; i++) if (points[i].line_value === undefined) gap = i;
+    for (let i = 0; i < points.length; i++) {
+      if (points[i].line_value === undefined) {
+        gap = i;
+      }
+    }
     expect(gap).toBeGreaterThan(0);
     const segmentEnd = points[gap - 1];
     expect(Number(all.texts[0].getAttribute("x"))).toBeCloseTo(all.visual.plotProperties.xScale(segmentEnd.x) as number, 6);

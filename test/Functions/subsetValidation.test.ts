@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import viewModelClass from "../../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../../src/settings";
-import buildDataView from "../helpers/buildDataView";
+import buildDataView, { sequentialKeys } from "../helpers/buildDataView";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48, 60, 66, 74, 84];
 
@@ -12,7 +12,7 @@ function update(spc: Partial<settingsValueType["spc"]>) {
     spc: { ...defaultSettings.spc, chart_type: "i", ...spc }
   };
   const dataView = buildDataView({
-    key: numerators.map((_, i) => String(i + 1)),
+    key: sequentialKeys(numerators.length),
     numerators
   }, settings);
   const viewModel = new viewModelClass();
@@ -24,7 +24,7 @@ function update(spc: Partial<settingsValueType["spc"]>) {
   return { viewModel, result };
 }
 
-// Core finding 16: a fractional subset count is rejected by settings validation with a message,
+// A fractional subset count is rejected by settings validation with a message,
 // the same way as any other invalid setting value, instead of reaching an invalid array length.
 describe("subset count validation", () => {
   it("rejects a fractional subset count with a validation message", () => {
