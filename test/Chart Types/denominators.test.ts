@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
-import { defaultSettings } from "../../src/settings";
+import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 
 const chartTypes = ["p", "pp", "u", "up", "i", "i_m", "i_mm", "mr", "run", "xbar", "s"] as const;
 const limitNames = ["ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
-type ExpectedLimits = Pick<controlLimitsObject, "values" | "targets" | typeof limitNames[number]>;
+type ExpectedLimits = Pick<controlLimitsObject, "values" | "targets"> & Partial<Pick<controlLimitsObject, typeof limitNames[number]>>;
 type Input = { numerators: number[], denominators: number[], xbar_sds?: number[] };
 
 function limitsAround(values: number[], centre: number, sigmas?: number[], lower = -Infinity, upper = Infinity): ExpectedLimits {
@@ -29,7 +29,7 @@ function limitsAround(values: number[], centre: number, sigmas?: number[], lower
   return expected;
 }
 
-function checkChart(chart_type: string, input: Input, expected: ExpectedLimits, outliers_in_limits: boolean, num_points_subset?: number) {
+function checkChart(chart_type: settingsValueType["spc"]["chart_type"], input: Input, expected: ExpectedLimits, outliers_in_limits: boolean, num_points_subset?: number) {
   const element = testDom("500", "500");
   const host = createVisualHost({});
   const failed = vi.spyOn(host.eventService, "renderingFailed");
@@ -59,12 +59,12 @@ function checkChart(chart_type: string, input: Input, expected: ExpectedLimits, 
     expect(limits.keys).toHaveLength(expected.values.length);
     for (const line of ["values", "targets", ...limitNames] as const) {
       if (!expected[line]) {
-        expect(limits[line], line).toBeUndefined();
+        expect(limits[line], line).toEqual(new Array<undefined>(expected.values.length).fill(undefined));
         continue;
       }
       expect(limits[line], line).toHaveLength(expected[line]!.length);
       for (let i = 0; i < expected[line]!.length; i++) {
-        expect(limits[line]![i], `${line} at ${i}`).toBeCloseTo(expected[line]![i]! * multiplier, 8);
+        expect(limits[line][i], `${line} at ${i}`).toBeCloseTo(expected[line]![i]! * multiplier, 8);
       }
     }
 
@@ -170,7 +170,7 @@ describe.each([false, true])("Constant baseline subsets with outliers_in_limits=
     { chart_type: "pp", centre: 1 },
     { chart_type: "pp", centre: 0 },
     { chart_type: "up", centre: 0 }
-  ])("preserves later values for $chart_type with baseline $centre", ({ chart_type, centre }) => {
+  ] as const)("preserves later values for $chart_type with baseline $centre", ({ chart_type, centre }) => {
     const input = { numerators: [2 * centre, 4 * centre, 1, 3], denominators: [2, 4, 2, 4] };
     checkChart(chart_type, input, limitsAround([centre, centre, 0.5, 0.75], centre, [0, 0, 0, 0]), keepOutliers, 2);
   });
@@ -221,7 +221,7 @@ const references = [
     chart_type: "s", input: { numerators: [1, 2, 3, 4], denominators: [2, 3, 4, 5] },
     expected: limitsAround([1, 2, 3, 4], Math.sqrt(10), [2.389134418141634, 1.652995900585246, 1.334530798056653, 1.147904543980176])
   }
-];
+] satisfies ({ chart_type: settingsValueType["spc"]["chart_type"] } & Record<string, unknown>)[];
 
 it.each(references)("$chart_type chart matches reference limits for varying ratios or subgroups", ({ chart_type, input, expected }) => {
   checkChart(chart_type, input, expected, false);

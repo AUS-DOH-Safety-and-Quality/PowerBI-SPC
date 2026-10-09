@@ -4,7 +4,6 @@ import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { keyedHost } from "powerbi-visuals-core/testing";
 import { rep } from "powerbi-visuals-core/math";
-import { type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
@@ -47,10 +46,10 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
       type: 2
     });
 
-    const headers: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('.table-header th')) as HTMLElement[];
+    const headers: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('.table-header th'));
     expect(headers.length).toBeGreaterThan(2);
     const middleHeader: HTMLElement = headers[1];
-    const middleHeaderText: HTMLElement = middleHeader.querySelector('text') as HTMLElement;
+    const middleHeaderText: HTMLElement = middleHeader.querySelector<HTMLElement>('text')!;
 
     expect(middleHeaderText.style.fontFamily).toBe("Georgia");
     expect(middleHeaderText.style.color).toBe("rgb(18, 52, 86)");
@@ -64,7 +63,7 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
     expect(middleHeader.style.borderRightStyle).toBe("none");
 
     // Interior cell only: drawOuterBorder forces first/last row/column borders back to "inherit"
-    const bodyRows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('tbody tr')) as HTMLElement[];
+    const bodyRows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
     expect(bodyRows.length).toBeGreaterThan(2);
     const middleCell: HTMLElement = bodyRows[1].querySelectorAll('td')[1] as HTMLElement;
     expect(middleCell.style.fontFamily).toBe("Verdana");
@@ -155,18 +154,18 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
       type: 2
     });
 
-    const rows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('tbody tr')) as HTMLElement[];
+    const rows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
     expect(rows.length).toBe(3);
     // No selection yet: every row uses the default table_opacity
     rows.forEach(row => expect(row.style.opacity).toBe("0.77"));
 
     // Select the first group's underlying identity and re-derive highlighting
-    const plotPoints = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const plotPoints = visual.viewModel.groupedRows;
     const selectedIdentity = plotPoints[0].identity[0];
     visual.selectionManager.select(selectedIdentity, false);
     visual.updateHighlighting();
 
-    const rowsAfterSelection: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('tbody tr')) as HTMLElement[];
+    const rowsAfterSelection: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
     expect(rowsAfterSelection[0].style.opacity).toBe("0.88");
     expect(rowsAfterSelection[1].style.opacity).toBe("0.11");
     expect(rowsAfterSelection[2].style.opacity).toBe("0.11");
@@ -174,7 +173,7 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
     // Clearing the selection restores the default opacity across all rows
     visual.selectionManager.clear();
     visual.updateHighlighting();
-    const rowsAfterClear: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('tbody tr')) as HTMLElement[];
+    const rowsAfterClear: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
     rowsAfterClear.forEach(row => expect(row.style.opacity).toBe("0.77"));
   });
 

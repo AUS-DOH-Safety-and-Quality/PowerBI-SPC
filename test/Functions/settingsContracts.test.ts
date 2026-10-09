@@ -1,3 +1,4 @@
+import type powerbi from "powerbi-visuals-api";
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import settingsClass from "../../src/Classes/settingsClass";
@@ -8,6 +9,9 @@ import buildDataView from "../helpers/buildDataView";
 
 function input() {
   return buildDataView({ key: ["A", "B", "C", "D", "E"], numerators: [1, 2, 3, 4, 5] });
+}
+function category(view: powerbi.DataView): powerbi.DataViewCategoryColumn {
+  return view.categorical!.categories![0];
 }
 
 describe("selected settings integration", () => {
@@ -35,7 +39,7 @@ describe("selected settings integration", () => {
       { spc: { sig_figs: -1 } }, {}, { spc: { sig_figs: 2 }, y_axis: { ylimit_sig_figs: -1 } }
     ];
     const settings = new settingsClass();
-    settings.update(view, [[4, 2], [1]]);
+    settings.update(category(view), [[4, 2], [1]]);
     expect(settings.settings[0].spc.sig_figs).toBe(2);
     expect(settings.settings[1].spc.sig_figs).toBe(4);
     expect(settings.settings[0].y_axis.ylimit_sig_figs).toBeUndefined();
@@ -52,25 +56,33 @@ describe("selected settings integration", () => {
       {}, {}, { spc: { sig_figs: -1 } }, { spc: { sig_figs: Infinity } }, {}
     ];
     const settings = new settingsClass();
-    settings.update(view, [[3], [2]]);
+    settings.update(category(view), [[3], [2]]);
     expect(settings.validationStatus.status).toBe(1);
     expect(settings.validationStatus.error).toContain("Infinity");
     expect(settings.validationStatus.messages).toHaveLength(2);
-    settings.update(input(), [[4], [1]]);
+    settings.update(category(input()), [[4], [1]]);
     expect(settings.validationStatus).toEqual({ status: 0, messages: [[], []] });
     expect(settings.settings[0].spc.sig_figs).toBe(defaultSettings.spc.sig_figs);
   });
 
-  it("keeps empty groups independent and resets when category data is absent", () => {
+  it("keeps empty groups independent", () => {
     const settings = new settingsClass();
-    settings.update(input(), [[], [4]]);
+    settings.update(category(input()), [[], [4]]);
     settings.settings[0].canvas.lower_padding = 25;
     expect(settings.settings[1].canvas.lower_padding).toBe(10);
     expect(settings.validationStatus.messages).toEqual([[]]);
-    settings.update(undefined, []);
-    expect(settings.settings).toEqual([defaultSettings]);
-    expect(settings.validationStatus).toEqual({ status: 0, messages: [] });
     expect(settings.getFormattingModel().cards).toHaveLength(12);
+  });
+
+  it("rejects flagging against specification limits that are not shown", () => {
+    const view = input();
+    view.categorical!.categories![0].objects = [{ outliers: { astronomical: true, astronomical_limit: "Specification" } }, {}, {}, {}, {}];
+    const settings = new settingsClass();
+    settings.update(category(view), [[0, 1, 2, 3, 4]]);
+    expect(settings.validationStatus).toMatchObject({ status: 1, error: "Flagging against specification limits requires the specification lines to be shown" });
+    view.categorical!.categories![0].objects[0].lines = { show_specification: true };
+    settings.update(category(view), [[0, 1, 2, 3, 4]]);
+    expect(settings.validationStatus.status).toBe(0);
   });
 
   it("keeps interleaved group formatting and warning labels attached to their raw rows", () => {
@@ -135,7 +147,7 @@ it("preserves blank limit tooltip prefixes through settings reading and renderin
     expect(failed).not.toHaveBeenCalled();
     expect(finished).toHaveBeenCalledOnce();
     expect(visual.viewModel.inputSettings.settings[0].lines.ttip_label_95_prefix_lower).toBe("");
-    const tooltip = visual.viewModel.plotPoints[0][0].tooltip;
+    const tooltip = visual.viewModel.plotPoints[0].tooltip;
     let matchingLimits = 0;
     for (let i = 0; i < tooltip.length; i++) {
       if (tooltip[i].displayName === "95% Limit") matchingLimits++;

@@ -1,7 +1,6 @@
-import { groupCategoryRows, indexColumnsByRole, readColourPalette, validateDataView, type ColourPalette } from "powerbi-visuals-core/powerbi";
+import { groupCategoryRows, readColourPalette, validateDataView, type ColourPalette, type UpdateOptions } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
-type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as limitFunctions from "../Limit Calculations"
@@ -12,15 +11,14 @@ import buildTooltip from "../Functions/buildTooltip";
 import { rep, between, calculateTrendLine } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
-import { isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection, type OutlierStatus } from "powerbi-visuals-core/data";
+import { isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection, type FlagDirection, type OutlierStatus } from "powerbi-visuals-core/data";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
 import { astronomical, shift, trend, twoInThree } from "powerbi-visuals-core/spc";
-import lineKeys from "../Functions/lineKeys";
+import lineKeys, { type LineName } from "../Functions/lineKeys";
+import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
 import { sequence } from "powerbi-visuals-core/math";
-
-type LineSettingsKeys = keyof settingsValueType["lines"];
 
 import type { ErrorKind } from "powerbi-visuals-core/rendering";
 
@@ -34,7 +32,7 @@ export type viewModelValidationT = {
 export type lineData = {
   x: number;
   line_value: number | undefined;
-  group: string;
+  group: LineName;
   aesthetics: settingsValueType["lines"];
 }
 
@@ -54,27 +52,29 @@ export type summaryTableRowData = {
   speclimits_lower: number | undefined;
   speclimits_upper: number | undefined;
   trend_line: number | undefined;
-  astpoint: string;
-  trend: string;
-  shift: string;
-  two_in_three: string;
+  astpoint: FlagDirection;
+  trend: FlagDirection;
+  shift: FlagDirection;
+  two_in_three: FlagDirection;
 }
 
+// Grouped rows hold formatted text; indicator and tooltip columns are named by the report
 export type summaryTableRowDataGrouped = {
-  [key: string]: any;
-
+  [column: string]: string;
   latest_date: string;
-  value: number;
-  target: number;
-  alt_target: number;
-  ucl99: number;
-  ucl95: number;
-  ucl68: number;
-  lcl68: number;
-  lcl95: number;
-  lcl99: number;
-  variation: string;
-  assurance: string;
+  value: string;
+  numerator: string;
+  denominator: string;
+  target: string;
+  alt_target: string;
+  ucl99: string;
+  ucl95: string;
+  ucl68: string;
+  lcl68: string;
+  lcl95: string;
+  lcl99: string;
+  variation: NhsIconName;
+  assurance: NhsIconName | "none";
 }
 
 export type plotData = {
@@ -103,24 +103,35 @@ export type plotDataGrouped = {
   highlighted: boolean;
 }
 
+// Every series is row-aligned with `keys`; a cell is undefined where the chart or settings define no value
 export type controlLimitsObject = {
   keys: { x: number, id: number, label: string }[];
   values: number[];
-  numerators?: (number | undefined)[];
-  denominators?: (number | undefined)[];
+  numerators: (number | undefined)[];
+  denominators: (number | undefined)[];
   targets: (number | undefined)[];
-  ll99?: (number | undefined)[];
-  ll95?: (number | undefined)[];
-  ll68?: (number | undefined)[];
-  ul68?: (number | undefined)[];
-  ul95?: (number | undefined)[];
-  ul99?: (number | undefined)[];
-  count?: (number | undefined)[];
-  alt_targets?: (number | undefined)[];
-  speclimits_lower?: (number | undefined)[];
-  speclimits_upper?: (number | undefined)[];
-  trend_line?: (number | undefined)[];
+  ll99: (number | undefined)[];
+  ll95: (number | undefined)[];
+  ll68: (number | undefined)[];
+  ul68: (number | undefined)[];
+  ul95: (number | undefined)[];
+  ul99: (number | undefined)[];
+  count: (number | undefined)[];
+  alt_targets: (number | undefined)[];
+  speclimits_lower: (number | undefined)[];
+  speclimits_upper: (number | undefined)[];
+  trend_line: (number | undefined)[];
 };
+
+export type LimitSeries = Exclude<keyof controlLimitsObject, "keys" | "values">;
+// Listed exhaustively so merging and sanitising cover every series
+const limitSeries = Object.keys({
+  numerators: true, denominators: true, targets: true, ll99: true, ll95: true, ll68: true, ul68: true, ul95: true, ul99: true,
+  count: true, alt_targets: true, speclimits_lower: true, speclimits_upper: true, trend_line: true
+} satisfies Record<LimitSeries, true>) as LimitSeries[];
+
+// Calculators return only the series their chart defines
+export type CalculatedLimits = Pick<controlLimitsObject, "keys" | "values"> & Partial<Pick<controlLimitsObject, LimitSeries>>;
 
 export type controlLimitsArgs = {
   keys: { x: number, id: number, label: string }[];
@@ -132,10 +143,10 @@ export type controlLimitsArgs = {
 }
 
 export type outliersObject = {
-  astpoint: string[];
-  trend: string[];
-  two_in_three: string[];
-  shift: string[];
+  astpoint: FlagDirection[];
+  trend: FlagDirection[];
+  two_in_three: FlagDirection[];
+  shift: FlagDirection[];
 }
 
 export default class viewModelClass {
@@ -143,8 +154,9 @@ export default class viewModelClass {
   inputSettings: settingsClass;
   controlLimits: controlLimitsObject[];
   outliers: outliersObject[];
-  plotPoints: (plotData[] | plotDataGrouped[])[];
-  groupedLines: [string, lineData[]][];
+  plotPoints: plotData[];
+  groupedRows: plotDataGrouped[];
+  groupedLines: [LineName, lineData[]][];
   tickLabels: { x: number; label: string; }[];
   splitIndexes: number[];
   groupStartEndIndexes: number[][][];
@@ -169,8 +181,9 @@ export default class viewModelClass {
     this.inputSettings = new settingsClass();
     this.controlLimits = new Array<controlLimitsObject>();
     this.outliers = new Array<outliersObject>();
-    this.plotPoints = new Array<plotData[] | plotDataGrouped[]>();
-    this.groupedLines = new Array<[string, lineData[]]>();
+    this.plotPoints = [];
+    this.groupedRows = [];
+    this.groupedLines = [];
     this.firstRun = true
     this.splitIndexes = new Array<number>();
     this.groupStartEndIndexes = new Array<number[][]>();
@@ -186,34 +199,32 @@ export default class viewModelClass {
     this.groupNames = [];
   }
 
-  update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
+  update(options: UpdateOptions, host: IVisualHost): viewModelValidationT {
     // Finding 34: read before any early return so error rendering is themed
     this.colourPalette = readColourPalette(host);
     const checkView = validateDataView(options.dataViews, ["numerators"]);
-    if (checkView !== "valid") {
-      return { status: false, error: checkView };
+    if (checkView.status !== "valid") {
+      return { status: false, error: checkView.error };
     }
+    const view = checkView.view;
     this.svgWidth = options.viewport.width;
     this.svgHeight = options.viewport.height;
-    this.headless = (options as VisualUpdateOptions & { headless?: boolean })?.headless ?? false;
-    this.frontend = (options as VisualUpdateOptions & { frontend?: boolean })?.frontend ?? false;
+    this.headless = options.headless ?? false;
+    this.frontend = options.frontend ?? false;
 
-    const inputView = options.dataViews[0].categorical!;
-    const columns = { categories: indexColumnsByRole(inputView.categories ?? []), values: indexColumnsByRole(inputView.values ?? []) };
-    const indicator_cols = columns.categories.indicator ?? [];
+    const indicator_cols = view.categories.indicator ?? [];
     this.indicatorVarNames = new Array<string>(indicator_cols.length);
     for (let i = 0; i < indicator_cols.length; i++) this.indicatorVarNames[i] = indicator_cols[i].source.displayName;
 
-    const n_values: number = options.dataViews[0]?.categorical?.categories?.[0]?.values?.length ?? 1;
     const res: viewModelValidationT = { status: true };
-    const indicatorGroups = groupCategoryRows(indicator_cols, n_values);
+    const indicatorGroups = groupCategoryRows(indicator_cols, view.rowCount);
     const idx_per_indicator = indicatorGroups.rows;
     this.groupNames = indicatorGroups.names;
 
     // Data and Style updates both rebuild settings, so theme changes reach the derived values
     const dataChanged = (options.type & (2 | 16)) !== 0 || this.firstRun;
     if (dataChanged) {
-      this.inputSettings.update(options.dataViews[0], idx_per_indicator);
+      this.inputSettings.update(view.category, idx_per_indicator);
     }
     if (this.inputSettings.validationStatus.status !== 0) {
       res.status = false;
@@ -221,7 +232,7 @@ export default class viewModelClass {
       res.type = "settings";
       return res;
     }
-    const checkDV: string = validateDataViewColumns(this.inputSettings, columns.values);
+    const checkDV: string = validateDataViewColumns(this.inputSettings, view.values);
     if (checkDV !== "valid") {
       res.status = false;
       res.error = checkDV;
@@ -234,7 +245,7 @@ export default class viewModelClass {
     if (dataChanged) {
       // Handle split indexes (only for first indicator in single mode)
       const hasIndicator = indicator_cols.length > 0;
-      const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+      const split_indexes_str: string = <string>(view.dataView.metadata.objects?.split_indexes_storage?.split_indexes) ?? "[]";
       const split_indexes: number[] = JSON.parse(split_indexes_str);
       this.splitIndexes = hasIndicator ? [] : split_indexes;
 
@@ -257,8 +268,7 @@ export default class viewModelClass {
 
         // Extract data for this indicator
         const extraction = extractInputData(
-          inputView,
-          columns,
+          view,
           settings,
           derivedSettings,
           this.inputSettings.validationStatus.messages,
@@ -310,6 +320,7 @@ export default class viewModelClass {
       this.outliers = [];
       this.identities = [];
       this.plotPoints = [];
+      this.groupedRows = [];
       this.groupedLines = [];
       this.tickLabels = [];
       this.firstRun = true;
@@ -330,7 +341,7 @@ export default class viewModelClass {
   getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {
     const allIndexes: number[] = (splitIndexes ?? [])
                                     .concat([-1])
-                                    .concat(inputData.groupingIndexes ?? [])
+                                    .concat(inputData.groupingIndexes)
                                     .concat([inputData.limitInputArgs.keys.length - 1])
                                     .filter((d, idx, arr) => arr.indexOf(d) === idx)
                                     .sort((a,b) => a - b);
@@ -355,12 +366,12 @@ export default class viewModelClass {
   }
 
   calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsValueType): controlLimitsObject {
-    const limitFunction: (args: controlLimitsArgs) => controlLimitsObject
-      = limitFunctions[inputSettings.spc.chart_type as keyof typeof limitFunctions];
+    const limitFunction: (args: controlLimitsArgs) => CalculatedLimits
+      = limitFunctions[inputSettings.spc.chart_type];
 
     const { num_points_subset, subset_points_from, subset_rebaselines } = inputSettings.spc;
     const args = inputData.limitInputArgs;
-    const calcLimitsGrouped: controlLimitsObject[] = groupStartEndIndexes.map(([start, end], groupIndex) => {
+    const calcLimitsGrouped: CalculatedLimits[] = groupStartEndIndexes.map(([start, end], groupIndex) => {
       const n: number = end - start;
       const applySubset: boolean = groupIndex === 0 || subset_rebaselines;
       const subsetCount: number = applySubset && !isNullOrUndefined(num_points_subset) && between(num_points_subset, 1, n)
@@ -378,38 +389,43 @@ export default class viewModelClass {
       return currLimits;
     });
 
-    const controlLimits: controlLimitsObject = calcLimitsGrouped.reduce((all: controlLimitsObject, curr: controlLimitsObject) => {
-      const allInner: controlLimitsObject = all;
-      Object.entries(all).forEach((entry, idx) => {
-        if (isNullOrUndefined(entry[1])) {
-          return;
-        }
-        const newValues = entry[1].concat(Object.entries(curr)[idx][1]);
-        (allInner[entry[0] as keyof controlLimitsObject] as typeof newValues) = newValues;
-      })
-      return allInner;
-    })
+    // Series a chart does not define are filled blank so every series stays row-aligned across segments
+    const controlLimits: controlLimitsObject = {
+      keys: [], values: [], numerators: [], denominators: [], targets: [], ll99: [], ll95: [], ll68: [], ul68: [], ul95: [], ul99: [],
+      count: [], alt_targets: [], speclimits_lower: [], speclimits_upper: [], trend_line: []
+    };
+    for (let g = 0; g < calcLimitsGrouped.length; g++) {
+      const group = calcLimitsGrouped[g];
+      controlLimits.keys = controlLimits.keys.concat(group.keys);
+      controlLimits.values = controlLimits.values.concat(group.values);
+      for (let s = 0; s < limitSeries.length; s++) {
+        const name = limitSeries[s];
+        controlLimits[name] = controlLimits[name].concat(group[name] ?? rep(undefined, group.keys.length));
+      }
+    }
 
     // Per-row inputs join through each returned key's position (moving ranges drop a key per segment)
     const positions = new Array<number>(controlLimits.keys.length);
     for (let i = 0; i < positions.length; i++) positions[i] = controlLimits.keys[i].x;
-    controlLimits.alt_targets = inputData.alt_targets === undefined ? undefined : pickRows(inputData.alt_targets, positions);
-    controlLimits.speclimits_lower = inputData.speclimits_lower === undefined ? undefined : pickRows(inputData.speclimits_lower, positions);
-    controlLimits.speclimits_upper = inputData.speclimits_upper === undefined ? undefined : pickRows(inputData.speclimits_upper, positions);
+    controlLimits.alt_targets = pickRows(inputData.alt_targets, positions);
+    controlLimits.speclimits_lower = pickRows(inputData.speclimits_lower, positions);
+    controlLimits.speclimits_upper = pickRows(inputData.speclimits_upper, positions);
 
-    for (const key in controlLimits) {
-      const keyTyped: keyof controlLimitsObject = key as keyof controlLimitsObject;
-      if (keyTyped === "keys" || keyTyped == "values" || isNullOrUndefined(controlLimits[keyTyped])) {
-        continue;
+    for (let s = 0; s < limitSeries.length; s++) {
+      const series = controlLimits[limitSeries[s]];
+      for (let i = 0; i < series.length; i++) {
+        if (!isValidNumber(series[i])) {
+          series[i] = undefined;
+        }
       }
-      controlLimits[keyTyped] = controlLimits[keyTyped].map(d => !isValidNumber(d) ? undefined : d);
     }
 
     return controlLimits;
   }
 
   initialisePlotDataGrouped(): void {
-    this.plotPoints = new Array<plotDataGrouped[]>();
+    this.plotPoints = [];
+    this.groupedRows = [];
     this.tableColumns = new Array<{ name: string; label: string; }[]>();
 
     // Build table column definitions
@@ -435,19 +451,19 @@ export default class viewModelClass {
     if (lineSettings.show_alt_target) {
       tableColumnsDef.push({ name: "alt_target", label: lineSettings.ttip_label_alt_target });
     }
-    ["99", "95", "68"].forEach(limit => {
-      if (lineSettings[`show_${limit}` as LineSettingsKeys]) {
+    (["99", "95", "68"] as const).forEach(limit => {
+      if (lineSettings[`show_${limit}`]) {
         tableColumnsDef.push({
           name: `ucl${limit}`,
-          label: `${lineSettings[`ttip_label_${limit}_prefix_upper` as LineSettingsKeys]}${lineSettings[`ttip_label_${limit}` as LineSettingsKeys]}`
+          label: `${lineSettings[`ttip_label_${limit}_prefix_upper`]}${lineSettings[`ttip_label_${limit}`]}`
         })
       }
     });
-    ["68", "95", "99"].forEach(limit => {
-      if (lineSettings[`show_${limit}` as LineSettingsKeys]) {
+    (["68", "95", "99"] as const).forEach(limit => {
+      if (lineSettings[`show_${limit}`]) {
         tableColumnsDef.push({
           name: `lcl${limit}`,
-          label: `${lineSettings[`ttip_label_${limit}_prefix_lower` as LineSettingsKeys]}${lineSettings[`ttip_label_${limit}` as LineSettingsKeys]}`
+          label: `${lineSettings[`ttip_label_${limit}_prefix_lower`]}${lineSettings[`ttip_label_${limit}`]}`
         })
       }
     })
@@ -458,10 +474,10 @@ export default class viewModelClass {
     if (nhsIconSettings.show_assurance_icons) {
       tableColumnsDef.push({ name: "assurance", label: "Assurance" });
     }
-    const anyTooltips: boolean = this.inputData.some(d => d?.tooltips?.some(t => t.length > 0));
+    const anyTooltips: boolean = this.inputData.some(d => d.tooltips.some(t => t.length > 0));
 
     if (anyTooltips) {
-      this.inputData?.[0].tooltips?.[0].forEach(tooltip => {
+      this.inputData[0].tooltips[0].forEach(tooltip => {
         tableColumnsDef.push({ name: tooltip.displayName, label: tooltip.displayName });
       })
     }
@@ -471,20 +487,13 @@ export default class viewModelClass {
 
     // Process each indicator group
     for (let i: number = 0; i < this.groupNames.length; i++) {
-      // Skip if no data for this group
-      if (isNullOrUndefined(this.inputData[i]?.categories)) {
-        continue;
-      }
       const formatValues = this.inputSettings.derivedSettings[i].formatValue;
-      const varIconFilter: string = this.inputSettings.settings[i].summary_table.table_variation_filter;
-      const assIconFilter: string = this.inputSettings.settings[i].summary_table.table_assurance_filter;
+      const varIconFilter = this.inputSettings.settings[i].summary_table.table_variation_filter;
+      const assIconFilter = this.inputSettings.settings[i].summary_table.table_assurance_filter;
       const limits: controlLimitsObject = this.controlLimits[i];
-      if (!limits) {
-        continue;
-      }
       const outliers: outliersObject = this.outliers[i];
       const lastIndex: number = limits.keys.length - 1;
-      const varIcons: string[] = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
+      const varIcons = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
       if (varIconFilter !== "all") {
         if (varIconFilter === "improvement" && !(["improvementHigh", "improvementLow"].includes(varIcons[0]))) {
           continue;
@@ -502,7 +511,7 @@ export default class viewModelClass {
           continue;
         }
       }
-      const assIcon: string = assuranceIconToDraw(limits, this.inputSettings.settings[i],
+      const assIcon = assuranceIconToDraw(limits, this.inputSettings.settings[i],
                                                       this.inputSettings.derivedSettings[i]);
       if (assIconFilter !== "all") {
         if (assIconFilter === "any" && assIcon === "inconsistent") {
@@ -518,37 +527,39 @@ export default class viewModelClass {
           continue;
         }
       }
-      const table_row_entries: [string, string | number][] = new Array<[string, string | number]>();
-      this.indicatorVarNames.forEach((indicator_name, idx) => {
-        table_row_entries.push([indicator_name, this.groupNames[i][idx]]);
-      })
-      table_row_entries.push(["latest_date", limits.keys?.[lastIndex].label]);
-      table_row_entries.push(["value", formatValues(limits.values?.[lastIndex], "value")]);
-      table_row_entries.push(["numerator", formatValues(limits.numerators?.[lastIndex], "integer")]);
-      table_row_entries.push(["denominator", formatValues(limits.denominators?.[lastIndex], "integer")]);
-      table_row_entries.push(["target", formatValues(limits.targets?.[lastIndex], "value")]);
-      table_row_entries.push(["alt_target", formatValues(limits.alt_targets?.[lastIndex], "value")]);
-      table_row_entries.push(["ucl99", formatValues(limits.ul99?.[lastIndex], "value")]);
-      table_row_entries.push(["ucl95", formatValues(limits.ul95?.[lastIndex], "value")]);
-      table_row_entries.push(["ucl68", formatValues(limits.ul68?.[lastIndex], "value")]);
-      table_row_entries.push(["lcl68", formatValues(limits.ll68?.[lastIndex], "value")]);
-      table_row_entries.push(["lcl95", formatValues(limits.ll95?.[lastIndex], "value")]);
-      table_row_entries.push(["lcl99", formatValues(limits.ll99?.[lastIndex], "value")]);
-      table_row_entries.push(["variation", varIcons[0]]);
-      table_row_entries.push(["assurance", assIcon]);
-
-      if (anyTooltips && !isNullOrUndefined(this.inputData[i].tooltips)) {
-        this.inputData[i].tooltips![lastIndex].forEach(tooltip => {
-          table_row_entries.push([tooltip.displayName, tooltip.value]);
-        })
+      // Indicator columns come first and tooltip columns last, so a shared name resolves as before
+      const indicatorColumns: Record<string, string> = {};
+      for (let idx = 0; idx < this.indicatorVarNames.length; idx++) {
+        indicatorColumns[this.indicatorVarNames[idx]] = this.groupNames[i][idx];
       }
-
-      if (!this.plotPoints[i]) {
-        this.plotPoints[i] = [];
+      const tooltipColumns: Record<string, string> = {};
+      if (anyTooltips) {
+        const rowTooltips = this.inputData[i].tooltips[lastIndex];
+        for (let t = 0; t < rowTooltips.length; t++) {
+          tooltipColumns[rowTooltips[t].displayName] = rowTooltips[t].value;
+        }
       }
+      const table_row: summaryTableRowDataGrouped = {
+        ...indicatorColumns,
+        latest_date: limits.keys[lastIndex].label,
+        value: formatValues(limits.values[lastIndex], "value"),
+        numerator: formatValues(limits.numerators[lastIndex], "integer"),
+        denominator: formatValues(limits.denominators[lastIndex], "integer"),
+        target: formatValues(limits.targets[lastIndex], "value"),
+        alt_target: formatValues(limits.alt_targets[lastIndex], "value"),
+        ucl99: formatValues(limits.ul99[lastIndex], "value"),
+        ucl95: formatValues(limits.ul95[lastIndex], "value"),
+        ucl68: formatValues(limits.ul68[lastIndex], "value"),
+        lcl68: formatValues(limits.ll68[lastIndex], "value"),
+        lcl95: formatValues(limits.ll95[lastIndex], "value"),
+        lcl99: formatValues(limits.ll99[lastIndex], "value"),
+        variation: varIcons[0],
+        assurance: assIcon,
+        ...tooltipColumns
+      };
 
-      (this.plotPoints[i] as plotDataGrouped[]).push({
-        table_row: Object.fromEntries(table_row_entries) as summaryTableRowDataGrouped,
+      this.groupedRows.push({
+        table_row,
         identity: this.identities[i],
         aesthetics: this.inputSettings.settings[i].summary_table,
         highlighted: this.inputData[i].anyHighlights
@@ -564,21 +575,16 @@ export default class viewModelClass {
     const settings = this.inputSettings.settings[0];
     const derivedSettings = this.inputSettings.derivedSettings[0];
 
-    this.plotPoints[0] = new Array<plotData>();
+    this.plotPoints = [];
+    this.groupedRows = [];
     this.tickLabels = new Array<{ x: number; label: string; }>();
     this.tableColumns[0] = new Array<{ name: string; label: string; }>();
 
     this.tableColumns[0].push({ name: "date", label: "Date" });
     this.tableColumns[0].push({ name: "value", label: "Value" });
 
-    if (!controlLimits) {
-      return;
-    }
-
-    if (!isNullOrUndefined(controlLimits.numerators)) {
+    if (inputData.limitInputArgs.denominators !== undefined) {
       this.tableColumns[0].push({ name: "numerator", label: "Numerator" });
-    }
-    if (!isNullOrUndefined(controlLimits.denominators)) {
       this.tableColumns[0].push({ name: "denominator", label: "Denominator" });
     }
     if (settings.lines.show_target) {
@@ -624,34 +630,34 @@ export default class viewModelClass {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
       // Later patterns take precedence, so an astronomical point's colour wins
-      const flagged: [string, string][] = [
+      const flagged: [FlagDirection, "shift_colour" | "trend_colour" | "twointhree_colour" | "ast_colour"][] = [
         [outliers.shift[i], "shift_colour"], [outliers.trend[i], "trend_colour"],
         [outliers.two_in_three[i], "twointhree_colour"], [outliers.astpoint[i], "ast_colour"]
       ];
       for (let j = 0; j < flagged.length; j++) {
         const [status, prefix] = flagged[j];
         if (status !== "none") {
-          const colour = settings.outliers[`${prefix}_${status}` as keyof settingsValueType["outliers"]] as string;
+          const colour = settings.outliers[`${prefix}_${status}`];
           aesthetics.colour = colour;
           aesthetics.colour_outline = colour;
         }
       }
       const table_row: summaryTableRowData = {
         date: controlLimits.keys[i].label,
-        numerator: controlLimits.numerators?.[i],
-        denominator: controlLimits.denominators?.[i],
+        numerator: controlLimits.numerators[i],
+        denominator: controlLimits.denominators[i],
         value: controlLimits.values[i],
         target: controlLimits.targets[i],
-        alt_target: controlLimits.alt_targets?.[i],
-        ll99: controlLimits?.ll99?.[i],
-        ll95: controlLimits?.ll95?.[i],
-        ll68: controlLimits?.ll68?.[i],
-        ul68: controlLimits?.ul68?.[i],
-        ul95: controlLimits?.ul95?.[i],
-        ul99: controlLimits?.ul99?.[i],
-        speclimits_lower: controlLimits?.speclimits_lower?.[i],
-        speclimits_upper: controlLimits?.speclimits_upper?.[i],
-        trend_line: controlLimits?.trend_line?.[i],
+        alt_target: controlLimits.alt_targets[i],
+        ll99: controlLimits.ll99[i],
+        ll95: controlLimits.ll95[i],
+        ll68: controlLimits.ll68[i],
+        ul68: controlLimits.ul68[i],
+        ul95: controlLimits.ul95[i],
+        ul99: controlLimits.ul99[i],
+        speclimits_lower: controlLimits.speclimits_lower[i],
+        speclimits_upper: controlLimits.speclimits_upper[i],
+        trend_line: controlLimits.trend_line[i],
         astpoint: outliers.astpoint[i],
         trend: outliers.trend[i],
         shift: outliers.shift[i],
@@ -659,7 +665,7 @@ export default class viewModelClass {
       }
 
 
-      this.plotPoints[0].push({
+      this.plotPoints.push({
         x: index,
         value: controlLimits.values[i],
         aesthetics: aesthetics,
@@ -667,11 +673,10 @@ export default class viewModelClass {
         identity: host.createSelectionIdBuilder()
                       .withCategory(inputData.categories, controlLimits.keys[i].id)
                       .createSelectionId(),
-        highlighted: !isNullOrUndefined(inputData.highlights?.[index]),
-        tooltip: buildTooltip(table_row, inputData?.tooltips?.[index],
-                              settings, derivedSettings),
+        highlighted: inputData.highlights[index] !== undefined,
+        tooltip: buildTooltip(table_row, inputData.tooltips[index], settings, derivedSettings),
         label: {
-          text_value: inputData.labels?.[index],
+          text_value: inputData.labels[index],
           aesthetics: inputData.label_formatting[index],
           angle: undefined,
           distance: undefined
@@ -687,7 +692,7 @@ export default class viewModelClass {
     const controlLimits = this.controlLimits[0];
     const inputData = this.inputData[0];
 
-    const labels: string[] = new Array<string>();
+    const labels: LineName[] = [];
     if (settings.lines.show_main) {
       labels.push("values");
     }
@@ -716,11 +721,6 @@ export default class viewModelClass {
     }
 
     const formattedLines: lineData[] = new Array<lineData>();
-
-    if (!controlLimits) {
-      return;
-    }
-
     const nLimits = controlLimits.keys.length;
     const groups = this.groupStartEndIndexes[0];
     const isGroupStart = new Array<boolean>(nLimits).fill(false);
@@ -729,11 +729,11 @@ export default class viewModelClass {
     for (let i: number = 0; i < nLimits; i++) {
       const isRebaselinePoint: boolean = isGroupStart[i];
       let isNewAltTarget: boolean = false;
-      if (i > 0 && settings.lines.show_alt_target && !isNullOrUndefined(controlLimits.alt_targets)) {
+      if (i > 0 && settings.lines.show_alt_target) {
         isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
       }
       labels.forEach(label => {
-        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineKeys[label]}` as LineSettingsKeys] as boolean;
+        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineKeys[label]}`];
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
         if (isRebaselinePoint || isNewAltTarget) {
@@ -741,7 +741,7 @@ export default class viewModelClass {
           const is_rebaseline: boolean = label !== "alt_targets" && isRebaselinePoint;
           formattedLines.push({
             x: controlLimits.keys[i].x,
-            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? undefined : controlLimits[label as Exclude<keyof controlLimitsObject, "keys">]?.[i],
+            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? undefined : controlLimits[label][i],
             group: label,
             aesthetics: inputData.line_formatting[controlLimits.keys[i].x]
           })
@@ -749,7 +749,7 @@ export default class viewModelClass {
 
         formattedLines.push({
           x: controlLimits.keys[i].x,
-          line_value: controlLimits[label as Exclude<keyof controlLimitsObject, "keys">]?.[i],
+          line_value: controlLimits[label][i],
           group: label,
           aesthetics: inputData.line_formatting[controlLimits.keys[i].x]
         })
@@ -784,29 +784,27 @@ export default class viewModelClass {
     }
 
     lines_to_scale.forEach(limit => {
-      if (isNullOrUndefined(controlLimits[limit])) {
-        return;
-      }
-      for (let i: number = 0; i < controlLimits[limit].length; i++) {
-        if (!isNullOrUndefined(controlLimits[limit][i])) {
-          controlLimits[limit][i] = (controlLimits[limit][i] as number) * multiplier;
+      const series = controlLimits[limit];
+      for (let i: number = 0; i < series.length; i++) {
+        const value = series[i];
+        if (value !== undefined) {
+          series[i] = value * multiplier;
         }
       }
     })
 
     lines_to_truncate.forEach(limit => {
-      if (isNullOrUndefined(controlLimits[limit])) {
-        return;
-      }
-      for (let i: number = 0; i < controlLimits[limit].length; i++) {
-        if (!isNullOrUndefined(controlLimits[limit][i])) {
+      const series = controlLimits[limit];
+      for (let i: number = 0; i < series.length; i++) {
+        const value = series[i];
+        if (value !== undefined) {
           const lower_trunc: number = isValidNumber(inputSettings.spc.ll_truncate)
-            ? Math.max(inputSettings.spc.ll_truncate, controlLimits[limit][i]!)
-            : controlLimits[limit][i] as number;
+            ? Math.max(inputSettings.spc.ll_truncate, value)
+            : value;
           const upper_trunc: number = isValidNumber(inputSettings.spc.ul_truncate)
             ? Math.min(inputSettings.spc.ul_truncate, lower_trunc)
             : lower_trunc;
-          controlLimits[limit][i] = upper_trunc;
+          series[i] = upper_trunc;
         }
       }
     })
@@ -814,8 +812,8 @@ export default class viewModelClass {
 
   flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][],
                 inputSettings: settingsValueType, derivedSettings: derivedSettingsClass): outliersObject {
-    const process_flag_type: string = inputSettings.outliers.process_flag_type;
-    const improvement_direction: string = inputSettings.outliers.improvement_direction;
+    const process_flag_type = inputSettings.outliers.process_flag_type;
+    const improvement_direction = inputSettings.outliers.improvement_direction;
     const trend_n: number = inputSettings.outliers.trend_n;
     const shift_n: number = inputSettings.outliers.shift_n;
     const ast_specification: boolean = inputSettings.outliers.astronomical_limit === "Specification";
@@ -830,31 +828,27 @@ export default class viewModelClass {
       const start: number = groupStartEndIndexes[i][0];
       const end: number = groupStartEndIndexes[i][1];
       const group_values: number[] = controlLimits.values.slice(start, end);
-      const group_targets: number[] = controlLimits.targets.slice(start, end) as number[];
+      const group_targets = controlLimits.targets.slice(start, end);
 
       if (derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
-        const limit_map: Record<string, string> = {
-          "1 Sigma": "68",
-          "2 Sigma": "95",
-          "3 Sigma": "99",
-          "Specification": "",
-        };
+        const limitKeys = {
+          "1 Sigma": ["ll68", "ul68"],
+          "2 Sigma": ["ll95", "ul95"],
+          "3 Sigma": ["ll99", "ul99"],
+          "Specification": ["speclimits_lower", "speclimits_upper"]
+        } as const satisfies Record<string, readonly [LimitSeries, LimitSeries]>;
         if (inputSettings.outliers.astronomical) {
-          const ast_limit: string = limit_map[inputSettings.outliers.astronomical_limit];
-          const ll_prefix: string = ast_specification ? "speclimits_lower" : "ll";
-          const ul_prefix: string = ast_specification ? "speclimits_upper" : "ul";
-          const lower_limits: number[] = controlLimits[`${ll_prefix}${ast_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
-          const upper_limits: number[] = controlLimits[`${ul_prefix}${ast_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
+          const [lower_key, upper_key] = limitKeys[inputSettings.outliers.astronomical_limit];
+          const lower_limits = controlLimits[lower_key].slice(start, end);
+          const upper_limits = controlLimits[upper_key].slice(start, end);
           astronomical(group_values, lower_limits, upper_limits)
             .forEach((flag, idx) => outliers.astpoint[start + idx] = flag)
         }
         if (inputSettings.outliers.two_in_three) {
           const highlight_series: boolean = inputSettings.outliers.two_in_three_highlight_series;
-          const two_in_three_limit: string = limit_map[inputSettings.outliers.two_in_three_limit];
-          const ll_prefix: string = two_in_three_specification ? "speclimits_lower" : "ll";
-          const ul_prefix: string = two_in_three_specification ? "speclimits_upper" : "ul";
-          const lower_warn_limits: number[] = controlLimits[`${ll_prefix}${two_in_three_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
-          const upper_warn_limits: number[] = controlLimits[`${ul_prefix}${two_in_three_limit}` as Exclude<keyof controlLimitsObject, "keys">]!.slice(start, end) as number[];
+          const [lower_key, upper_key] = limitKeys[inputSettings.outliers.two_in_three_limit];
+          const lower_warn_limits = controlLimits[lower_key].slice(start, end);
+          const upper_warn_limits = controlLimits[upper_key].slice(start, end);
           twoInThree(group_values, lower_warn_limits, upper_warn_limits, highlight_series)
             .forEach((flag, idx) => outliers.two_in_three[start + idx] = flag)
         }
@@ -869,16 +863,18 @@ export default class viewModelClass {
       }
     }
     const flagSettings = { process_flag_type, improvement_direction };
-    const names = ["astpoint", "two_in_three", "trend", "shift"] as const;
-    const result = {} as outliersObject;
-    for (let k = 0; k < names.length; k++) {
-      const raw = outliers[names[k]];
-      const flagged = new Array<string>(raw.length);
+    const flag = (raw: readonly OutlierStatus[]): FlagDirection[] => {
+      const flagged = new Array<FlagDirection>(raw.length);
       for (let i = 0; i < raw.length; i++) {
         flagged[i] = checkFlagDirection(raw[i], flagSettings);
       }
-      result[names[k]] = flagged;
-    }
-    return result;
+      return flagged;
+    };
+    return {
+      astpoint: flag(outliers.astpoint),
+      two_in_three: flag(outliers.two_in_three),
+      trend: flag(outliers.trend),
+      shift: flag(outliers.shift)
+    };
   }
 }

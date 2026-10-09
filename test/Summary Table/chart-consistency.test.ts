@@ -2,7 +2,6 @@ import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { type plotData } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
@@ -28,7 +27,7 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
       type: 2
     });
 
-    const lastPoint = (visual.viewModel.plotPoints[0] as plotData[])[keys.length - 1];
+    const lastPoint = visual.viewModel.plotPoints[keys.length - 1];
     const valueTooltipEntry = lastPoint.tooltip.find(t => t.displayName === "Proportion")!;
     expect(valueTooltipEntry).toBeTruthy();
     expect(valueTooltipEntry.value).toMatch(/%$/);
@@ -77,7 +76,7 @@ describe("Summary Table - numeric/tooltip consistency with the individual chart"
       type: 2
     });
 
-    const lastPoint = (visual.viewModel.plotPoints[0] as plotData[])[keys.length - 1];
+    const lastPoint = visual.viewModel.plotPoints[keys.length - 1];
     const upper68TooltipEntry = lastPoint.tooltip.find(t => t.displayName === "Upper 68% Limit");
     expect(upper68TooltipEntry).toBeTruthy();
 

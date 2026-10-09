@@ -34,7 +34,7 @@ function attribute(element: Element | null, name: string): number {
 }
 
 function firstPoint(visual: Visual): { point: plotData; x: number; y: number } {
-  const point = (visual.viewModel.plotPoints[0] as plotData[])[0];
+  const point = visual.viewModel.plotPoints[0];
   return { point, x: visual.plotProperties.xScale(point.x) as number, y: visual.plotProperties.yScale(point.value) as number };
 }
 
@@ -178,7 +178,7 @@ describe("Value labels", () => {
     const visual = new Visual({ element, host: createVisualHost({}) });
     visual.update({
       dataViews: [labelledView({})], viewport: { width: 500, height: 500 }, type: 2, headless: true
-    } as powerbi.extensibility.visual.VisualUpdateOptions);
+    });
     const group = labelGroups(element)[0];
     expect(group.style.touchAction).toBe("");
     group.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 1, bubbles: true }));

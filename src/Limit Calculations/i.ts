@@ -1,5 +1,5 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
-import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import type { controlLimitsArgs } from "../Classes/viewModelClass";
+import plottedValues from "./plottedValues";
 
 /**
  * Calculates control limits for an I-chart (Individuals chart), also known as an XmR chart.
@@ -62,19 +62,16 @@ import { isNullOrUndefined } from "powerbi-visuals-core/data";
  *
  * @see {@link https://en.wikipedia.org/wiki/X-bar_and_R_chart} for individuals chart theory
  */
-export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function iLimits(args: Readonly<controlLimitsArgs>) {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
-  const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
+  const { values, numerators, denominators } = plottedValues(args);
 
   // Extract input arrays from arguments
   const n_sub: number = args.subset_points.length;          // Number of points used for limit calculation
-  const numerators: readonly number[] = args.numerators;    // Raw values or numerators for ratios
-  const denominators: readonly number[] | undefined = args.denominators; // Denominators for ratio calculation
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Initialize with first value (for moving range calculation we need previous value)
-  let prevVal: number = useRatio ? numerators[subset_points[0]] / denominators![subset_points[0]]
-                                 : numerators[subset_points[0]];
+  let prevVal: number = values[subset_points[0]];
 
   // Accumulators for mean and average moving range
   let cl: number = prevVal;                              // Running sum for mean calculation
@@ -84,8 +81,7 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Calculate sum for mean and moving ranges: MR_i = |x_i - x_{i-1}|
   for (let i = 1; i < n_sub; i++) {
     // Get current value (raw or ratio)
-    let currVal: number = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
-                                   : numerators[subset_points[i]];
+    let currVal: number = values[subset_points[i]];
 
     // Calculate moving range (absolute difference from previous value)
     consec_diff[i - 1] = Math.abs(currVal - prevVal);
@@ -125,11 +121,11 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
-    values: new Array<number>(n),                          // The plotted values
-    numerators: useRatio ? args.numerators : undefined,    // Original numerators (if ratio)
-    denominators: useRatio ? args.denominators : undefined, // Original denominators (if ratio)
+    values,
+    numerators,
+    denominators,
     targets: new Array<number>(n),                         // Centreline (mean)
     ll99: new Array<number>(n),                            // Lower 3-sigma limit
     ll95: new Array<number>(n),                            // Lower 2-sigma limit
@@ -151,22 +147,14 @@ export default function iLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Calculate control limits for each point
   // I-chart has constant limits (same sigma for all points)
   for (let i = 0; i < n; i++) {
-    // Calculate the plotted value (raw or ratio)
-    if (useRatio) {
-      rtn.values[i] = numerators[i] / denominators![i];  // Ratio: numerator/denominator
-      rtn.numerators![i] = numerators[i];                // Store original numerator
-      rtn.denominators![i] = denominators![i];            // Store original denominator
-    } else {
-      rtn.values[i] = numerators[i];                     // Raw value
-    }
 
     rtn.targets[i] = cl;               // Centreline: x̄
-    rtn.ll99![i] = ll99;      // LCL: x̃ - 3σ
-    rtn.ll95![i] = ll95;      // 2σ lower limit: x̃ - 2σ
-    rtn.ll68![i] = ll68;      // 1σ lower limit: x̃ - σ
-    rtn.ul68![i] = ul68;      // 1σ upper limit: x̃ + σ
-    rtn.ul95![i] = ul95;      // 2σ upper limit: x̃ + 2σ
-    rtn.ul99![i] = ul99;      // UCL: x̃ + 3σ
+    rtn.ll99[i] = ll99;      // LCL: x̃ - 3σ
+    rtn.ll95[i] = ll95;      // 2σ lower limit: x̃ - 2σ
+    rtn.ll68[i] = ll68;      // 1σ lower limit: x̃ - σ
+    rtn.ul68[i] = ul68;      // 1σ upper limit: x̃ + σ
+    rtn.ul95[i] = ul95;      // 2σ upper limit: x̃ + 2σ
+    rtn.ul99[i] = ul99;      // UCL: x̃ + 3σ
   }
 
   return rtn;

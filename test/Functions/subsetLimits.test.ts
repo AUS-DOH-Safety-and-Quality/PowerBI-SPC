@@ -63,7 +63,7 @@ describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", so
     { from: "End", rebaselines: true, means: [19, 44, 79], ranges: [6, 8, 10] },
     { from: "Start", rebaselines: false, means: [11, 38, 71], ranges: [2, 6, 8] },
     { from: "End", rebaselines: false, means: [19, 38, 71], ranges: [6, 6, 8] }
-  ])("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, means, ranges }) => {
+  ] as const)("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, means, ranges }) => {
     const limits = calculateLimits({
       num_points_subset: 2,
       subset_points_from: from,
@@ -88,7 +88,7 @@ describe("Limit subsets without rebaselines", () => {
     { from: "Start", rebaselines: false, mean: 11 },
     { from: "End", rebaselines: true, mean: 79 },
     { from: "End", rebaselines: false, mean: 79 }
-  ])("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, mean }) => {
+  ] as const)("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, mean }) => {
     const limits = calculateLimits({
       num_points_subset: 2,
       subset_points_from: from,
@@ -99,7 +99,7 @@ describe("Limit subsets without rebaselines", () => {
   });
 });
 
-it.each(["Start", "End"])("uses every point in short rebaselines when selecting from %s", from => {
+it.each(["Start", "End"] as const)("uses every point in short rebaselines when selecting from %s", from => {
   const limits = calculateLimits({
     num_points_subset: 3,
     subset_points_from: from,
@@ -183,7 +183,7 @@ const chartReferences = [
       sigmas: [[2.8024956082, 2.0601290775, 1.7161710616, 1.5045055561], [2.8939742195, 3.3011209486, 3.9627374022, 5.3907079355]]
     }
   }
-];
+] satisfies ({ chart_type: settingsValueType["spc"]["chart_type"] } & Record<string, unknown>)[];
 
 describe.each(["groupings", "click splits"])("Numerical control limits with %s", source => {
   describe.each(chartReferences)("$chart_type chart", reference => {

@@ -1,4 +1,4 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import { median } from "powerbi-visuals-core/math";
 
 /**
@@ -53,7 +53,7 @@ import { median } from "powerbi-visuals-core/math";
  *
  * @see {@link https://en.wikipedia.org/wiki/G-chart} for G-chart theory
  */
-export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function gLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   // Extract input arrays from arguments
   const numerators: readonly number[] = args.numerators;         // Counts (opportunities between events)
   const subset_points: readonly number[] = args.subset_points;   // Indices of points to include
@@ -85,7 +85,7 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
     values: args.numerators,           // The plotted values (counts)
     targets: new Array<number>(n),     // Centreline (median for display)
@@ -106,12 +106,12 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Lower limits are 0 because counts cannot be negative
   for (let i = 0; i < n; i++) {
     rtn.targets[i] = median_val;        // Use median as centreline for display
-    rtn.ll68![i] = 0;                    // Lower limits all 0 (geometric lower bound)
-    rtn.ll95![i] = 0;
-    rtn.ll99![i] = 0;
-    rtn.ul68![i] = ul68;       // 1σ upper limit: ḡ + σ
-    rtn.ul95![i] = ul95;       // 2σ upper limit: ḡ + 2σ
-    rtn.ul99![i] = ul99;       // UCL: ḡ + 3σ
+    rtn.ll68[i] = 0;                    // Lower limits all 0 (geometric lower bound)
+    rtn.ll95[i] = 0;
+    rtn.ll99[i] = 0;
+    rtn.ul68[i] = ul68;       // 1σ upper limit: ḡ + σ
+    rtn.ul95[i] = ul95;       // 2σ upper limit: ḡ + 2σ
+    rtn.ul99[i] = ul99;       // UCL: ḡ + 3σ
   }
 
   return rtn;

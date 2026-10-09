@@ -1,4 +1,4 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for a P'-chart (standardized P-chart using moving range).
@@ -49,7 +49,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits (truncated at 0 and 1)
  *   - ll68/ul68: Lower/Upper 1-sigma limits (truncated at 0 and 1)
  */
-export default function pprimeLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function pprimeLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   // Extract input arrays from arguments
   const n: number = args.keys.length;                       // Total number of data points
   const numerators: readonly number[] = args.numerators;    // Nonconforming unit counts
@@ -68,7 +68,7 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): control
   const cl: number = sum_numerators / sum_denominators;
 
   if (cl === 0 || cl === 1) {
-    const rtn: controlLimitsObject = {
+    const rtn = {
       keys: args.keys,
       values: new Array<number>(n),
       numerators: args.numerators,
@@ -84,12 +84,12 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): control
     for (let i = 0; i < n; i++) {
       rtn.values[i] = numerators[i] / denominators[i];
       rtn.targets[i] = cl;
-      rtn.ll99![i] = cl;
-      rtn.ll95![i] = cl;
-      rtn.ll68![i] = cl;
-      rtn.ul68![i] = cl;
-      rtn.ul95![i] = cl;
-      rtn.ul99![i] = cl;
+      rtn.ll99[i] = cl;
+      rtn.ll95[i] = cl;
+      rtn.ll68[i] = cl;
+      rtn.ul68[i] = cl;
+      rtn.ul95[i] = cl;
+      rtn.ul99[i] = cl;
     }
     return rtn;
   }
@@ -144,7 +144,7 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): control
   const sigma_multiplier: number = amr / 1.128;
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
     values: val,                                           // The proportions
     numerators: args.numerators,                           // Original nonconforming unit counts
@@ -167,12 +167,12 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): control
     const threeSigma: number = 3 * sigma;
 
     rtn.targets[i] = cl;                                   // Centreline: p̄
-    rtn.ll99![i] = Math.max(0, cl - threeSigma);             // LCL: max(0, p̄ - 3σ)
-    rtn.ll95![i] = Math.max(0, cl - twoSigma);             // 2σ lower: max(0, p̄ - 2σ)
-    rtn.ll68![i] = Math.max(0, cl - sigma);             // 1σ lower: max(0, p̄ - σ)
-    rtn.ul68![i] = Math.min(1, cl + sigma);             // 1σ upper: min(1, p̄ + σ)
-    rtn.ul95![i] = Math.min(1, cl + twoSigma);             // 2σ upper: min(1, p̄ + 2σ)
-    rtn.ul99![i] = Math.min(1, cl + threeSigma);             // UCL: min(1, p̄ + 3σ)
+    rtn.ll99[i] = Math.max(0, cl - threeSigma);             // LCL: max(0, p̄ - 3σ)
+    rtn.ll95[i] = Math.max(0, cl - twoSigma);             // 2σ lower: max(0, p̄ - 2σ)
+    rtn.ll68[i] = Math.max(0, cl - sigma);             // 1σ lower: max(0, p̄ - σ)
+    rtn.ul68[i] = Math.min(1, cl + sigma);             // 1σ upper: min(1, p̄ + σ)
+    rtn.ul95[i] = Math.min(1, cl + twoSigma);             // 2σ upper: min(1, p̄ + 2σ)
+    rtn.ul99[i] = Math.min(1, cl + threeSigma);             // UCL: min(1, p̄ + 3σ)
   }
 
   return rtn;

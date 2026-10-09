@@ -2,6 +2,7 @@ import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
 import { rep } from "powerbi-visuals-core/math";
+import type { PrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { describe, it, expect } from "vitest";
 
 const stringKeys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -33,7 +34,7 @@ describe("Chart Errors", () => {
     expect_error(svgElement, 'No numerators passed!');
 
     visual.update({
-      dataViews: [ buildDataView({ key: stringKeys, numerators: rep(<any>null, 7) }) ],
+      dataViews: [ buildDataView({ key: stringKeys, numerators: rep<PrimitiveValue>(null, 7) }) ],
       viewport: { width: 500, height: 500 },
       type:  2 /*powerbi.VisualUpdateType.Data*/
     });
@@ -49,7 +50,7 @@ describe("Chart Errors", () => {
     expect_error(svgElement, 'All numerators are not numbers!');
 
     visual.update({
-      dataViews: [ buildDataView({ key: rep(<any>null, 7), numerators: validNumerators }) ],
+      dataViews: [ buildDataView({ key: rep<PrimitiveValue>(null, 7), numerators: validNumerators }) ],
       viewport: { width: 500, height: 500 },
       type:  2 /*powerbi.VisualUpdateType.Data*/
     });

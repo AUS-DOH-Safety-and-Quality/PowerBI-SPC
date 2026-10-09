@@ -30,7 +30,7 @@ describe("setting definitions", () => {
     );
     const settings = new settingsClass();
     const other = new settingsClass();
-    settings.update(view, [[0, 2], [1, 3]]);
+    settings.update(view.categorical!.categories![0], [[0, 2], [1, 3]]);
     expect(settings.settings[0].spc.chart_type).toBe("i");
     expect(settings.settings[1].spc.chart_type).toBe("p");
     expect(settings.settings[0].spc.subset_rebaselines).toBe(false);

@@ -7,7 +7,7 @@ import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import type { summaryTableRowData } from "../Classes/viewModelClass";
 
 export default function buildTooltip(table_row: summaryTableRowData,
-                                      inputTooltips: powerbi.extensibility.VisualTooltipDataItem[] | undefined,
+                                      inputTooltips: powerbi.extensibility.VisualTooltipDataItem[],
                                       inputSettings: settingsValueType,
                                       derivedSettings: derivedSettingsClass): VisualTooltipDataItem[] {
 

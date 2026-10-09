@@ -2,7 +2,8 @@ import type powerbi from "powerbi-visuals-api";
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
-import { indexColumnsByRole, formatPrimitiveValue } from "powerbi-visuals-core/powerbi";
+import { formatPrimitiveValue, validateDataView, type PrimitiveValue } from "powerbi-visuals-core/powerbi";
+import { cells } from "powerbi-visuals-core/testing";
 import { pickRows } from "powerbi-visuals-core/data";
 import settingsModel from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
@@ -16,16 +17,15 @@ import buildDataView from "../helpers/buildDataView";
 function extract(view: powerbi.DataView, indices: number[], chart: "i" | "p" | "xbar" = "i") {
   const settings = createDefaultValues(settingsModel);
   settings.spc.chart_type = chart;
-  const categorical = view.categorical!;
+  const validated = validateDataView([view], ["numerators"]);
+  if (validated.status !== "valid") return validated;
   const positions = new Map<number, number>();
   const messages: string[][] = [];
   for (let i = 0; i < indices.length; i++) {
     positions.set(indices[i], i);
     messages.push([]);
   }
-  return extractInputData(categorical, {
-    categories: indexColumnsByRole(categorical.categories ?? []), values: indexColumnsByRole(categorical.values ?? [])
-  }, settings, new derivedSettingsClass(settings.spc), messages, indices, positions);
+  return extractInputData(validated.view, settings, new derivedSettingsClass(settings.spc), messages, indices, positions);
 }
 
 describe("input row contracts", () => {
@@ -53,7 +53,6 @@ describe("input row contracts", () => {
       [{ displayName: "Extra Tooltip", value: "" }], [{ displayName: "Extra Tooltip", value: "0" }],
       [{ displayName: "Extra Tooltip", value: "false" }], [{ displayName: "Extra Tooltip", value: "" }]
     ]);
-    expect(result.data.groupings).toEqual(["two", "one", undefined, "two"]);
     expect(result.data.groupingIndexes).toEqual([0, 1, 2]);
     expect(result.data.scatter_formatting[0].size).toBe(4);
     expect(result.data.scatter_formatting[1].size).toBe(1);
@@ -64,12 +63,14 @@ describe("input row contracts", () => {
     expect(result.data.warningMessage).toBe("Category B removed due to: Numerator missing.\nCategory undefined removed due to: Numerator missing.");
   });
 
-  it("distinguishes absent optional columns from present empty columns", () => {
+  it("reads absent optional columns as blank rows and present empty columns the same way", () => {
     const absent = extract(buildDataView({ key: ["A", "B"], numerators: [1, 2] }), [0, 1]);
     if (absent.status !== "valid") throw new Error(absent.error);
-    expect(absent.data.labels).toBeUndefined();
-    expect(absent.data.tooltips).toBeUndefined();
-    expect(absent.data.highlights).toBeUndefined();
+    expect(absent.data.labels).toEqual([undefined, undefined]);
+    expect(absent.data.tooltips).toEqual([[], []]);
+    expect(absent.data.highlights).toEqual([undefined, undefined]);
+    expect(absent.data.anyLabels).toBe(false);
+    expect(absent.data.anyHighlights).toBe(false);
     expect(absent.data.limitInputArgs.denominators).toBeUndefined();
     const view = buildDataView({ key: ["A", "B"], numerators: [1, 2], labels: [], tooltips: [] });
     view.categorical!.values![0].highlights = [];
@@ -109,8 +110,8 @@ describe("input row contracts", () => {
 
   it("retains scalar key conversion, duplicate query groups and complete date hierarchies", () => {
     const settings = createDefaultValues(settingsModel);
-    const column = (queryName: string, values: powerbi.PrimitiveValue[], category?: string): powerbi.DataViewCategoryColumn => ({
-      source: { displayName: queryName, queryName, roles: { key: true }, type: category === undefined ? { text: true } : { temporal: true, category } as powerbi.ValueTypeDescriptor }, values
+    const column = (queryName: string, values: PrimitiveValue[], category?: string): powerbi.DataViewCategoryColumn => ({
+      source: { displayName: queryName, queryName, roles: { key: true }, type: category === undefined ? { text: true } : { temporal: true, category } as unknown as powerbi.ValueTypeDescriptor }, values: cells(values)
     });
     expect(extractKeys([column("key", [0, false, null, ""])], settings, [1, 0, 3, 2])).toEqual(["false", "0", "", undefined]);
     expect(extractKeys([column("key", ["A", "B"]), column("key", ["X", "Y"])], settings, [1, 0])).toEqual(["B Y", "A X"]);
@@ -170,7 +171,7 @@ describe("input row contracts", () => {
       expect(visual.viewModel.plotPoints).toEqual([]);
       update([2, 3, 4]);
       expect(visual.viewModel.inputData[0].limitInputArgs.numerators).toEqual([2, 3, 4]);
-      expect(visual.viewModel.plotPoints[0]).toHaveLength(3);
+      expect(visual.viewModel.plotPoints).toHaveLength(3);
     } finally {
       failed.mockRestore();
       element.remove();

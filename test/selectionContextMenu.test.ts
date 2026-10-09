@@ -23,7 +23,7 @@ function dotOpacity(element: HTMLElement, index: number): string {
 }
 
 function points(visual: Visual): plotData[] {
-  return visual.viewModel.plotPoints[0] as plotData[];
+  return visual.viewModel.plotPoints;
 }
 
 // Changeset 7: selection matching by key and the shared context-menu binding.
@@ -52,8 +52,7 @@ describe("Selection and context menu", () => {
     const element = testDom("500", "500");
     const visual = new Visual({ element, host: keyedHost() });
     render(visual);
-    const show = vi.fn(() => Promise.resolve({}));
-    visual.selectionManager.showContextMenu = show;
+    const show = vi.spyOn(visual.selectionManager, "showContextMenu").mockResolvedValue({});
     const svg = element.querySelector("svg");
     const dot = element.querySelector(".dotsgroup path");
     if (svg === null || dot === null) throw new Error("Missing chart elements");
@@ -71,14 +70,14 @@ describe("Selection and context menu", () => {
     expect(show).toHaveBeenLastCalledWith({}, { x: 3, y: 4 });
     expect(onBackground.defaultPrevented).toBe(true);
 
-    visual.plotProperties.displayPlot = false;
+    const hidden = vi.spyOn(visual, "plotProperties", "get").mockReturnValue({ ...visual.plotProperties, displayPlot: false });
     visual.svg.call(addContextMenu, visual);
     const disabled = new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: 1, clientY: 1 });
     dot.dispatchEvent(disabled);
     expect(show).toHaveBeenCalledTimes(2);
     expect(disabled.defaultPrevented).toBe(false);
 
-    visual.plotProperties.displayPlot = true;
+    hidden.mockRestore();
     visual.svg.call(addContextMenu, visual);
     visual.svg.call(addContextMenu, visual);
     dot.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: 5, clientY: 6 }));

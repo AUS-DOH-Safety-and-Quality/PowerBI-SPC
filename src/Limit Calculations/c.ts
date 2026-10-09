@@ -1,4 +1,4 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for a C-chart (Count chart).
@@ -46,7 +46,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/C-chart} for C-chart theory
  */
-export default function cLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function cLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   const n_sub: number = args.subset_points.length;  // Number of points used for limit calculation
   const numerators: readonly number[] = args.numerators;     // Count values for each sample
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
@@ -67,7 +67,7 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
     values: args.numerators,       // The plotted values (counts)
     targets: new Array<number>(n), // Centreline (average count)
@@ -93,12 +93,12 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): controlLimit
   // Lower limits are truncated at 0 since counts cannot be negative
   for (let i = 0; i < n; i++) {
     rtn.targets[i] = cl;
-    rtn.ll99![i] = ll99; // LCL = max(0, c̄ - 3σ)
-    rtn.ll95![i] = ll95; // 2σ lower limit
-    rtn.ll68![i] = ll68; // 1σ lower limit
-    rtn.ul68![i] = ul68;                          // 1σ upper limit
-    rtn.ul95![i] = ul95;                          // 2σ upper limit
-    rtn.ul99![i] = ul99;                          // UCL = c̄ + 3σ
+    rtn.ll99[i] = ll99; // LCL = max(0, c̄ - 3σ)
+    rtn.ll95[i] = ll95; // 2σ lower limit
+    rtn.ll68[i] = ll68; // 1σ lower limit
+    rtn.ul68[i] = ul68;                          // 1σ upper limit
+    rtn.ul95[i] = ul95;                          // 2σ upper limit
+    rtn.ul99[i] = ul99;                          // UCL = c̄ + 3σ
   }
 
   return rtn;

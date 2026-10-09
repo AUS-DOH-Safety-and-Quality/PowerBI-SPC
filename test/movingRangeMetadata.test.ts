@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createVisualHost } from "powerbi-visuals-utils-testutils";
-import viewModelClass, { type plotData } from "../src/Classes/viewModelClass";
+import viewModelClass from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
 import buildDataView from "./helpers/buildDataView";
 
@@ -36,7 +36,7 @@ describe("moving-range per-row metadata", () => {
     const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
     expect(result.status).toBe(true);
 
-    const points = viewModel.plotPoints[0] as plotData[];
+    const points = viewModel.plotPoints;
     const positions = new Array<number>(points.length);
     for (let i = 0; i < points.length; i++) {
       const point = points[i];

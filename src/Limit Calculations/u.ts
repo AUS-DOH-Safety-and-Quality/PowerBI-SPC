@@ -1,4 +1,4 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for a U-chart (rate per unit chart).
@@ -44,7 +44,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits (lower limits truncated at 0)
  *   - ll68/ul68: Lower/Upper 1-sigma limits (lower limits truncated at 0)
  */
-export default function uLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function uLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   // Extract input arrays from arguments
   const n: number = args.keys.length;                       // Total number of data points
   const numerators: readonly number[] = args.numerators;    // Nonconformity counts
@@ -62,7 +62,7 @@ export default function uLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const cl: number = sum_numerators / sum_denominators;
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
     values: new Array<number>(n),                          // The rates (nonconformities per unit)
     numerators: args.numerators,                           // Original nonconformity counts
@@ -88,12 +88,12 @@ export default function uLimits(args: Readonly<controlLimitsArgs>): controlLimit
     const threeSigma: number = 3 * sigma;
 
     rtn.targets[i] = cl;                                   // Centreline: ū
-    rtn.ll99![i] = Math.max(0, cl - threeSigma);             // LCL: max(0, ū - 3σ)
-    rtn.ll95![i] = Math.max(0, cl - twoSigma);             // 2σ lower: max(0, ū - 2σ)
-    rtn.ll68![i] = Math.max(0, cl - sigma);             // 1σ lower: max(0, ū - σ)
-    rtn.ul68![i] = cl + sigma;                          // 1σ upper: ū + σ
-    rtn.ul95![i] = cl + twoSigma;                          // 2σ upper: ū + 2σ
-    rtn.ul99![i] = cl + threeSigma;                          // UCL: ū + 3σ
+    rtn.ll99[i] = Math.max(0, cl - threeSigma);             // LCL: max(0, ū - 3σ)
+    rtn.ll95[i] = Math.max(0, cl - twoSigma);             // 2σ lower: max(0, ū - 2σ)
+    rtn.ll68[i] = Math.max(0, cl - sigma);             // 1σ lower: max(0, ū - σ)
+    rtn.ul68[i] = cl + sigma;                          // 1σ upper: ū + σ
+    rtn.ul95[i] = cl + twoSigma;                          // 2σ upper: ū + 2σ
+    rtn.ul99[i] = cl + threeSigma;                          // UCL: ū + 3σ
   }
 
   return rtn;

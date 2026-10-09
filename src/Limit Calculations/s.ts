@@ -1,5 +1,5 @@
 import { c4, c5 } from "powerbi-visuals-core/math";
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for an S-chart (Standard Deviation chart).
@@ -53,7 +53,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/Xbar_and_s_chart} for S-chart theory
  */
-export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function sLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   // Extract input arrays from arguments
   const group_sd: readonly number[] = args.numerators;       // Standard deviation of each subgroup
   const count_per_group: readonly number[] = args.denominators!; // Sample size of each subgroup
@@ -81,7 +81,7 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimit
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
     values: args.numerators,              // The plotted values (subgroup SDs)
     targets: new Array<number>(n), // Centreline (pooled SD)
@@ -103,12 +103,12 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): controlLimit
     const threeSigma: number = 3 * sigma;
 
     rtn.targets[i] = cl;
-    rtn.ll99![i] = cl - threeSigma;   //cl * b3(count_per_group[i], 3); // 3-sigma lower limit
-    rtn.ll95![i] = cl - twoSigma; // 2-sigma lower limit
-    rtn.ll68![i] = cl - sigma; // 1-sigma lower limit
-    rtn.ul68![i] = cl + sigma; // 1-sigma upper limit
-    rtn.ul95![i] = cl + twoSigma; // 2-sigma upper limit
-    rtn.ul99![i] = cl + threeSigma; // 3-sigma upper limit
+    rtn.ll99[i] = cl - threeSigma;   //cl * b3(count_per_group[i], 3); // 3-sigma lower limit
+    rtn.ll95[i] = cl - twoSigma; // 2-sigma lower limit
+    rtn.ll68[i] = cl - sigma; // 1-sigma lower limit
+    rtn.ul68[i] = cl + sigma; // 1-sigma upper limit
+    rtn.ul95[i] = cl + twoSigma; // 2-sigma upper limit
+    rtn.ul99[i] = cl + threeSigma; // 3-sigma upper limit
   }
 
   return rtn;

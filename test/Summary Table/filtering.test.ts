@@ -1,10 +1,9 @@
-import { defaultSettings } from "../../src/settings";
+import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { rep } from "powerbi-visuals-core/math";
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
-import { type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
@@ -22,7 +21,7 @@ describe("Summary Table - variation and assurance filters", () => {
   const stableKeys: string[] = stableValues.map((_, i) => `s${i}`);
   const outlierKeys: string[] = outlierValues.map((_, i) => `o${i}`);
 
-  function buildVariationDataView(settings: any) {
+  function buildVariationDataView(settings: settingsValueType) {
     const keys: string[] = stableKeys.concat(outlierKeys);
     const numerators: number[] = stableValues.concat(outlierValues);
     const indicator: string[] = rep("Stable", stableValues.length).concat(rep("Extreme", outlierValues.length));
@@ -40,7 +39,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: 2
     });
 
-    const rows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Extreme");
     expect(rows[0].table_row.variation).toBe("improvementHigh");
@@ -58,7 +57,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: 2
     });
 
-    const rows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Stable");
     expect(rows[0].table_row.variation).toBe("commonCause");
@@ -75,7 +74,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: 2
     });
 
-    const rows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(0);
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(0);
   });
@@ -91,7 +90,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: 2
     });
 
-    expect((visual.viewModel.plotPoints.flat() as plotDataGrouped[]).length).toBe(2);
+    expect(visual.viewModel.groupedRows.length).toBe(2);
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(2);
   });
 
@@ -119,7 +118,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: 2
     });
 
-    const allRows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+    const allRows = visual.viewModel.groupedRows;
     expect(allRows.length).toBe(2);
     const categories: Map<string, string> = new Map(allRows.map(r => [r.table_row["Indicator"] as string, r.table_row.assurance]));
     expect(new Set(categories.values()).size).toBeGreaterThan(1);
@@ -147,7 +146,7 @@ describe("Summary Table - variation and assurance filters", () => {
       const expectedGroups: string[] = Array.from(categories.entries())
         .filter(([, cat]) => cat === category)
         .map(([name]) => name);
-      const filteredRows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+      const filteredRows = visual.viewModel.groupedRows;
       expect(filteredRows.map(r => r.table_row["Indicator"]).sort()).toEqual(expectedGroups.sort());
       expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(expectedGroups.length);
     }
@@ -161,7 +160,7 @@ describe("Summary Table - variation and assurance filters", () => {
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const allRows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+    const allRows = visual.viewModel.groupedRows;
     const expectedGroups: string[] = allRows.filter(r => r.table_row.assurance !== "inconsistent").map(r => r.table_row["Indicator"] as string);
 
     const filterSettings = buildAssuranceSettings();
@@ -171,7 +170,7 @@ describe("Summary Table - variation and assurance filters", () => {
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const filteredRows = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]);
+    const filteredRows = visual.viewModel.groupedRows;
     expect(filteredRows.map(r => r.table_row["Indicator"]).sort()).toEqual(expectedGroups.sort());
   });
 
@@ -206,7 +205,7 @@ describe("Summary Table - variation and assurance filters", () => {
         type: 2
       });
 
-      const rows = visual2.viewModel.plotPoints.flat() as plotDataGrouped[];
+      const rows = visual2.viewModel.groupedRows;
       expect(rows.length).toBe(1);
       expect(rows[0].table_row["Indicator"]).toBe("High Site");
 
@@ -234,7 +233,7 @@ describe("Summary Table - variation and assurance filters", () => {
         type: 2
       });
 
-      const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+      const rows = visual.viewModel.groupedRows;
       expect(rows.length).toBe(1);
       expect(rows[0].table_row["Indicator"]).toBe("Low Site");
       expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();

@@ -22,13 +22,13 @@ function temporalTypeToKey(inputType: { temporal?: boolean, category?: string}, 
     return [];
   }
 
-  if (inputType?.["category"] === "DayOfMonth") {
+  if (inputType.category === "DayOfMonth") {
     return ["day", <number>(inputValue)]
-  } else if (inputType?.["category"] === "Months") {
+  } else if (inputType.category === "Months") {
     return ["month", monthNameToNumber[<string>(inputValue)]]
-  } else if (inputType?.["category"] === "Quarters") {
+  } else if (inputType.category === "Quarters") {
     return ["quarter", <string>inputValue]
-  } else if (inputType?.["category"] === "Years") {
+  } else if (inputType.category === "Years") {
     return ["year", <number>(inputValue)]
   } else {
     return []
@@ -54,14 +54,15 @@ export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[]
         datePartsArray.push(temporalTypeToKey(inputs[j].source.type! as unknown as { temporal?: boolean, category?: string}, inputs[j].values[idxs[i]]));
       }
       const datePartsObj: datePartsType = Object.fromEntries(datePartsArray);
-      if (datePartsObj?.quarter) {
+      if (datePartsObj.quarter) {
         inputQuarters.push(datePartsObj.quarter)
       }
-      inputDates[i] = new Date(datePartsObj?.year ?? 1970, datePartsObj?.month ?? 0, datePartsObj?.day ?? 1)
+      inputDates[i] = new Date(datePartsObj.year ?? 1970, datePartsObj.month ?? 0, datePartsObj.day ?? 1)
     }
   } else {
     for (let i = 0; i < n_keys; i++) {
-      inputDates[i] = isNullOrUndefined(inputs?.[0]?.values[idxs[i]]) ? undefined : new Date(<Date>(inputs?.[0]?.values[idxs[i]]))
+      const value = inputs[0].values[idxs[i]];
+      inputDates[i] = isNullOrUndefined(value) ? undefined : new Date(<Date>value)
     }
   }
   return { dates: inputDates, quarters: inputQuarters }

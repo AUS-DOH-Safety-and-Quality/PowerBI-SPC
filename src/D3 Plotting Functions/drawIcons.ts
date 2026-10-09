@@ -1,4 +1,4 @@
-import * as nhsIcons from "./NHS Icons"
+import { nhsIcons } from "./NHS Icons"
 import initialiseIconSVG from "./initialiseIconSVG";
 import { iconTransformSpec } from "./initialiseIconSVG";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
@@ -20,12 +20,12 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
 
   if (draw_variation) {
     const variation_scaling: number = nhsIconSettings.variation_icons_scaling;
-    const variationIconsPresent: string[] = variationIconsToDraw(visualObj.viewModel.outliers[0], visualObj.viewModel.inputSettings.settings[0]);
-    variationIconsPresent.forEach((icon: string, idx: number) => {
+    const variationIconsPresent = variationIconsToDraw(visualObj.viewModel.outliers[0], visualObj.viewModel.inputSettings.settings[0]);
+    variationIconsPresent.forEach((icon, idx) => {
       selection
           .call(initialiseIconSVG, icon, iconTransformSpec(svg_width, svg_height, variation_location, variation_scaling, idx))
           .selectAll(`.${icon}`)
-          .call(nhsIcons[icon as keyof typeof nhsIcons])
+          .call(nhsIcons[icon])
     })
     numVariationIcons = variationIconsPresent.length;
   }
@@ -36,7 +36,7 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
     const assurance_scaling: number = nhsIconSettings.assurance_icons_scaling;
     const settings = visualObj.viewModel.inputSettings.settings[0];
     const derivedSettings = visualObj.viewModel.inputSettings.derivedSettings[0];
-    const assuranceIconPresent: string = assuranceIconToDraw(visualObj.viewModel.controlLimits[0],
+    const assuranceIconPresent = assuranceIconToDraw(visualObj.viewModel.controlLimits[0],
                                                               settings,
                                                               derivedSettings);
     if (assuranceIconPresent === "none") {
@@ -49,6 +49,6 @@ export default function drawIcons(selection: svgBaseType, visualObj: Visual): vo
     selection
         .call(initialiseIconSVG, assuranceIconPresent, iconTransformSpec(svg_width, svg_height, assurance_location, assurance_scaling, currIconCount))
         .selectAll(`.${assuranceIconPresent}`)
-        .call(nhsIcons[assuranceIconPresent as keyof typeof nhsIcons])
+        .call(nhsIcons[assuranceIconPresent])
   }
 }

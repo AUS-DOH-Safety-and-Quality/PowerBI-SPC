@@ -4,7 +4,6 @@ import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { keyedHost } from "powerbi-visuals-core/testing";
 import { rep } from "powerbi-visuals-core/math";
-import { type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect, vi } from "vitest";
 
 function cloneSettings() {
@@ -33,7 +32,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    expect((visual.viewModel.plotPoints.flat() as plotDataGrouped[]).length).toBe(0);
+    expect(visual.viewModel.groupedRows.length).toBe(0);
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
     // The header row (with its full set of columns) must still render even with zero data rows
     expect(tableDivElement.querySelectorAll('.table-header th').length).toBe(visual.viewModel.tableColumns[0].length);
@@ -112,7 +111,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    const extremeRow = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]).find(p => p.table_row["Indicator"] === "Extreme")!;
+    const extremeRow = visual.viewModel.groupedRows.find(p => p.table_row["Indicator"] === "Extreme")!;
     visual.selectionManager.select(extremeRow.identity[0], false);
     visual.updateHighlighting();
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(2);
@@ -150,7 +149,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Stable");
     expect(visual.viewModel.tableColumns[0].map(c => c.name)).not.toContain("variation");
@@ -202,15 +201,14 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     const siteBRow = rows.find(r => r.table_row["Indicator"] === "Site B")!;
     expect(Array.isArray(siteBRow.identity)).toBe(true);
     expect(siteBRow.identity.length).toBeGreaterThan(1);
 
-    const showContextMenuSpy = vi.fn(() => Promise.resolve({}));
-    visual.selectionManager.showContextMenu = showContextMenuSpy;
+    const showContextMenuSpy = vi.spyOn(visual.selectionManager, "showContextMenu").mockResolvedValue({});
 
-    const bodyRows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('tbody tr')) as HTMLElement[];
+    const bodyRows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll<HTMLElement>('tbody tr'));
     const siteBTr = bodyRows.find(r => r.querySelector('td')!.textContent === "Site B")!;
     siteBTr.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 10, clientY: 10 }));
 

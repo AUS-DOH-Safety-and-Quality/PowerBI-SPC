@@ -1,4 +1,4 @@
-import { defaultSettings } from "../../src/settings";
+import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
@@ -49,7 +49,7 @@ describe("P Chart Test", () => {
     { proportion: 1, perc_labels: "No", expected: 1 },
     { proportion: 0, perc_labels: "Automatic", expected: 0 },
     { proportion: 0, perc_labels: "No", expected: 0 }
-  ])("renders constant proportion $proportion with percentage labels $perc_labels", ({ proportion, perc_labels, expected }) => {
+  ] as const)("renders constant proportion $proportion with percentage labels $perc_labels", ({ proportion, perc_labels, expected }) => {
     const chartElement = testDom("500", "500");
     const host = createVisualHost({});
     const renderingFailed = vi.spyOn(host.eventService, "renderingFailed");
@@ -64,7 +64,7 @@ describe("P Chart Test", () => {
       numerators[i] = counts[i] * proportion;
       expectedValues[i] = expected;
     }
-    const settings = {
+    const settings: settingsValueType = {
       ...defaultSettings,
       spc: { ...defaultSettings.spc, chart_type: "p", perc_labels }
     };

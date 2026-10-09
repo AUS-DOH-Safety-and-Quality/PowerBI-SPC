@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
-import type { plotData } from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
 import buildDataView from "./helpers/buildDataView";
 
@@ -216,7 +215,7 @@ describe("renderer boundaries", () => {
     const element = testDom("500", "500");
     const visual = render(element, settingsWith({}));
     const svg = must(element.querySelector("svg"));
-    const point = (visual.viewModel.plotPoints[0] as plotData[])[2];
+    const point = visual.viewModel.plotPoints[2];
     const px = visual.plotProperties.xScale(point.x) as number;
     const py = visual.plotProperties.yScale(point.value) as number;
     const rect = svg.getBoundingClientRect();

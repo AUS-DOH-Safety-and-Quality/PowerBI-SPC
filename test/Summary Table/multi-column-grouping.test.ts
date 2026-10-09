@@ -2,7 +2,6 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
@@ -37,7 +36,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
     expect(visual.viewModel.indicatorVarNames).toEqual(["Indicator", "Cohort"]);
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(4);
 
     const byCombo = new Map(rows.map(r => [`${r.table_row["Indicator"]}|${r.table_row["Cohort"]}`, r.table_row]));
@@ -79,7 +78,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
       type: 2
     });
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(2);
 
     const wardARows = rows.filter(r => r.table_row["Indicator"] === "Ward A" && r.table_row["Cohort"] === "2023");
@@ -119,7 +118,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
     expect(visual.viewModel.indicatorVarNames).toEqual(["Indicator", "Cohort", "Region"]);
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(8);
 
     const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
@@ -148,7 +147,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     });
 
     expect(visual.viewModel.showGrouped).toBe(true);
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(3);
     rows.forEach(r => expect(r.table_row["Indicator"]).toBe("Ward A"));
     expect(rows.map(r => r.table_row["Cohort"]).sort()).toEqual(["2022", "2023", "2024"]);
@@ -177,7 +176,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Ward B");
     expect(rows[0].table_row["Cohort"]).toBe("2023");
@@ -208,7 +207,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(2);
 
     const wardA = rows.find(r => r.table_row["Indicator"] === "Ward A")!;

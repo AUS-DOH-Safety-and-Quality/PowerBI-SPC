@@ -1,5 +1,5 @@
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
-import { isNullOrUndefined } from "powerbi-visuals-core/data";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import plottedValues from "./plottedValues";
 import { median } from "powerbi-visuals-core/math";
 
 /**
@@ -51,21 +51,18 @@ import { median } from "powerbi-visuals-core/math";
  *   - ll95/ul95: Lower/Upper 2-sigma warning limits
  *   - ll68/ul68: Lower/Upper 1-sigma limits
  */
-export default function immLimits(args: controlLimitsArgs): controlLimitsObject {
+export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
   // Determine if we're calculating ratios (numerator/denominator) or raw values
-  const useRatio: boolean = isNullOrUndefined(args.denominators) ? false : args.denominators!.length > 0;
+  const { values, numerators, denominators } = plottedValues(args);
 
   // Extract input arrays from arguments
   const n_sub: number = args.subset_points.length;          // Number of points used for limit calculation
-  const numerators: readonly number[] = args.numerators;    // Raw values or numerators for ratios
-  const denominators: readonly number[] | undefined = args?.denominators; // Denominators for ratio calculation
   const subset_points: readonly number[] = args.subset_points; // Indices of points to include
 
   // Extract subset values and store for median calculation
   let ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
-    ratio_subset[i] = useRatio ? numerators[subset_points[i]] / denominators![subset_points[i]]
-                                : numerators[subset_points[i]];
+    ratio_subset[i] = values[subset_points[i]];
   }
 
   // Calculate median (centreline)
@@ -107,11 +104,11 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
-    values: new Array<number>(n),                          // The plotted values
-    numerators: useRatio ? args.numerators : undefined,    // Original numerators (if ratio)
-    denominators: useRatio ? args.denominators : undefined, // Original denominators (if ratio)
+    values,
+    numerators,
+    denominators,
     targets: new Array<number>(n),                         // Centreline (median)
     ll99: new Array<number>(n),                            // Lower 3-sigma limit
     ll95: new Array<number>(n),                            // Lower 2-sigma limit
@@ -133,22 +130,14 @@ export default function immLimits(args: controlLimitsArgs): controlLimitsObject 
   // Calculate control limits for each point
   // I-mmR chart has constant limits (same sigma for all points)
   for (let i = 0; i < n; i++) {
-    // Calculate the plotted value (raw or ratio)
-    if (useRatio) {
-      rtn.values[i] = numerators[i] / denominators![i];  // Ratio: numerator/denominator
-      rtn.numerators![i] = numerators[i];                // Store original numerator
-      rtn.denominators![i] = denominators![i];            // Store original denominator
-    } else {
-      rtn.values[i] = numerators[i];                     // Raw value
-    }
 
     rtn.targets[i] = cl;               // Centreline: x̃ (median)
-    rtn.ll99![i] = ll99;      // LCL: x̃ - 3σ
-    rtn.ll95![i] = ll95;      // 2σ lower limit: x̃ - 2σ
-    rtn.ll68![i] = ll68;      // 1σ lower limit: x̃ - σ
-    rtn.ul68![i] = ul68;      // 1σ upper limit: x̃ + σ
-    rtn.ul95![i] = ul95;      // 2σ upper limit: x̃ + 2σ
-    rtn.ul99![i] = ul99;      // UCL: x̃ + 3σ
+    rtn.ll99[i] = ll99;      // LCL: x̃ - 3σ
+    rtn.ll95[i] = ll95;      // 2σ lower limit: x̃ - 2σ
+    rtn.ll68[i] = ll68;      // 1σ lower limit: x̃ - σ
+    rtn.ul68[i] = ul68;      // 1σ upper limit: x̃ + σ
+    rtn.ul95[i] = ul95;      // 2σ upper limit: x̃ + 2σ
+    rtn.ul99[i] = ul99;      // UCL: x̃ + 3σ
   }
 
   return rtn;

@@ -8,7 +8,7 @@ export default function validateDataViewColumns(inputSettingsClass: settingsClas
   let needs_sd: boolean = false;
   let chart_type: string = inputSettingsClass.settings[0].spc.chart_type;
 
-  if (inputSettingsClass?.derivedSettings.length > 0) {
+  if (inputSettingsClass.derivedSettings.length > 0) {
     for (let i = 0; i < inputSettingsClass.derivedSettings.length; i++) {
       const d = inputSettingsClass.derivedSettings[i];
       if (d.chart_type_props.needs_denominator) {

@@ -11,8 +11,8 @@ import drawLineLabels from "./D3 Plotting Functions/drawLineLabels";
 import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
 import type { plotDataGrouped } from "./Classes/viewModelClass";
 import axisRanges from "./Functions/axisRanges";
-import lineKeys from "./Functions/lineKeys";
-import { identitySelected, selectionState } from "powerbi-visuals-core/powerbi";
+import lineKeys, { type LineName } from "./Functions/lineKeys";
+import { identitySelected, selectionState, type UpdateOptions } from "powerbi-visuals-core/powerbi";
 import { lineOpacity } from "powerbi-visuals-core/settings";
 import {
   createPlotFrame, fitPlotToOverflow, highlightOpacity, highlightPlot, initialiseSvg, drawErrorMessage,
@@ -66,7 +66,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     table.append('tbody').classed("table-body", true);
   }
 
-  public update(options: VisualUpdateOptions): void {
+  public update(options: UpdateOptions): void {
     try {
       this.host.eventService.renderingStarted(options);
       // Remove printed error if refreshing after a previous error run
@@ -80,7 +80,7 @@ export class Visual implements powerbi.extensibility.IVisual {
         this.currentPlotProperties = undefined;
         this.resizeCanvas(options.viewport.width, options.viewport.height);
         this.drawErrors(options, update_status.error ?? "", update_status.type,
-                        this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true);
+                        this.viewModel.inputSettings.settings[0].canvas.show_errors);
 
         this.host.eventService.renderingFailed(options);
         return;
@@ -90,7 +90,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       this.currentPlotProperties = createPlotFrame({
         width: options.viewport.width,
         height: options.viewport.height,
-        displayPlot: (viewModel.plotPoints[0]?.length ?? 0) > 0,
+        displayPlot: viewModel.plotPoints.length > 0,
         ...axisRanges(viewModel),
         settings: viewModel.inputSettings.settings[0],
         palette: viewModel.colourPalette
@@ -137,7 +137,7 @@ export class Visual implements powerbi.extensibility.IVisual {
     const viewModel = this.viewModel;
     return {
       frame: this.plotProperties,
-      points: viewModel.plotPoints[0] as plotData[],
+      points: viewModel.plotPoints,
       palette: viewModel.colourPalette,
       settings: viewModel.inputSettings.settings[0],
       host: this.host,
@@ -186,7 +186,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       }
       return rows;
     });
-    drawPlotValueLabels(svg, context, viewModel.inputData[0]?.anyLabels ?? false);
+    drawPlotValueLabels(svg, context, viewModel.inputData[0].anyLabels);
   }
 
   // Toggles a limit split at the point; persisting it triggers the update that recalculates the limits
@@ -235,14 +235,14 @@ export class Visual implements powerbi.extensibility.IVisual {
 
   updateHighlighting(): void {
     const viewModel = this.viewModel;
-    const anyHighlights: boolean = viewModel.inputData.length > 0 && viewModel.inputData.some(d => d.anyHighlights);
+    const anyHighlights: boolean = viewModel.inputData.some(d => d.anyHighlights);
     const { active, selected } = selectionState(this.selectionManager, anyHighlights);
     const settings = viewModel.inputSettings.settings[0];
     const svg = this.svg.node();
     if (svg !== null) {
       highlightPlot<plotData>(svg, {
         active, selected,
-        lineOpacity: line => lineOpacity(settings.lines, lineKeys[line.name], active),
+        lineOpacity: line => lineOpacity(settings.lines, lineKeys[line.name as LineName], active),
         dotOpacities: point => point.aesthetics
       });
     }
@@ -253,6 +253,7 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   public getFormattingModel(): powerbi.visuals.FormattingModel {
-    return this.viewModel.inputSettings.getFormattingModel();
+    // API 5.1 omits the visual's unset numeric values and legacy option shapes.
+    return this.viewModel.inputSettings.getFormattingModel() as powerbi.visuals.FormattingModel;
   }
 }

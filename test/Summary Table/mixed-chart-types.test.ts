@@ -3,10 +3,9 @@ import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { rep } from "powerbi-visuals-core/math";
-import { type plotData, type plotDataGrouped } from "../../src/Classes/viewModelClass";
 import { describe, it, expect } from "vitest";
 
-function settingsFor(chartType: string): settingsValueType {
+function settingsFor(chartType: settingsValueType["spc"]["chart_type"]): settingsValueType {
   const s: settingsValueType = JSON.parse(JSON.stringify(defaultSettings));
   s.spc.chart_type = chartType;
   return s;
@@ -50,7 +49,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(4);
 
     const byIndicator = new Map(rows.map(r => [r.table_row["Indicator"] as string, r.table_row]));
@@ -84,7 +83,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const isolatedLastPoint = (visual.viewModel.plotPoints[0] as plotData[])[pKeys.length - 1];
+    const isolatedLastPoint = visual.viewModel.plotPoints[pKeys.length - 1];
     const isolatedValueTooltip = isolatedLastPoint.tooltip.find(t => t.displayName === "Proportion")!.value;
     const isolatedUl99 = isolatedLastPoint.table_row.ul99;
 
@@ -117,7 +116,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const allRows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const allRows = visual.viewModel.groupedRows;
     expect(allRows.length).toBe(4);
     const categories = new Map(allRows.map(r => [r.table_row["Indicator"] as string, r.table_row.assurance]));
     expect(categories.get("Trend Site")).toBe("none");
@@ -135,7 +134,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const failRows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const failRows = visual.viewModel.groupedRows;
     expect(failRows.map(r => r.table_row["Indicator"]).sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
 
     const settingsAny = settingsAll.map(s => {
@@ -148,7 +147,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       viewport: { width: 500, height: 500 },
       type: 2
     });
-    const anyRows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const anyRows = visual.viewModel.groupedRows;
     // "any" excludes only "inconsistent" - the run chart's "none" is not "inconsistent", so it stays
     expect(anyRows.map(r => r.table_row["Indicator"]).sort()).toEqual(["Count Site", "Proportion Site", "Rate Site", "Trend Site"]);
   });
@@ -170,7 +169,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       type: 2
     });
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     const proportionValue = rows.find(r => r.table_row["Indicator"] === "Proportion Site")!.table_row.value;
     const rateValue = rows.find(r => r.table_row["Indicator"] === "Rate Site")!.table_row.value;
     expect(proportionValue).toMatch(/^\d+%$/); // 0 decimal places

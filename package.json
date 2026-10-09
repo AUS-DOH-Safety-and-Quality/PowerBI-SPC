@@ -8,10 +8,10 @@
     "build": "npm run package",
     "eslint": "npx eslint .",
     "test": "vitest --run",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.test.json --noEmit"
   },
   "dependencies": {
-    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#1728c7d7f930614a6532fbc6babf103f3169366e"
+    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#bfcad4d3d35e976e26f626bdf80508d4e361a8f6"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "5.0.3",

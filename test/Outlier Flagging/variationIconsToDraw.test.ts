@@ -305,12 +305,12 @@ describe("variationIconsToDraw", () => {
                 ["neutral_low", "none", "none"],
                 ["neutral_high", "none", "none"]
             );
-            const settings = createSettings("neutral", false);
+            const settings = createSettings("increase", false);
 
             const result = variationIconsToDraw(outliers, settings);
 
-            expect(result).toContain("improvement");
-            expect(result).toContain("concern");
+            expect(result).toContain("improvementHigh");
+            expect(result).toContain("concernLow");
             expect(result).toContain("neutralLow");
             expect(result).toContain("neutralHigh");
             expect(result.length).toBe(4);

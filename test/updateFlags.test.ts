@@ -1,3 +1,4 @@
+import type powerbi from "powerbi-visuals-api";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
@@ -17,7 +18,7 @@ describe("combined update types", () => {
     visual.update({ dataViews: [buildDataView({ key: keys, numerators: first })], viewport: { width: 500, height: 500 }, type: 2 });
     expect(visual.viewModel.inputData[0].limitInputArgs.numerators).toEqual(first);
 
-    visual.update({ dataViews: [buildDataView({ key: keys, numerators: second })], viewport: { width: 600, height: 400 }, type: 6 });
+    visual.update({ dataViews: [buildDataView({ key: keys, numerators: second })], viewport: { width: 600, height: 400 }, type: 6 as powerbi.VisualUpdateType });
     expect(visual.viewModel.inputData[0].limitInputArgs.numerators).toEqual(second);
 
     visual.update({ dataViews: [buildDataView({ key: keys, numerators: first })], viewport: { width: 300, height: 300 }, type: 4 });

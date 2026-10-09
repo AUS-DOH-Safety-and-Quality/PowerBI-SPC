@@ -37,18 +37,18 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settin
   }
   const inputDates = parseInputDates(col, idxs);
   const formatOptions = dateSettingsToFormatOptions(inputSettings.dates);
-  const locale = inputSettings.dates.date_format_locale as "en-GB" | "en-US";
-  let day_elem: string = locale === "en-GB" ? "day" : "month";
-  let month_elem: string = locale === "en-GB" ? "month" : "day";
+  const locale = inputSettings.dates.date_format_locale;
+  const day_elem = locale === "en-GB" ? "day" : "month";
+  const month_elem = locale === "en-GB" ? "month" : "day";
 
   for (let i = 0; i < n_keys; i++) {
     if (isNullOrUndefined(inputDates.dates[i])) {
       ret[i] = undefined
     } else {
       const datePartsRecord = formatDateParts(inputDates.dates[i], locale, formatOptions);
-      const datePartStrings: string[] = [datePartsRecord.weekday + " " + datePartsRecord[day_elem as keyof typeof datePartsRecord],
-                                          datePartsRecord[month_elem as keyof typeof datePartsRecord],
-                                          inputDates.quarters?.[i] ?? "",
+      const datePartStrings: string[] = [datePartsRecord.weekday + " " + datePartsRecord[day_elem],
+                                          datePartsRecord[month_elem],
+                                          inputDates.quarters[i] ?? "",
                                           datePartsRecord.year];
       let key = "";
       let partCount = 0;

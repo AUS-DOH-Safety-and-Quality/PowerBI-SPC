@@ -1,5 +1,5 @@
 import type powerbi from "powerbi-visuals-api";
-import { readSettingsGroups, buildFormattingModel, type SettingsValidation } from "powerbi-visuals-core/powerbi";
+import { readSettingsGroups, buildFormattingModel, type FormattingModel, type SettingsValidation } from "powerbi-visuals-core/powerbi";
 import settingsModel, { type settingsValueType } from "../settings";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
 import derivedSettingsClass from "./derivedSettingsClass";
@@ -10,15 +10,7 @@ export default class settingsClass {
   validationStatus: SettingsValidation;
   messagePositionByRowIndex = new Map<number, number>();
 
-  update(inputView: powerbi.DataView | undefined, groupIdxs: readonly (readonly number[])[]): void {
-    this.validationStatus = { status: 0, messages: [] };
-    this.messagePositionByRowIndex = new Map<number, number>();
-    const category = inputView?.categorical?.categories?.[0];
-    if (category === undefined || groupIdxs.length === 0) {
-      this.settings = [createDefaultValues(settingsModel)];
-      this.derivedSettings = [new derivedSettingsClass(this.settings[0].spc)];
-      return;
-    }
+  update(category: powerbi.DataViewCategoryColumn, groupIdxs: readonly (readonly number[])[]): void {
     const result = readSettingsGroups(settingsModel, category, groupIdxs);
     this.settings = result.values;
     this.validationStatus = result.validation;
@@ -34,13 +26,19 @@ export default class settingsClass {
       }
     }
     for (let i = 0; i < this.settings.length; i++) {
+      const outliers = this.settings[i].outliers;
+      const flagsOnSpecification = (outliers.astronomical && outliers.astronomical_limit === "Specification")
+        || (outliers.two_in_three && outliers.two_in_three_limit === "Specification");
+      if (flagsOnSpecification && !this.settings[i].lines.show_specification) {
+        this.validationStatus = { status: 1, messages: this.validationStatus.messages,
+          error: "Flagging against specification limits requires the specification lines to be shown" };
+      }
       this.derivedSettings[i] = new derivedSettingsClass(this.settings[i].spc);
     }
   }
 
-  public getFormattingModel(): powerbi.visuals.FormattingModel {
-    // API 5.1 omits the visual's unset numeric values and legacy option shapes.
-    return buildFormattingModel(settingsModel, this.settings[0]) as powerbi.visuals.FormattingModel;
+  public getFormattingModel(): FormattingModel {
+    return buildFormattingModel(settingsModel, this.settings[0]);
   }
 
   constructor() {

@@ -37,7 +37,10 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
       const eligible = r >= showN || lineSetting<boolean>(lineSettings, "plot_label_show_all", key) || index === lastIndex;
       if (!eligible || !lineSetting<boolean>(lineSettings, "plot_label_show", key)) continue;
       const point = points[index];
-      const value = point.line_value as number;
+      const value = point.line_value;
+      if (value === undefined) {
+        continue;
+      }
       labels.push(lineLabel(lineSettings, key, { x: frame.xScale(point.x), y: frame.yScale(value), value }, lowerLines.has(name), formatValue));
     }
   }

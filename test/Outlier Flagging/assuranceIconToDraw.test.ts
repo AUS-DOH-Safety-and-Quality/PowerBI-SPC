@@ -7,22 +7,15 @@ import { describe, it, expect } from "vitest";
 
 describe("assuranceIconToDraw", () => {
     // Helper to create mock control limits
-    const createControlLimits = (ul99: number[], ll99: number[], alt_targets?: number[]): controlLimitsObject => ({
-        keys: [],
-        values: [],
-        targets: [],
-        alt_targets: alt_targets,
-        ul99: ul99,
-        ul95: [],
-        ll95: [],
-        ll99: ll99
-    } as controlLimitsObject);
+    const createControlLimits = (ul99: number[], ll99: number[], alt_targets: (number | undefined)[]): controlLimitsObject => ({
+        keys: [], values: [], numerators: [], denominators: [], targets: [], ll99, ll95: [], ll68: [], ul68: [], ul95: [], ul99,
+        count: [], alt_targets, speclimits_lower: [], speclimits_upper: [], trend_line: []
+    });
 
     // Helper to create mock settings
-    const createSettings = (improvement_direction: string): settingsValueType => ({
-        outliers: {
-            improvement_direction: improvement_direction
-        }
+    const createSettings = (improvement_direction: string, show_alt_target = true): settingsValueType => ({
+        outliers: { improvement_direction },
+        lines: { show_alt_target }
     } as settingsValueType);
 
     // Helper to create derived settings with control limits
@@ -55,9 +48,9 @@ describe("assuranceIconToDraw", () => {
         expect(result).toBe("none");
     });
 
-    it("should return 'none' when alternative target is null", () => {
-        const controlLimits = createControlLimits([10], [0], undefined);
-        const settings = createSettings("increase");
+    it("should return 'none' when the alternative target line is hidden", () => {
+        const controlLimits = createControlLimits([10], [0], [5]);
+        const settings = createSettings("increase", false);
         const derivedSettings = createDerivedSettings(true);
 
         const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);

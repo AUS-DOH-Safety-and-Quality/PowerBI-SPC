@@ -1,5 +1,5 @@
 import { a3 } from "powerbi-visuals-core/math";
-import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 
 /**
  * Calculates control limits for an X-bar chart (Mean chart).
@@ -60,7 +60,7 @@ import type { controlLimitsObject, controlLimitsArgs } from "../Classes/viewMode
  *
  * @see {@link https://en.wikipedia.org/wiki/Xbar_and_s_chart} for X-bar and S chart theory
  */
-export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLimitsObject {
+export default function xbarLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   // Extract input arrays from arguments
   const count_per_group: readonly number[] = args.denominators!;  // Sample size of each subgroup
   const group_means: readonly number[] = args.numerators;        // Mean of each subgroup
@@ -100,7 +100,7 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLi
   const n: number = args.keys.length; // Total number of data points
 
   // Initialize the return object with arrays for all limit lines
-  let rtn: controlLimitsObject = {
+  const rtn = {
     keys: args.keys,
     values: args.numerators,           // The plotted values (subgroup means)
     targets: new Array<number>(n), // Centreline (grand mean)
@@ -110,7 +110,7 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLi
     ul68: new Array<number>(n),    // Upper 1-sigma limit
     ul95: new Array<number>(n),    // Upper 2-sigma limit
     ul99: new Array<number>(n),    // Upper 3-sigma limit
-    count: args.denominators!         // Sample sizes for reference
+    count: args.denominators         // Sample sizes for reference
   }
 
   // Calculate control limits for each point
@@ -126,12 +126,12 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): controlLi
     const threeSigma: number = sigma * 3;
 
     rtn.targets[i] = cl;                      // Centreline (grand mean)
-    rtn.ll99![i] = cl - threeSigma;                 // Lower 3-sigma limit
-    rtn.ll95![i] = cl - twoSigma;       // Lower 2-sigma limit
-    rtn.ll68![i] = cl - sigma;           // Lower 1-sigma limit
-    rtn.ul68![i] = cl + sigma;           // Upper 1-sigma limit
-    rtn.ul95![i] = cl + twoSigma;       // Upper 2-sigma limit
-    rtn.ul99![i] = cl + threeSigma;                 // Upper 3-sigma limit
+    rtn.ll99[i] = cl - threeSigma;                 // Lower 3-sigma limit
+    rtn.ll95[i] = cl - twoSigma;       // Lower 2-sigma limit
+    rtn.ll68[i] = cl - sigma;           // Lower 1-sigma limit
+    rtn.ul68[i] = cl + sigma;           // Upper 1-sigma limit
+    rtn.ul95[i] = cl + twoSigma;       // Upper 2-sigma limit
+    rtn.ul99[i] = cl + threeSigma;                 // Upper 3-sigma limit
   }
 
   return rtn;
