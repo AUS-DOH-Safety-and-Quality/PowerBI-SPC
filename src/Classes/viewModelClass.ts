@@ -1,4 +1,4 @@
-import { groupCategoryRows, indexColumnsByRole, readColourPalette, type ColourPalette } from "powerbi-visuals-core/powerbi";
+import { groupCategoryRows, indexColumnsByRole, readColourPalette, validateDataView, type ColourPalette } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -20,7 +20,6 @@ import validateDataViewColumns from "../Functions/validateDataViewColumns";
 import { astronomical, shift, trend, twoInThree } from "powerbi-visuals-core/spc";
 import { lineNameMap } from "../Functions/getAesthetic";
 import { sequence } from "powerbi-visuals-core/math";
-import { default as updateOptionsUndefined, UpdateOptionsValidTypes } from "../Functions/updateOptionsUndefined";
 
 type LineSettingsKeys = keyof settingsValueType["lines"];
 
@@ -193,11 +192,9 @@ export default class viewModelClass {
   update(options: VisualUpdateOptions, host: IVisualHost): viewModelValidationT {
     // Finding 34: read before any early return so error rendering is themed
     this.colourPalette = readColourPalette(host);
-    const updateOptionsStatus: UpdateOptionsValidTypes = updateOptionsUndefined(options);
-    if (updateOptionsStatus === UpdateOptionsValidTypes.Undefined) {
-      return { status: false, error: "" }
-    } else if (updateOptionsStatus === UpdateOptionsValidTypes.MissingNumerators) {
-      return { status: false, error: "No Numerators passed!" }
+    const checkView = validateDataView(options.dataViews, ["numerators"]);
+    if (checkView !== "valid") {
+      return { status: false, error: checkView };
     }
     this.svgWidth = options.viewport.width;
     this.svgHeight = options.viewport.height;
@@ -216,7 +213,9 @@ export default class viewModelClass {
     const idx_per_indicator = indicatorGroups.rows;
     this.groupNames = indicatorGroups.names;
 
-    if ((options.type & 2) !== 0 || this.firstRun) {
+    // Data and Style updates both rebuild settings, so theme changes reach the derived values
+    const dataChanged = (options.type & (2 | 16)) !== 0 || this.firstRun;
+    if (dataChanged) {
       this.inputSettings.update(options.dataViews[0], idx_per_indicator);
     }
     if (this.inputSettings.validationStatus.status !== 0) {
@@ -225,7 +224,7 @@ export default class viewModelClass {
       res.type = "settings";
       return res;
     }
-    const checkDV: string = validateDataViewColumns(options.dataViews, this.inputSettings, columns.values);
+    const checkDV: string = validateDataViewColumns(this.inputSettings, columns.values);
     if (checkDV !== "valid") {
       res.status = false;
       res.error = checkDV;
@@ -235,7 +234,7 @@ export default class viewModelClass {
     const inputErrors: string[] = [];
 
     // Only re-construct data and re-calculate limits if they have changed
-    if ((options.type & 2) !== 0 || this.firstRun) {
+    if (dataChanged) {
       // Handle split indexes (only for first indicator in single mode)
       const hasIndicator = indicator_cols.length > 0;
       const split_indexes_str: string = <string>(options.dataViews[0]?.metadata?.objects?.split_indexes_storage?.split_indexes) ?? "[]";

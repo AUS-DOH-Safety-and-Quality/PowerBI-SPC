@@ -3,12 +3,13 @@ import outliersSettings from "./Settings Model/outliersSettings";
 import nhsIconsSettings from "./Settings Model/nhsIconsSettings";
 import scatterSettings from "./Settings Model/scatterSettings";
 import linesSettings from "./Settings Model/linesSettings";
-import xAxisSettings from "./Settings Model/xAxisSettings";
-import yAxisSettings from "./Settings Model/yAxisSettings";
 import datesSettings from "./Settings Model/datesSettings";
 import summaryTableSettings from "./Settings Model/summaryTableSettings";
 import downloadSettings from "./Settings Model/downloadSettings";
-import { createCanvasCard, createLabelsCard, defineCard, createDefaultValues, type SettingsValues, type MergeUnions } from "powerbi-visuals-core/settings";
+import {
+  createCanvasCard, createLabelsCard, createAxisCard, defineCard, createDefaultValues, numberOption,
+  type SettingsValues, type MergeUnions
+} from "powerbi-visuals-core/settings";
 
 const settingsModel = {
   canvas: createCanvasCard(),
@@ -17,8 +18,8 @@ const settingsModel = {
   nhs_icons: defineCard(nhsIconsSettings),
   scatter: defineCard(scatterSettings),
   lines: defineCard(linesSettings),
-  x_axis: defineCard(xAxisSettings),
-  y_axis: defineCard(yAxisSettings),
+  x_axis: createAxisCard("x", { tickRotation: -35 }),
+  y_axis: createAxisCard("y", { tickRotation: 0 }, { limit_multiplier: numberOption("Axis Scaling Factor", 1.5, { min: 0 }) }),
   dates: defineCard(datesSettings),
   summary_table: defineCard(summaryTableSettings),
   download_options: defineCard(downloadSettings),

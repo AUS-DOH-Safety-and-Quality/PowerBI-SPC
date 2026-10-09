@@ -4,25 +4,24 @@ import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
-import drawXAxis from "./D3 Plotting Functions/drawXAxis";
-import drawYAxis from "./D3 Plotting Functions/drawYAxis";
+import drawAxes from "./D3 Plotting Functions/drawAxes";
 import drawTooltipLine from "./D3 Plotting Functions/drawTooltipLine";
 import drawLines from "./D3 Plotting Functions/drawLines";
 import drawDots from "./D3 Plotting Functions/drawDots";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import addContextMenu from "./D3 Plotting Functions/addContextMenu";
-import drawErrors from "./D3 Plotting Functions/drawErrors";
-import initialiseSVG from "./D3 Plotting Functions/initialiseSVG";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
 import drawValueLabels from "./D3 Plotting Functions/drawValueLabels";
 import drawLineLabels from "./D3 Plotting Functions/drawLineLabels";
 import drawDownloadButton from "./D3 Plotting Functions/drawDownloadButton";
 import plotPropertiesClass from "./Classes/plotPropertiesClass";
 import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
-import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
+import type { plotDataGrouped } from "./Classes/viewModelClass";
 import getAesthetic from "./Functions/getAesthetic";
 import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
-import { adjustPaddingForOverflow, highlightOpacity } from "powerbi-visuals-core/rendering";
+import {
+  adjustPaddingForOverflow, highlightOpacity, initialiseSvg, drawErrorMessage, type ErrorKind, type PlotLine
+} from "powerbi-visuals-core/rendering";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
 export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
@@ -50,7 +49,10 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.selectionManager = this.host.createSelectionManager();
     this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
 
-    this.svg.call(initialiseSVG);
+    const svg = this.svg.node();
+    if (svg !== null) {
+      initialiseSvg(svg);
+    }
     const table = this.tableDiv.append("table")
                                 .classed("table-group", true)
                                 .style("border-collapse", "collapse")
@@ -74,11 +76,8 @@ export class Visual implements powerbi.extensibility.IVisual {
       if (!update_status.status) {
         this.plotProperties.displayPlot = false;
         this.resizeCanvas(options.viewport.width, options.viewport.height);
-        if (this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true) {
-          this.svg.call(drawErrors, options, this.viewModel.colourPalette, update_status.error ?? "", update_status.type);
-        } else {
-          this.svg.call(initialiseSVG, true);
-        }
+        this.drawErrors(options, update_status.error ?? "", update_status.type,
+                        this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true);
 
         this.host.eventService.renderingFailed(options);
         return;
@@ -105,15 +104,30 @@ export class Visual implements powerbi.extensibility.IVisual {
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
       this.resizeCanvas(options.viewport.width, options.viewport.height);
-      this.svg.call(drawErrors, options, this.viewModel.colourPalette, (caught_error as Error).message, "internal");
+      this.drawErrors(options, (caught_error as Error).message, "internal", true);
       console.error(caught_error);
       this.host.eventService.renderingFailed(options);
     }
   }
 
+  // A hidden error leaves an empty canvas
+  drawErrors(options: VisualUpdateOptions, message: string, kind: ErrorKind | undefined, show: boolean): void {
+    const svg = this.svg.node();
+    if (svg === null) {
+      return;
+    }
+    if (show) {
+      drawErrorMessage(svg, {
+        width: options.viewport.width, height: options.viewport.height,
+        message, kind, colour: this.viewModel.colourPalette.foregroundColour
+      });
+    } else {
+      initialiseSvg(svg, true);
+    }
+  }
+
   drawVisual(): void {
-    this.svg.call(drawXAxis, this)
-            .call(drawYAxis, this)
+    this.svg.call(drawAxes, this)
             .call(drawTooltipLine, this)
             .call(drawLines, this)
             .call(drawLineLabels, this)
@@ -164,12 +178,12 @@ export class Visual implements powerbi.extensibility.IVisual {
 
     const dotsSelection: d3.Selection<d3.BaseType | SVGPathElement, plotData, d3.BaseType, unknown> = this.svg.selectAll(".dotsgroup").selectChildren();
     // Only the line groups carry line data; the label texts are Core-drawn and unbound
-    const linesSelection: d3.Selection<d3.BaseType | SVGGElement, [string, lineData[]], d3.BaseType, unknown> = this.svg.selectAll(".linesgroup").selectChildren("g");
+    const linesSelection = this.svg.selectAll(".linesgroup").selectChildren<SVGGElement, PlotLine>("g");
     const tableSelection: d3.Selection<d3.BaseType | HTMLTableRowElement, plotDataGrouped, d3.BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
 
     const active = anyHighlights || allSelectionIDs.length > 0;
     const settings = this.viewModel.inputSettings.settings[0];
-    linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => getAesthetic(d[0], "lines", active ? "opacity_unselected" : "opacity", settings));
+    linesSelection.style("stroke-opacity", (d: PlotLine) => getAesthetic(d.name, "lines", active ? "opacity_unselected" : "opacity", settings));
     const dotOpacity = (d: plotData) => highlightOpacity(d.aesthetics, active, identitySelected(d.identity, selected) || d.highlighted);
     dotsSelection.style("fill-opacity", dotOpacity).style("stroke-opacity", dotOpacity);
     tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({

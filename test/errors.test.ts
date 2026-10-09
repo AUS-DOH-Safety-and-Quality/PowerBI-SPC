@@ -30,7 +30,7 @@ describe("Chart Errors", () => {
       type:  2 /*powerbi.VisualUpdateType.Data*/
     });
 
-    expect_error(svgElement, 'No Numerators passed!');
+    expect_error(svgElement, 'No numerators passed!');
 
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys, numerators: rep(<any>null, 7) }) ],

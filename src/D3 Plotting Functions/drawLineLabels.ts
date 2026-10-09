@@ -43,8 +43,8 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
       const point = points[index];
       labels.push({
         text: lineSetting<string>(lineSettings, `plot_label_prefix_${key}`) + formatValue(point.line_value, "value"),
-        x: visualObj.plotProperties.xScale(point.x) as number,
-        y: visualObj.plotProperties.yScale(point.line_value as number) as number,
+        x: visualObj.plotProperties.xScale(point.x),
+        y: visualObj.plotProperties.yScale(point.line_value as number),
         position: lineSetting<LineLabelPosition>(lineSettings, `plot_label_position_${key}`),
         lower: lowerLines.has(name),
         hpad: lineSetting<number>(lineSettings, `plot_label_hpad_${key}`),

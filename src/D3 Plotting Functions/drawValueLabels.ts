@@ -10,8 +10,8 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   drawValueLabels(svg, {
     visible: labelSettings.show_labels && (viewModel.inputData[0]?.anyLabels ?? false),
     points: viewModel.plotPoints[0] as plotData[],
-    xScale: x => visualObj.plotProperties.xScale(x) as number,
-    yScale: value => visualObj.plotProperties.yScale(value) as number,
+    xScale: visualObj.plotProperties.xScale,
+    yScale: visualObj.plotProperties.yScale,
     plotHeight: viewModel.svgHeight,
     bottomPadding: visualObj.plotProperties.yAxis.start_padding,
     line: { colour: labelSettings.label_line_colour, width: labelSettings.label_line_width, type: labelSettings.label_line_type },

@@ -1,22 +1,9 @@
-import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { RoleColumns } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 import settingsClass from "../Classes/settingsClass";
 
-export default function validateDataViewColumns(inputDV: powerbi.DataView[], inputSettingsClass: settingsClass, valueColumns: RoleColumns<powerbi.DataViewValueColumn>): string {
-  // Show blank error messages for empty data or categories as settings are
-  // bound to the input categories, and so cannot disable error messages
-  if (isNullOrUndefined(inputDV?.[0]) || (inputDV?.[0]?.categorical?.categories?.[0]?.identity?.length === 0)) {
-    return ""; //"No data present!";
-  }
-  if (isNullOrUndefined(inputDV[0]?.categorical?.categories) || isNullOrUndefined(inputDV[0]?.categorical?.categories.some(d => d.source?.roles?.key))) {
-    return ""; //"No grouping/ID variable passed!";
-  }
-
-  if (valueColumns.numerators === undefined) {
-    return "No Numerators passed!";
-  }
-
+// Chart-type requirements only; the presence of data, keys and numerators is checked by Core first
+export default function validateDataViewColumns(inputSettingsClass: settingsClass, valueColumns: RoleColumns<powerbi.DataViewValueColumn>): string {
   let needs_denominator: boolean = false;
   let needs_sd: boolean = false;
   let chart_type: string = inputSettingsClass.settings[0].spc.chart_type;

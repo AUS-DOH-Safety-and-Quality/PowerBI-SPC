@@ -72,7 +72,7 @@ describe("renderer boundaries", () => {
     visual.update({ dataViews: [buildDataView({ key: keys }, settingsWith({}))], viewport, type: 2 });
     const texts = element.querySelectorAll<SVGTextElement>(".errormessage text");
     expect(texts).toHaveLength(1);
-    expect(texts[0].textContent).toBe("No Numerators passed!");
+    expect(texts[0].textContent).toBe("No numerators passed!");
     expect(texts[0].style.fill).toBe("rgb(171, 205, 239)");
     element.remove();
   });

@@ -1,4 +1,3 @@
-import * as d3 from "../D3 Plotting Functions/D3 Modules";
 import { min, max } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
 import { isNullOrUndefined, isValidNumber } from "powerbi-visuals-core/data";
@@ -9,54 +8,34 @@ import type { plotData, controlLimitsObject } from "./viewModelClass";
 import type viewModelClass from "./viewModelClass";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import type { ColourPalette } from "powerbi-visuals-core/powerbi";
-import { scaleLinear } from "powerbi-visuals-core/math";
-import type { AxisLabelAlign } from "powerbi-visuals-core/rendering";
-
-export type axisProperties = {
-  lower: number,
-  upper: number,
-  start_padding: number,
-  end_padding: number,
-  colour: string,
-  ticks: boolean,
-  tick_marks: boolean,
-  tick_size: string,
-  tick_font: string,
-  tick_colour: string,
-  tick_rotation: number,
-  tick_count: number,
-  label: string,
-  label_size: string,
-  label_font: string,
-  label_colour: string,
-  label_style: string,
-  label_align: AxisLabelAlign,
-  grid_show: boolean,
-  grid_colour: string,
-  grid_width: number
-};
+import { scaleLinear, type LinearScale } from "powerbi-visuals-core/math";
+import { axisPropertiesFromSettings, type AxisProperties } from "powerbi-visuals-core/rendering";
 
 export default class plotPropertiesClass {
+  width: number;
+  height: number;
   displayPlot: boolean;
-  xAxis: axisProperties;
-  yAxis: axisProperties;
-  xScale: d3.AxisScale<number>;
-  yScale: d3.AxisScale<number>;
+  xAxis: AxisProperties;
+  yAxis: AxisProperties;
+  xScale: LinearScale;
+  yScale: LinearScale;
 
   // Separate function so that the axis can be re-calculated on changes to padding
   initialiseScale(svgWidth: number, svgHeight: number): void {
+    this.width = svgWidth;
+    this.height = svgHeight;
     this.xScale = scaleLinear()
                     .domain([this.xAxis.lower, this.xAxis.upper])
                     .range([this.xAxis.start_padding,
-                            svgWidth - this.xAxis.end_padding]) as unknown as d3.AxisScale<number>;
+                            svgWidth - this.xAxis.end_padding]);
 
     this.yScale = scaleLinear()
                     .domain([this.yAxis.lower, this.yAxis.upper])
                     .range([svgHeight - this.yAxis.start_padding,
-                            this.yAxis.end_padding]) as unknown as d3.AxisScale<number>;
+                            this.yAxis.end_padding]);
   }
   constructor() {
-    const dummyAxisProperties: axisProperties = {
+    const dummyAxisProperties: AxisProperties = {
       lower: 0,
       upper: 1,
       start_padding: 0,
@@ -79,12 +58,14 @@ export default class plotPropertiesClass {
       grid_colour: "#D3D3D3",
       grid_width: 1
     }
+    this.width = 0;
+    this.height = 0;
     this.displayPlot = false;
 
     this.xAxis = dummyAxisProperties;
     this.yAxis = dummyAxisProperties;
-    this.xScale = scaleLinear().domain([0, 1]).range([0, 1]) as unknown as d3.AxisScale<number>;
-    this.yScale = scaleLinear().domain([0, 1]).range([0, 1]) as unknown as d3.AxisScale<number>;
+    this.xScale = scaleLinear().domain([0, 1]).range([0, 1]);
+    this.yScale = scaleLinear().domain([0, 1]).range([0, 1]);
   }
 
   update(options: VisualUpdateOptions, viewModel: viewModelClass): void {
@@ -151,9 +132,6 @@ export default class plotPropertiesClass {
         : max(keysToPlot);
     }
 
-    const xTickSize: number = inputSettings.x_axis.xlimit_tick_size;
-    const yTickSize: number = inputSettings.y_axis.ylimit_tick_size;
-
     const leftLabelPadding: number = inputSettings.y_axis.ylimit_label
                                       ? inputSettings.y_axis.ylimit_label_size
                                       : 0;
@@ -162,53 +140,19 @@ export default class plotPropertiesClass {
                                       ? inputSettings.x_axis.xlimit_label_size
                                       : 0;
 
-    this.xAxis = {
+    this.xAxis = axisPropertiesFromSettings("x", inputSettings.x_axis, colorPalette, {
       lower: !isNullOrUndefined(xLowerLimit) ? xLowerLimit : 0,
       upper: xUpperLimit as number,
       start_padding: inputSettings.canvas.left_padding + leftLabelPadding,
-      end_padding: inputSettings.canvas.right_padding,
-      colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.x_axis.xlimit_colour,
-      ticks: inputSettings.x_axis.xlimit_ticks,
-      tick_marks: inputSettings.x_axis.xlimit_tick_marks,
-      tick_size: `${xTickSize}px`,
-      tick_font: inputSettings.x_axis.xlimit_tick_font,
-      tick_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.x_axis.xlimit_tick_colour,
-      tick_rotation: inputSettings.x_axis.xlimit_tick_rotation,
-      tick_count: inputSettings.x_axis.xlimit_tick_count,
-      label: inputSettings.x_axis.xlimit_label,
-      label_size: `${inputSettings.x_axis.xlimit_label_size}px`,
-      label_font: inputSettings.x_axis.xlimit_label_font,
-      label_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.x_axis.xlimit_label_colour,
-      label_style: inputSettings.x_axis.xlimit_label_style,
-      label_align: inputSettings.x_axis.xlimit_label_align,
-      grid_show: inputSettings.x_axis.xlimit_grid_show,
-      grid_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.x_axis.xlimit_grid_colour,
-      grid_width: inputSettings.x_axis.xlimit_grid_width
-    };
+      end_padding: inputSettings.canvas.right_padding
+    });
 
-    this.yAxis = {
+    this.yAxis = axisPropertiesFromSettings("y", inputSettings.y_axis, colorPalette, {
       lower: yLowerLimit as number,
       upper: yUpperLimit as number,
       start_padding: inputSettings.canvas.lower_padding + lowerLabelPadding,
-      end_padding: inputSettings.canvas.upper_padding,
-      colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.y_axis.ylimit_colour,
-      ticks: inputSettings.y_axis.ylimit_ticks,
-      tick_marks: inputSettings.y_axis.ylimit_tick_marks,
-      tick_size: `${yTickSize}px`,
-      tick_font: inputSettings.y_axis.ylimit_tick_font,
-      tick_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.y_axis.ylimit_tick_colour,
-      tick_rotation: inputSettings.y_axis.ylimit_tick_rotation,
-      tick_count: inputSettings.y_axis.ylimit_tick_count,
-      label: inputSettings.y_axis.ylimit_label,
-      label_size: `${inputSettings.y_axis.ylimit_label_size}px`,
-      label_font: inputSettings.y_axis.ylimit_label_font,
-      label_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.y_axis.ylimit_label_colour,
-      label_style: inputSettings.y_axis.ylimit_label_style,
-      label_align: inputSettings.y_axis.ylimit_label_align,
-      grid_show: inputSettings.y_axis.ylimit_grid_show,
-      grid_colour: colorPalette.isHighContrast ? colorPalette.foregroundColour : inputSettings.y_axis.ylimit_grid_colour,
-      grid_width: inputSettings.y_axis.ylimit_grid_width
-    };
+      end_padding: inputSettings.canvas.upper_padding
+    });
 
     this.initialiseScale(options.viewport.width, options.viewport.height);
   }

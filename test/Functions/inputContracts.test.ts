@@ -92,7 +92,7 @@ describe("input row contracts", () => {
     expect(extract(buildDataView({ key: ["A"], numerators: [null] }), [0])).toEqual({ status: "invalid", error: "All numerators are missing or null!" });
     expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [0], "p")).toEqual({ status: "invalid", error: "All denominators missing or null!" });
     expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [])).toEqual({ status: "invalid", error: "No valid data found!" });
-    expect(extract(buildDataView({ key: ["A"] }), [0])).toEqual({ status: "invalid", error: "No Numerators passed!" });
+    expect(extract(buildDataView({ key: ["A"] }), [0])).toEqual({ status: "invalid", error: "No numerators passed!" });
   });
 
   it("preserves local row-message priority and uniform versus mixed failure errors", () => {

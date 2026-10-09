@@ -46,7 +46,7 @@ export default function extractInputData(inputView: powerbi.DataViewCategorical,
   const keyColumns = columns.categories.key;
   const numeratorColumn = columns.values.numerators?.[0];
   if (keyColumns === undefined || categories === undefined) return { status: "invalid", error: "No grouping/ID variable passed!" };
-  if (numeratorColumn === undefined) return { status: "invalid", error: "No Numerators passed!" };
+  if (numeratorColumn === undefined) return { status: "invalid", error: "No numerators passed!" };
   const denominatorColumn = columns.values.denominators?.[0];
   const sdColumn = columns.values.xbar_sds?.[0];
   const chart = derivedSettings.chart_type_props;
