@@ -5,10 +5,9 @@ import scatterSettings from "./Settings Model/scatterSettings";
 import linesSettings from "./Settings Model/linesSettings";
 import datesSettings from "./Settings Model/datesSettings";
 import summaryTableSettings from "./Settings Model/summaryTableSettings";
-import downloadSettings from "./Settings Model/downloadSettings";
 import {
-  createCanvasCard, createLabelsCard, createAxisCard, defineCard, createDefaultValues, numberOption,
-  type SettingsValues, type MergeUnions
+  createCanvasCard, createLabelsCard, createAxisCard, createDownloadCard, defineCard, createDefaultValues, numberOption,
+  type SettingsValues
 } from "powerbi-visuals-core/settings";
 
 const settingsModel = {
@@ -22,24 +21,13 @@ const settingsModel = {
   y_axis: createAxisCard("y", { tickRotation: 0 }, { limit_multiplier: numberOption("Axis Scaling Factor", 1.5, { min: 0 }) }),
   dates: defineCard(datesSettings),
   summary_table: defineCard(summaryTableSettings),
-  download_options: defineCard(downloadSettings),
+  download_options: createDownloadCard(),
   labels: createLabelsCard()
 };
 
-type settingsModelType = typeof settingsModel;
-type settingsModelKeys = keyof settingsModelType;
-type settingsValueType = SettingsValues<settingsModelType>;
-type settingsValueTypesUnion = settingsValueType[settingsModelKeys];
+type settingsValueType = SettingsValues<typeof settingsModel>;
 
 const defaultSettings = createDefaultValues(settingsModel);
 
-type SettingsValueKeys = keyof settingsValueType;
-type settingsValueTypesMerged = MergeUnions<settingsValueTypesUnion>;
-type SettingsValueNestedKeys = keyof settingsValueTypesMerged;
-
-export {
-  defaultSettings, type settingsValueType, type settingsValueTypesUnion,
-  type SettingsValueKeys, type SettingsValueNestedKeys, type settingsValueTypesMerged,
-  type settingsModelKeys, type settingsModelType
-};
+export { defaultSettings, type settingsValueType };
 export default settingsModel;

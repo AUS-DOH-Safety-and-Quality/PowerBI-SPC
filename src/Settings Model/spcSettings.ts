@@ -1,4 +1,6 @@
-import { numberOption, toggleOption, textOption, dropdownOption } from "powerbi-visuals-core/settings";
+import {
+  numberOption, toggleOption, textOption, dropdownOption, scalingOptions, valueTooltipOptions, limitTruncationOptions
+} from "powerbi-visuals-core/settings";
 
 const spcSettings = {
   description: "SPC Settings",
@@ -26,23 +28,15 @@ const spcSettings = {
         ]
       ),
       outliers_in_limits: toggleOption("Keep Outliers in Limit Calcs.", false),
-      multiplier: numberOption("Multiplier", 1, { min: 0 }),
-      sig_figs: numberOption("Decimals to Report:", 2, { min: 0, max: 20 }),
-      perc_labels: dropdownOption("Report as percentage", "Automatic", ["Automatic", "Yes", "No"]),
+      ...scalingOptions(),
       split_on_click: toggleOption("Split Limits on Click", false),
       num_points_subset: numberOption("Subset Number of Points for Limit Calculations", undefined, { integer: true }),
       subset_points_from: dropdownOption("Subset Points From", "Start", ["Start", "End"]),
       subset_rebaselines: toggleOption("Subset Points After Each Re-Baseline", false),
       ttip_show_date: toggleOption("Show Date in Tooltip", true),
       ttip_label_date: textOption("Date Tooltip Label", "Automatic"),
-      ttip_show_numerator: toggleOption("Show Numerator in Tooltip", true),
-      ttip_label_numerator: textOption("Numerator Tooltip Label", "Numerator"),
-      ttip_show_denominator: toggleOption("Show Denominator in Tooltip", true),
-      ttip_label_denominator: textOption("Denominator Tooltip Label", "Denominator"),
-      ttip_show_value: toggleOption("Show Value in Tooltip", true),
-      ttip_label_value: textOption("Value Tooltip Label", "Automatic"),
-      ll_truncate: numberOption("Truncate Lower Limits at:", undefined),
-      ul_truncate: numberOption("Truncate Upper Limits at:", undefined)
+      ...valueTooltipOptions(),
+      ...limitTruncationOptions()
     }
   }
 };

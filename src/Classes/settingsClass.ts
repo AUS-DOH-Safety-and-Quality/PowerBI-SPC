@@ -1,12 +1,8 @@
 import type powerbi from "powerbi-visuals-api";
 import { readSettingsGroups, buildFormattingModel, type SettingsValidation } from "powerbi-visuals-core/powerbi";
-import settingsModel, { defaultSettings, type settingsValueType } from "../settings";
+import settingsModel, { type settingsValueType } from "../settings";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
 import derivedSettingsClass from "./derivedSettingsClass";
-
-export type optionalSettingsTypes = Partial<{
-  [K in keyof typeof defaultSettings]: Partial<settingsValueType[K]>;
-}>;
 
 export default class settingsClass {
   settings: settingsValueType[];

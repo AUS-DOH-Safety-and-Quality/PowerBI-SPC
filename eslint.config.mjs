@@ -9,10 +9,7 @@ export default [
             ".vscode/**",
             ".tmp/**",
             "test/**",
-            "coverage/**",
-            "rollup.config.js",
-            "karma.conf.ts",
-            "test.webpack.config.js"
+            "coverage/**"
         ]
     },
 ];

@@ -1,15 +1,10 @@
 import type { svgBaseType, Visual } from "../visual";
-import { lineNameMap } from "../Functions/getAesthetic";
-import type { settingsValueType } from "../settings";
-import { drawLineLabels, type LineLabel, type LineLabelPosition } from "powerbi-visuals-core/rendering";
+import lineKeys from "../Functions/lineKeys";
+import { lineLabel, lineSetting } from "powerbi-visuals-core/settings";
+import { drawLineLabels, type LineLabel } from "powerbi-visuals-core/rendering";
 
-type LineSettingsKey = keyof settingsValueType["lines"];
 // Lower boundary lines place outside labels below the line (finding 18)
 const lowerLines = new Set(["ll99", "ll95", "ll68", "speclimits_lower"]);
-
-function lineSetting<T>(lineSettings: settingsValueType["lines"], name: string): T {
-  return lineSettings[name as LineSettingsKey] as T;
-}
 
 // Selects which line ends are labelled; Core places and draws them
 export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
@@ -31,29 +26,19 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   rebaselinePoints.push(firstLine.length - 1);
   const lastIndex = firstLine.length - 1;
   const formatValue = inputSettings.derivedSettings[0].formatValue;
+  const frame = visualObj.plotProperties;
   const labels: LineLabel[] = [];
   for (let r = 0; r < rebaselinePoints.length; r++) {
     const index = rebaselinePoints[r];
     for (let l = 0; l < lines.length; l++) {
       const [name, points] = lines[l];
-      const key = lineNameMap[name];
-      const showN = rebaselinePoints.length - Math.min(rebaselinePoints.length, lineSetting<number>(lineSettings, `plot_label_show_n_${key}`));
-      const eligible = r >= showN || lineSetting<boolean>(lineSettings, `plot_label_show_all_${key}`) || index === lastIndex;
-      if (!eligible || !lineSetting<boolean>(lineSettings, `plot_label_show_${key}`)) continue;
+      const key = lineKeys[name];
+      const showN = rebaselinePoints.length - Math.min(rebaselinePoints.length, lineSetting<number>(lineSettings, "plot_label_show_n", key));
+      const eligible = r >= showN || lineSetting<boolean>(lineSettings, "plot_label_show_all", key) || index === lastIndex;
+      if (!eligible || !lineSetting<boolean>(lineSettings, "plot_label_show", key)) continue;
       const point = points[index];
-      labels.push({
-        text: lineSetting<string>(lineSettings, `plot_label_prefix_${key}`) + formatValue(point.line_value, "value"),
-        x: visualObj.plotProperties.xScale(point.x),
-        y: visualObj.plotProperties.yScale(point.line_value as number),
-        position: lineSetting<LineLabelPosition>(lineSettings, `plot_label_position_${key}`),
-        lower: lowerLines.has(name),
-        hpad: lineSetting<number>(lineSettings, `plot_label_hpad_${key}`),
-        vpad: lineSetting<number>(lineSettings, `plot_label_vpad_${key}`),
-        lineWidth: lineSetting<number>(lineSettings, `width_${key}`),
-        size: lineSetting<number>(lineSettings, `plot_label_size_${key}`),
-        font: lineSetting<string>(lineSettings, `plot_label_font_${key}`),
-        colour: lineSetting<string>(lineSettings, `plot_label_colour_${key}`)
-      });
+      const value = point.line_value as number;
+      labels.push(lineLabel(lineSettings, key, { x: frame.xScale(point.x), y: frame.yScale(value), value }, lowerLines.has(name), formatValue));
     }
   }
   drawLineLabels(group, labels);

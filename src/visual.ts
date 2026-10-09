@@ -2,25 +2,22 @@
 
 import type powerbi from "powerbi-visuals-api";
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-type ISelectionId = powerbi.visuals.ISelectionId;
 import * as d3 from "./D3 Plotting Functions/D3 Modules";
-import drawAxes from "./D3 Plotting Functions/drawAxes";
-import drawTooltipLine from "./D3 Plotting Functions/drawTooltipLine";
 import drawLines from "./D3 Plotting Functions/drawLines";
-import drawDots from "./D3 Plotting Functions/drawDots";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import addContextMenu from "./D3 Plotting Functions/addContextMenu";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
-import drawValueLabels from "./D3 Plotting Functions/drawValueLabels";
 import drawLineLabels from "./D3 Plotting Functions/drawLineLabels";
-import drawDownloadButton from "./D3 Plotting Functions/drawDownloadButton";
-import plotPropertiesClass from "./Classes/plotPropertiesClass";
 import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
 import type { plotDataGrouped } from "./Classes/viewModelClass";
-import getAesthetic from "./Functions/getAesthetic";
-import { identitySelected, selectedKeys } from "powerbi-visuals-core/powerbi";
+import axisRanges from "./Functions/axisRanges";
+import lineKeys from "./Functions/lineKeys";
+import { identitySelected, selectionState } from "powerbi-visuals-core/powerbi";
+import { lineOpacity } from "powerbi-visuals-core/settings";
 import {
-  adjustPaddingForOverflow, highlightOpacity, initialiseSvg, drawErrorMessage, type ErrorKind, type PlotLine
+  createPlotFrame, fitPlotToOverflow, highlightOpacity, highlightPlot, initialiseSvg, drawErrorMessage,
+  drawPlotAxes, drawPlotTooltips, drawPlotDots, drawPlotDownload, drawPlotValueLabels, valueTickFormat,
+  type ErrorKind, type PlotContext, type PlotFrame
 } from "powerbi-visuals-core/rendering";
 
 export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
@@ -31,8 +28,15 @@ export class Visual implements powerbi.extensibility.IVisual {
   tableDiv: divBaseType;
   svg: svgBaseType;
   viewModel: viewModelClass;
-  plotProperties: plotPropertiesClass;
   selectionManager: powerbi.extensibility.ISelectionManager;
+  private currentPlotProperties: PlotFrame | undefined;
+
+  get plotProperties(): PlotFrame {
+    if (this.currentPlotProperties === undefined) {
+      throw new Error("Plot properties require validated data.");
+    }
+    return this.currentPlotProperties;
+  }
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions | undefined) {
     if (options === undefined) {
@@ -44,7 +48,6 @@ export class Visual implements powerbi.extensibility.IVisual {
     this.svg = d3.select(options.element).append("svg");
     this.host = options.host;
     this.viewModel = new viewModelClass();
-    this.plotProperties = new plotPropertiesClass();
 
     this.selectionManager = this.host.createSelectionManager();
     this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
@@ -74,7 +77,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       // update status to false
       const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
       if (!update_status.status) {
-        this.plotProperties.displayPlot = false;
+        this.currentPlotProperties = undefined;
         this.resizeCanvas(options.viewport.width, options.viewport.height);
         this.drawErrors(options, update_status.error ?? "", update_status.type,
                         this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true);
@@ -83,14 +86,22 @@ export class Visual implements powerbi.extensibility.IVisual {
         return;
       }
 
-      this.plotProperties.update(options, this.viewModel);
+      const viewModel = this.viewModel;
+      this.currentPlotProperties = createPlotFrame({
+        width: options.viewport.width,
+        height: options.viewport.height,
+        displayPlot: (viewModel.plotPoints[0]?.length ?? 0) > 0,
+        ...axisRanges(viewModel),
+        settings: viewModel.inputSettings.settings[0],
+        palette: viewModel.colourPalette
+      });
 
       if (update_status.warning) {
         this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
                                       update_status.warning);
       }
 
-      if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings[0].summary_table.show_table) {
+      if (viewModel.showGrouped || viewModel.inputSettings.settings[0].summary_table.show_table) {
         this.resizeCanvas(0, 0);
         this.tableDiv.call(drawSummaryTable, this)
                      .call(addContextMenu, this);
@@ -103,6 +114,7 @@ export class Visual implements powerbi.extensibility.IVisual {
       this.updateHighlighting();
       this.host.eventService.renderingFinished(options);
     } catch (caught_error) {
+      this.currentPlotProperties = undefined;
       this.resizeCanvas(options.viewport.width, options.viewport.height);
       this.drawErrors(options, (caught_error as Error).message, "internal", true);
       console.error(caught_error);
@@ -110,32 +122,89 @@ export class Visual implements powerbi.extensibility.IVisual {
     }
   }
 
-  // A hidden error leaves an empty canvas
   drawErrors(options: VisualUpdateOptions, message: string, kind: ErrorKind | undefined, show: boolean): void {
     const svg = this.svg.node();
     if (svg === null) {
       return;
     }
-    if (show) {
-      drawErrorMessage(svg, {
-        width: options.viewport.width, height: options.viewport.height,
-        message, kind, colour: this.viewModel.colourPalette.foregroundColour
-      });
-    } else {
-      initialiseSvg(svg, true);
-    }
+    drawErrorMessage(svg, {
+      width: options.viewport.width, height: options.viewport.height,
+      message, kind, show, colour: this.viewModel.colourPalette.foregroundColour
+    });
+  }
+
+  plotContext(): PlotContext<plotData> {
+    const viewModel = this.viewModel;
+    return {
+      frame: this.plotProperties,
+      points: viewModel.plotPoints[0] as plotData[],
+      palette: viewModel.colourPalette,
+      settings: viewModel.inputSettings.settings[0],
+      host: this.host,
+      selectionManager: this.selectionManager,
+      onSelectionChange: () => this.updateHighlighting(),
+      headless: viewModel.headless,
+      frontend: viewModel.frontend
+    };
   }
 
   drawVisual(): void {
-    this.svg.call(drawAxes, this)
-            .call(drawTooltipLine, this)
-            .call(drawLines, this)
-            .call(drawLineLabels, this)
-            .call(drawDots, this)
-            .call(drawIcons, this)
-            .call(addContextMenu, this)
-            .call(drawDownloadButton, this)
-            .call(drawValueLabels, this);
+    const svg = this.svg.node();
+    if (svg === null) {
+      return;
+    }
+    const viewModel = this.viewModel;
+    const settings = viewModel.inputSettings.settings[0];
+    const context = this.plotContext();
+    const tickLabels = viewModel.tickLabels;
+    drawPlotAxes(svg, context, {
+      x: value => {
+        for (let i = 0; i < tickLabels.length; i++) {
+          if (tickLabels[i].x === value) {
+            return tickLabels[i].label;
+          }
+        }
+        return "";
+      },
+      y: valueTickFormat(settings.y_axis.ylimit_sig_figs ?? settings.spc.sig_figs, viewModel.inputSettings.derivedSettings[0].percentLabels)
+    });
+    drawPlotTooltips(svg, context, false);
+    this.svg.call(drawLines, this)
+            .call(drawLineLabels, this);
+    drawPlotDots(svg, context, {
+      show: settings.scatter.show_dots,
+      text: undefined,
+      onClick: settings.spc.split_on_click ? point => this.toggleSplit(point) : undefined
+    });
+    this.svg.call(drawIcons, this)
+            .call(addContextMenu, this);
+    drawPlotDownload(svg, context, () => {
+      const points = context.points;
+      const rows = new Array<plotData["table_row"]>(points.length);
+      for (let i = 0; i < points.length; i++) {
+        rows[i] = points[i].table_row;
+      }
+      return rows;
+    });
+    drawPlotValueLabels(svg, context, viewModel.inputData[0]?.anyLabels ?? false);
+  }
+
+  // Toggles a limit split at the point; persisting it triggers the update that recalculates the limits
+  toggleSplit(point: plotData): void {
+    const splitIndexes = this.viewModel.splitIndexes;
+    const xIndex = splitIndexes.indexOf(point.x);
+    if (xIndex > -1) {
+      splitIndexes.splice(xIndex, 1);
+    } else {
+      splitIndexes.push(point.x);
+    }
+    this.host.persistProperties({
+      replace: [{
+        objectName: "split_indexes_storage",
+        selector: {},
+        properties: { split_indexes: JSON.stringify(splitIndexes) }
+      }]
+    });
   }
 
   adjustPaddingForOverflow(): void {
@@ -143,21 +212,15 @@ export class Visual implements powerbi.extensibility.IVisual {
     if (this.viewModel.headless) {
       return;
     }
-    const node = this.svg.node();
-    if (node === null) {
+    const svg = this.svg.node();
+    if (svg === null) {
       return;
     }
-    const { xAxis, yAxis } = this.plotProperties;
-    const padding = adjustPaddingForOverflow(node.getBBox(), this.viewModel.svgWidth, this.viewModel.svgHeight,
-      { left: xAxis.start_padding, right: xAxis.end_padding, top: yAxis.end_padding, bottom: yAxis.start_padding });
-    if (padding === undefined) {
+    const fitted = fitPlotToOverflow(svg, this.plotProperties);
+    if (fitted === undefined) {
       return;
     }
-    xAxis.start_padding = padding.left;
-    xAxis.end_padding = padding.right;
-    yAxis.end_padding = padding.top;
-    yAxis.start_padding = padding.bottom;
-    this.plotProperties.initialiseScale(this.viewModel.svgWidth, this.viewModel.svgHeight);
+    this.currentPlotProperties = fitted;
     this.drawVisual();
   }
 
@@ -171,21 +234,19 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   updateHighlighting(): void {
-    const anyHighlights: boolean = this.viewModel.inputData.length > 0
-      && this.viewModel.inputData.some(d => d.anyHighlights);
-    const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
-    const selected = selectedKeys(allSelectionIDs);
-
-    const dotsSelection: d3.Selection<d3.BaseType | SVGPathElement, plotData, d3.BaseType, unknown> = this.svg.selectAll(".dotsgroup").selectChildren();
-    // Only the line groups carry line data; the label texts are Core-drawn and unbound
-    const linesSelection = this.svg.selectAll(".linesgroup").selectChildren<SVGGElement, PlotLine>("g");
+    const viewModel = this.viewModel;
+    const anyHighlights: boolean = viewModel.inputData.length > 0 && viewModel.inputData.some(d => d.anyHighlights);
+    const { active, selected } = selectionState(this.selectionManager, anyHighlights);
+    const settings = viewModel.inputSettings.settings[0];
+    const svg = this.svg.node();
+    if (svg !== null) {
+      highlightPlot<plotData>(svg, {
+        active, selected,
+        lineOpacity: line => lineOpacity(settings.lines, lineKeys[line.name], active),
+        dotOpacities: point => point.aesthetics
+      });
+    }
     const tableSelection: d3.Selection<d3.BaseType | HTMLTableRowElement, plotDataGrouped, d3.BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
-
-    const active = anyHighlights || allSelectionIDs.length > 0;
-    const settings = this.viewModel.inputSettings.settings[0];
-    linesSelection.style("stroke-opacity", (d: PlotLine) => getAesthetic(d.name, "lines", active ? "opacity_unselected" : "opacity", settings));
-    const dotOpacity = (d: plotData) => highlightOpacity(d.aesthetics, active, identitySelected(d.identity, selected) || d.highlighted);
-    dotsSelection.style("fill-opacity", dotOpacity).style("stroke-opacity", dotOpacity);
     tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({
       opacity: d.aesthetics.table_opacity, opacity_selected: d.aesthetics.table_opacity_selected, opacity_unselected: d.aesthetics.table_opacity_unselected
     }, active, identitySelected(d.identity, selected) || d.highlighted));

@@ -9,7 +9,6 @@ import settingsClass from "./settingsClass";
 import { type settingsValueType } from "../settings";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
-import getAesthetic from "../Functions/getAesthetic";
 import { rep, between, calculateTrendLine } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
@@ -18,7 +17,7 @@ import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
 import { astronomical, shift, trend, twoInThree } from "powerbi-visuals-core/spc";
-import { lineNameMap } from "../Functions/getAesthetic";
+import lineKeys from "../Functions/lineKeys";
 import { sequence } from "powerbi-visuals-core/math";
 
 type LineSettingsKeys = keyof settingsValueType["lines"];
@@ -93,9 +92,7 @@ export type plotData = {
     text_value: string | undefined,
     aesthetics: settingsValueType["labels"],
     angle: number | undefined,
-    distance: number | undefined,
-    line_offset: number | undefined,
-    marker_offset: number | undefined
+    distance: number | undefined
   };
 }
 
@@ -626,29 +623,18 @@ export default class viewModelClass {
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
-      if (outliers.shift[i] !== "none") {
-        aesthetics.colour = getAesthetic(outliers.shift[i], "outliers",
-                                  "shift_colour", settings) as string;
-        aesthetics.colour_outline = getAesthetic(outliers.shift[i], "outliers",
-                                  "shift_colour", settings) as string;
-      }
-      if (outliers.trend[i] !== "none") {
-        aesthetics.colour = getAesthetic(outliers.trend[i], "outliers",
-                                  "trend_colour", settings) as string;
-        aesthetics.colour_outline = getAesthetic(outliers.trend[i], "outliers",
-                                  "trend_colour", settings) as string;
-      }
-      if (outliers.two_in_three[i] !== "none") {
-        aesthetics.colour = getAesthetic(outliers.two_in_three[i], "outliers",
-                                  "twointhree_colour", settings) as string;
-        aesthetics.colour_outline = getAesthetic(outliers.two_in_three[i], "outliers",
-                                  "twointhree_colour", settings) as string;
-      }
-      if (outliers.astpoint[i] !== "none") {
-        aesthetics.colour = getAesthetic(outliers.astpoint[i], "outliers",
-                                  "ast_colour", settings) as string;
-        aesthetics.colour_outline = getAesthetic(outliers.astpoint[i], "outliers",
-                                  "ast_colour", settings) as string;
+      // Later patterns take precedence, so an astronomical point's colour wins
+      const flagged: [string, string][] = [
+        [outliers.shift[i], "shift_colour"], [outliers.trend[i], "trend_colour"],
+        [outliers.two_in_three[i], "twointhree_colour"], [outliers.astpoint[i], "ast_colour"]
+      ];
+      for (let j = 0; j < flagged.length; j++) {
+        const [status, prefix] = flagged[j];
+        if (status !== "none") {
+          const colour = settings.outliers[`${prefix}_${status}` as keyof settingsValueType["outliers"]] as string;
+          aesthetics.colour = colour;
+          aesthetics.colour_outline = colour;
+        }
       }
       const table_row: summaryTableRowData = {
         date: controlLimits.keys[i].label,
@@ -688,9 +674,7 @@ export default class viewModelClass {
           text_value: inputData.labels?.[index],
           aesthetics: inputData.label_formatting[index],
           angle: undefined,
-          distance: undefined,
-          line_offset: undefined,
-          marker_offset: undefined
+          distance: undefined
         }
       })
       this.tickLabels.push({x: index, label: controlLimits.keys[i].label});
@@ -749,7 +733,7 @@ export default class viewModelClass {
         isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
       }
       labels.forEach(label => {
-        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineNameMap[label]}` as LineSettingsKeys] as boolean;
+        const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineKeys[label]}` as LineSettingsKeys] as boolean;
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
         if (isRebaselinePoint || isNewAltTarget) {

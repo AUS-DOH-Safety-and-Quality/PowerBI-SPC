@@ -1,13 +1,10 @@
-import { colourOption, numberOption, toggleOption, dropdownOption } from "powerbi-visuals-core/settings";
+import { colourOption, numberOption, toggleOption, dropdownOption, flagDirectionOptions } from "powerbi-visuals-core/settings";
 
 const outliersSettings = {
   description: "Outlier Settings",
   displayName: "Outlier Settings",
   settingsGroups: {
-    "General" : {
-      process_flag_type: dropdownOption("Type of Change to Flag", "both", ["both", "improvement", "deterioration"], "sentence"),
-      improvement_direction: dropdownOption("Improvement Direction", "increase", ["increase", "neutral", "decrease"], "sentence")
-    },
+    "General" : flagDirectionOptions(),
     "Astronomical Points" : {
       astronomical: toggleOption("Highlight Astronomical Points", false),
       astronomical_limit: dropdownOption("Limit for Astronomical Points", "3 Sigma", ["1 Sigma", "2 Sigma", "3 Sigma", "Specification"]),
