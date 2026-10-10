@@ -1,0 +1,10 @@
+title: SPC Charts for PowerBI
+description: A PowerBI Custom Visual for SPC Charts
+theme: just-the-docs
+
+url: https://aus-doh-safety-and-quality.github.io/PowerBI-SPC/
+
+aux_links:
+  GitHub Repository: https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC
+
+math: mathjax

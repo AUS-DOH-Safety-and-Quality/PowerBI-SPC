@@ -17,9 +17,11 @@ const settingsModel = {
   nhs_icons: defineCard(nhsIconsSettings),
   scatter: defineCard(scatterSettings),
   lines: defineCard(linesSettings),
-  x_axis: createAxisCard("x", { tickRotation: -35 }),
-  y_axis: createAxisCard("y", { tickRotation: 0 }, {
-    limit_multiplier: numberOption("Axis Scaling Factor", 1.5, { min: 0 })
+  x_axis: createAxisCard("x", { tickRotation: -35, limitUnits: "a point number counted from 0" }),
+  y_axis: createAxisCard("y", { tickRotation: 0, limitUnits: "a plotted value" }, {
+    limit_multiplier: numberOption("Axis Scaling Factor",
+                                   "Extends the y-axis past the centreline by this multiple of the distance to the furthest point, limit or target.",
+                                   1.5, { min: 0 })
   }),
   dates: defineCard(datesSettings),
   summary_table: defineCard(summaryTableSettings),

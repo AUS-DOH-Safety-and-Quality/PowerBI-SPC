@@ -21,7 +21,7 @@ import lineKeys, { type LineName } from "../Functions/lineKeys";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
 import { sequence } from "powerbi-visuals-core/math";
 
-import type { ErrorKind } from "powerbi-visuals-core/rendering";
+import { axisRangeError, type ErrorKind } from "powerbi-visuals-core/rendering";
 
 export type viewModelValidationT = {
   status: boolean,
@@ -414,14 +414,11 @@ export default class viewModelClass {
       res.warning = warnings.join("\n");
     }
 
-    // An explicit axis limit can still invert against the automatic one; the grouped table has no axes
+    // The grouped table has no axes
     if (!this.showGrouped) {
-      const axes = axisRanges(this);
-      if (axes.x.lower > axes.x.upper) {
-        return { status: false, type: "settings", error: `The x-axis lower limit (${axes.x.lower}) is above the upper limit (${axes.x.upper})` };
-      }
-      if (axes.y.lower > axes.y.upper) {
-        return { status: false, type: "settings", error: `The y-axis lower limit (${axes.y.lower}) is above the upper limit (${axes.y.upper})` };
+      const rangeError = axisRangeError(axisRanges(this));
+      if (rangeError !== undefined) {
+        return { status: false, type: "settings", error: rangeError };
       }
     }
 

@@ -69,7 +69,7 @@ describe("input row contracts", () => {
     expect(result.data.scatter_formatting[0]).not.toBe(result.data.scatter_formatting[3]);
     expect(result.data.anyHighlights).toBe(true);
     expect(result.data.anyLabels).toBe(true);
-    expect(result.data.warningMessage).toBe("Category B removed due to: Numerator missing.\nCategory undefined removed due to: Numerator missing.");
+    expect(result.data.warningMessage).toBe("Category B removed due to: Numerator missing.\nCategory (Blank) removed due to: Numerator missing.");
   });
 
   it("reads absent optional columns as blank rows and present empty columns the same way", () => {

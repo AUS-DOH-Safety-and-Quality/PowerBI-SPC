@@ -5,7 +5,7 @@ const scatterSettings = {
   displayName: "Scatter Settings",
   settingsGroups: {
     "all": {
-      show_dots: toggleOption("Show Scatter", true),
+      show_dots: toggleOption("Show Scatter", "Draws the points.", true),
       ...dotOptions()
     }
   }

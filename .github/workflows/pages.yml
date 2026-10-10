@@ -10,10 +10,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - PowerBI-SPC-Docs/** # Push events to docs folder
-      - src/**
-      - package.json
-      - typedoc.json
+      - docs/** # Push events to docs folder
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,17 +33,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: "20"
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -54,7 +40,7 @@ jobs:
           ruby-version: '3.1' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
           cache-version: 0 # Increment this number if you need to re-download cached gems
-          working-directory: '${{ github.workspace }}/PowerBI-SPC-Docs/docs'
+          working-directory: '${{ github.workspace }}/docs'
 
       - name: Setup Pages
         id: pages
@@ -63,7 +49,7 @@ jobs:
       - name: Build Site Page with Jekyll
         # Outputs to the './_site' directory by default
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        working-directory: PowerBI-SPC-Docs/docs
+        working-directory: docs
         env:
           JEKYLL_ENV: production
 
@@ -71,7 +57,7 @@ jobs:
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v5
         with:
-          path: "PowerBI-SPC-Docs/docs/_site/"
+          path: "docs/_site/"
 
   # Deployment job
   deploy:

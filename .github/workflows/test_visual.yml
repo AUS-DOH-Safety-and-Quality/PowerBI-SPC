@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
     paths-ignore:
-      - PowerBI-SPC-Docs/** # Don't run on docs folder
+      - docs/** # Don't run on docs folder
 
 permissions:
   contents: read

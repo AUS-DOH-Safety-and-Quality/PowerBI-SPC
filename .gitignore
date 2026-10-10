@@ -14,9 +14,6 @@ webpack.statistics*
 # OS generated files
 .DS_Store
 
-# Typedoc generated docs
-docs
-
 # Coverage reports
 coverage
 
