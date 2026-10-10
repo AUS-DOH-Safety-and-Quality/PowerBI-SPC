@@ -254,7 +254,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     settings.lines.specification_upper = 40;
     settings.lines.specification_lower = 10;
     settings.lines.show_trend = true;
-    const ownColumns = new Set(["date", "latest_date", "Indicator", "astpoint", "trend", "shift"]);
+    const ownColumns = new Set(["date", "latest_date", "Indicator", "astpoint", "trend", "shift", "two_in_three"]);
     function sharedColumns(): { name: string; label: string; }[] {
       const columns = visual.viewModel.tableColumns[0];
       const shared: { name: string; label: string; }[] = [];

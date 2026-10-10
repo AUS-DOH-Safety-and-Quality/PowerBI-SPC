@@ -48,7 +48,7 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settin
       ret[i] = undefined
     } else {
       const datePartsRecord = formatDateParts(inputDates.dates[i], locale, formatOptions);
-      const datePartStrings: string[] = [datePartsRecord.weekday + " " + datePartsRecord[day_elem],
+      const datePartStrings: string[] = [(datePartsRecord.weekday + " " + datePartsRecord[day_elem]).trim(),
                                           datePartsRecord[month_elem],
                                           inputDates.quarters[i] ?? "",
                                           datePartsRecord.year];

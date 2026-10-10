@@ -13,7 +13,7 @@ const numericColumns = new Set([
   "ll99", "ll95", "ll68", "ul68", "ul95", "ul99"
 ]);
 const dateColumns = new Set(["date", "latest_date"]);
-const flagColumns = new Set(["astpoint", "trend", "shift"]);
+const flagColumns = new Set(["astpoint", "trend", "shift", "two_in_three"]);
 const flagLabels: Record<string, string> = {
   none: "",
   improvement: "Improvement",

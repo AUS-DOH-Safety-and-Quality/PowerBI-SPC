@@ -188,7 +188,7 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
     }
   });
 
-  function render(settings: ReturnType<typeof cloneSettings>, args: Parameters<typeof buildDataView>[0]) {
+  function render(settings: ReturnType<typeof cloneSettings> | ReturnType<typeof cloneSettings>[], args: Parameters<typeof buildDataView>[0]) {
     visual.update({
       dataViews: [ buildDataView(args, settings) ],
       viewport: { width: 500, height: 500 },
@@ -316,12 +316,106 @@ describe("Summary Table - style, decimal and opacity/selection formatting", () =
     expect(labels).toEqual(expected);
   });
 
+  it("adds a labelled column for each selected pattern, including two-in-three", () => {
+    const settings = cloneSettings();
+    settings.spc.chart_type = "i";
+    settings.summary_table.show_table = true;
+    settings.outliers.astronomical = true;
+    settings.outliers.trend = true;
+    settings.outliers.shift = true;
+    settings.outliers.two_in_three = true;
+    settings.outliers.two_in_three_limit = "1 Sigma";
+    // 14 and 6 fall beyond the 1-sigma limits only, two of three on the same side
+    const values: number[] = [10, 11, 9, 10, 11, 9, 10, 14, 10, 14, 10, 11, 9, 10, 6, 11, 6, 10, 9, 11];
+    const valueKeys: string[] = [];
+    for (let i = 0; i < values.length; i++) {
+      valueKeys.push(String(i + 1));
+    }
+    render(settings, { key: valueKeys, numerators: values });
+    const headers = tableDivElement.querySelectorAll("thead th");
+    const names = columnNames(visual);
+    expect(names.slice(-4)).toEqual(["astpoint", "trend", "shift", "two_in_three"]);
+    expect(headers[headers.length - 1].textContent).toBe("Two-in-Three");
+    const rows = tableDivElement.querySelectorAll("tbody tr");
+    const labels: string[] = [];
+    for (let i = 0; i < rows.length; i++) {
+      labels.push(rows[i].querySelectorAll("td")[names.length - 1].textContent ?? "");
+    }
+    const expected: string[] = rep("", values.length);
+    expected[7] = "Improvement";
+    expected[9] = "Improvement";
+    expected[14] = "Deterioration";
+    expected[16] = "Deterioration";
+    expect(labels).toEqual(expected);
+  });
+
   it("keeps dates on one line while text columns wrap", () => {
     render(cloneSettings(), { key: keys, indicator: indicator, numerators: numerators });
     const dateIdx: number = columnNames(visual).indexOf("latest_date");
     const cells = tableDivElement.querySelector('tbody tr')!.querySelectorAll<HTMLElement>('td');
     expect(cells[dateIdx].style.whiteSpace).toBe("nowrap");
     expect(cells[0].style.whiteSpace).toBe("normal");
+  });
+
+  it("applies the padding, body size and border settings of the header, body and outer edge", () => {
+    const settings = cloneSettings();
+    settings.summary_table.table_header_text_padding = 7;
+    settings.summary_table.table_header_border_style = "dashed";
+    settings.summary_table.table_header_border_width = 2;
+    settings.summary_table.table_header_border_colour = "#123456";
+    settings.summary_table.table_body_size = 14;
+    settings.summary_table.table_body_text_padding = 5;
+    settings.summary_table.table_body_border_style = "dotted";
+    settings.summary_table.table_body_border_width = 3;
+    settings.summary_table.table_body_border_colour = "#654321";
+    settings.summary_table.table_outer_border_style = "double";
+    settings.summary_table.table_outer_border_width = 4;
+    settings.summary_table.table_outer_border_colour = "#abcdef";
+    render(settings, { key: keys, indicator: indicator, numerators: numerators });
+
+    const header = tableDivElement.querySelectorAll<HTMLElement>('th')[1];
+    expect(header.style.padding).toBe("7px");
+    expect(header.style.borderBottomStyle).toBe("dashed");
+    expect(header.style.borderBottomWidth).toBe("2px");
+    expect(header.style.borderBottomColor).toBe("rgb(18, 52, 86)");
+    const cell = tableDivElement.querySelectorAll('tbody tr')[1].querySelectorAll<HTMLElement>('td')[1];
+    expect(cell.style.padding).toBe("5px");
+    expect(getComputedStyle(cell).fontSize).toBe("14px");
+    expect(cell.style.borderBottomStyle).toBe("dotted");
+    expect(cell.style.borderBottomWidth).toBe("3px");
+    expect(cell.style.borderBottomColor).toBe("rgb(101, 67, 33)");
+    const table = tableDivElement.querySelector<HTMLElement>('table.table-group')!;
+    expect(getComputedStyle(table).borderTopStyle).toBe("double");
+    expect(getComputedStyle(table).borderTopWidth).toBe("4px");
+    expect(getComputedStyle(table).borderTopColor).toBe("rgb(171, 205, 239)");
+  });
+
+  it("styles each group's row from its own conditional formatting", () => {
+    const rows = [];
+    for (let i = 0; i < keys.length; i++) {
+      const settings = cloneSettings();
+      settings.summary_table.table_body_bg_colour = ["#111111", "#222222", "#333333"][Math.floor(i / 4)];
+      settings.summary_table.table_body_colour = ["#444444", "#555555", "#666666"][Math.floor(i / 4)];
+      rows.push(settings);
+    }
+    render(rows, { key: keys, indicator: indicator, numerators: numerators });
+    const expected: Record<string, [string, string]> = {
+      "Team A": ["rgb(17, 17, 17)", "rgb(68, 68, 68)"],
+      "Team B": ["rgb(34, 34, 34)", "rgb(85, 85, 85)"],
+      "Team C": ["rgb(51, 51, 51)", "rgb(102, 102, 102)"]
+    };
+    const teams = Object.keys(expected);
+    for (let t = 0; t < teams.length; t++) {
+      const row = tableRow(tableDivElement, teams[t]);
+      const cells = row.querySelectorAll<HTMLElement>('td');
+      for (let c = 0; c < cells.length; c++) {
+        expect(cells[c].style.backgroundColor, teams[t]).toBe(expected[teams[t]][0]);
+        expect(cells[c].style.color, teams[t]).toBe(expected[teams[t]][1]);
+      }
+      row.dispatchEvent(new MouseEvent("mouseenter"));
+      row.dispatchEvent(new MouseEvent("mouseleave"));
+      expect(cells[1].style.backgroundColor, teams[t]).toBe(expected[teams[t]][0]);
+    }
   });
 
   // Remove visual element from DOM to avoid interfering with other tests

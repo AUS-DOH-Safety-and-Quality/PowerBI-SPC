@@ -235,6 +235,8 @@ export default class viewModelClass {
   plotPoints: plotData[];
   groupedRows: plotDataGrouped[];
   groupedLines: [LineName, lineData[]][];
+  /** Positions in every grouped line that end a re-baselined period, joined or not */
+  rebaselineEnds: number[];
   tickLabels: { x: number; label: string; }[];
   splitIndexes: number[];
   groupStartEndIndexes: number[][][];
@@ -262,6 +264,7 @@ export default class viewModelClass {
     this.plotPoints = [];
     this.groupedRows = [];
     this.groupedLines = [];
+    this.rebaselineEnds = [];
     this.firstRun = true
     this.splitIndexes = new Array<number>();
     this.groupStartEndIndexes = new Array<number[][]>();
@@ -359,10 +362,10 @@ export default class viewModelClass {
         const inputGroupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
         const limits: controlLimitsObject = this.calculateLimits(inpData, inputGroupStartEnd, settings);
         const groupStartEnd: number[][] = this.getResultGroupIndexes(limits.keys, inputGroupStartEnd);
-        // Flags compare display units (as specification limits are entered) against the untruncated limits
+        // Flags compare display units (as specification limits are entered) against the truncated limits
         this.scaleLimits(limits, settings, derivedSettings);
-        const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
         this.truncateLimits(limits, settings);
+        const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
 
         const keys = inpData.limitInputArgs.keys;
         const identities = new Array<ISelectionId>(keys.length);
@@ -686,6 +689,9 @@ export default class viewModelClass {
     if (settings.outliers.shift) {
       this.tableColumns[0].push({ name: "shift", label: "Shift" });
     }
+    if (settings.outliers.two_in_three) {
+      this.tableColumns[0].push({ name: "two_in_three", label: "Two-in-Three" });
+    }
 
     for (let i: number = 0; i < controlLimits.keys.length; i++) {
       const index: number = controlLimits.keys[i].x;
@@ -793,12 +799,18 @@ export default class viewModelClass {
       isGroupStart[groups[i][0]] = true;
     }
 
+    this.rebaselineEnds = [];
+    let position: number = 0;
     for (let i: number = 0; i < nLimits; i++) {
       const isRebaselinePoint: boolean = isGroupStart[i];
       let isNewAltTarget: boolean = false;
       if (i > 0 && settings.lines.show_alt_target) {
         isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
       }
+      if (isRebaselinePoint) {
+        this.rebaselineEnds.push(position - 1);
+      }
+      position += (isRebaselinePoint || isNewAltTarget) ? 2 : 1;
       for (let l = 0; l < labels.length; l++) {
         const label = labels[l];
         const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineKeys[label]}`];
@@ -823,6 +835,7 @@ export default class viewModelClass {
         })
       }
     }
+    this.rebaselineEnds.push(position - 1);
     this.groupedLines = groupBy(formattedLines, "group");
   }
 

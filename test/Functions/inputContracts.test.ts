@@ -147,8 +147,8 @@ describe("input row contracts", () => {
       column("Date Hierarchy.Year", [2024, 2025], "Years"), column("Date Hierarchy.Month", ["January", "February"], "Months"),
       column("Date Hierarchy.Day", [15, 20], "DayOfMonth"), column("label", ["A", "B"])
     ], settings, [1, 0]);
-    expect(dates[0]?.trim()).toBe("20/02/2025 B");
-    expect(dates[1]?.trim()).toBe("15/01/2024 A");
+    expect(dates[0]).toBe("20/02/2025 B");
+    expect(dates[1]).toBe("15/01/2024 A");
     expect(formatPrimitiveValue(false)).toBe("false");
   });
 

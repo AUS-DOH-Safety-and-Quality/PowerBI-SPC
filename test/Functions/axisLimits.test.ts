@@ -5,6 +5,7 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import axisRanges from "../../src/Functions/axisRanges";
 import buildDataView from "../helpers/buildDataView";
 import { updateViewModel, type LimitInputs } from "../helpers/calculateLimits";
+import { rep } from "powerbi-visuals-core/math";
 
 type Bounds = Partial<Pick<settingsValueType["spc"], "ll_truncate" | "ul_truncate">
   & Pick<settingsValueType["x_axis"], "xlimit_l" | "xlimit_u">
@@ -140,5 +141,26 @@ describe("percentage label axis bounds", () => {
     const values = [0.05, 0.01, 0.06, 0.02, 0.07, 0.01, 0.05, 0.02];
     expect(yRange("No", values).lower).toBeLessThan(0);
     expect(yRange("Yes", values).lower).toBe(0);
+  });
+});
+
+describe("truncation in display units", () => {
+  // Proportions near 50% shown as percentages: truncation bounds are percentages, applied after scaling
+  it.each([
+    { spc: { chart_type: "p", ll_truncate: 40, ul_truncate: 60 }, lower: 40, upper: 60 },
+    { spc: { chart_type: "i", multiplier: 10, ll_truncate: 450, ul_truncate: 550 }, lower: 450, upper: 550 }
+  ] as const)("clamps scaled limits at $lower and $upper", ({ spc, lower, upper }) => {
+    const proportions = [48, 52, 50, 47, 53, 49, 51, 50, 46, 54];
+    const denominators = rep(100, proportions.length);
+    const settings: settingsValueType = { ...defaultSettings, spc: { ...defaultSettings.spc, ...spc } };
+    const untruncated = updateViewModel({ ...settings, spc: { ...settings.spc, ll_truncate: undefined, ul_truncate: undefined } },
+      { numerators: proportions, denominators: spc.chart_type === "p" ? denominators : undefined }).viewModel.controlLimits[0];
+    const limits = updateViewModel(settings, { numerators: proportions, denominators: spc.chart_type === "p" ? denominators : undefined }).viewModel.controlLimits[0];
+    // The untruncated limits straddle the bounds, so both clamps apply
+    expect(untruncated.ul99[0]).toBeGreaterThan(upper);
+    expect(untruncated.ll99[0]).toBeLessThan(lower);
+    expect(limits.ul99[0]).toBe(upper);
+    expect(limits.ll99[0]).toBe(lower);
+    expect(limits.values).toEqual(untruncated.values);
   });
 });

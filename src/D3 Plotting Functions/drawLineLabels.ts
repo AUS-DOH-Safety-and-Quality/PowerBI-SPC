@@ -1,7 +1,7 @@
 import type { svgBaseType, Visual } from "../visual";
 import lineKeys from "../Functions/lineKeys";
 import { lineLabel, lineSetting } from "powerbi-visuals-core/settings";
-import { drawLineLabels, type LineLabel } from "powerbi-visuals-core/rendering";
+import { drawLineLabels, inPlot, type LineLabel } from "powerbi-visuals-core/rendering";
 
 /** Lower boundary lines place outside labels below the line */
 const lowerLines = new Set(["ll99", "ll95", "ll68", "speclimits_lower"]);
@@ -19,21 +19,14 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
   }
   const inputSettings = visualObj.viewModel.inputSettings;
   const lineSettings = inputSettings.settings[0].lines;
-  const firstLine = lines[0][1];
-  // Each gap marker starts a new segment, so the point before it ends the previous one
-  const rebaselinePoints: number[] = [];
-  for (let i = 0; i < firstLine.length; i++) {
-    if (firstLine[i].line_value === undefined) {
-      rebaselinePoints.push(i - 1);
-    }
-  }
-  rebaselinePoints.push(firstLine.length - 1);
-  const lastIndex = firstLine.length - 1;
+  const rebaselinePoints = visualObj.viewModel.rebaselineEnds;
+  const lastIndex = rebaselinePoints[rebaselinePoints.length - 1];
   const formatValue = inputSettings.derivedSettings[0].formatValue;
   const frame = visualObj.plotProperties;
   const labels: LineLabel[] = [];
   for (let r = 0; r < rebaselinePoints.length; r++) {
     const index = rebaselinePoints[r];
+    const start = r === 0 ? 0 : rebaselinePoints[r - 1] + 1;
     for (let l = 0; l < lines.length; l++) {
       const name = lines[l][0];
       const points = lines[l][1];
@@ -43,16 +36,18 @@ export default function drawLabels(selection: svgBaseType, visualObj: Visual) {
       if (!eligible || !lineSetting<boolean>(lineSettings, "plot_label_show", key)) {
         continue;
       }
-      const point = points[index];
-      const value = point.line_value;
-      if (value === undefined) {
-        continue;
+      // The period's last point inside the axis limits
+      for (let i = index; i >= start; i--) {
+        const value = points[i].line_value;
+        if (value !== undefined && inPlot(frame, points[i].x, value)) {
+          labels.push(lineLabel(lineSettings, key, {
+            x: frame.xScale(points[i].x),
+            y: frame.yScale(value),
+            value
+          }, lowerLines.has(name), formatValue));
+          break;
+        }
       }
-      labels.push(lineLabel(lineSettings, key, {
-        x: frame.xScale(point.x),
-        y: frame.yScale(value),
-        value
-      }, lowerLines.has(name), formatValue));
     }
   }
   drawLineLabels(group, labels);

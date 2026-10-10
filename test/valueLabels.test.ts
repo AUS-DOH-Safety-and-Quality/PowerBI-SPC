@@ -189,6 +189,47 @@ describe("Value labels", () => {
     }
   });
 
+  // Top labels sit straight above the point, turned by the angle offset and capped at the maximum line length
+  it.each([
+    { offset: 0, maxLength: 1000 },
+    { offset: 30, maxLength: 1000 },
+    { offset: -45, maxLength: 25 }
+  ])("places labels at an angle offset of $offset degrees within $maxLength px", ({ offset, maxLength }) => {
+    const element = testDom("500", "500");
+    const visual = render(element, { label_angle_offset: offset, label_line_max_length: maxLength, label_y_offset: 20 });
+    const first = firstPoint(visual);
+    const text = labelGroups(element)[0].querySelector("text");
+    const dx = attribute(text, "x") - first.x;
+    const dy = attribute(text, "y") - first.y;
+    expect(Math.atan2(dy, dx) * 180 / Math.PI).toBeCloseTo(offset - 90, 6);
+    expect(Math.hypot(dx, dy)).toBeCloseTo(Math.min(first.y - 20, maxLength), 6);
+  });
+
+  it("offsets the connector from the text and the marker from the point, outlining the marker", () => {
+    const element = testDom("500", "500");
+    const visual = render(element, { label_line_offset: 8, label_marker_offset: 12, label_size: 10, label_marker_outline_colour: "#123456" });
+    const first = firstPoint(visual);
+    const group = labelGroups(element)[0];
+    const text = group.querySelector("text");
+    const line = group.querySelector("line");
+    expect(attribute(line, "y1")).toBeCloseTo(attribute(text, "y") + 8, 6);
+    // The marker sits its offset plus half the font size from the point, towards the label
+    expect(attribute(line, "x2")).toBeCloseTo(first.x, 6);
+    expect(attribute(line, "y2")).toBeCloseTo(first.y - 17, 6);
+    const marker = group.querySelector("path");
+    expect(marker?.style.stroke).toBe("rgb(18, 52, 86)");
+    const translate = marker?.getAttribute("transform")?.match(/^translate\(([^,]+), ([^)]+)\)/);
+    expect(Number(translate?.[1])).toBeCloseTo(first.x, 6);
+    expect(Number(translate?.[2])).toBeCloseTo(first.y - 17, 6);
+  });
+
+  it("drops the connector below the text for bottom labels", () => {
+    const element = testDom("500", "500");
+    render(element, { label_position: "bottom", label_line_offset: 8, label_size: 10 });
+    const group = labelGroups(element)[0];
+    expect(attribute(group.querySelector("line"), "y1")).toBeCloseTo(attribute(group.querySelector("text"), "y") - 13, 6);
+  });
+
   it("attaches no drag handlers when rendering headless", () => {
     const element = testDom("500", "500");
     const visual = new Visual({ element, host: createVisualHost({}) });

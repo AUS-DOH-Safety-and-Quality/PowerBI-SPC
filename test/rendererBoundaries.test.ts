@@ -1,29 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
-import { defaultSettings, type settingsValueType } from "../src/settings";
+import { type settingsValueType } from "../src/settings";
 import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
+import { must, settingsWith } from "./helpers/renderVisual";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 const keys = sequentialKeys(numerators.length);
 const viewport = { width: 500, height: 500 };
-
-function must<T>(value: T | null | undefined): T {
-  if (value === null || value === undefined) {
-    throw new Error("Missing element");
-  }
-  return value;
-}
-
-function settingsWith(overrides: { [K in keyof settingsValueType]?: Partial<settingsValueType[K]> }): settingsValueType {
-  const result: settingsValueType = { ...defaultSettings, spc: { ...defaultSettings.spc, chart_type: "i" } };
-  const cards = Object.keys(overrides) as (keyof settingsValueType)[];
-  for (let i = 0; i < cards.length; i++) {
-    const key = cards[i];
-    (result as Record<string, object>)[key] = { ...result[key], ...overrides[key] };
-  }
-  return result;
-}
 
 function update(visual: Visual, settings: settingsValueType): void {
   visual.update({ dataViews: [buildDataView({ key: keys, numerators }, settings)], viewport, type: 2 });
@@ -146,7 +130,8 @@ describe("renderer boundaries", () => {
     lastTwo.element.remove();
 
     const joined = labelsFor({ plot_label_show_all_main: true, join_rebaselines_main: true });
-    expect(joined.texts).toHaveLength(1);
+    expect(joined.texts).toHaveLength(2);
+    expect(Number(joined.texts[0].getAttribute("x"))).toBeCloseTo(joined.visual.plotProperties.xScale(segmentEnd.x) as number, 6);
     joined.element.remove();
   });
 
