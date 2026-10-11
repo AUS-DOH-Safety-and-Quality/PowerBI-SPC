@@ -93,10 +93,7 @@ describe("truncation and axis limit combinations", () => {
     { bounds: { ylimit_l: 5, ylimit_u: 5 }, error: "ylimit_l (5) must be below ylimit_u (5)" },
     { bounds: { ylimit_l: 6, ylimit_u: 5 }, error: "ylimit_l (6) must be below ylimit_u (5)" }
   ])("rejects $bounds as a settings error", ({ bounds, error }) => {
-    const updated = update(bounds);
-    expect(updated.result.status).toBe(false);
-    expect(updated.result.type).toBe("settings");
-    expect(updated.result.error).toBe(error);
+    expect(update(bounds).result).toEqual({ status: false, type: "settings", error });
   });
 
   it.each([
@@ -105,10 +102,7 @@ describe("truncation and axis limit combinations", () => {
     { bounds: { ylimit_l: 100 }, error: `The y-axis lower limit (100) is above the upper limit (${automatic.y.upper})` },
     { bounds: { ylimit_u: -100 }, error: `The y-axis lower limit (${automatic.y.lower}) is above the upper limit (-100)` }
   ])("rejects $bounds against the automatic range as a settings error", ({ bounds, error }) => {
-    const updated = update(bounds);
-    expect(updated.result.status).toBe(false);
-    expect(updated.result.type).toBe("settings");
-    expect(updated.result.error).toBe(error);
+    expect(update(bounds).result).toEqual({ status: false, type: "settings", error });
   });
 
   it("does not check axis ranges for the grouped summary table", () => {

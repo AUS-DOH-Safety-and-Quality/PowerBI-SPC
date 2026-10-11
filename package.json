@@ -12,7 +12,7 @@
     "docs": "quarto preview docs"
   },
   "dependencies": {
-    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#9652308"
+    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#cb2ac89"
   },
   "devDependencies": {
     "@vitest/browser-playwright": "5.0.3",

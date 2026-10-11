@@ -21,14 +21,9 @@ import lineKeys, { type LineName } from "../Functions/lineKeys";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
 import { sequence } from "powerbi-visuals-core/math";
 
-import { axisRangeError, type ErrorKind } from "powerbi-visuals-core/rendering";
+import { axisRangeError, type ViewModelValidation } from "powerbi-visuals-core/rendering";
 
-export type viewModelValidationT = {
-  status: boolean,
-  error?: string,
-  warning?: string,
-  type?: ErrorKind
-}
+export type viewModelValidationT = ViewModelValidation;
 
 export type lineData = {
   x: number;
@@ -299,7 +294,6 @@ export default class viewModelClass {
       this.indicatorVarNames[i] = indicator_cols[i].source.displayName;
     }
 
-    const res: viewModelValidationT = { status: true };
     const indicatorGroups = groupCategoryRows(indicator_cols, view.rowCount);
     const idx_per_indicator = indicatorGroups.rows;
     this.groupNames = indicatorGroups.names;
@@ -309,17 +303,13 @@ export default class viewModelClass {
     if (dataChanged) {
       this.inputSettings.update(view.category, idx_per_indicator);
     }
-    if (this.inputSettings.validationStatus.status !== 0) {
-      res.status = false;
-      res.error = this.inputSettings.validationStatus.error;
-      res.type = "settings";
-      return res;
+    const settingsValidation = this.inputSettings.validationStatus;
+    if (settingsValidation.status !== 0) {
+      return { status: false, error: settingsValidation.error, type: "settings" };
     }
     const checkDV: string = validateDataViewColumns(this.inputSettings, view.values);
     if (checkDV !== "valid") {
-      res.status = false;
-      res.error = checkDV;
-      return res;
+      return { status: false, error: checkDV };
     }
 
     const inputErrors: string[] = [];
@@ -410,9 +400,6 @@ export default class viewModelClass {
         warnings.push(this.inputData[i].warningMessage);
       }
     }
-    if (warnings.length > 0) {
-      res.warning = warnings.join("\n");
-    }
 
     // The grouped table has no axes
     if (!this.showGrouped) {
@@ -422,7 +409,7 @@ export default class viewModelClass {
       }
     }
 
-    return res;
+    return { status: true, warning: warnings.length > 0 ? warnings.join("\n") : undefined };
   }
 
   getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {

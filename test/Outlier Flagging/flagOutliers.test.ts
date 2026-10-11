@@ -71,10 +71,7 @@ describe("rule lengths", () => {
     { outliers: { shift_n: 0 }, error: "0 is not a valid value for shift_n" },
     { outliers: { shift_n: 2.5 }, error: "2.5 is not a valid value for shift_n" }
   ])("rejects $outliers as a settings error", ({ outliers, error }) => {
-    const updated = update({ outliers });
-    expect(updated.result.status).toBe(false);
-    expect(updated.result.type).toBe("settings");
-    expect(updated.result.error).toContain(error);
+    expect(update({ outliers }).result).toEqual({ status: false, type: "settings", error: expect.stringContaining(error) });
   });
 
   it("accepts the shortest whole-number runs", () => {

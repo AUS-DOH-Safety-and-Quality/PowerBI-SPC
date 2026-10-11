@@ -9,7 +9,8 @@ export default [
             ".vscode/**",
             ".tmp/**",
             "test/**",
-            "coverage/**"
+            "coverage/**",
+            "docs/**"
         ]
     },
 ];

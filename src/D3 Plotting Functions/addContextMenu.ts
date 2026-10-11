@@ -5,15 +5,13 @@ import { bindContextMenu, select, type BaseType } from "powerbi-visuals-core/ren
 
 type ISelectionId = powerbi.visuals.ISelectionId;
 
-export default function addContextMenu(selection: svgBaseType | divBaseType, visualObj: Visual) {
+export default function addContextMenu(selection: svgBaseType | divBaseType, visualObj: Visual, enabled = visualObj.plotProperties.displayPlot) {
   const root = selection.node();
   if (root === null) {
     return;
   }
   bindContextMenu(root, {
-    enabled: visualObj.plotProperties.displayPlot
-      || visualObj.viewModel.inputSettings.settings[0].summary_table.show_table
-      || visualObj.viewModel.showGrouped,
+    enabled,
     // showContextMenu takes one ISelectionId, so grouped rows supply their first; background keeps the empty identity
     identity: target => {
       const dataPoint = select(target as BaseType).datum() as plotData | plotDataGrouped | undefined;

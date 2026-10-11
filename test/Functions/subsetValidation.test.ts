@@ -28,10 +28,11 @@ function update(spc: Partial<settingsValueType["spc"]>) {
 // the same way as any other invalid setting value, instead of reaching an invalid array length.
 describe("subset count validation", () => {
   it("rejects a fractional subset count with a validation message", () => {
-    const fractional = update({ num_points_subset: 2.5 });
-    expect(fractional.result.status).toBe(false);
-    expect(fractional.result.type).toBe("settings");
-    expect(fractional.result.error).toBe("2.5 is not a valid value for num_points_subset. Valid values are whole numbers");
+    expect(update({ num_points_subset: 2.5 }).result).toEqual({
+      status: false,
+      type: "settings",
+      error: "2.5 is not a valid value for num_points_subset. Valid values are whole numbers"
+    });
   });
 
   it("accepts whole subset counts and unset counts", () => {
