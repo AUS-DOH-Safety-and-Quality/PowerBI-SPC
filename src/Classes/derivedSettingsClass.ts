@@ -1,4 +1,5 @@
 import type { settingsValueType } from "../settings"
+import { createValueFormatter, resolvePercentScaling, type ValueFormatter } from "powerbi-visuals-core/data";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -20,6 +21,7 @@ const valueNames: Record<string, string> = {
 export default class derivedSettingsClass {
   multiplier: number
   percentLabels: boolean
+  formatValue: ValueFormatter
   chart_type_props: {
     name: string,
     needs_denominator: boolean,
@@ -37,24 +39,8 @@ export default class derivedSettingsClass {
 
   constructor(inputSettingsSpc: settingsValueType["spc"]) {
     const chartType: string = inputSettingsSpc.chart_type;
-    const pChartType: boolean = ["p", "pp"].includes(chartType);
-    const percentSettingString: string = inputSettingsSpc.perc_labels;
-    let multiplier: number = inputSettingsSpc.multiplier;
-    let percentLabels: boolean;
-
-    if (percentSettingString === "Yes") {
-      multiplier = 100
-    }
-
-    if (pChartType && percentSettingString !== "No") {
-      multiplier = multiplier === 1 ? 100 : multiplier
-    }
-
-    if (percentSettingString === "Automatic") {
-      percentLabels = pChartType && multiplier === 100;
-    } else {
-      percentLabels = percentSettingString === "Yes";
-    }
+    const scaling = resolvePercentScaling(["p", "pp"].includes(chartType),
+                                          inputSettingsSpc.perc_labels, inputSettingsSpc.multiplier);
 
     this.chart_type_props = {
       name: chartType,
@@ -71,7 +57,10 @@ export default class derivedSettingsClass {
       denominator_gt_one: ["xbar", "s"].includes(chartType)
     }
 
-    this.multiplier = multiplier
-    this.percentLabels = percentLabels
+    this.multiplier = scaling.multiplier
+    this.percentLabels = scaling.percentLabels
+    const decimalPlaces = inputSettingsSpc.sig_figs;
+    this.formatValue = createValueFormatter(decimalPlaces, this.chart_type_props.integer_num_den ? 0 : decimalPlaces,
+                                            scaling.percentLabels ? "%" : "");
   }
 }

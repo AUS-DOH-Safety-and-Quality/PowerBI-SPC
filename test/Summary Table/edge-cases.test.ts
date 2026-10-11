@@ -1,9 +1,10 @@
 import { defaultSettings } from "../../src/settings";
-import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
+import { testDom } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import rep from "../../src/Functions/rep";
-import { type plotDataGrouped } from "../../src/Classes/viewModelClass";
+import { columnNames, groupedRow, tableRow } from "../helpers/summaryTable";
+import { keyedHost } from "powerbi-visuals-core/testing";
+import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect, vi } from "vitest";
 
 function cloneSettings() {
@@ -12,7 +13,7 @@ function cloneSettings() {
 
 describe("Summary Table - edge cases in grouping, filtering and re-rendering", () => {
   const element = testDom("500", "500");
-  const visual = new Visual({ element: element, host: createVisualHost({}) });
+  const visual = new Visual({ element: element, host: keyedHost() });
   const visualClassElement: Element = document.body.querySelector('.visual') as Element;
   const tableDivElement: Element = visualClassElement.querySelector('div') as Element;
 
@@ -32,7 +33,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    expect((visual.viewModel.plotPoints.flat() as plotDataGrouped[]).length).toBe(0);
+    expect(visual.viewModel.groupedRows.length).toBe(0);
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
     // The header row (with its full set of columns) must still render even with zero data rows
     expect(tableDivElement.querySelectorAll('.table-header th').length).toBe(visual.viewModel.tableColumns[0].length);
@@ -53,11 +54,10 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
-    const rows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
-    expect(rows.length).toBe(2);
+    expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(2);
 
-    const newSiteRow = rows.find(r => r.querySelector('td')!.textContent === "New Site")!;
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const newSiteRow = tableRow(tableDivElement, "New Site");
+    const colNames: string[] = columnNames(visual);
     const valueIdx: number = colNames.indexOf("value");
     // A lone point's own value is its own mean - the value column is still well-defined even
     // though there isn't enough history to compute a moving-range-based control limit
@@ -91,9 +91,10 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     const colCountOn: number = visual.viewModel.tableColumns[0].length;
     expect(colCountOn).toBe(colCountOff + 1);
     expect(tableDivElement.querySelectorAll('.table-header th').length).toBe(colCountOn);
-    Array.from(tableDivElement.querySelectorAll('tbody tr')).forEach(row => {
-      expect(row.querySelectorAll('td').length).toBe(colCountOn);
-    });
+    const rows = tableDivElement.querySelectorAll('tbody tr');
+    for (let i = 0; i < rows.length; i++) {
+      expect(rows[i].querySelectorAll('td').length).toBe(colCountOn);
+    }
   });
 
   it("Selecting a row and then filtering it out of view does not crash highlight recalculation", () => {
@@ -111,7 +112,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    const extremeRow = (visual.viewModel.plotPoints.flat() as plotDataGrouped[]).find(p => p.table_row["Indicator"] === "Extreme")!;
+    const extremeRow = groupedRow(visual.viewModel.groupedRows, "Extreme");
     visual.selectionManager.select(extremeRow.identity[0], false);
     visual.updateHighlighting();
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(2);
@@ -149,10 +150,10 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
+    const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
     expect(rows[0].table_row["Indicator"]).toBe("Stable");
-    expect(visual.viewModel.tableColumns[0].map(c => c.name)).not.toContain("variation");
+    expect(columnNames(visual)).not.toContain("variation");
   });
 
   it("Growing the surviving row count back up on re-render (1 row -> 2 rows) renders correctly", () => {
@@ -201,16 +202,13 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       type: 2
     });
 
-    const rows = visual.viewModel.plotPoints.flat() as plotDataGrouped[];
-    const siteBRow = rows.find(r => r.table_row["Indicator"] === "Site B")!;
+    const siteBRow = groupedRow(visual.viewModel.groupedRows, "Site B");
     expect(Array.isArray(siteBRow.identity)).toBe(true);
     expect(siteBRow.identity.length).toBeGreaterThan(1);
 
-    const showContextMenuSpy = vi.fn(() => Promise.resolve({}));
-    visual.selectionManager.showContextMenu = showContextMenuSpy;
+    const showContextMenuSpy = vi.spyOn(visual.selectionManager, "showContextMenu").mockResolvedValue({});
 
-    const bodyRows: HTMLElement[] = Array.from(tableDivElement.querySelectorAll('tbody tr')) as HTMLElement[];
-    const siteBTr = bodyRows.find(r => r.querySelector('td')!.textContent === "Site B")!;
+    const siteBTr = tableRow(tableDivElement, "Site B");
     siteBTr.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 10, clientY: 10 }));
 
     expect(showContextMenuSpy).toHaveBeenCalledTimes(1);

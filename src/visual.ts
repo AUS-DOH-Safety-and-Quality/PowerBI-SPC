@@ -1,157 +1,132 @@
 "use strict";
 
 import type powerbi from "powerbi-visuals-api";
-type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-type ISelectionId = powerbi.visuals.ISelectionId;
-import * as d3 from "./D3 Plotting Functions/D3 Modules";
-import drawXAxis from "./D3 Plotting Functions/drawXAxis";
-import drawYAxis from "./D3 Plotting Functions/drawYAxis";
-import drawTooltipLine from "./D3 Plotting Functions/drawTooltipLine";
-import drawLines from "./D3 Plotting Functions/drawLines";
-import drawDots from "./D3 Plotting Functions/drawDots";
+import {
+  PlotVisual, select, drawPlotAxes, drawPlotTooltips, drawPlotDots, drawPlotDownload, drawPlotValueLabels, drawPlotLines,
+  drawPlotLineLabels, highlightOpacity, valueTickFormat, type Selection, type BaseType, type AxisBounds, type SvgSelection
+} from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import addContextMenu from "./D3 Plotting Functions/addContextMenu";
-import drawErrors from "./D3 Plotting Functions/drawErrors";
-import initialiseSVG from "./D3 Plotting Functions/initialiseSVG";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
-import drawValueLabels from "./D3 Plotting Functions/drawValueLabels";
-import drawLineLabels from "./D3 Plotting Functions/drawLineLabels";
-import drawDownloadButton from "./D3 Plotting Functions/drawDownloadButton";
-import plotPropertiesClass from "./Classes/plotPropertiesClass";
-import viewModelClass, { type plotData, type viewModelValidationT } from "./Classes/viewModelClass";
-import type { lineData, plotDataGrouped } from "./Classes/viewModelClass";
-import getAesthetic from "./Functions/getAesthetic";
-import identitySelected from "./Functions/identitySelected";
+import viewModelClass, { type plotData, type plotDataGrouped } from "./Classes/viewModelClass";
+import axisRanges from "./Functions/axisRanges";
+import lineKeys from "./Functions/lineKeys";
+import type { settingsValueType } from "./settings";
+import { identitySelected, selectionState } from "powerbi-visuals-core/powerbi";
+import { lineStyle } from "powerbi-visuals-core/settings";
 
-export type svgBaseType = d3.Selection<SVGSVGElement, unknown, null, undefined>;
-export type divBaseType = d3.Selection<HTMLDivElement, unknown, null, undefined>;
+export type svgBaseType = SvgSelection;
+export type divBaseType = Selection<HTMLDivElement, unknown, null, undefined>;
 
-export class Visual implements powerbi.extensibility.IVisual {
-  host: powerbi.extensibility.visual.IVisualHost;
+/** Lower boundary lines place outside labels below the line */
+const lowerLines = new Set<string>(["ll99", "ll95", "ll68", "speclimits_lower"]);
+
+export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueType> {
   tableDiv: divBaseType;
-  svg: svgBaseType;
-  viewModel: viewModelClass;
-  plotProperties: plotPropertiesClass;
-  selectionManager: powerbi.extensibility.ISelectionManager;
+  protected readonly lineKeys = lineKeys;
 
-  constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
-    this.tableDiv = d3.select(options.element).append("div")
-                                              .style("overflow", "auto");
-
-    this.svg = d3.select(options.element).append("svg");
-    this.host = options.host;
-    this.viewModel = new viewModelClass();
-    this.plotProperties = new plotPropertiesClass();
-
-    this.selectionManager = this.host.createSelectionManager();
-    this.selectionManager.registerOnSelectCallback(() => this.updateHighlighting());
-
-    this.svg.call(initialiseSVG);
+  constructor(options: powerbi.extensibility.visual.VisualConstructorOptions | undefined) {
+    super(options, () => new viewModelClass());
+    this.tableDiv = select(this.element).insert("div", "svg")
+                                        .style("overflow", "auto");
+    // Collapsed borders stay behind when the sticky header scrolls, so cells draw their own
     const table = this.tableDiv.append("table")
                                 .classed("table-group", true)
-                                .style("border-collapse", "collapse")
-                                .style("width", "100%")
-                                .style("height", "100%");
+                                .style("border-collapse", "separate")
+                                .style("border-spacing", "0")
+                                .style("width", "100%");
 
     table.append("thead").append("tr").classed("table-header", true);
     table.append('tbody').classed("table-body", true);
   }
 
-  public update(options: VisualUpdateOptions): void {
-    try {
-      this.host.eventService.renderingStarted(options);
-      // Remove printed error if refreshing after a previous error run
-      this.svg.select(".errormessage").remove();
+  protected get settings(): settingsValueType {
+    return this.viewModel.inputSettings.settings[0];
+  }
 
-      // This step handles the updating of both the input data and settings
-      // If there are any errors or failures, the update exits early sets the
-      // update status to false
-      const update_status: viewModelValidationT = this.viewModel.update(options, this.host);
-      if (!update_status.status) {
-        this.plotProperties.displayPlot = false;
-        this.resizeCanvas(options.viewport.width, options.viewport.height);
-        if (this.viewModel?.inputSettings?.settings?.[0]?.canvas?.show_errors ?? true) {
-          this.svg.call(drawErrors, options, this.viewModel.colourPalette, update_status?.error ?? "", update_status?.type ?? "");
-        } else {
-          this.svg.call(initialiseSVG, true);
-        }
+  protected axisRanges(): { x: AxisBounds; y: AxisBounds } {
+    return axisRanges(this.viewModel);
+  }
 
-        this.host.eventService.renderingFailed(options);
-        return;
-      }
-
-      this.plotProperties.update(options, this.viewModel);
-
-      if (update_status.warning) {
-        this.host.displayWarningIcon("Invalid inputs or settings ignored.\n",
-                                      update_status.warning);
-      }
-
-      if (this.viewModel.showGrouped || this.viewModel.inputSettings.settings[0].summary_table.show_table) {
-        this.resizeCanvas(0, 0);
-        this.tableDiv.call(drawSummaryTable, this)
-                     .call(addContextMenu, this);
-      } else {
-        this.resizeCanvas(options.viewport.width, options.viewport.height);
-        this.drawVisual();
-        this.adjustPaddingForOverflow();
-      }
-
-      this.updateHighlighting();
-      this.host.eventService.renderingFinished(options);
-    } catch (caught_error) {
-      this.resizeCanvas(options.viewport.width, options.viewport.height);
-      this.svg.call(drawErrors, options, this.viewModel.colourPalette, (caught_error as Error).message, "internal");
-      console.error(caught_error);
-      this.host.eventService.renderingFailed(options);
+  protected drawAlternate(): boolean {
+    if (!(this.viewModel.showGrouped || this.settings.summary_table.show_table)) {
+      return false;
     }
+    this.resizeCanvas(0, 0);
+    this.tableDiv.call(drawSummaryTable, this)
+                 .call(addContextMenu, this, true);
+    return true;
   }
 
   drawVisual(): void {
-    this.svg.call(drawXAxis, this)
-            .call(drawYAxis, this)
-            .call(drawTooltipLine, this)
-            .call(drawLines, this)
-            .call(drawLineLabels, this)
-            .call(drawDots, this)
-            .call(drawIcons, this)
-            .call(addContextMenu, this)
-            .call(drawDownloadButton, this)
-            .call(drawValueLabels, this);
-  }
-
-  adjustPaddingForOverflow(): void {
-    // Headless mode does not render to screen so do not attempt to adjust for overflow
-    if (this.viewModel.headless) {
+    const svg = this.svg.node();
+    if (svg === null) {
       return;
     }
-    const svgWidth: number = this.viewModel.svgWidth;
-    const svgHeight: number = this.viewModel.svgHeight;
-    const svgBBox: DOMRect = (this.svg.node() as SVGSVGElement).getBBox();
-    const overflowLeft: number = Math.abs(Math.min(0, svgBBox.x));
-    const overflowRight: number = Math.max(0, svgBBox.width + svgBBox.x - svgWidth);
-    const overflowTop: number = Math.abs(Math.min(0, svgBBox.y));
-    const overflowBottom: number = Math.max(0, svgBBox.height + svgBBox.y - svgHeight);
-    if (overflowLeft > 0) {
-      this.plotProperties.xAxis.start_padding += overflowLeft + this.plotProperties.xAxis.start_padding;
+    const viewModel = this.viewModel;
+    const settings = this.settings;
+    const context = this.plotContext();
+    const tickLabels = viewModel.tickLabels;
+    drawPlotAxes(svg, context, {
+      x: value => {
+        for (let i = 0; i < tickLabels.length; i++) {
+          if (tickLabels[i].x === value) {
+            return tickLabels[i].label;
+          }
+        }
+        return "";
+      },
+      y: valueTickFormat(settings.y_axis.ylimit_sig_figs ?? settings.spc.sig_figs, viewModel.inputSettings.derivedSettings[0].percentLabels)
+    });
+    drawPlotTooltips(svg, context, false);
+    // Each point carries its own row's line settings, so rebaselined segments may differ
+    drawPlotLines(svg, context, viewModel.groupedLines, (name, points, index) => lineStyle(points[index].aesthetics, lineKeys[name]));
+    drawPlotLineLabels(svg, context, {
+      lines: viewModel.groupedLines,
+      settings: settings.lines,
+      keys: lineKeys,
+      lower: name => lowerLines.has(name),
+      format: viewModel.inputSettings.derivedSettings[0].formatValue,
+      periodEnds: viewModel.rebaselineEnds
+    });
+    drawPlotDots(svg, context, {
+      show: settings.scatter.show_dots,
+      text: undefined,
+      onClick: settings.spc.split_on_click ? point => this.toggleSplit(point) : undefined
+    });
+    this.svg.call(drawIcons, this)
+            .call(addContextMenu, this);
+    drawPlotDownload(svg, context, () => {
+      const points = context.points;
+      const rows = new Array<plotData["table_row"]>(points.length);
+      for (let i = 0; i < points.length; i++) {
+        rows[i] = points[i].table_row;
+      }
+      return rows;
+    });
+    drawPlotValueLabels(svg, context, viewModel.inputData[0].anyLabels);
+  }
+
+  /** Toggles a limit split at the point; persisting it triggers the update that recalculates the limits */
+  toggleSplit(point: plotData): void {
+    const splitIndexes = this.viewModel.splitIndexes;
+    const xIndex = splitIndexes.indexOf(point.x);
+    if (xIndex > -1) {
+      splitIndexes.splice(xIndex, 1);
+    } else {
+      splitIndexes.push(point.x);
     }
-    if (overflowRight > 0) {
-      this.plotProperties.xAxis.end_padding += overflowRight + this.plotProperties.xAxis.end_padding;
-    }
-    if (overflowTop > 0) {
-      this.plotProperties.yAxis.end_padding += overflowTop + this.plotProperties.yAxis.end_padding;
-    }
-    if (overflowBottom > 0) {
-      this.plotProperties.yAxis.start_padding += overflowBottom + this.plotProperties.yAxis.start_padding;
-    }
-    if (overflowLeft > 0 || overflowRight > 0 || overflowTop > 0 || overflowBottom > 0) {
-      this.plotProperties.initialiseScale(svgWidth, svgHeight);
-      this.drawVisual();
-    }
+    this.host.persistProperties({
+      replace: [{
+        objectName: "split_indexes_storage",
+        selector: {},
+        properties: { split_indexes: JSON.stringify(splitIndexes) }
+      }]
+    });
   }
 
   resizeCanvas(width: number, height: number): void {
-    this.svg.attr("width", width).attr("height", height);
+    super.resizeCanvas(width, height);
     if (width === 0 && height === 0) {
       this.tableDiv.style("width", "100%").style("height", "100%");
     } else {
@@ -160,46 +135,18 @@ export class Visual implements powerbi.extensibility.IVisual {
   }
 
   updateHighlighting(): void {
-    const anyHighlights: boolean = this.viewModel.inputData.length > 0
-      && this.viewModel.inputData.some(d => d.anyHighlights);
-    const allSelectionIDs: ISelectionId[] = this.selectionManager.getSelectionIds() as ISelectionId[];
-
-    const dotsSelection: d3.Selection<d3.BaseType | SVGPathElement, plotData, d3.BaseType, unknown> = this.svg.selectAll(".dotsgroup").selectChildren();
-    const linesSelection: d3.Selection<d3.BaseType | SVGGElement, [string, lineData[]], d3.BaseType, unknown> = this.svg.selectAll(".linesgroup").selectChildren();
-    const tableSelection: d3.Selection<d3.BaseType | HTMLTableRowElement, plotDataGrouped, d3.BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
-
-    // Set all elements to their default opacity before applying highlights
-    linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-      return getAesthetic(d[0], "lines", "opacity", this.viewModel.inputSettings.settings[0])
-    });
-    dotsSelection.style("fill-opacity", (d: plotData) => d.aesthetics.opacity);
-    dotsSelection.style("stroke-opacity", (d: plotData) => d.aesthetics.opacity);
-    tableSelection.style("opacity", (d: plotDataGrouped) => d.aesthetics.table_opacity);
-
-    if (anyHighlights || (allSelectionIDs.length > 0)) {
-      linesSelection.style("stroke-opacity", (d: [string, lineData[]]) => {
-        return getAesthetic(d[0], "lines", "opacity_unselected", this.viewModel.inputSettings.settings[0])
-      });
-      dotsSelection.nodes().forEach(currentDotNode => {
-        const dot: plotData = d3.select(currentDotNode).datum() as plotData;
-        const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
-        const currentPointHighlighted: boolean = dot.highlighted;
-        const newDotOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics.opacity_selected  : dot.aesthetics.opacity_unselected;
-        d3.select(currentDotNode).style("fill-opacity", newDotOpacity);
-        d3.select(currentDotNode).style("stroke-opacity", newDotOpacity);
-      })
-
-      tableSelection.nodes().forEach(currentTableNode => {
-        const dot: plotDataGrouped = d3.select(currentTableNode).datum() as plotDataGrouped;
-        const currentPointSelected: boolean = identitySelected(dot.identity, this.selectionManager);
-        const currentPointHighlighted: boolean = dot.highlighted;
-        const newTableOpacity: number = (currentPointSelected || currentPointHighlighted) ? dot.aesthetics["table_opacity_selected"] : dot.aesthetics["table_opacity_unselected"];
-        d3.select(currentTableNode).style("opacity", newTableOpacity);
-      })
+    const viewModel = this.viewModel;
+    let anyHighlights: boolean = false;
+    for (let i = 0; i < viewModel.inputData.length && !anyHighlights; i++) {
+      anyHighlights = viewModel.inputData[i].anyHighlights;
     }
-  }
-
-  public getFormattingModel(): powerbi.visuals.FormattingModel {
-    return this.viewModel.inputSettings.getFormattingModel();
+    const state = selectionState(this.selectionManager, anyHighlights);
+    this.highlightPlotPoints(state, point => point.aesthetics);
+    const tableSelection: Selection<BaseType | HTMLTableRowElement, plotDataGrouped, BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
+    tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({
+      opacity: d.aesthetics.table_opacity,
+      opacity_selected: d.aesthetics.table_opacity_selected,
+      opacity_unselected: d.aesthetics.table_opacity_unselected
+    }, state.active, identitySelected(d.identity, state.selected) || d.highlighted));
   }
 }

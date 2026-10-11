@@ -3,29 +3,25 @@
   "scripts": {
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
+    "prepackage": "npm run typecheck",
     "package": "pbiviz package",
-    "build": "pbiviz package",
+    "build": "npm run package",
     "eslint": "npx eslint .",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "docs": "quarto preview docs"
   },
   "dependencies": {
-    "d3-axis": "3.0.0",
-    "d3-selection": "3.0.0",
-    "d3-shape": "3.2.0"
+    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core#280693e"
   },
   "devDependencies": {
-    "@types/d3-axis": "3.0.6",
-    "@types/d3-selection": "3.0.11",
-    "@types/d3-shape": "3.1.8",
-    "@typescript-eslint/eslint-plugin": "8.60.1",
-    "@typescript-eslint/parser": "8.60.1",
-    "@vitest/browser-playwright": "4.1.10",
-    "eslint": "10.4.1",
+    "@vitest/browser-playwright": "5.0.3",
+    "eslint": "10.12.0",
     "eslint-plugin-powerbi-visuals": "1.1.1",
     "powerbi-visuals-api": "5.1.0",
     "powerbi-visuals-utils-testutils": "7.0.1",
     "typescript": "6.0.3",
-    "vitest": "4.1.10"
+    "vitest": "5.0.3"
   },
   "overrides": {
     "powerbi-visuals-api": "$powerbi-visuals-api"

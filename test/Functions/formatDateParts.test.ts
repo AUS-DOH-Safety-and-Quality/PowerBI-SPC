@@ -4,7 +4,7 @@ import { describe, it, expect } from "vitest";
 describe("formatDateParts", () => {
   describe("empty options", () => {
     it("should return empty strings for all components when no options specified", () => {
-      const date = new Date(2024, 0, 15); // January 15, 2024
+      const date = new Date(2024, 0, 15);
       const result = formatDateParts(date, "en-GB", {});
       expect(result.weekday).toBe("");
       expect(result.day).toBe("");
@@ -16,42 +16,42 @@ describe("formatDateParts", () => {
   describe("weekday formatting", () => {
     it("should format weekday in short format", () => {
       const dates = [
-        new Date(2024, 0, 14), // Sunday
-        new Date(2024, 0, 15), // Monday
-        new Date(2024, 0, 16), // Tuesday
-        new Date(2024, 0, 17), // Wednesday
-        new Date(2024, 0, 18), // Thursday
-        new Date(2024, 0, 19), // Friday
-        new Date(2024, 0, 20)  // Saturday
+        new Date(2024, 0, 14),
+        new Date(2024, 0, 15),
+        new Date(2024, 0, 16),
+        new Date(2024, 0, 17),
+        new Date(2024, 0, 18),
+        new Date(2024, 0, 19),
+        new Date(2024, 0, 20)
       ];
       const expected = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-      dates.forEach((date, idx) => {
-        const result = formatDateParts(date, "en-GB", { weekday: "short" });
-        expect(result.weekday).toBe(expected[idx]);
-      });
+      for (let i = 0; i < dates.length; i++) {
+        const result = formatDateParts(dates[i], "en-GB", { weekday: "short" });
+        expect(result.weekday).toBe(expected[i]);
+      }
     });
 
     it("should format weekday in long format", () => {
       const dates = [
-        new Date(2024, 0, 14), // Sunday
-        new Date(2024, 0, 15), // Monday
-        new Date(2024, 0, 16), // Tuesday
-        new Date(2024, 0, 17), // Wednesday
-        new Date(2024, 0, 18), // Thursday
-        new Date(2024, 0, 19), // Friday
-        new Date(2024, 0, 20)  // Saturday
+        new Date(2024, 0, 14),
+        new Date(2024, 0, 15),
+        new Date(2024, 0, 16),
+        new Date(2024, 0, 17),
+        new Date(2024, 0, 18),
+        new Date(2024, 0, 19),
+        new Date(2024, 0, 20)
       ];
       const expected = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-      dates.forEach((date, idx) => {
-        const result = formatDateParts(date, "en-GB", { weekday: "long" });
-        expect(result.weekday).toBe(expected[idx]);
-      });
+      for (let i = 0; i < dates.length; i++) {
+        const result = formatDateParts(dates[i], "en-GB", { weekday: "long" });
+        expect(result.weekday).toBe(expected[i]);
+      }
     });
 
     it("should return same weekday names for en-US locale", () => {
-      const date = new Date(2024, 0, 15); // Monday
+      const date = new Date(2024, 0, 15);
       const resultGB = formatDateParts(date, "en-GB", { weekday: "long" });
       const resultUS = formatDateParts(date, "en-US", { weekday: "long" });
       expect(resultGB.weekday).toBe("Monday");
@@ -61,7 +61,7 @@ describe("formatDateParts", () => {
 
   describe("day formatting", () => {
     it("should format single-digit day with leading zero", () => {
-      const date = new Date(2024, 0, 1); // January 1st
+      const date = new Date(2024, 0, 1);
       const result = formatDateParts(date, "en-GB", { day: "2-digit" });
       expect(result.day).toBe("01");
     });
@@ -73,13 +73,13 @@ describe("formatDateParts", () => {
     });
 
     it("should format last day of month correctly", () => {
-      const date = new Date(2024, 0, 31); // January 31st
+      const date = new Date(2024, 0, 31);
       const result = formatDateParts(date, "en-GB", { day: "2-digit" });
       expect(result.day).toBe("31");
     });
 
     it("should format leap year day correctly", () => {
-      const date = new Date(2024, 1, 29); // February 29, 2024 (leap year)
+      const date = new Date(2024, 1, 29);
       const result = formatDateParts(date, "en-GB", { day: "2-digit" });
       expect(result.day).toBe("29");
     });
@@ -88,26 +88,25 @@ describe("formatDateParts", () => {
   describe("month formatting", () => {
     it("should format month as 2-digit with leading zero", () => {
       const dates = [
-        new Date(2024, 0, 15),  // January (01)
-        new Date(2024, 8, 15),  // September (09)
-        new Date(2024, 11, 15)  // December (12)
+        new Date(2024, 0, 15),
+        new Date(2024, 8, 15),
+        new Date(2024, 11, 15)
       ];
       const expected = ["01", "09", "12"];
 
-      dates.forEach((date, idx) => {
-        const result = formatDateParts(date, "en-GB", { month: "2-digit" });
-        expect(result.month).toBe(expected[idx]);
-      });
+      for (let i = 0; i < dates.length; i++) {
+        const result = formatDateParts(dates[i], "en-GB", { month: "2-digit" });
+        expect(result.month).toBe(expected[i]);
+      }
     });
 
     it("should format all months in short format", () => {
       const expected = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-      expected.forEach((monthName, idx) => {
-        const date = new Date(2024, idx, 15);
-        const result = formatDateParts(date, "en-GB", { month: "short" });
-        expect(result.month).toBe(monthName);
-      });
+      for (let i = 0; i < expected.length; i++) {
+        const result = formatDateParts(new Date(2024, i, 15), "en-GB", { month: "short" });
+        expect(result.month).toBe(expected[i]);
+      }
     });
 
     it("should format all months in long format", () => {
@@ -116,15 +115,14 @@ describe("formatDateParts", () => {
         "July", "August", "September", "October", "November", "December"
       ];
 
-      expected.forEach((monthName, idx) => {
-        const date = new Date(2024, idx, 15);
-        const result = formatDateParts(date, "en-GB", { month: "long" });
-        expect(result.month).toBe(monthName);
-      });
+      for (let i = 0; i < expected.length; i++) {
+        const result = formatDateParts(new Date(2024, i, 15), "en-GB", { month: "long" });
+        expect(result.month).toBe(expected[i]);
+      }
     });
 
     it("should return same month names for en-US locale", () => {
-      const date = new Date(2024, 0, 15); // January
+      const date = new Date(2024, 0, 15);
       const resultGB = formatDateParts(date, "en-GB", { month: "long" });
       const resultUS = formatDateParts(date, "en-US", { month: "long" });
       expect(resultGB.month).toBe("January");
@@ -160,7 +158,7 @@ describe("formatDateParts", () => {
 
   describe("combined formatting", () => {
     it("should format complete date with all components", () => {
-      const date = new Date(2024, 0, 15); // Monday, January 15, 2024
+      const date = new Date(2024, 0, 15);
       const result = formatDateParts(date, "en-GB", {
         weekday: "long",
         day: "2-digit",
@@ -174,7 +172,7 @@ describe("formatDateParts", () => {
     });
 
     it("should format date with short formats", () => {
-      const date = new Date(2024, 0, 15); // Monday, January 15, 2024
+      const date = new Date(2024, 0, 15);
       const result = formatDateParts(date, "en-GB", {
         weekday: "short",
         day: "2-digit",
@@ -201,7 +199,7 @@ describe("formatDateParts", () => {
     });
 
     it("should handle partial options (only day and month)", () => {
-      const date = new Date(2024, 5, 7); // June 7, 2024
+      const date = new Date(2024, 5, 7);
       const result = formatDateParts(date, "en-GB", {
         day: "2-digit",
         month: "long"
@@ -267,7 +265,7 @@ describe("formatDateParts", () => {
 
   describe("locale consistency", () => {
     it("should produce identical results for both locales (since both are English)", () => {
-      const date = new Date(2024, 5, 15); // June 15, 2024 (Saturday)
+      const date = new Date(2024, 5, 15);
       const options = {
         weekday: "long" as const,
         day: "2-digit" as const,
@@ -278,7 +276,6 @@ describe("formatDateParts", () => {
       const resultGB = formatDateParts(date, "en-GB", options);
       const resultUS = formatDateParts(date, "en-US", options);
 
-      // Both locales should produce identical component values
       expect(resultGB.weekday).toBe(resultUS.weekday);
       expect(resultGB.day).toBe(resultUS.day);
       expect(resultGB.month).toBe(resultUS.month);

@@ -1,13 +1,31 @@
-// Variation
-export { default as commonCause } from "./commonCause"
-export { default as concernHigh } from "./concernHigh"
-export { default as concernLow } from "./concernLow"
-export { default as improvementHigh } from "./improvementHigh"
-export { default as improvementLow } from "./improvementLow"
-export { default as neutralHigh } from "./neutralHigh"
-export { default as neutralLow } from "./neutralLow"
+import commonCause from "./commonCause"
+import concernHigh from "./concernHigh"
+import concernLow from "./concernLow"
+import improvementHigh from "./improvementHigh"
+import improvementLow from "./improvementLow"
+import neutralHigh from "./neutralHigh"
+import neutralLow from "./neutralLow"
+import consistentFail from "./consistentFail"
+import consistentPass from "./consistentPass"
+import inconsistent from "./inconsistent"
 
-// Assurance
-export { default as consistentFail } from "./consistentFail"
-export { default as consistentPass } from "./consistentPass"
-export { default as inconsistent } from "./inconsistent"
+export const nhsIcons = {
+  // Variation
+  commonCause,
+  concernHigh,
+  concernLow,
+  improvementHigh,
+  improvementLow,
+  neutralHigh,
+  neutralLow,
+  // Assurance
+  consistentFail,
+  consistentPass,
+  inconsistent
+};
+
+export type NhsIconName = keyof typeof nhsIcons;
+
+export function isNhsIcon(name: string): name is NhsIconName {
+  return Object.prototype.hasOwnProperty.call(nhsIcons, name);
+}

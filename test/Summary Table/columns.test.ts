@@ -2,6 +2,8 @@ import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
+import { columnNames, tableRow } from "../helpers/summaryTable";
+import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
 
 function cloneSettings() {
@@ -36,30 +38,49 @@ describe("Summary Table - column presence, order and content driven by settings"
   it("C Chart, default settings: grouped table shows the standard default column set in order", () => {
     const settings = cloneSettings();
     settings.spc.chart_type = "c";
-    const indicator: string[] = cKeys.map((_, i) => i < 18 ? "Ward 1" : "Ward 2");
+    const indicator: string[] = rep("Ward 1", 18).concat(rep("Ward 2", cKeys.length - 18));
     visual.update({
       dataViews: [ buildDataView({ key: cKeys, indicator: indicator, numerators: cNumerators }, settings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
+    // No denominators, so no numerator or denominator columns
     expect(colNames).toEqual([
-      "Indicator", "latest_date", "value", "numerator", "denominator",
-      "target", "ucl99", "ucl95", "lcl95", "lcl99"
+      "Indicator", "latest_date", "value",
+      "ul99", "ul95", "target", "ll95", "ll99"
     ]);
 
-    const headerLabels: (string | null)[] = Array.from(tableDivElement.querySelectorAll('.table-header th text')).map(d => d.textContent);
-    expect(headerLabels).toEqual(visual.viewModel.tableColumns[0].map(c => c.label));
+    const headerLabels = tableDivElement.querySelectorAll('.table-header th text');
+    const columns = visual.viewModel.tableColumns[0];
+    expect(headerLabels.length).toBe(columns.length);
+    for (let i = 0; i < columns.length; i++) {
+      expect(headerLabels[i].textContent).toBe(columns[i].label);
+    }
 
-    const rows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
+    const rows = tableDivElement.querySelectorAll('tbody tr');
     expect(rows.length).toBe(2);
-    rows.forEach(row => expect(row.querySelectorAll('td').length).toBe(colNames.length));
+    for (let i = 0; i < rows.length; i++) {
+      expect(rows[i].querySelectorAll('td').length).toBe(colNames.length);
+    }
 
-    const ward1Row = rows.find(r => r.querySelector('td')!.textContent === "Ward 1")!;
-    const ward2Row = rows.find(r => r.querySelector('td')!.textContent === "Ward 2")!;
+    const ward1Row = tableRow(tableDivElement, "Ward 1");
+    const ward2Row = tableRow(tableDivElement, "Ward 2");
     expect(ward1Row.querySelectorAll('td')[1].textContent).toBe(cKeys[17]);
     expect(ward2Row.querySelectorAll('td')[1].textContent).toBe(cKeys[35]);
+  });
+
+  it("Run Chart: grouped table has no control limit columns, as in the single-indicator table", () => {
+    const settings = cloneSettings();
+    settings.spc.chart_type = "run";
+    const indicator: string[] = rep("Ward 1", 18).concat(rep("Ward 2", cKeys.length - 18));
+    visual.update({
+      dataViews: [ buildDataView({ key: cKeys, indicator: indicator, numerators: cNumerators }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+    expect(columnNames(visual)).toEqual(["Indicator", "latest_date", "value", "target"]);
   });
 
   it("U Chart: disabling numerator/denominator tooltips removes those columns", () => {
@@ -68,42 +89,53 @@ describe("Summary Table - column presence, order and content driven by settings"
     settings.spc.multiplier = 10000;
     settings.spc.ttip_show_numerator = false;
     settings.spc.ttip_show_denominator = false;
-    const indicator: string[] = uKeys.map((_, i) => i < 12 ? "Region North" : "Region South");
+    const indicator: string[] = rep("Region North", 12).concat(rep("Region South", uKeys.length - 12));
     visual.update({
-      dataViews: [ buildDataView({ key: uKeys, indicator: indicator, numerators: uNumerators, denominators: uDenominators }, settings) ],
+      dataViews: [ buildDataView({
+        key: uKeys,
+        indicator: indicator,
+        numerators: uNumerators,
+        denominators: uDenominators
+      }, settings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     expect(colNames).not.toContain("numerator");
     expect(colNames).not.toContain("denominator");
     expect(colNames).toContain("value");
 
-    const rows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
-    rows.forEach(row => expect(row.querySelectorAll('td').length).toBe(colNames.length));
+    const rows = tableDivElement.querySelectorAll('tbody tr');
+    for (let i = 0; i < rows.length; i++) {
+      expect(rows[i].querySelectorAll('td').length).toBe(colNames.length);
+    }
   });
 
   it("P Chart: numerator/denominator columns render integer-formatted values, and percentage labelling is applied to the value column", () => {
     const settings = cloneSettings();
     settings.spc.chart_type = "p";
-    const indicator: string[] = pKeys.map((_, i) => i < 18 ? "Site A" : "Site B");
+    const indicator: string[] = rep("Site A", 18).concat(rep("Site B", pKeys.length - 18));
     visual.update({
-      dataViews: [ buildDataView({ key: pKeys, indicator: indicator, numerators: pNumerators, denominators: pDenominators }, settings) ],
+      dataViews: [ buildDataView({
+        key: pKeys,
+        indicator: indicator,
+        numerators: pNumerators,
+        denominators: pDenominators
+      }, settings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     const numIdx: number = colNames.indexOf("numerator");
     const denIdx: number = colNames.indexOf("denominator");
     const valIdx: number = colNames.indexOf("value");
     expect(numIdx).toBeGreaterThanOrEqual(0);
     expect(denIdx).toBeGreaterThanOrEqual(0);
 
-    const rows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
-    const siteARow = rows.find(r => r.querySelector('td')!.textContent === "Site A")!;
-    const siteBRow = rows.find(r => r.querySelector('td')!.textContent === "Site B")!;
+    const siteARow = tableRow(tableDivElement, "Site A");
+    const siteBRow = tableRow(tableDivElement, "Site B");
 
     // Numerator/denominator formatting for p-charts uses 0 decimal places (integer_num_den = true)
     expect(siteARow.querySelectorAll('td')[numIdx].textContent).toBe(pNumerators[17].toFixed(0));
@@ -127,15 +159,20 @@ describe("Summary Table - column presence, order and content driven by settings"
     settings.nhs_icons.show_assurance_icons = true;
     settings.lines.show_alt_target = true;
     settings.lines.alt_target = 10;
-    const indicator: string[] = gKeys.map((_, i) => i < 33 ? "Team Alpha" : "Team Beta");
-    const tooltips: string[] = gKeys.map((_, i) => i < 33 ? "Alpha note" : "Beta note");
+    const indicator: string[] = rep("Team Alpha", 33).concat(rep("Team Beta", gKeys.length - 33));
+    const tooltips: string[] = rep("Alpha note", 33).concat(rep("Beta note", gKeys.length - 33));
     visual.update({
-      dataViews: [ buildDataView({ key: gKeys, indicator: indicator, numerators: gNumerators, tooltips: tooltips }, settings) ],
+      dataViews: [ buildDataView({
+        key: gKeys,
+        indicator: indicator,
+        numerators: gNumerators,
+        tooltips: tooltips
+      }, settings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     expect(colNames).toContain("variation");
     expect(colNames).toContain("assurance");
     expect(colNames).toContain("Extra Tooltip");
@@ -144,16 +181,16 @@ describe("Summary Table - column presence, order and content driven by settings"
     const assIdx: number = colNames.indexOf("assurance");
     const ttipIdx: number = colNames.indexOf("Extra Tooltip");
 
-    const rows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
+    const rows = tableDivElement.querySelectorAll('tbody tr');
     expect(rows.length).toBe(2);
-    rows.forEach(row => {
-      const cells: Element[] = Array.from(row.querySelectorAll('td'));
+    for (let i = 0; i < rows.length; i++) {
+      const cells = rows[i].querySelectorAll('td');
       expect(cells[varIdx].querySelector('svg.rowsvg')).toBeTruthy();
       expect(cells[assIdx].querySelector('svg.rowsvg')).toBeTruthy();
-    });
+    }
 
-    const alphaRow = rows.find(r => r.querySelector('td')!.textContent === "Team Alpha")!;
-    const betaRow = rows.find(r => r.querySelector('td')!.textContent === "Team Beta")!;
+    const alphaRow = tableRow(tableDivElement, "Team Alpha");
+    const betaRow = tableRow(tableDivElement, "Team Beta");
     expect(alphaRow.querySelectorAll('td')[ttipIdx].textContent).toBe("Alpha note");
     expect(betaRow.querySelectorAll('td')[ttipIdx].textContent).toBe("Beta note");
   });
@@ -165,12 +202,17 @@ describe("Summary Table - column presence, order and content driven by settings"
     settings.outliers.shift = true;
     settings.outliers.trend = true;
     visual.update({
-      dataViews: [ buildDataView({ key: xbarKeys, numerators: xbarNumerators, denominators: xbarDenominators, xbar_sds: xbarSds }, settings) ],
+      dataViews: [ buildDataView({
+        key: xbarKeys,
+        numerators: xbarNumerators,
+        denominators: xbarDenominators,
+        xbar_sds: xbarSds
+      }, settings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
 
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     expect(colNames).toContain("shift");
     expect(colNames).toContain("trend");
     expect(colNames).not.toContain("astpoint");
@@ -185,15 +227,88 @@ describe("Summary Table - column presence, order and content driven by settings"
     const indicator: string[] = ["A", "A", "A", "A", "B", "B", "B", "B"];
     const indicator2: string[] = ["X", "X", "Y", "Y", "X", "X", "Y", "Y"];
     visual.update({
-      dataViews: [ buildDataView({ key: keys, indicator: indicator, indicator2: indicator2, numerators: numerators }, settings) ],
+      dataViews: [ buildDataView({
+        key: keys,
+        indicator: indicator,
+        indicator2: indicator2,
+        numerators: numerators
+      }, settings) ],
       viewport: { width: 500, height: 500 },
       type: 2
     });
 
     expect(visual.viewModel.indicatorVarNames).toEqual(["Indicator", "Indicator 2"]);
-    const colNames: string[] = visual.viewModel.tableColumns[0].map(c => c.name);
+    const colNames: string[] = columnNames(visual);
     expect(colNames.slice(0, 2)).toEqual(["Indicator", "Indicator 2"]);
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(4);
+  });
+
+  it("labels and orders the shared columns alike in both tables, as the tooltip does", () => {
+    const settings = cloneSettings();
+    settings.spc.chart_type = "p";
+    settings.summary_table.show_table = true;
+    settings.lines.show_68 = true;
+    settings.lines.show_alt_target = true;
+    settings.lines.alt_target = 20;
+    settings.lines.show_specification = true;
+    settings.lines.specification_upper = 40;
+    settings.lines.specification_lower = 10;
+    settings.lines.show_trend = true;
+    const ownColumns = new Set(["date", "latest_date", "Indicator", "astpoint", "trend", "shift", "two_in_three"]);
+    function sharedColumns(): { name: string; label: string; }[] {
+      const columns = visual.viewModel.tableColumns[0];
+      const shared: { name: string; label: string; }[] = [];
+      for (let i = 0; i < columns.length; i++) {
+        if (!ownColumns.has(columns[i].name)) {
+          shared.push(columns[i]);
+        }
+      }
+      return shared;
+    }
+
+    visual.update({
+      dataViews: [ buildDataView({ key: pKeys, numerators: pNumerators, denominators: pDenominators }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+    const single = sharedColumns();
+    const tooltip = visual.viewModel.plotPoints[0].tooltip;
+    const names: string[] = [];
+    const labels: string[] = [];
+    for (let i = 0; i < single.length; i++) {
+      names.push(single[i].name);
+      labels.push(single[i].label);
+    }
+    expect(names).toEqual([
+      "value", "numerator", "denominator", "trend_line", "speclimits_upper", "speclimits_lower",
+      "ul99", "ul95", "ul68", "target", "alt_target", "ll68", "ll95", "ll99"
+    ]);
+    expect(new Set(labels).size).toBe(labels.length);
+
+    // Same order as the tooltip, for the entries both show
+    const tooltipLabels: string[] = [];
+    for (let i = 0; i < tooltip.length; i++) {
+      if (labels.includes(tooltip[i].displayName!)) {
+        tooltipLabels.push(tooltip[i].displayName!);
+      }
+    }
+    const tableLabels: string[] = [];
+    for (let i = 0; i < labels.length; i++) {
+      if (tooltipLabels.includes(labels[i])) {
+        tableLabels.push(labels[i]);
+      }
+    }
+    expect(tableLabels.length).toBe(names.length - 1);
+    expect(tableLabels).toEqual(tooltipLabels);
+
+    const indicator: string[] = rep("Site A", 18).concat(rep("Site B", pKeys.length - 18));
+    visual.update({
+      dataViews: [ buildDataView({ key: pKeys, indicator: indicator, numerators: pNumerators, denominators: pDenominators }, settings) ],
+      viewport: { width: 500, height: 500 },
+      type: 2
+    });
+    expect(visual.viewModel.showGrouped).toBe(true);
+    expect(sharedColumns()).toEqual(single);
   });
 
   // Remove visual element from DOM to avoid interfering with other tests

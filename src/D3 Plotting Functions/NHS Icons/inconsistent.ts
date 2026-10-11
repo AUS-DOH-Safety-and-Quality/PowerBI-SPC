@@ -1,13 +1,8 @@
-import type { BaseType, Selection } from "../D3 Modules";
+import type { BaseType, Selection } from "powerbi-visuals-core/rendering";
 
 /**
- * Inline function to be called by D3 for rendering the Assurance - Iconsistent icon.
- * The code below is a translation from HTML to D3 syntax of the SVG file:
- * https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/assurance/inconsistent.svg
- *
- * This function does not return a value, it is meant to be called as part of chaining D3 syntax
- *
- * @param selection The D3 parent object to which the icon's SVG code will be added
+ * Assurance - Inconsistent icon, translated to D3 from the NHSRplotthedots SVG.
+ * @see https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/assurance/inconsistent.svg
  */
 export default function inconsistent(selection: Selection<BaseType, unknown, SVGSVGElement | BaseType, unknown>): void {
   selection.append("g")
@@ -20,7 +15,7 @@ export default function inconsistent(selection: Selection<BaseType, unknown, SVG
             .attr("clip-path","url(#clip4)")
             .append("path")
             .attr("d","M17.47 173.345C17.47 87.1637 87.1031 17.3 173 17.3 258.897 17.3 328.53 87.1637 328.53 173.345 328.53 259.526 258.897 329.39 173 329.39 87.1031 329.39 17.47 259.526 17.47 173.345Z")
-            .attr("stroke","#BFBFBF")
+            .attr("stroke","#A6A6A6")
             .attr("stroke-width","21")
             .attr("stroke-miterlimit","8")
             .attr("fill","#FFFFFF")
@@ -28,7 +23,7 @@ export default function inconsistent(selection: Selection<BaseType, unknown, SVG
 
   selection.append("path")
             .attr("d","M38 189.5C38 105.829 105.605 38 189 38 272.395 38 340 105.829 340 189.5 340 273.171 272.395 341 189 341 105.605 341 38 273.171 38 189.5Z")
-            .attr("stroke","#BFBFBF")
+            .attr("stroke","#A6A6A6")
             .attr("stroke-width","20")
             .attr("stroke-miterlimit","8")
             .attr("fill","#FFFFFF")
@@ -44,7 +39,7 @@ export default function inconsistent(selection: Selection<BaseType, unknown, SVG
 
   selection.append("path")
             .attr("d","M38.5001 222.5 340.862 222.5")
-            .attr("stroke","#BFBFBF")
+            .attr("stroke","#A6A6A6")
             .attr("stroke-width","8.66667")
             .attr("stroke-miterlimit","8")
             .attr("stroke-dasharray","26 8.66667")

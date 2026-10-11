@@ -1,13 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
-import { defaultSettings } from "../../src/settings";
+import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { Visual } from "../../src/visual";
-import buildDataView from "../helpers/buildDataView";
+import buildDataView, { sequentialKeys } from "../helpers/buildDataView";
+import { rep } from "powerbi-visuals-core/math";
 
 const chartTypes = ["p", "pp", "u", "up", "i", "i_m", "i_mm", "mr", "run", "xbar", "s"] as const;
 const limitNames = ["ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
-type ExpectedLimits = Pick<controlLimitsObject, "values" | "targets" | typeof limitNames[number]>;
+const seriesNames = ["values", "targets", ...limitNames] as const;
+type ExpectedLimits = Pick<controlLimitsObject, "values" | "targets"> & Partial<Pick<controlLimitsObject, typeof limitNames[number]>>;
 type Input = { numerators: number[], denominators: number[], xbar_sds?: number[] };
 
 function limitsAround(values: number[], centre: number, sigmas?: number[], lower = -Infinity, upper = Infinity): ExpectedLimits {
@@ -17,7 +19,10 @@ function limitsAround(values: number[], centre: number, sigmas?: number[], lower
   }
   if (sigmas) {
     const bands = [["ll68", "ul68", 1], ["ll95", "ul95", 2], ["ll99", "ul99", 3]] as const;
-    for (const [ll, ul, width] of bands) {
+    for (let b = 0; b < bands.length; b++) {
+      const ll = bands[b][0];
+      const ul = bands[b][1];
+      const width = bands[b][2];
       expected[ll] = new Array<number>(sigmas.length);
       expected[ul] = new Array<number>(sigmas.length);
       for (let i = 0; i < sigmas.length; i++) {
@@ -29,7 +34,7 @@ function limitsAround(values: number[], centre: number, sigmas?: number[], lower
   return expected;
 }
 
-function checkChart(chart_type: string, input: Input, expected: ExpectedLimits, outliers_in_limits: boolean, num_points_subset?: number) {
+function checkChart(chart_type: settingsValueType["spc"]["chart_type"], input: Input, expected: ExpectedLimits, outliers_in_limits: boolean, num_points_subset?: number) {
   const element = testDom("500", "500");
   const host = createVisualHost({});
   const failed = vi.spyOn(host.eventService, "renderingFailed");
@@ -39,10 +44,7 @@ function checkChart(chart_type: string, input: Input, expected: ExpectedLimits, 
     ...defaultSettings,
     spc: { ...defaultSettings.spc, chart_type, outliers_in_limits, num_points_subset }
   };
-  const keys = new Array<string>(input.numerators.length);
-  for (let i = 0; i < keys.length; i++) {
-    keys[i] = String(i + 1);
-  }
+  const keys = sequentialKeys(input.numerators.length);
 
   try {
     visual.update({
@@ -57,14 +59,15 @@ function checkChart(chart_type: string, input: Input, expected: ExpectedLimits, 
     const limits = visual.viewModel.controlLimits[0];
     const multiplier = chart_type === "p" || chart_type === "pp" ? 100 : 1;
     expect(limits.keys).toHaveLength(expected.values.length);
-    for (const line of ["values", "targets", ...limitNames] as const) {
+    for (let l = 0; l < seriesNames.length; l++) {
+      const line = seriesNames[l];
       if (!expected[line]) {
-        expect(limits[line], line).toBeUndefined();
+        expect(limits[line], line).toEqual(new Array<undefined>(expected.values.length).fill(undefined));
         continue;
       }
       expect(limits[line], line).toHaveLength(expected[line]!.length);
       for (let i = 0; i < expected[line]!.length; i++) {
-        expect(limits[line]![i], `${line} at ${i}`).toBeCloseTo(expected[line]![i]! * multiplier, 8);
+        expect(limits[line][i], `${line} at ${i}`).toBeCloseTo(expected[line]![i]! * multiplier, 8);
       }
     }
 
@@ -91,7 +94,7 @@ function checkChart(chart_type: string, input: Input, expected: ExpectedLimits, 
   }
 }
 
-// Closed-form c4 constants for subgroup sizes 2–5, independent of the production gamma function.
+/** Closed-form c4 constants for subgroup sizes 2–5, independent of the production gamma function. */
 const c4: Record<number, number> = {
   2: Math.sqrt(2 / Math.PI), 3: Math.sqrt(Math.PI) / 2,
   4: Math.sqrt(8 / (3 * Math.PI)), 5: 3 * Math.sqrt(2 * Math.PI) / 8
@@ -137,7 +140,7 @@ describe.each(chartTypes)("%s chart with denominators", chart_type => {
             const n = input.denominators[i];
             sigmas[i] = input.sCentre * Math.sqrt(1 - c4[n] ** 2) / c4[n];
           }
-          expected = limitsAround(input.numerators, input.sCentre, sigmas);
+          expected = limitsAround(input.numerators, input.sCentre, sigmas, 0);
           break;
         case "mr":
           expected = limitsAround([0, 0, 0], 0, [0, 0, 0]);
@@ -170,7 +173,7 @@ describe.each([false, true])("Constant baseline subsets with outliers_in_limits=
     { chart_type: "pp", centre: 1 },
     { chart_type: "pp", centre: 0 },
     { chart_type: "up", centre: 0 }
-  ])("preserves later values for $chart_type with baseline $centre", ({ chart_type, centre }) => {
+  ] as const)("preserves later values for $chart_type with baseline $centre", ({ chart_type, centre }) => {
     const input = { numerators: [2 * centre, 4 * centre, 1, 3], denominators: [2, 4, 2, 4] };
     checkChart(chart_type, input, limitsAround([centre, centre, 0.5, 0.75], centre, [0, 0, 0, 0]), keepOutliers, 2);
   });
@@ -178,13 +181,13 @@ describe.each([false, true])("Constant baseline subsets with outliers_in_limits=
 
 const ratioInput = { numerators: [1, 4, 2, 18], denominators: [4, 8, 4, 20] };
 const ratioValues = [0.25, 0.5, 0.5, 0.9];
-// Mean = 0.5375, median = 0.5, pooled proportion = 25/36; moving ranges = [0.25, 0, 0.4].
+/** Mean = 0.5375, median = 0.5, pooled proportion = 25/36; moving ranges = [0.25, 0, 0.4]. */
 const laneySigmas = [0.267163309639303, 0.18891298793019248, 0.267163309639303, 0.11947906428946126];
 const meanRangeSigmas = new Array<number>(4);
 const medianRangeSigmas = new Array<number>(4);
 for (let i = 0; i < 4; i++) {
   meanRangeSigmas[i] = (13 / 60) / 1.128;
-  medianRangeSigmas[i] = 0.25 / 1.128;
+  medianRangeSigmas[i] = 0.25 / 0.954;
 }
 const movingRangeLimits: ExpectedLimits = {
   values: [0.25, 0, 0.4], targets: new Array<number>(3),
@@ -219,9 +222,18 @@ const references = [
   },
   {
     chart_type: "s", input: { numerators: [1, 2, 3, 4], denominators: [2, 3, 4, 5] },
-    expected: limitsAround([1, 2, 3, 4], Math.sqrt(10), [2.389134418141634, 1.652995900585246, 1.334530798056653, 1.147904543980176])
+    expected: limitsAround([1, 2, 3, 4], Math.sqrt(10), [2.389134418141634, 1.652995900585246, 1.334530798056653, 1.147904543980176], 0)
+  },
+  // Constant subgroup size uses the mean SD (qicharts2 qic.xbar / qic.s), not the pooled SD
+  {
+    chart_type: "xbar", input: { numerators: [10, 12, 11, 13], denominators: [5, 5, 5, 5], xbar_sds: [1, 3, 2, 2] },
+    expected: limitsAround([10, 12, 11, 13], 11.5, rep(0.95153286194814457, 4))
+  },
+  {
+    chart_type: "s", input: { numerators: [1, 3, 2, 2], denominators: [5, 5, 5, 5] },
+    expected: limitsAround([1, 3, 2, 2], 2, rep(0.72599857908685583, 4), 0)
   }
-];
+] satisfies ({ chart_type: settingsValueType["spc"]["chart_type"] } & Record<string, unknown>)[];
 
 it.each(references)("$chart_type chart matches reference limits for varying ratios or subgroups", ({ chart_type, input, expected }) => {
   checkChart(chart_type, input, expected, false);

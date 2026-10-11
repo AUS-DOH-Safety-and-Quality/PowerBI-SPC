@@ -982,7 +982,7 @@
           "type": { "enumeration" : [ ] }
         },
         "table_header_text_align": {
-          "type": { "formatting": { "alignment": true } }
+          "type": { "enumeration" : [ ] }
         },
         "table_header_text_padding": {
           "type": { "numeric": true }
@@ -1021,7 +1021,7 @@
           "type": { "enumeration" : [ ] }
         },
         "table_body_text_align": {
-          "type": { "formatting": { "alignment": true } }
+          "type": { "enumeration" : [ ] }
         },
         "table_body_text_padding": {
           "type": { "numeric": true }

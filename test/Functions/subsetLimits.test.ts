@@ -1,10 +1,44 @@
 import { describe, expect, it } from "vitest";
-import { createVisualHost } from "powerbi-visuals-utils-testutils";
-import viewModelClass, { type controlLimitsObject } from "../../src/Classes/viewModelClass";
+import { type controlLimitsObject } from "../../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../../src/settings";
-import buildDataView from "../helpers/buildDataView";
+import { rep, sequence } from "powerbi-visuals-core/math";
+import viewModelLimits from "../helpers/calculateLimits";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48, 60, 66, 74, 84];
+
+/** R's rep(values, each = n) */
+function repEach(values: readonly number[], each: number): number[] {
+  const result = new Array<number>(values.length * each);
+  for (let i = 0; i < result.length; i++) {
+    result[i] = values[Math.floor(i / each)];
+  }
+  return result;
+}
+
+/** Moving-range sigma: mean range / d2, with d2 = 1.128 for n = 2 */
+function rangeSigmas(ranges: readonly number[], each: number): number[] {
+  const sigmas = repEach(ranges, each);
+  for (let i = 0; i < sigmas.length; i++) {
+    sigmas[i] /= 1.128;
+  }
+  return sigmas;
+}
+
+function groupLabels(size: number): string[] {
+  const labels = new Array<string>(numerators.length);
+  for (let i = 0; i < labels.length; i++) {
+    labels[i] = String(Math.floor(i / size));
+  }
+  return labels;
+}
+
+function keyIds(limits: controlLimitsObject): number[] {
+  const ids = new Array<number>(limits.keys.length);
+  for (let i = 0; i < ids.length; i++) {
+    ids[i] = limits.keys[i].id;
+  }
+  return ids;
+}
 
 function calculateLimits(
   spc: Partial<settingsValueType["spc"]>,
@@ -18,44 +52,31 @@ function calculateLimits(
     ...defaultSettings,
     spc: { ...defaultSettings.spc, chart_type: "i", outliers_in_limits: true, ...spc }
   };
-  const dataView = buildDataView({
-    key: values.map((_, i) => String(i + 1)),
-    numerators: values,
-    denominators,
-    xbar_sds,
-    groupings
-  }, settings);
-  dataView.metadata.objects = {
-    split_indexes_storage: { split_indexes: JSON.stringify(splitIndexes) }
-  };
-  const viewModel = new viewModelClass();
-  const result = viewModel.update({
-    dataViews: [dataView],
-    viewport: { width: 500, height: 500 },
-    type: 2
-  }, createVisualHost({}));
-  expect(result.status).toBe(true);
-  return viewModel.controlLimits[0];
+  return viewModelLimits(settings, { numerators: values, denominators, xbar_sds, groupings }, splitIndexes);
 }
 
 const bands = [["ll68", "ul68", 1], ["ll95", "ul95", 2], ["ll99", "ul99", 3]] as const;
 
 function expectLimits(limits: controlLimitsObject, centres: number[], sigmas: number[], lower = -Infinity, upper = Infinity) {
   expect(limits.targets).toHaveLength(centres.length);
-  centres.forEach((centre, i) => expect(limits.targets[i], `target at ${i}`).toBeCloseTo(centre, 8));
-  bands.forEach(([ll, ul, width]) => {
+  for (let i = 0; i < centres.length; i++) {
+    expect(limits.targets[i], `target at ${i}`).toBeCloseTo(centres[i], 8);
+  }
+  for (let b = 0; b < bands.length; b++) {
+    const ll = bands[b][0];
+    const ul = bands[b][1];
+    const width = bands[b][2];
     expect(limits[ll]).toHaveLength(centres.length);
     expect(limits[ul]).toHaveLength(centres.length);
-    centres.forEach((centre, i) => {
-      expect(limits[ll]![i], `${ll} at ${i}`).toBeCloseTo(Math.max(lower, centre - width * sigmas[i]), 8);
-      expect(limits[ul]![i], `${ul} at ${i}`).toBeCloseTo(Math.min(upper, centre + width * sigmas[i]), 8);
-    });
-  });
+    for (let i = 0; i < centres.length; i++) {
+      expect(limits[ll]![i], `${ll} at ${i}`).toBeCloseTo(Math.max(lower, centres[i] - width * sigmas[i]), 8);
+      expect(limits[ul]![i], `${ul} at ${i}`).toBeCloseTo(Math.min(upper, centres[i] + width * sigmas[i]), 8);
+    }
+  }
 }
 
 describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", source => {
-  const groupings = source === "click splits" ? undefined
-    : numerators.map((_, i) => String(Math.floor(i / (source === "both" ? 8 : 4))));
+  const groupings = source === "click splits" ? undefined : groupLabels(source === "both" ? 8 : 4);
   const splitIndexes = source === "groupings" ? [] : source === "both" ? [3] : [3, 7];
 
   it.each([
@@ -63,7 +84,7 @@ describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", so
     { from: "End", rebaselines: true, means: [19, 44, 79], ranges: [6, 8, 10] },
     { from: "Start", rebaselines: false, means: [11, 38, 71], ranges: [2, 6, 8] },
     { from: "End", rebaselines: false, means: [19, 38, 71], ranges: [6, 6, 8] }
-  ])("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, means, ranges }) => {
+  ] as const)("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, means, ranges }) => {
     const limits = calculateLimits({
       num_points_subset: 2,
       subset_points_from: from,
@@ -72,13 +93,13 @@ describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", so
     }, groupings, splitIndexes);
 
     expect(limits.values).toEqual(numerators);
-    expect(limits.keys.map(key => key.id)).toEqual(numerators.map((_, i) => i));
-    expectLimits(limits, means.flatMap(mean => Array(4).fill(mean)), ranges.flatMap(range => Array(4).fill(range / 1.128)));
+    expect(keyIds(limits)).toEqual(sequence(0, numerators.length, 1));
+    expectLimits(limits, repEach(means, 4), rangeSigmas(ranges, 4));
   });
 
   it.each([undefined, 0, 20])("uses every point when the subset count is %s", count => {
     const limits = calculateLimits({ num_points_subset: count }, groupings, splitIndexes);
-    expectLimits(limits, [15, 38, 71].flatMap(mean => Array(4).fill(mean)), [4, 6, 8].flatMap(range => Array(4).fill(range / 1.128)));
+    expectLimits(limits, repEach([15, 38, 71], 4), rangeSigmas([4, 6, 8], 4));
   });
 });
 
@@ -88,18 +109,18 @@ describe("Limit subsets without rebaselines", () => {
     { from: "Start", rebaselines: false, mean: 11 },
     { from: "End", rebaselines: true, mean: 79 },
     { from: "End", rebaselines: false, mean: 79 }
-  ])("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, mean }) => {
+  ] as const)("uses $from points with subset_rebaselines=$rebaselines", ({ from, rebaselines, mean }) => {
     const limits = calculateLimits({
       num_points_subset: 2,
       subset_points_from: from,
       subset_rebaselines: rebaselines
     });
     expect(limits.values).toEqual(numerators);
-    expectLimits(limits, numerators.map(() => mean), numerators.map(() => (from === "Start" ? 2 : 10) / 1.128));
+    expectLimits(limits, rep(mean, numerators.length), rep((from === "Start" ? 2 : 10) / 1.128, numerators.length));
   });
 });
 
-it.each(["Start", "End"])("uses every point in short rebaselines when selecting from %s", from => {
+it.each(["Start", "End"] as const)("uses every point in short rebaselines when selecting from %s", from => {
   const limits = calculateLimits({
     num_points_subset: 3,
     subset_points_from: from,
@@ -108,7 +129,10 @@ it.each(["Start", "End"])("uses every point in short rebaselines when selecting 
 
   expect(limits.targets.slice(0, 4)).toEqual(Array(4).fill(from === "Start" ? 38 / 3 : 50 / 3));
   expect(limits.targets.slice(4)).toEqual([32, 32, 40]);
-  bands.forEach(([ll, ul, width]) => {
+  for (let b = 0; b < bands.length; b++) {
+    const ll = bands[b][0];
+    const ul = bands[b][1];
+    const width = bands[b][2];
     for (let i = 0; i < 6; i++) {
       const mean = i < 4 ? (from === "Start" ? 38 / 3 : 50 / 3) : 32;
       const range = i < 4 ? (from === "Start" ? 3 : 5) : 4;
@@ -117,11 +141,11 @@ it.each(["Start", "End"])("uses every point in short rebaselines when selecting 
     }
     expect(limits[ll]![6]).toBeUndefined();
     expect(limits[ul]![6]).toBeUndefined();
-  });
+  }
 });
 
 const varyingDenominators = [100, 200, 400, 100, 300, 100, 200, 400];
-// Reference centres and one-sigma widths use hand-calculated totals, moving ranges, and pooled variances.
+/** Reference centres and one-sigma widths use hand-calculated totals, moving ranges, and pooled variances. */
 const chartReferences = [
   {
     chart_type: "i", denominators: varyingDenominators, lower: -Infinity, upper: Infinity,
@@ -183,7 +207,7 @@ const chartReferences = [
       sigmas: [[2.8024956082, 2.0601290775, 1.7161710616, 1.5045055561], [2.8939742195, 3.3011209486, 3.9627374022, 5.3907079355]]
     }
   }
-];
+] satisfies ({ chart_type: settingsValueType["spc"]["chart_type"] } & Record<string, unknown>)[];
 
 describe.each(["groupings", "click splits"])("Numerical control limits with %s", source => {
   describe.each(chartReferences)("$chart_type chart", reference => {
@@ -207,8 +231,12 @@ describe.each(["groupings", "click splits"])("Numerical control limits with %s",
       const second = rebaselines ? reference[from] : reference.All;
       const centres = [...Array(4).fill(first.centres[0]), ...Array(4).fill(second.centres[1])];
       expectLimits(limits, centres, [...first.sigmas[0], ...second.sigmas[1]], reference.lower, reference.upper);
-      expect(limits.values).toEqual(numerators.slice(0, 8).map((value, i) => reference.chart_type === "xbar" ? value : value / reference.denominators[i]));
-      expect(limits.keys.map(key => key.id)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+      const values = new Array<number>(8);
+      for (let i = 0; i < values.length; i++) {
+        values[i] = reference.chart_type === "xbar" ? numerators[i] : numerators[i] / reference.denominators[i];
+      }
+      expect(limits.values).toEqual(values);
+      expect(keyIds(limits)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
     });
   });
 });
@@ -219,10 +247,30 @@ it.each([true, false])("calculates subset limits with outliers_in_limits=%s", ke
     num_points_subset: 5,
     subset_rebaselines: true,
     outliers_in_limits: keepOutliers
-  }, values.map((_, i) => i < 6 ? "A" : "B"), [], values);
+  }, rep("A", 6).concat(rep("B", values.length - 6)), [], values);
 
   // The selected moving ranges are [1, 1, 1, 100] and [2, 2, 2, 200].
   const ranges = keepOutliers ? [25.75, 51.5] : [1, 2];
-  expectLimits(limits, [31.8, 73.6].flatMap(mean => Array(6).fill(mean)), ranges.flatMap(range => Array(6).fill(range / 1.128)));
+  expectLimits(limits, repEach([31.8, 73.6], 6), rangeSigmas(ranges, 6));
   expect(limits.values).toEqual(values);
+});
+
+it.each([
+  { from: "Start", centre: 5 },
+  { from: "End", centre: 9 }
+] as const)("plots every moving range with the centreline from the $from subset", ({ from, centre }) => {
+  const limits = calculateLimits({
+    chart_type: "mr",
+    num_points_subset: 5,
+    subset_points_from: from
+  });
+
+  // Subset ranges are [2, 4, 6, 8] from the start and [12, 6, 8, 10] from the end.
+  expect(limits.values).toEqual([2, 4, 6, 8, 4, 6, 8, 12, 6, 8, 10]);
+  expect(limits.targets).toEqual(rep(centre, 11));
+  for (let i = 0; i < 11; i++) {
+    expect(limits.ul99![i]).toBeCloseTo(centre * 3.267, 10);
+  }
+  expect(limits.ll99).toEqual(rep(0, 11));
+  expect(keyIds(limits)).toEqual(sequence(1, 11, 1));
 });

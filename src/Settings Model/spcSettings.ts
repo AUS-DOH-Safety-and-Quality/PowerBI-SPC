@@ -1,4 +1,6 @@
-import { numberOption, toggleOption, textOption, dropdownOption } from "./common";
+import {
+  numberOption, toggleOption, textOption, dropdownOption, scalingOptions, valueTooltipOptions, limitTruncationOptions
+} from "powerbi-visuals-core/settings";
 
 const spcSettings = {
   description: "SPC Settings",
@@ -6,7 +8,7 @@ const spcSettings = {
   settingsGroups: {
     "all": {
       chart_type: dropdownOption(
-        "Chart Type", "i",
+        "Chart Type", "Type of control chart; see Chart Types for the inputs each needs.", "i",
         ["run", "i", "i_m", "i_mm", "mr", "p", "pp", "u", "up", "c", "xbar", "s", "g", "t"], "none",
         [
           "run - Run Chart",
@@ -25,24 +27,25 @@ const spcSettings = {
           "t - Time Between Events"
         ]
       ),
-      outliers_in_limits: toggleOption("Keep Outliers in Limit Calcs.", false),
-      multiplier: numberOption("Multiplier", 1, { min: 0 }),
-      sig_figs: numberOption("Decimals to Report:", 2, { min: 0, max: 20 }),
-      perc_labels: dropdownOption("Report as percentage", "Automatic", ["Automatic", "Yes", "No"]),
-      split_on_click: toggleOption("Split Limits on Click", false),
-      num_points_subset: numberOption("Subset Number of Points for Limit Calculations", undefined),
-      subset_points_from: dropdownOption("Subset Points From", "Start", ["Start", "End"]),
-      subset_rebaselines: toggleOption("Subset Points After Each Re-Baseline", false),
-      ttip_show_date: toggleOption("Show Date in Tooltip", true),
-      ttip_label_date: textOption("Date Tooltip Label", "Automatic"),
-      ttip_show_numerator: toggleOption("Show Numerator in Tooltip", true),
-      ttip_label_numerator: textOption("Numerator Tooltip Label", "Numerator"),
-      ttip_show_denominator: toggleOption("Show Denominator in Tooltip", true),
-      ttip_label_denominator: textOption("Denominator Tooltip Label", "Denominator"),
-      ttip_show_value: toggleOption("Show Value in Tooltip", true),
-      ttip_label_value: textOption("Value Tooltip Label", "Automatic"),
-      ll_truncate: numberOption("Truncate Lower Limits at:", undefined),
-      ul_truncate: numberOption("Truncate Upper Limits at:", undefined)
+      outliers_in_limits: toggleOption("Keep Outliers in Limit Calcs.",
+                                       "Keeps unusually large moving ranges when calculating limits; off drops them first. "
+                                       + "Applies to i, i_m, i_mm, t, p prime and u prime charts.", false),
+      ...scalingOptions(),
+      split_on_click: toggleOption("Split Limits on Click",
+                                   "Clicking a point ends a limit period there; clicking it again removes the split. "
+                                   + "Splits stay when this is turned off, and are ignored when Grouping (Summary Table) is used.", false),
+      num_points_subset: numberOption("Subset Number of Points for Limit Calculations",
+                                      "Calculates the first period's limits from only this many points; blank or out of range uses them all.",
+                                      undefined, { integer: true }),
+      subset_points_from: dropdownOption("Subset Points From", "Whether the subset is taken from the start or end of the period.",
+                                         "Start", ["Start", "End"]),
+      subset_rebaselines: toggleOption("Subset Points After Each Re-Baseline",
+                                       "Applies the subset to every rebaseline period, not only the first.", false),
+      ttip_show_date: toggleOption("Show Date in Tooltip", "Shows the date, or the point number for g and t charts, in the tooltip.", true),
+      ttip_label_date: textOption("Date Tooltip Label",
+                                  "Name for the date in the tooltip; Automatic uses Date, or Event for g and t charts.", "Automatic"),
+      ...valueTooltipOptions(),
+      ...limitTruncationOptions()
     }
   }
 };

@@ -1,0 +1,99 @@
+project:
+  type: website
+
+website:
+  title: "SPC Charts for PowerBI"
+  site-url: https://aus-doh-safety-and-quality.github.io/PowerBI-SPC/
+  repo-url: https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC
+  search: true
+  sidebar:
+    style: docked
+    contents:
+      - href: index.md
+        text: "Home"
+      - href: Installation.md
+        text: "Installation"
+      - href: SummaryTable.md
+        text: "Scorecard/Summary Table"
+      - section: "Chart Types"
+        href: ChartTypes.md
+        contents:
+          - href: ChartTypes/runChart.md
+            text: "Run Chart"
+          - href: ChartTypes/iChart.md
+            text: "I Chart (aka XmR)"
+          - href: ChartTypes/mrChart.md
+            text: "MR Chart"
+          - href: ChartTypes/pChart.md
+            text: "P Chart"
+          - href: ChartTypes/ppChart.md
+            text: "P' Chart (aka P-Prime)"
+          - href: ChartTypes/uChart.md
+            text: "U Chart"
+          - href: ChartTypes/upChart.md
+            text: "U' Chart (aka U-Prime)"
+          - href: ChartTypes/cChart.md
+            text: "C Chart"
+          - href: ChartTypes/xbarChart.md
+            text: "Xbar Chart"
+          - href: ChartTypes/sChart.md
+            text: "S Chart"
+          - href: ChartTypes/gChart.md
+            text: "G Chart"
+          - href: ChartTypes/tChart.md
+            text: "T Chart"
+      - section: "Pattern Detection"
+        href: PatternDetection.md
+        contents:
+          - href: PatternDetection/astPoint.md
+            text: "Astronomical Point"
+          - href: PatternDetection/trend.md
+            text: "Trend"
+          - href: PatternDetection/shift.md
+            text: "Shift"
+          - href: PatternDetection/twoInThree.md
+            text: "Two-In-Three"
+      - section: "Plot The Dots"
+        href: PlotTheDots.md
+        contents:
+          - href: PlotTheDots/variation.md
+            text: "Variation"
+          - href: PlotTheDots/assurance.md
+            text: "Assurance"
+      - section: "Settings Reference"
+        href: SettingsReference.md
+        contents:
+          - href: SettingsReference/dataSettings.md
+            text: "Data Settings"
+          - href: SettingsReference/outlierHighlighting.md
+            text: "Outlier Highlighting"
+          - href: SettingsReference/nhsIcons.md
+            text: "NHS Icons"
+          - href: SettingsReference/canvasSettings.md
+            text: "Canvas Settings"
+          - href: SettingsReference/scatterSettings.md
+            text: "Scatter Settings"
+          - href: SettingsReference/dateFormat.md
+            text: "Date Settings"
+          - href: SettingsReference/lineSettings.md
+            text: "Line Settings"
+          - href: SettingsReference/xAxisSettings.md
+            text: "X-Axis Settings"
+          - href: SettingsReference/yAxisSettings.md
+            text: "Y-Axis Settings"
+          - href: SettingsReference/summaryTableSettings.md
+            text: "Summary Table Settings"
+          - href: SettingsReference/downloadOptions.md
+            text: "Download Options"
+          - href: SettingsReference/labelsSettings.md
+            text: "Labels Settings"
+      - href: RebaselineLimits.md
+        text: "Rebaselining Control Limits"
+      - href: LabelPoints.md
+        text: "Labelling Points"
+
+format:
+  html:
+    theme: flatly
+    toc: true
+    tbl-colwidths: false
