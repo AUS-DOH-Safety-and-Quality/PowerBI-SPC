@@ -1,10 +1,7 @@
 ---
-title: Installation
-layout: page
-nav_order: 2
+title: "Installing the Visual"
 ---
 
-# Installing the Visual
 
 ## AppSource
 
@@ -14,7 +11,7 @@ We recommend installing the visual from [AppSource](https://appsource.microsoft.
 
 You can download the most recent development release from the ['Releases' section](https://github.com/AUS-DOH-Safety-and-Quality/PowerBI-SPC/releases/tag/latest).  Save the file to your desktop. Within Power BI, use the Visuals pane and add using the 'Import visual from a file' option:
 
-![image](https://user-images.githubusercontent.com/27717896/128833977-51ae139d-43f2-4d32-8c8c-4cdcabc2bdaf.png)
+![](https://user-images.githubusercontent.com/27717896/128833977-51ae139d-43f2-4d32-8c8c-4cdcabc2bdaf.png){fig-alt="image"}
 
 Find the file on your desktop and click OK.  The custom visual will show as a new icon.
 

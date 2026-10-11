@@ -6,7 +6,7 @@
 | --- | --- | --- | --- |
 | Show Main Line | Draws the line joining the points. | On | On or Off |
 | Main Line Width | Line width, in pixels. | 1 | Number from 0 to 100 |
-| Main Line Type | Dash pattern of the line. | Solid | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Main Line Type | Dash pattern of the line. | Solid | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Main Line Colour | Line colour. | `#A6A6A6` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -14,7 +14,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -28,7 +28,7 @@
 | --- | --- | --- | --- |
 | Show Target | Draws the centreline. | On | On or Off |
 | Line Width | Line width, in pixels. | 1.5 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Solid | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Solid | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#000000` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -38,7 +38,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -54,7 +54,7 @@
 | Additional Target Value: | Value of the target line, as a plotted value unless the multiplier is applied. | (blank) | Number |
 | Apply Multiplier to Alt. Target | Multiplies the target by the Multiplier, for targets entered as raw proportions or rates. | Off | On or Off |
 | Line Width | Line width, in pixels. | 1.5 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Solid | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Solid | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#000000` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -64,7 +64,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -78,7 +78,7 @@
 | --- | --- | --- | --- |
 | Show 68% Lines | Draws the one-sigma lines. | Off | On or Off |
 | Line Width | Line width, in pixels. | 2 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Dotted | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Dotted | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#6495ED` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -90,7 +90,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -104,7 +104,7 @@
 | --- | --- | --- | --- |
 | Show 95% Lines | Draws the two-sigma lines. | On | On or Off |
 | Line Width | Line width, in pixels. | 2 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Dotted | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Dotted | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#6495ED` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -116,7 +116,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -130,7 +130,7 @@
 | --- | --- | --- | --- |
 | Show 99% Lines | Draws the three-sigma control limits. | On | On or Off |
 | Line Width | Line width, in pixels. | 2 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Dashed | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Dashed | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#6495ED` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -142,7 +142,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -159,7 +159,7 @@
 | Lower Specification Limit: | Lower specification limit, as a plotted value unless the multiplier is applied. | (blank) | Number |
 | Apply Multiplier to Specification Limits | Multiplies the limits by the Multiplier, for limits entered as raw proportions or rates. | Off | On or Off |
 | Line Width | Line width, in pixels. | 2 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Dashed | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Dashed | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#6495ED` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -171,7 +171,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |
@@ -185,7 +185,7 @@
 | --- | --- | --- | --- |
 | Show Trend | Draws a least-squares trend line through each rebaseline period. | Off | On or Off |
 | Line Width | Line width, in pixels. | 1.5 | Number from 0 to 100 |
-| Line Type | Dash pattern of the line. | Solid | Solid (`10 0`)<br>Dashed (`10 10`)<br>Dotted (`2 5`) |
+| Line Type | Dash pattern of the line. | Solid | • Solid (`10 0`)<br>• Dashed (`10 10`)<br>• Dotted (`2 5`) |
 | Line Colour | Line colour. | `#A6A6A6` | Colour |
 | Default Opacity | Line opacity while nothing is selected. | 1 | Number from 0 to 1 |
 | Opacity if Any Selected | Line opacity while any point is selected. | 0.2 | Number from 0 to 1 |
@@ -195,7 +195,7 @@
 | Show Value on Plot | Writes the line's value at its right-hand end. | Off | On or Off |
 | Show Value at all Re-Baselines | Writes the value in every rebaseline period. | Off | On or Off |
 | Show Value at Last N Re-Baselines | Writes the value in this many of the latest rebaseline periods. | 1 | Whole number, at least 1 |
-| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | Outside (`outside`)<br>Inside (`inside`)<br>Above (`above`)<br>Below (`below`)<br>Beside (`beside`) |
+| Position of Value on Line(s) | Where the value sits at the line's end. Outside is below lower limits and above other lines; inside is the reverse. | Beside | • Outside (`outside`)<br>• Inside (`inside`)<br>• Above (`above`)<br>• Below (`below`)<br>• Beside (`beside`) |
 | Value Vertical Padding | Vertical offset of the value from the line, in pixels. | 0 | Number |
 | Value Horizontal Padding | Horizontal gap between the value and the line's end, in pixels. | 10 | Number |
 | Value Font | Font of the value. | `'Arial', sans-serif` | Font family |

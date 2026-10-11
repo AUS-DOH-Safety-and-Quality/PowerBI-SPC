@@ -1,9 +1,7 @@
 ---
-title: Labelling Points
-layout: page
+title: "Labelling Points on the SPC Chart"
 ---
 
-# Labelling Points on the SPC Chart
 
 In some situations, it may be desirable to label particular points on the SPC chart. For example, if a point is identified as an outlier, it may be useful to label that point with additional information (e.g. the value of the point, or the reason for the outlier).
 
@@ -33,8 +31,8 @@ For example, consider the following columns of data:
 
 By adding the `Label` column to the `Value Labels` input field:
 
-![ValueLabels](images/ValueLabels.png)
+![](images/ValueLabels.png){fig-alt="ValueLabels"}
 
 The labels will be displayed on the chart for the corresponding points:
 
-![LabelledChart](images/LabelledChart.png)
+![](images/LabelledChart.png){fig-alt="LabelledChart"}

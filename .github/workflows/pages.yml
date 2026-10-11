@@ -3,8 +3,8 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll site to Pages
+# Builds the Quarto documentation site and deploys it to GitHub Pages
+name: Deploy Quarto site to Pages
 
 on:
   push:
@@ -34,24 +34,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1' # Not needed with a .ruby-version file
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-          cache-version: 0 # Increment this number if you need to re-download cached gems
-          working-directory: '${{ github.workspace }}/docs'
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
 
-      - name: Build Site Page with Jekyll
-        # Outputs to the './_site' directory by default
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        working-directory: docs
-        env:
-          JEKYLL_ENV: production
+      - name: Render Site with Quarto
+        # Outputs to docs/_site
+        run: quarto render docs
 
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default

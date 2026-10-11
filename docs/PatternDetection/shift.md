@@ -1,11 +1,7 @@
 ---
-title: Shift
-layout: page
-parent: Pattern Detection
-nav_order: 4.3
+title: "Shifts"
 ---
 
-# Shifts
 A shift is defined as seven or more consecutive points all above or all below the center line. Data points that fall on the center line neither count towards nor break the shift; they are highlighted as part of a shift that continues past them. 
 
 The SPC visual defaults this to a minimum of seven points, however this can be adjusted in the data settings.

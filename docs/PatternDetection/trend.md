@@ -1,11 +1,7 @@
 ---
-title: Trend
-layout: page
-parent: Pattern Detection
-nav_order: 4.2
+title: "Trends"
 ---
 
-# Trends
 A trend is defined as five or more consecutive points all going up or all going down, inclusive of the first data point that starts the trend. If the value of two or more consecutive points are the same, they count as one point: repeated values neither make nor break a trend, and are highlighted as part of a trend that continues past them. A point where one trend ends and an opposite trend begins stays with the earlier trend.
 
 The SPC visual defaults this to a minimum of five points, however this can be adjusted in the data settings.

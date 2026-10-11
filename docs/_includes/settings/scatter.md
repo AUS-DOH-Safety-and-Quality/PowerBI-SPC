@@ -5,7 +5,7 @@
 | Setting | Description | Default | Values |
 | --- | --- | --- | --- |
 | Show Scatter | Draws the points. | On | On or Off |
-| Shape | Marker shape for each point. | Circle | `Circle`<br>`Cross`<br>`Diamond`<br>`Square`<br>`Star`<br>`Triangle`<br>`Wye` |
+| Shape | Marker shape for each point. | Circle | • `Circle`<br>• `Cross`<br>• `Diamond`<br>• `Square`<br>• `Star`<br>• `Triangle`<br>• `Wye` |
 | Size | Size of each point; a circle's radius in pixels. | 2.5 | Number from 0 to 100 |
 | Colour | Fill colour of each point. | `#A6A6A6` | Colour |
 | Outline Colour | Outline colour of each point. | `#A6A6A6` | Colour |

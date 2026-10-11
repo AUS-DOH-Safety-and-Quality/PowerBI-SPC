@@ -1,10 +1,7 @@
 ---
-title: Home
-layout: home
-nav_order: 1
+title: "Free and Open-Source Process Control for PowerBI"
 ---
 
-# Free and Open-Source Process Control for PowerBI
 
 This repository contains a free PowerBI custom visual for you to create Statistical Process Control (SPC) charts. The visual has been developed by the Safety and Quality team at the West Australian Health Department's Healthcare Quality Intelligence Unit. If you'd like more detail on SPC we recommend the [NHS Making Data Count guide](https://www.england.nhs.uk/publication/making-data-count/).
 

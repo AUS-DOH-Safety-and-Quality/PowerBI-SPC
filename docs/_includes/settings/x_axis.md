@@ -29,8 +29,8 @@
 | Label Font | Font of the axis title. | `'Arial', sans-serif` | Font family |
 | Label Font Size | Font size of the axis title, in pixels. | 10 | Number from 0 to 100 |
 | Label Font Colour | Colour of the axis title. | `#000000` | Colour |
-| Label Font Style | Font style of the axis title. | Normal | Normal (`normal`)<br>Italic (`italic`) |
-| Label Alignment | Where the title sits along the axis. | Center | Left (`left`)<br>Center (`center`)<br>Right (`right`) |
+| Label Font Style | Font style of the axis title. | Normal | • Normal (`normal`)<br>• Italic (`italic`) |
+| Label Alignment | Where the title sits along the axis. | Center | • Left (`left`)<br>• Center (`center`)<br>• Right (`right`) |
 
 ### Gridlines
 

@@ -1,15 +1,9 @@
 ---
-title: Date Format
-layout: page
-parent: Settings Reference
-nav_order: 7.6
+title: "Date Formatting"
 ---
 
-# Date Formatting
-The date formatting settings allow for customised tick labels when dates are parsed through the ID Key. The date settings are below:
-
-![Date Format](images\dateFormat.png)
+The date formatting settings allow for customised tick labels when dates are parsed through the ID Key. The date settings are listed below.
 
 ## All Settings
 
-{% include settings/dates.md %}
+{{< include /_includes/settings/dates.md >}}
