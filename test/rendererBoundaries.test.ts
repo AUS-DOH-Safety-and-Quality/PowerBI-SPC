@@ -3,7 +3,8 @@ import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../src/visual";
 import { type settingsValueType } from "../src/settings";
 import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
-import { must, settingsWith } from "./helpers/renderVisual";
+import { settingsWith } from "./helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 const keys = sequentialKeys(numerators.length);

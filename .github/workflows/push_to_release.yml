@@ -1,40 +1,11 @@
 name: "Build release"
+
 on:
   workflow_dispatch:
+
 permissions:
   contents: write
 
 jobs:
   build-pbiviz-packages:
-    name: "Pre Release"
-    runs-on: "ubuntu-latest"
-
-    steps:
-    - uses: actions/checkout@v7
-
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v7
-      with:
-        node-version: 24.x
-
-    - name: Label visuals as 'Development'
-      run: |
-        sed -i 's/"name":"PBISPC"/"name":"PBISPC_DEV"/g' pbiviz.json
-        sed -i 's/"displayName":"SPC Charts"/"displayName":"SPC Charts (Dev)"/g' pbiviz.json
-        sed -i 's/"guid":"PBISPC"/"guid":"PBISPC_DEV"/g' pbiviz.json
-      shell: bash
-
-    - name: Build
-      run: |
-        npm ci
-        npm install -g powerbi-visuals-tools@6.2.0
-        npm run package
-
-    - name : "Create Release"
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: false
-        title: "Development Build"
-        files: dist/*.pbiviz
+    uses: AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core/.github/workflows/release_visual.yml@main

@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { settingsValueType } from "../../src/settings";
 import type { Visual } from "../../src/visual";
 import { columnNames } from "../helpers/summaryTable";
-import { must, renderVisual, settingsWith } from "../helpers/renderVisual";
+import { renderVisual, settingsWith } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 const dates = [new Date(2024, 0, 15), new Date(2024, 1, 3), new Date(2024, 2, 9), new Date(2024, 3, 22), new Date(2024, 4, 6)];
 const numerators = [10, 12, 9, 14, 11];

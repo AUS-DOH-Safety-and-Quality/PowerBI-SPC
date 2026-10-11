@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import type { settingsValueType } from "../../src/settings";
 import { sequentialKeys } from "../helpers/buildDataView";
-import { must, renderVisual, settingsWith } from "../helpers/renderVisual";
+import { renderVisual, settingsWith } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 type Outliers = settingsValueType["outliers"];
 type Status = "improvement" | "deterioration" | "neutral_low" | "neutral_high";

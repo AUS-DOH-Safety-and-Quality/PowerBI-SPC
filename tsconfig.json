@@ -1,32 +1,8 @@
 {
+    "extends": "powerbi-visuals-core/config/tsconfig.visual.json",
     "compilerOptions": {
-        "allowJs": false,
-        "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        "alwaysStrict": true,
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "strictBindCallApply": true,
-        "strict": true,
-        "strictNullChecks": true,
-        "skipLibCheck": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "allowSyntheticDefaultImports": true,
-        "removeComments": true,
-        "target": "es2020",
-        "module": "es2020",
-        "sourceMap": false,
         "rootDir": "./",
-        "outDir": "./.tmp/build/",
-        "moduleResolution": "bundler",
-        "declaration": true,
-        "lib": [
-            "es2020",
-            "dom"
-        ]
+        "outDir": "./.tmp/build/"
     },
     "files": [
         "./src/visual.ts"

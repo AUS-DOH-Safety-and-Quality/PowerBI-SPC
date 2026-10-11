@@ -1,16 +1,4 @@
 import powerbiVisualsConfigs from "eslint-plugin-powerbi-visuals";
+import eslintConfig from "powerbi-visuals-core/config/eslint";
 
-export default [
-    powerbiVisualsConfigs.configs.recommended,
-    {
-        ignores: [
-            "node_modules/**",
-            "dist/**",
-            ".vscode/**",
-            ".tmp/**",
-            "test/**",
-            "coverage/**",
-            "docs/**"
-        ]
-    },
-];
+export default eslintConfig(powerbiVisualsConfigs);

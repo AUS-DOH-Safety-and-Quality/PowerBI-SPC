@@ -1,13 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createVisualHost } from "powerbi-visuals-utils-testutils";
-import { keyedHost } from "powerbi-visuals-core/testing";
+import { keyedHost, findBy, must } from "powerbi-visuals-core/testing";
 import { lineSetting } from "powerbi-visuals-core/settings";
 import type { settingsValueType } from "../../src/settings";
 import lineKeys, { type LineName } from "../../src/Functions/lineKeys";
 import type { Visual } from "../../src/visual";
 import { sequentialKeys } from "../helpers/buildDataView";
-import findBy from "../helpers/findBy";
-import { must, renderVisual, settingsWith } from "../helpers/renderVisual";
+import { renderVisual, settingsWith } from "../helpers/renderVisual";
 
 type Lines = settingsValueType["lines"];
 type LineKey = typeof lineKeys[LineName];

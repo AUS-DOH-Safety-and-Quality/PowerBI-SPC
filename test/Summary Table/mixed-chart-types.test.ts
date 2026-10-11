@@ -2,7 +2,7 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import findBy from "../helpers/findBy";
+import { findBy } from "powerbi-visuals-core/testing";
 import { columnNames, columnValues, groupedRow, tableRow } from "../helpers/summaryTable";
 import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";

@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { rep } from "powerbi-visuals-core/math";
 import { updateViewModel, type LimitInputs } from "../helpers/calculateLimits";
-import { must, settingsWith } from "../helpers/renderVisual";
+import { settingsWith } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 type Overrides = {
   spc?: Partial<settingsValueType["spc"]>;

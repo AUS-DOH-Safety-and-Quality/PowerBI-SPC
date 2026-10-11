@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { settingsValueType } from "../../src/settings";
 import { rep } from "powerbi-visuals-core/math";
 import { sequentialKeys } from "../helpers/buildDataView";
-import { must, renderVisual, settingsWith } from "../helpers/renderVisual";
+import { renderVisual, settingsWith } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 type Icons = settingsValueType["nhs_icons"];
 type Location = Icons["variation_icons_locations"];

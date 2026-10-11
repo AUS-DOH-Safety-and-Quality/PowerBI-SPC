@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { settingsValueType } from "../../src/settings";
 import { sequentialKeys } from "../helpers/buildDataView";
-import { must, renderVisual, settingsWith, type SettingsOverrides } from "../helpers/renderVisual";
+import { renderVisual, settingsWith, type SettingsOverrides } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 type Axis = "x" | "y";
 

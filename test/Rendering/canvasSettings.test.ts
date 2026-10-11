@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import { sequentialKeys } from "../helpers/buildDataView";
-import { must, renderVisual, settingsWith, type SettingsOverrides } from "../helpers/renderVisual";
+import { renderVisual, settingsWith, type SettingsOverrides } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48, 52];
 const data = { key: sequentialKeys(numerators.length), numerators };

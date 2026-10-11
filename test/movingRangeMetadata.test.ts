@@ -3,7 +3,7 @@ import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import viewModelClass from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
 import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
-import findBy from "./helpers/findBy";
+import { findBy } from "powerbi-visuals-core/testing";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 

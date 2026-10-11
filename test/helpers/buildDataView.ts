@@ -1,116 +1,54 @@
-import powerbi from "powerbi-visuals-api";
-import DataView = powerbi.DataView;
-
-import { isNullOrUndefined } from "powerbi-visuals-core/data";
-import { rep } from "powerbi-visuals-core/math";
+import type powerbi from "powerbi-visuals-api";
 import type { PrimitiveValue } from "powerbi-visuals-core/powerbi";
-import { cells } from "powerbi-visuals-core/testing";
-import { type settingsValueType } from "../../src/settings";
+import { buildDataView as build, type DataViewColumnInput } from "powerbi-visuals-core/testing";
+import type { settingsValueType } from "../../src/settings";
 
-function buildColumn(displayName: string, queryName: string, values: PrimitiveValue[],
-                      settings?: settingsValueType | (settingsValueType | undefined)[]): powerbi.DataViewCategoryColumn | powerbi.DataViewValueColumn {
-  const roles = Object.fromEntries([[queryName, true]]);
-  const type: powerbi.ValueTypeDescriptor = typeof values[0] === "number" ? { numeric: true } : { text: true };
-  const objects: (settingsValueType | undefined)[] = Array.isArray(settings)
-    ? settings
-    : rep(settings, values.length);
-  return {
-    source: {
-      displayName: displayName,
-      queryName: queryName,
-      type: type,
-      roles: roles,
-    },
-    values: cells(values),
-    objects: objects as powerbi.DataViewObjects[]
-  };
-}
+export { sequentialKeys } from "powerbi-visuals-core/testing";
 
-export function sequentialKeys(n: number): string[] {
-  const keys = new Array<string>(n);
-  for (let i = 0; i < n; i++) {
-    keys[i] = String(i + 1);
-  }
-  return keys;
-}
+export type DataViewArgs = {
+  key?: PrimitiveValue[];
+  indicator?: string[];
+  indicator2?: string[];
+  indicators?: { name: string; values: string[] }[];
+  numerators?: PrimitiveValue[];
+  denominators?: PrimitiveValue[];
+  xbar_sds?: PrimitiveValue[];
+  groupings?: PrimitiveValue[];
+  tooltips?: PrimitiveValue[];
+  labels?: PrimitiveValue[];
+};
 
-export default function buildDataView(args: {
-                                        key?: PrimitiveValue[], indicator?: string[], indicator2?: string[],
-                                        indicators?: { name: string, values: string[] }[],
-                                        numerators?: PrimitiveValue[], denominators?: PrimitiveValue[], xbar_sds?: PrimitiveValue[],
-                                        groupings?: PrimitiveValue[], tooltips?: PrimitiveValue[], labels?: PrimitiveValue[]
-                                      },
-                                      settings?: settingsValueType | (settingsValueType | undefined)[]): DataView {
-  const metadata_columns: powerbi.DataViewMetadataColumn[] = [];
-  const categories: powerbi.DataViewCategoryColumn[] = [];
-  const values: powerbi.DataViewValueColumns = Object.assign([], { grouped: () => [] });
+const measures = ["numerators", "denominators", "xbar_sds", "groupings"] as const;
 
-  if (!isNullOrUndefined(args?.key)) {
-    const keyColumn = buildColumn("Category", "key", args.key, settings);
-    categories.push(keyColumn as powerbi.DataViewCategoryColumn);
-    metadata_columns.push(keyColumn.source);
+/** The report's columns by role, named as the SPC tests expect them */
+export default function buildDataView(args: DataViewArgs, settings?: settingsValueType | (settingsValueType | undefined)[]): powerbi.DataView {
+  const categories: DataViewColumnInput[] = [];
+  const values: DataViewColumnInput[] = [];
+  if (args.key !== undefined) {
+    categories.push({ role: "key", values: args.key, displayName: "Category" });
   }
-  if (!isNullOrUndefined(args?.indicator)) {
-    const indicatorColumn = buildColumn("Indicator", "indicator", args.indicator);
-    categories.push(indicatorColumn as powerbi.DataViewCategoryColumn);
-    metadata_columns.push(indicatorColumn.source);
+  if (args.indicator !== undefined) {
+    categories.push({ role: "indicator", values: args.indicator, displayName: "Indicator" });
   }
-  if (!isNullOrUndefined(args?.indicator2)) {
-    const indicatorColumn2 = buildColumn("Indicator 2", "indicator", args.indicator2);
-    categories.push(indicatorColumn2 as powerbi.DataViewCategoryColumn);
-    metadata_columns.push(indicatorColumn2.source);
+  if (args.indicator2 !== undefined) {
+    categories.push({ role: "indicator", values: args.indicator2, displayName: "Indicator 2" });
   }
-  if (!isNullOrUndefined(args?.indicators)) {
+  if (args.indicators !== undefined) {
     for (let i = 0; i < args.indicators.length; i++) {
-      const indicatorColumn = buildColumn(args.indicators[i].name, "indicator", args.indicators[i].values);
-      categories.push(indicatorColumn as powerbi.DataViewCategoryColumn);
-      metadata_columns.push(indicatorColumn.source);
+      categories.push({ role: "indicator", values: args.indicators[i].values, displayName: args.indicators[i].name });
     }
   }
-
-  if (!isNullOrUndefined(args?.numerators)) {
-    const valueColumn = buildColumn("Measure", "numerators", args.numerators);
-    values.push(valueColumn as powerbi.DataViewValueColumn);
-    metadata_columns.push(valueColumn.source);
-  }
-
-  if (!isNullOrUndefined(args?.denominators)) {
-    const valueColumn = buildColumn("Measure", "denominators", args.denominators);
-    values.push(valueColumn as powerbi.DataViewValueColumn);
-    metadata_columns.push(valueColumn.source);
-  }
-
-  if (!isNullOrUndefined(args?.xbar_sds)) {
-    const valueColumn = buildColumn("Measure", "xbar_sds", args.xbar_sds);
-    values.push(valueColumn as powerbi.DataViewValueColumn);
-    metadata_columns.push(valueColumn.source);
-  }
-
-  if (!isNullOrUndefined(args?.groupings)) {
-    const valueColumn = buildColumn("Measure", "groupings", args.groupings);
-    values.push(valueColumn as powerbi.DataViewValueColumn);
-    metadata_columns.push(valueColumn.source);
-  }
-
-  if (!isNullOrUndefined(args?.tooltips)) {
-    const valueColumn = buildColumn("Extra Tooltip", "tooltips", args.tooltips);
-    values.push(valueColumn as powerbi.DataViewValueColumn);
-    metadata_columns.push(valueColumn.source);
-  }
-
-  if (!isNullOrUndefined(args?.labels)) {
-    const valueColumn = buildColumn("Labels", "labels", args.labels);
-    values.push(valueColumn as powerbi.DataViewValueColumn);
-    metadata_columns.push(valueColumn.source);
-  }
-
-  return {
-    categorical: {
-      categories: categories,
-      values: values,
-    },
-    metadata: {
-      columns: metadata_columns
+  for (let m = 0; m < measures.length; m++) {
+    const measure = args[measures[m]];
+    if (measure !== undefined) {
+      values.push({ role: measures[m], values: measure, displayName: "Measure" });
     }
   }
+  if (args.tooltips !== undefined) {
+    values.push({ role: "tooltips", values: args.tooltips, displayName: "Extra Tooltip" });
+  }
+  if (args.labels !== undefined) {
+    values.push({ role: "labels", values: args.labels, displayName: "Labels" });
+  }
+  return build({ categories, values }, settings);
 }
