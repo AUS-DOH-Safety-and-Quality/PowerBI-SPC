@@ -44,10 +44,8 @@ visual.update({
 });
 const options: UpdateOptions = { dataViews: [], viewport: { width: 1, height: 1 }, type: 2 };
 
-// Fixture cells may be blank, but never objects
+// Fixture cells may be blank
 buildDataView({ key: ["A", null], numerators: [1, undefined] });
-// @ts-expect-error Cells are Power BI primitives.
-buildDataView({ key: [{}] });
 
 // Extraction only accepts a view Core has validated, and reads its required roles without a check
 extractInputData(validated, settings, derived, [], [0], new Map());

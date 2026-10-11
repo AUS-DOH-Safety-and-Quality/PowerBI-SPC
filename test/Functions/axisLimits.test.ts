@@ -60,7 +60,7 @@ describe("truncation and axis limit combinations", () => {
       }
     }
     expect(limits.values).toEqual(untruncated.values);
-    expect(limits.targets).toEqual(untruncated.targets);
+    expect(limits.target).toEqual(untruncated.target);
 
     // Explicit axis limits win; the automatic y range follows the truncated limits
     const truncatedOnly = update({ ll_truncate: bounds.ll_truncate, ul_truncate: bounds.ul_truncate });

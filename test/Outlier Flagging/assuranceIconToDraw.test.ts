@@ -2,52 +2,50 @@ import assuranceIconToDraw from "../../src/Outlier Flagging/assuranceIconToDraw"
 import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
 import type { settingsValueType } from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
-import { defaultSettings } from "../../src/settings";
+import { settingsWith } from "../helpers/renderVisual";
 import { describe, it, expect } from "vitest";
 
 describe("assuranceIconToDraw", () => {
-    const createControlLimits = (ul99: number[], ll99: number[], alt_targets: (number | undefined)[]): controlLimitsObject => ({
-        keys: [],
-        values: [],
-        numerators: [],
-        denominators: [],
-        targets: [],
-        ll99,
-        ll95: [],
-        ll68: [],
-        ul68: [],
-        ul95: [],
-        ul99,
-        count: [],
-        alt_targets,
-        speclimits_lower: [],
-        speclimits_upper: [],
-        trend_line: []
-    });
+    const blanks = (n: number): (number | undefined)[] => new Array<number | undefined>(n).fill(undefined);
 
-    const createSettings = (improvement_direction: string, show_alt_target = true): settingsValueType => ({
+    const createControlLimits = (ul99: number[], ll99: number[], alt_target: (number | undefined)[]): controlLimitsObject => {
+        const n = ul99.length;
+        const keys = new Array<controlLimitsObject["keys"][number]>(n);
+        const values = new Array<number>(n);
+        for (let i = 0; i < n; i++) {
+            keys[i] = { x: i, id: i, label: String(i) };
+            values[i] = (ul99[i] + ll99[i]) / 2;
+        }
+        return {
+            keys,
+            values,
+            numerators: blanks(n),
+            denominators: blanks(n),
+            target: blanks(n),
+            ll99,
+            ll95: blanks(n),
+            ll68: blanks(n),
+            ul68: blanks(n),
+            ul95: blanks(n),
+            ul99,
+            count: blanks(n),
+            alt_target,
+            speclimits_lower: blanks(n),
+            speclimits_upper: blanks(n),
+            trend_line: blanks(n)
+        };
+    };
+
+    const createSettings = (
+        improvement_direction: settingsValueType["outliers"]["improvement_direction"],
+        show_alt_target = true
+    ): settingsValueType => settingsWith({
         outliers: { improvement_direction },
         lines: { show_alt_target }
-    } as settingsValueType);
+    });
 
-    const createDerivedSettings = (has_control_limits: boolean): derivedSettingsClass => {
-        const derived = new derivedSettingsClass(defaultSettings["spc"]);
-        derived.chart_type_props = {
-            has_control_limits: has_control_limits,
-            name: "test",
-            needs_denominator: false,
-            denominator_optional: false,
-            numerator_non_negative: false,
-            numerator_leq_denominator: false,
-            needs_sd: false,
-            integer_num_den: false,
-            value_name: "test",
-            x_axis_use_date: false,
-            date_name: "test",
-            denominator_gt_one: false
-        };
-        return derived;
-    };
+    const createDerivedSettings = (has_control_limits: boolean): derivedSettingsClass =>
+        new derivedSettingsClass(settingsWith({ spc: { chart_type: has_control_limits ? "i" : "run" } }).spc);
 
     it("should return 'none' when chart type does not support control limits", () => {
         const controlLimits = createControlLimits([10], [0], [5]);

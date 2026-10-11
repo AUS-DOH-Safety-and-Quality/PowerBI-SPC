@@ -26,7 +26,7 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const rtn = {
     keys: args.keys,
     values: args.numerators,
-    targets: new Array<number>(n),
+    target: new Array<number>(n),
     ll99: new Array<number>(n),
     ll95: new Array<number>(n),
     ll68: new Array<number>(n),
@@ -40,7 +40,7 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const ul99: number = cl + 3 * sigma;
 
   for (let i = 0; i < n; i++) {
-    rtn.targets[i] = median_val;
+    rtn.target[i] = median_val;
     rtn.ll68[i] = 0;
     rtn.ll95[i] = 0;
     rtn.ll99[i] = 0;

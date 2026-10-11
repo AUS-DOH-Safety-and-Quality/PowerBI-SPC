@@ -19,7 +19,7 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const limits = iLimits(inputArgsCopy);
 
   // I chart limits are constant, so back-transform the first
-  const cl: number = Math.pow(limits.targets[0], 3.6);
+  const cl: number = Math.pow(limits.target[0], 3.6);
   const ll99: number = limits.ll99[0] < 0 ? 0 : Math.pow(limits.ll99[0], 3.6);
   const ll95: number = limits.ll95[0] < 0 ? 0 : Math.pow(limits.ll95[0], 3.6);
   const ll68: number = limits.ll68[0] < 0 ? 0 : Math.pow(limits.ll68[0], 3.6);
@@ -30,7 +30,7 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const rtn = {
     keys: args.keys,
     values: args.numerators,
-    targets: new Array<number>(n),
+    target: new Array<number>(n),
     ll99: new Array<number>(n),
     ll95: new Array<number>(n),
     ll68: new Array<number>(n),
@@ -40,7 +40,7 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   }
 
   for (let i = 0; i < n; i++) {
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
     rtn.ll99[i] = ll99;
     rtn.ll95[i] = ll95;
     rtn.ll68[i] = ll68;

@@ -8,14 +8,14 @@ import { rep } from "powerbi-visuals-core/math";
 
 const chartTypes = ["p", "pp", "u", "up", "i", "i_m", "i_mm", "mr", "run", "xbar", "s"] as const;
 const limitNames = ["ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
-const seriesNames = ["values", "targets", ...limitNames] as const;
-type ExpectedLimits = Pick<controlLimitsObject, "values" | "targets"> & Partial<Pick<controlLimitsObject, typeof limitNames[number]>>;
+const seriesNames = ["values", "target", ...limitNames] as const;
+type ExpectedLimits = Pick<controlLimitsObject, "values" | "target"> & Partial<Pick<controlLimitsObject, typeof limitNames[number]>>;
 type Input = { numerators: number[], denominators: number[], xbar_sds?: number[] };
 
 function limitsAround(values: number[], centre: number, sigmas?: number[], lower = -Infinity, upper = Infinity): ExpectedLimits {
-  const expected: ExpectedLimits = { values, targets: new Array<number>(values.length) };
+  const expected: ExpectedLimits = { values, target: new Array<number>(values.length) };
   for (let i = 0; i < values.length; i++) {
-    expected.targets[i] = centre;
+    expected.target[i] = centre;
   }
   if (sigmas) {
     const bands = [["ll68", "ul68", 1], ["ll95", "ul95", 2], ["ll99", "ul99", 3]] as const;
@@ -190,12 +190,12 @@ for (let i = 0; i < 4; i++) {
   medianRangeSigmas[i] = 0.25 / 0.954;
 }
 const movingRangeLimits: ExpectedLimits = {
-  values: [0.25, 0, 0.4], targets: new Array<number>(3),
+  values: [0.25, 0, 0.4], target: new Array<number>(3),
   ll68: [0, 0, 0], ll95: [0, 0, 0], ll99: [0, 0, 0],
   ul68: new Array<number>(3), ul95: new Array<number>(3), ul99: new Array<number>(3)
 };
 for (let i = 0; i < 3; i++) {
-  movingRangeLimits.targets[i] = 13 / 60;
+  movingRangeLimits.target[i] = 13 / 60;
   movingRangeLimits.ul68![i] = 0.23595;
   movingRangeLimits.ul95![i] = 0.4719;
   movingRangeLimits.ul99![i] = 0.70785;

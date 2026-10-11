@@ -1,8 +1,30 @@
 import type powerbi from "powerbi-visuals-api";
-import { readSettingsGroups, buildFormattingModel, type FormattingModel, type SettingsValidation } from "powerbi-visuals-core/powerbi";
+import {
+  readSettingsGroups, buildFormattingModel, type FormattingModel, type SettingsGroupRule, type SettingsValidation
+} from "powerbi-visuals-core/powerbi";
 import settingsModel, { type settingsValueType } from "../settings";
 import { createDefaultValues, orderedBoundsError } from "powerbi-visuals-core/settings";
 import derivedSettingsClass from "./derivedSettingsClass";
+
+const rules: SettingsGroupRule<settingsValueType>[] = [
+  settings => {
+    const patterns = settings.outliers;
+    if (settings.nhs_icons.show_variation_icons && !patterns.astronomical && !patterns.shift && !patterns.trend && !patterns.two_in_three) {
+      return "Variation icons require at least one outlier pattern to be selected";
+    }
+    return undefined;
+  },
+  settings => {
+    const outliers = settings.outliers;
+    const flagsOnSpecification = (outliers.astronomical && outliers.astronomical_limit === "Specification")
+      || (outliers.two_in_three && outliers.two_in_three_limit === "Specification");
+    if (flagsOnSpecification && !settings.lines.show_specification) {
+      return "Flagging against specification limits requires the specification lines to be shown";
+    }
+    return undefined;
+  },
+  settings => orderedBoundsError(settings, settings.spc)
+];
 
 export default class settingsClass {
   settings: settingsValueType[];
@@ -11,32 +33,12 @@ export default class settingsClass {
   messagePositionByRowIndex = new Map<number, number>();
 
   update(category: powerbi.DataViewCategoryColumn, groupIdxs: readonly (readonly number[])[]): void {
-    const result = readSettingsGroups(settingsModel, category, groupIdxs);
+    const result = readSettingsGroups(settingsModel, category, groupIdxs, rules);
     this.settings = result.values;
     this.validationStatus = result.validation;
     this.messagePositionByRowIndex = result.messagePositionByRowIndex;
-    this.derivedSettings = new Array<derivedSettingsClass>(groupIdxs.length);
-
-    const settings = this.settings[0];
-    if (settings.nhs_icons.show_variation_icons) {
-      const patterns = settings.outliers;
-      if (!patterns.astronomical && !patterns.shift && !patterns.trend && !patterns.two_in_three) {
-        this.validationStatus = { status: 1, messages: this.validationStatus.messages,
-          error: "Variation icons require at least one outlier pattern to be selected" };
-      }
-    }
+    this.derivedSettings = new Array<derivedSettingsClass>(this.settings.length);
     for (let i = 0; i < this.settings.length; i++) {
-      const outliers = this.settings[i].outliers;
-      const flagsOnSpecification = (outliers.astronomical && outliers.astronomical_limit === "Specification")
-        || (outliers.two_in_three && outliers.two_in_three_limit === "Specification");
-      if (flagsOnSpecification && !this.settings[i].lines.show_specification) {
-        this.validationStatus = { status: 1, messages: this.validationStatus.messages,
-          error: "Flagging against specification limits requires the specification lines to be shown" };
-      }
-      const boundsError = orderedBoundsError(this.settings[i], this.settings[i].spc);
-      if (boundsError !== undefined) {
-        this.validationStatus = { status: 1, messages: this.validationStatus.messages, error: boundsError };
-      }
       this.derivedSettings[i] = new derivedSettingsClass(this.settings[i].spc);
     }
   }

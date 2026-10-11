@@ -50,7 +50,7 @@ describe("moving-range per-row metadata", () => {
       expect(point.tooltip).toContainEqual({ displayName: "Extra Tooltip", value: `T${point.x}` });
     }
     expect(positions).toEqual([1, 2, 3, 5, 6, 7]);
-    expect(viewModel.controlLimits[0].alt_targets).toEqual([101, 102, 103, 105, 106, 107]);
+    expect(viewModel.controlLimits[0].alt_target).toEqual([101, 102, 103, 105, 106, 107]);
 
     const lines = viewModel.groupedLines;
     expect(lines.length).toBeGreaterThan(0);

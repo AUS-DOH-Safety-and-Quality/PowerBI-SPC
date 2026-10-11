@@ -12,7 +12,7 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const rtn = {
     keys: args.keys,
     values: args.numerators,
-    targets: new Array<number>(n),
+    target: new Array<number>(n),
     ll99: new Array<number>(n),
     ll95: new Array<number>(n),
     ll68: new Array<number>(n),
@@ -27,7 +27,7 @@ export default function sLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
     const twoSigma: number = 2 * sigma;
     const threeSigma: number = 3 * sigma;
 
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
     rtn.ll99[i] = Math.max(0, cl - threeSigma);
     rtn.ll95[i] = Math.max(0, cl - twoSigma);
     rtn.ll68[i] = Math.max(0, cl - sigma);

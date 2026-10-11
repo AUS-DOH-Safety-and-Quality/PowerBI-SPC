@@ -40,6 +40,6 @@ describe("subset count validation", () => {
     const whole = update({ num_points_subset: 3, subset_points_from: "Start" });
     expect(all.result.status).toBe(true);
     expect(whole.result.status).toBe(true);
-    expect(whole.viewModel.controlLimits[0].targets[0]).not.toEqual(all.viewModel.controlLimits[0].targets[0]);
+    expect(whole.viewModel.controlLimits[0].target[0]).not.toEqual(all.viewModel.controlLimits[0].target[0]);
   });
 });

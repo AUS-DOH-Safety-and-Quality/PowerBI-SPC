@@ -10,8 +10,8 @@ type Series = (number | undefined)[];
 const chartTypes: ChartType[] = ["run", "i", "i_m", "i_mm", "mr", "p", "pp", "u", "up", "c", "xbar", "s", "g", "t"];
 const screeningCharts: ChartType[] = ["i", "i_m", "i_mm", "t", "pp", "up"];
 const limitLines = ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;
-const chartLines = ["values", "targets", "trend_line", ...limitLines] as const;
-const extraLines = ["alt_targets", "speclimits_lower", "speclimits_upper"] as const;
+const chartLines = ["values", "target", "trend_line", ...limitLines] as const;
+const extraLines = ["alt_target", "speclimits_lower", "speclimits_upper"] as const;
 
 const numerators = [5, 7, 5, 9, 7, 5, 4, 9, 8, 13, 8, 7];
 const denominators = [20, 22, 21, 24, 20, 23, 19, 25, 22, 27, 21, 22];
@@ -132,14 +132,14 @@ describe.each(chartTypes)("%s chart limit options", chart_type => {
       lower = sorted[3];
       upper = sorted[8];
     } else {
-      const target = unclamped.targets[0]!;
+      const target = unclamped.target[0]!;
       lower = (unclamped.ll99[0]! + target) / 2;
       upper = (unclamped.ul99[0]! + target) / 2;
     }
     const clamped = calculateLimits(settingsFor(chart_type, { ll_truncate: lower, ul_truncate: upper }), inputs);
 
     expectAllLinesClose(clamped, unclamped, limitLines, value => Math.min(upper, Math.max(lower, value)));
-    expectAllLinesClose(clamped, unclamped, ["values", "targets", "trend_line"]);
+    expectAllLinesClose(clamped, unclamped, ["values", "target", "trend_line"]);
     if (chart_type !== "run") {
       expect(clamped.ll99[0]).toBe(lower);
       expect(clamped.ul99[0]).toBe(upper);
@@ -173,7 +173,7 @@ describe("median centreline charts", () => {
     for (let c = 0; c < cases.length; c++) {
       const limits = calculateLimits(settingsFor(chart_type, { outliers_in_limits: cases[c].outliers_in_limits }), { numerators: values });
       const sigma = cases[c].sigma;
-      expectSeriesClose(limits.targets, rep(centre, values.length), "targets");
+      expectSeriesClose(limits.target, rep(centre, values.length), "target");
       expectSeriesClose(limits.ll99, rep(centre - 3 * sigma, values.length), "ll99");
       expectSeriesClose(limits.ul68, rep(centre + sigma, values.length), "ul68");
       expectSeriesClose(limits.ul99, rep(centre + 3 * sigma, values.length), "ul99");

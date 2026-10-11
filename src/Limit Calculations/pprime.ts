@@ -24,7 +24,7 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): Calcula
       values: new Array<number>(n),
       numerators: args.numerators,
       denominators: args.denominators,
-      targets: new Array<number>(n),
+      target: new Array<number>(n),
       ll99: new Array<number>(n),
       ll95: new Array<number>(n),
       ll68: new Array<number>(n),
@@ -34,7 +34,7 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): Calcula
     };
     for (let i = 0; i < n; i++) {
       rtn.values[i] = numerators[i] / denominators[i];
-      rtn.targets[i] = cl;
+      rtn.target[i] = cl;
       rtn.ll99[i] = cl;
       rtn.ll95[i] = cl;
       rtn.ll68[i] = cl;
@@ -68,7 +68,7 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): Calcula
     values: val,
     numerators: args.numerators,
     denominators: args.denominators,
-    targets: new Array<number>(n),
+    target: new Array<number>(n),
     ll99: new Array<number>(n),
     ll95: new Array<number>(n),
     ll68: new Array<number>(n),
@@ -82,7 +82,7 @@ export default function pprimeLimits(args: Readonly<controlLimitsArgs>): Calcula
     const twoSigma: number = 2 * sigma;
     const threeSigma: number = 3 * sigma;
 
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
     rtn.ll99[i] = Math.max(0, cl - threeSigma);
     rtn.ll95[i] = Math.max(0, cl - twoSigma);
     rtn.ll68[i] = Math.max(0, cl - sigma);

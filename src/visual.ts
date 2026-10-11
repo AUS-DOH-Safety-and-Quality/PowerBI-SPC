@@ -6,20 +6,16 @@ import {
   drawPlotLineLabels, highlightOpacity, valueTickFormat, type Selection, type BaseType, type AxisBounds, type SvgSelection
 } from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
-import addContextMenu from "./D3 Plotting Functions/addContextMenu";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
 import viewModelClass, { type plotData, type plotDataGrouped } from "./Classes/viewModelClass";
 import axisRanges from "./Functions/axisRanges";
 import lineKeys from "./Functions/lineKeys";
 import type { settingsValueType } from "./settings";
 import { identitySelected, selectionState } from "powerbi-visuals-core/powerbi";
-import { lineStyle } from "powerbi-visuals-core/settings";
+import { lineStyle, lowerLimitLines } from "powerbi-visuals-core/settings";
 
 export type svgBaseType = SvgSelection;
 export type divBaseType = Selection<HTMLDivElement, unknown, null, undefined>;
-
-/** Lower boundary lines place outside labels below the line */
-const lowerLines = new Set<string>(["ll99", "ll95", "ll68", "speclimits_lower"]);
 
 export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueType> {
   tableDiv: divBaseType;
@@ -53,8 +49,8 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
       return false;
     }
     this.resizeCanvas(0, 0);
-    this.tableDiv.call(drawSummaryTable, this)
-                 .call(addContextMenu, this, true);
+    this.tableDiv.call(drawSummaryTable, this);
+    this.addContextMenu(this.tableDiv.node(), true);
     return true;
   }
 
@@ -85,7 +81,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
       lines: viewModel.groupedLines,
       settings: settings.lines,
       keys: lineKeys,
-      lower: name => lowerLines.has(name),
+      lower: name => lowerLimitLines.has(name) || name === "speclimits_lower",
       format: viewModel.inputSettings.derivedSettings[0].formatValue,
       periodEnds: viewModel.rebaselineEnds
     });
@@ -94,8 +90,8 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
       text: undefined,
       onClick: settings.spc.split_on_click ? point => this.toggleSplit(point) : undefined
     });
-    this.svg.call(drawIcons, this)
-            .call(addContextMenu, this);
+    this.svg.call(drawIcons, this);
+    this.addContextMenu(svg);
     drawPlotDownload(svg, context, () => {
       const points = context.points;
       const rows = new Array<plotData["table_row"]>(points.length);

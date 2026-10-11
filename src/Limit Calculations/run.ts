@@ -20,11 +20,11 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): Calculated
     values: plotted.values,
     numerators: plotted.numerators,
     denominators: plotted.denominators,
-    targets: new Array<number>(n)
+    target: new Array<number>(n)
   }
 
   for (let i = 0; i < n; i++) {
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
   }
 
   return rtn;

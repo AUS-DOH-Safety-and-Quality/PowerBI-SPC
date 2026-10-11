@@ -24,7 +24,7 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): Calculate
   const rtn = {
     keys: args.keys,
     values: args.numerators,
-    targets: new Array<number>(n),
+    target: new Array<number>(n),
     ll99: new Array<number>(n),
     ll95: new Array<number>(n),
     ll68: new Array<number>(n),
@@ -40,7 +40,7 @@ export default function xbarLimits(args: Readonly<controlLimitsArgs>): Calculate
     const twoSigma: number = sigma * 2;
     const threeSigma: number = sigma * 3;
 
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
     rtn.ll99[i] = cl - threeSigma;
     rtn.ll95[i] = cl - twoSigma;
     rtn.ll68[i] = cl - sigma;

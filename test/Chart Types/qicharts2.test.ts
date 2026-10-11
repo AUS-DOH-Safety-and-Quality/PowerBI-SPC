@@ -3,7 +3,7 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import calculateLimits from "../helpers/calculateLimits";
 import references from "../fixtures/qicharts2";
 
-const lines = ["values", "targets", "ll99", "ll95", "ul95", "ul99"] as const;
+const lines = ["values", "target", "ll99", "ll95", "ul95", "ul99"] as const;
 
 /** Both sides evaluate the same formulae, so agreement is expected at floating-point precision. */
 function expectRelativelyClose(actual: number | undefined, expected: number, label: string): void {

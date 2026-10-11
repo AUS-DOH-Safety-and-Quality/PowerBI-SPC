@@ -44,10 +44,11 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settin
   const month_elem = locale === "en-GB" ? "month" : "day";
 
   for (let i = 0; i < n_keys; i++) {
-    if (isNullOrUndefined(inputDates.dates[i])) {
+    const date = inputDates.dates[i];
+    if (isNullOrUndefined(date)) {
       ret[i] = undefined
     } else {
-      const datePartsRecord = formatDateParts(inputDates.dates[i], locale, formatOptions);
+      const datePartsRecord = formatDateParts(date, locale, formatOptions);
       const datePartStrings: string[] = [(datePartsRecord.weekday + " " + datePartsRecord[day_elem]).trim(),
                                           datePartsRecord[month_elem],
                                           inputDates.quarters[i] ?? "",
@@ -71,13 +72,8 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settin
 
 export default function extractKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: number[]): (string | undefined)[] {
   const groupedCols: Record<string, powerbi.DataViewCategoryColumn[]> = Object.create(null);
-  const uniqueQueryNames = new Set<string>();
   for (let i = 0; i < col.length; i++) {
     let queryName = col[i].source.queryName ?? "";
-    if (uniqueQueryNames.has(queryName)) {
-      queryName = `${i}_${queryName}`;
-    }
-    uniqueQueryNames.add(queryName);
     if (queryName.includes("Date Hierarchy")) {
       const lastDot = queryName.lastIndexOf(".");
       if (lastDot !== -1) {
@@ -88,9 +84,6 @@ export default function extractKeys(col: powerbi.DataViewCategoryColumn[], input
   }
   const queryNames = Object.keys(groupedCols);
   const combinedKeys = new Array<string | undefined>(idxs.length);
-  if (queryNames.length === 0) {
-    return combinedKeys.fill(undefined);
-  }
   for (let i = 0; i < queryNames.length; i++) {
     const groupKeys = formatKeys(groupedCols[queryNames[i]], inputSettings, idxs);
     for (let j = 0; j < idxs.length; j++) {

@@ -18,7 +18,7 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const rtn = {
     keys: args.keys,
     values: args.numerators,
-    targets: new Array<number>(n),
+    target: new Array<number>(n),
     ll99: new Array<number>(n),
     ll95: new Array<number>(n),
     ll68: new Array<number>(n),
@@ -37,7 +37,7 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const ul99: number = cl + threeSigma;
 
   for (let i = 0; i < n; i++) {
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
     rtn.ll99[i] = ll99;
     rtn.ll95[i] = ll95;
     rtn.ll68[i] = ll68;

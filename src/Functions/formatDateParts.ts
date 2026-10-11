@@ -1,5 +1,3 @@
-import { isNullOrUndefined } from "powerbi-visuals-core/data";
-
 /** Subset of Intl.DateTimeFormatOptions. */
 export interface DateFormatOptions {
   weekday?: "short" | "long";
@@ -43,7 +41,7 @@ const monthLong: Record<"en-GB" | "en-US", string[]> = {
  * Unrequested parts are empty strings.
  */
 export default function formatDateParts(
-  date: Date | undefined,
+  date: Date,
   locale: "en-GB" | "en-US",
   options: DateFormatOptions
 ): DatePartsRecord {
@@ -53,10 +51,6 @@ export default function formatDateParts(
     month: "",
     year: ""
   };
-
-  if (isNullOrUndefined(date)) {
-    return result;
-  }
 
   if (options.weekday === "short") {
     result.weekday = weekdayShort[locale][date.getDay()];

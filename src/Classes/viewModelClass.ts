@@ -8,10 +8,13 @@ import settingsClass from "./settingsClass";
 import { type settingsValueType } from "../settings";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
-import { rep, between, calculateTrendLine } from "powerbi-visuals-core/math";
+import { rep, between, clamp, calculateTrendLine } from "powerbi-visuals-core/math";
 import type { dataObject } from "../Functions/extractInputData";
 import extractInputData from "../Functions/extractInputData";
-import { isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection, type FlagDirection, type OutlierStatus } from "powerbi-visuals-core/data";
+import {
+  isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection, applyFlagColours, type FlagDirection, type OutlierStatus
+} from "powerbi-visuals-core/data";
+import { limitLineNames } from "powerbi-visuals-core/settings";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
@@ -106,7 +109,7 @@ export type controlLimitsObject = {
   values: number[];
   numerators: (number | undefined)[];
   denominators: (number | undefined)[];
-  targets: (number | undefined)[];
+  target: (number | undefined)[];
   ll99: (number | undefined)[];
   ll95: (number | undefined)[];
   ll68: (number | undefined)[];
@@ -114,7 +117,7 @@ export type controlLimitsObject = {
   ul95: (number | undefined)[];
   ul99: (number | undefined)[];
   count: (number | undefined)[];
-  alt_targets: (number | undefined)[];
+  alt_target: (number | undefined)[];
   speclimits_lower: (number | undefined)[];
   speclimits_upper: (number | undefined)[];
   trend_line: (number | undefined)[];
@@ -125,7 +128,7 @@ export type LimitSeries = Exclude<keyof controlLimitsObject, "keys" | "values">;
 const limitSeries = Object.keys({
   numerators: true,
   denominators: true,
-  targets: true,
+  target: true,
   ll99: true,
   ll95: true,
   ll68: true,
@@ -133,12 +136,11 @@ const limitSeries = Object.keys({
   ul95: true,
   ul99: true,
   count: true,
-  alt_targets: true,
+  alt_target: true,
   speclimits_lower: true,
   speclimits_upper: true,
   trend_line: true
 } satisfies Record<LimitSeries, true>) as LimitSeries[];
-const limitLines = ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;
 
 /** Calculators return only the series their chart defines */
 export type CalculatedLimits = Pick<controlLimitsObject, "keys" | "values"> & Partial<Pick<controlLimitsObject, LimitSeries>>;
@@ -461,7 +463,7 @@ export default class viewModelClass {
       values: [],
       numerators: [],
       denominators: [],
-      targets: [],
+      target: [],
       ll99: [],
       ll95: [],
       ll68: [],
@@ -469,7 +471,7 @@ export default class viewModelClass {
       ul95: [],
       ul99: [],
       count: [],
-      alt_targets: [],
+      alt_target: [],
       speclimits_lower: [],
       speclimits_upper: [],
       trend_line: []
@@ -504,7 +506,7 @@ export default class viewModelClass {
     for (let i = 0; i < positions.length; i++) {
       positions[i] = controlLimits.keys[i].x;
     }
-    controlLimits.alt_targets = pickRows(inputData.alt_targets, positions);
+    controlLimits.alt_target = pickRows(inputData.alt_target, positions);
     controlLimits.speclimits_lower = pickRows(inputData.speclimits_lower, positions);
     controlLimits.speclimits_upper = pickRows(inputData.speclimits_upper, positions);
 
@@ -622,8 +624,8 @@ export default class viewModelClass {
         value: formatValues(limits.values[lastIndex], "value"),
         numerator: formatValues(limits.numerators[lastIndex], "integer"),
         denominator: formatValues(limits.denominators[lastIndex], "integer"),
-        target: formatValues(limits.targets[lastIndex], "value"),
-        alt_target: formatValues(limits.alt_targets[lastIndex], "value"),
+        target: formatValues(limits.target[lastIndex], "value"),
+        alt_target: formatValues(limits.alt_target[lastIndex], "value"),
         ul99: formatValues(limits.ul99[lastIndex], "value"),
         ul95: formatValues(limits.ul95[lastIndex], "value"),
         ul68: formatValues(limits.ul68[lastIndex], "value"),
@@ -684,26 +686,17 @@ export default class viewModelClass {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
       // Later patterns take precedence, so an astronomical point's colour wins
-      const flagged: [FlagDirection, "shift_colour" | "trend_colour" | "twointhree_colour" | "ast_colour"][] = [
+      applyFlagColours(aesthetics, settings.outliers, [
         [outliers.shift[i], "shift_colour"], [outliers.trend[i], "trend_colour"],
         [outliers.two_in_three[i], "twointhree_colour"], [outliers.astpoint[i], "ast_colour"]
-      ];
-      for (let j = 0; j < flagged.length; j++) {
-        const status = flagged[j][0];
-        const prefix = flagged[j][1];
-        if (status !== "none") {
-          const colour = settings.outliers[`${prefix}_${status}`];
-          aesthetics.colour = colour;
-          aesthetics.colour_outline = colour;
-        }
-      }
+      ] as const);
       const table_row: summaryTableRowData = {
         date: controlLimits.keys[i].label,
         numerator: controlLimits.numerators[i],
         denominator: controlLimits.denominators[i],
         value: controlLimits.values[i],
-        target: controlLimits.targets[i],
-        alt_target: controlLimits.alt_targets[i],
+        target: controlLimits.target[i],
+        alt_target: controlLimits.alt_target[i],
         ll99: controlLimits.ll99[i],
         ll95: controlLimits.ll95[i],
         ll68: controlLimits.ll68[i],
@@ -752,10 +745,10 @@ export default class viewModelClass {
       labels.push("values");
     }
     if (settings.lines.show_target) {
-      labels.push("targets");
+      labels.push("target");
     }
     if (settings.lines.show_alt_target) {
-      labels.push("alt_targets");
+      labels.push("alt_target");
     }
     if (settings.lines.show_specification) {
       labels.push("speclimits_lower", "speclimits_upper");
@@ -789,7 +782,7 @@ export default class viewModelClass {
       const isRebaselinePoint: boolean = isGroupStart[i];
       let isNewAltTarget: boolean = false;
       if (i > 0 && settings.lines.show_alt_target) {
-        isNewAltTarget = controlLimits.alt_targets[i] !== controlLimits.alt_targets[i - 1];
+        isNewAltTarget = controlLimits.alt_target[i] !== controlLimits.alt_target[i - 1];
       }
       if (isRebaselinePoint) {
         this.rebaselineEnds.push(position - 1);
@@ -801,8 +794,8 @@ export default class viewModelClass {
         // By adding an additional null line value at each re-baseline point
         // we avoid rendering a line joining each segment
         if (isRebaselinePoint || isNewAltTarget) {
-          const is_alt_target: boolean = label === "alt_targets" && isNewAltTarget;
-          const is_rebaseline: boolean = label !== "alt_targets" && isRebaselinePoint;
+          const is_alt_target: boolean = label === "alt_target" && isNewAltTarget;
+          const is_rebaseline: boolean = label !== "alt_target" && isRebaselinePoint;
           formattedLines.push({
             x: controlLimits.keys[i].x,
             line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? undefined : controlLimits[label][i],
@@ -827,13 +820,13 @@ export default class viewModelClass {
               inputSettings: settingsValueType,
               derivedSettings: derivedSettingsClass): void {
     const multiplier: number = derivedSettings.multiplier;
-    let lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "targets", "trend_line"];
+    let lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "target", "trend_line"];
 
     if (derivedSettings.chart_type_props.has_control_limits) {
-      lines_to_scale = lines_to_scale.concat(limitLines);
+      lines_to_scale = lines_to_scale.concat(limitLineNames);
     }
     if (inputSettings.lines.show_alt_target && inputSettings.lines.multiplier_alt_target) {
-      lines_to_scale = lines_to_scale.concat(["alt_targets"]);
+      lines_to_scale = lines_to_scale.concat(["alt_target"]);
     }
     if (inputSettings.lines.show_specification && inputSettings.lines.multiplier_specification) {
       lines_to_scale = lines_to_scale.concat(["speclimits_lower", "speclimits_upper"]);
@@ -854,13 +847,12 @@ export default class viewModelClass {
   truncateLimits(controlLimits: controlLimitsObject, inputSettings: settingsValueType): void {
     const ll_truncate = inputSettings.spc.ll_truncate;
     const ul_truncate = inputSettings.spc.ul_truncate;
-    for (let l = 0; l < limitLines.length; l++) {
-      const series = controlLimits[limitLines[l]];
+    for (let l = 0; l < limitLineNames.length; l++) {
+      const series = controlLimits[limitLineNames[l]];
       for (let i: number = 0; i < series.length; i++) {
         const value = series[i];
         if (value !== undefined) {
-          const lower_trunc: number = isValidNumber(ll_truncate) ? Math.max(ll_truncate, value) : value;
-          series[i] = isValidNumber(ul_truncate) ? Math.min(ul_truncate, lower_trunc) : lower_trunc;
+          series[i] = clamp(value, ll_truncate, ul_truncate);
         }
       }
     }
@@ -884,7 +876,7 @@ export default class viewModelClass {
       const start: number = groupStartEndIndexes[i][0];
       const end: number = groupStartEndIndexes[i][1];
       const group_values: number[] = controlLimits.values.slice(start, end);
-      const group_targets = controlLimits.targets.slice(start, end);
+      const group_targets = controlLimits.target.slice(start, end);
 
       if (derivedSettings.chart_type_props.has_control_limits || ast_specification || two_in_three_specification) {
         const limitKeys = {

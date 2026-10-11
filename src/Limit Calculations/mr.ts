@@ -21,7 +21,7 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedL
     values: new Array<number>(n_mr),
     numerators: plotted.numerators?.slice(1),
     denominators: plotted.denominators?.slice(1),
-    targets: new Array<number>(n_mr),
+    target: new Array<number>(n_mr),
     ll99: new Array<number>(n_mr),
     ll95: new Array<number>(n_mr),
     ll68: new Array<number>(n_mr),
@@ -39,7 +39,7 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedL
 
   for (let i = 0; i < n_mr; i++) {
     rtn.values[i] = Math.abs(values[i + 1] - values[i]);
-    rtn.targets[i] = cl;
+    rtn.target[i] = cl;
     rtn.ll99[i] = 0;
     rtn.ll95[i] = 0;
     rtn.ll68[i] = 0;
