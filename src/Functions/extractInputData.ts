@@ -1,8 +1,7 @@
-import type powerbi from "powerbi-visuals-api";
 import {
-  formatPrimitiveValue, readNumbers, readSettingsRows, readRowAnnotations, rowWarnings, type RowAnnotations, type ValidatedDataView
+  extractRows, formatPrimitiveValue, readNumbers, readSettingsRows, type InputRows, type ValidatedDataView
 } from "powerbi-visuals-core/powerbi";
-import { keptPositions, keptValues, type InputDataResult, type ValidRows } from "powerbi-visuals-core/data";
+import { keptValues, type InputDataResult } from "powerbi-visuals-core/data";
 import extractKeys from "./extractKeys";
 import validateInputData from "./validateInputData";
 import settingsModel, { defaultSettings, type settingsValueType } from "../settings";
@@ -10,19 +9,15 @@ import { orderedPairError } from "powerbi-visuals-core/settings";
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 
-export type dataObject = RowAnnotations<settingsValueType["scatter"], settingsValueType["labels"]> & {
+export type dataObject = InputRows<settingsValueType["scatter"], settingsValueType["labels"]> & {
   limitInputArgs: Omit<controlLimitsArgs, "subset_points">;
   spcSettings: settingsValueType["spc"];
-  /** Key and indicator columns, which together identify a row */
-  identityColumns: powerbi.DataViewCategoryColumn[];
   groupingIndexes: number[];
   line_formatting: settingsValueType["lines"][];
-  warningMessage: string;
   /** Row-aligned with the limit inputs; blank where the line is hidden or its setting is unset */
   alt_target: (number | undefined)[];
   speclimits_lower: (number | undefined)[];
   speclimits_upper: (number | undefined)[];
-  validationStatus: ValidRows;
 };
 
 export default function extractInputData(view: ValidatedDataView<"numerators">,
@@ -40,12 +35,18 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
   const numerators = readNumbers(view.values.numerators[0], idxs);
   const denominators = useDenominators && denominatorColumn !== undefined ? readNumbers(denominatorColumn, idxs) : undefined;
   const xbar_sds = chart.needs_sd && sdColumn !== undefined ? readNumbers(sdColumn, idxs) : undefined;
-  const validation = validateInputData(keys, numerators, denominators, xbar_sds, chart);
-  if (validation.status !== 0) {
-    return { status: "invalid", error: validation.error };
+  const extracted = extractRows(view, idxs, {
+    keys,
+    validation: validateInputData(keys, numerators, denominators, xbar_sds, chart),
+    cards: { scatter: settingsModel.scatter, labels: settingsModel.labels },
+    defaults: { scatter: defaultSettings.scatter, labels: defaultSettings.labels },
+    settings: { messages: validationMessages, messagePositionByRowIndex }
+  });
+  if (extracted.status === "invalid") {
+    return extracted;
   }
+  const { kept, warnings, ...rows } = extracted.data;
 
-  const kept = keptPositions(validation.messages);
   const groupings = view.values.groupings?.[0];
   const lines = readSettingsRows(settingsModel.lines, "lines", defaultSettings.lines, categories, idxs).values;
   const spcSettings = readSettingsRows(settingsModel.spc, "spc", defaultSettings.spc, categories, [idxs[0]]).values[0];
@@ -86,40 +87,26 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
       currentGrouping = grouping;
     }
   }
-  const groupName = view.category.source.displayName;
-  const removalMessages = rowWarnings(groupName, idxs, keys, validation.messages, {
-    messages: validationMessages,
-    messagePositionByRowIndex
-  });
   if (inputSettings.nhs_icons.show_assurance_icons) {
     if (showAltTarget && alt_target.length > 0 && alt_target[alt_target.length - 1] === undefined) {
-      removalMessages.push("NHS Assurance icon requires a valid alt. target at last observation.");
+      warnings.push("NHS Assurance icon requires a valid alt. target at last observation.");
     }
     if (!chart.has_control_limits) {
-      removalMessages.push("NHS Assurance icon requires chart with control limits.");
+      warnings.push("NHS Assurance icon requires chart with control limits.");
     }
   }
-  const annotations = readRowAnnotations({
-    categorical: view.categorical,
-    values: view.values,
-    categories,
-    cards: { scatter: settingsModel.scatter, labels: settingsModel.labels },
-    defaults: { scatter: defaultSettings.scatter, labels: defaultSettings.labels }
-  }, idxs, kept);
   return {
     status: "valid",
     data: {
-      ...annotations,
+      ...rows,
       limitInputArgs,
       spcSettings,
-      identityColumns: [...view.categories.key, ...(view.categories.indicator ?? [])],
       groupingIndexes,
       line_formatting,
       alt_target,
       speclimits_lower,
       speclimits_upper,
-      warningMessage: removalMessages.join("\n"),
-      validationStatus: validation
+      warningMessage: warnings.join("\n")
     }
   };
 }

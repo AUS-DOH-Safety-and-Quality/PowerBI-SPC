@@ -95,7 +95,7 @@ describe("input row contracts", () => {
     expect(valid.data.limitInputArgs.denominators).toEqual([10, 20]);
     expect(valid.data.limitInputArgs.xbar_sds).toEqual([1, 3]);
     expect(extract(buildDataView({ key: ["A"], numerators: [null] }), [0])).toEqual({ status: "invalid", error: "All numerators are missing or null!" });
-    expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [0], "p")).toEqual({ status: "invalid", error: "All denominators missing or null!" });
+    expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [0], "p")).toEqual({ status: "invalid", error: "All denominators are missing or null!" });
     expect(extract(buildDataView({ key: ["A"] }), [0])).toEqual({ status: "invalid", error: "No numerators passed!" });
   });
 
