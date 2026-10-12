@@ -97,6 +97,14 @@ describe("truncation and axis limit combinations", () => {
   });
 
   it.each([
+    { lines: { specification_lower: 5, specification_upper: 5 }, error: "specification_lower (5) must be below specification_upper (5)" },
+    { lines: { specification_lower: 6, specification_upper: 5 }, error: "specification_lower (6) must be below specification_upper (5)" }
+  ])("rejects $lines as an input error", ({ lines, error }) => {
+    const settings: settingsValueType = { ...defaultSettings, lines: { ...defaultSettings.lines, ...lines } };
+    expect(updateViewModel(settings, inputs).result).toMatchObject({ status: false, error });
+  });
+
+  it.each([
     { bounds: { xlimit_l: 50 }, error: `The x-axis lower limit (50) is above the upper limit (${automatic.x.upper})` },
     { bounds: { xlimit_u: -1 }, error: `The x-axis lower limit (${automatic.x.lower}) is above the upper limit (-1)` },
     { bounds: { ylimit_l: 100 }, error: `The y-axis lower limit (100) is above the upper limit (${automatic.y.upper})` },

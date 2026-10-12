@@ -147,22 +147,43 @@ describe("input row contracts", () => {
     expect(formatter(undefined, "value")).toBe("");
   });
 
-  it("builds grouped selection identities only for accepted raw rows", () => {
+  it("builds grouped selection identities from the key and indicator columns, only for accepted raw rows", () => {
     const host = createVisualHost({});
-    const createdRows: number[] = [];
+    const createdRows: string[] = [];
     const original = host.createSelectionIdBuilder.bind(host);
     vi.spyOn(host, "createSelectionIdBuilder").mockImplementation(() => {
       const builder = original();
       const withCategory = builder.withCategory.bind(builder);
-      builder.withCategory = (category, index) => { createdRows.push(index); return withCategory(category, index); };
+      builder.withCategory = (category, index) => {
+        createdRows.push(`${category.source.displayName}[${index}]`);
+        return withCategory(category, index);
+      };
       return builder;
     });
     const model = new viewModelClass();
     const view = buildDataView({ key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators: [1, 3, null, 4, 2, 5] });
     expect(model.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 }, host).status).toBe(true);
-    expect(createdRows).toEqual([0, 4, 1, 3, 5]);
+    expect(createdRows).toEqual([
+      "Category[0]", "Indicator[0]", "Category[4]", "Indicator[4]",
+      "Category[1]", "Indicator[1]", "Category[3]", "Indicator[3]", "Category[5]", "Indicator[5]"
+    ]);
     expect(model.identities[0]).toHaveLength(2);
     expect(model.identities[1]).toHaveLength(3);
+  });
+
+  it("names the group in grouped warnings and reports every failing group's error", () => {
+    const host = createVisualHost({});
+    const model = new viewModelClass();
+    const viewport = { width: 500, height: 500 };
+    const grouped = (numerators: (number | null)[]) => buildDataView({
+      key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators
+    });
+    expect(model.update({ dataViews: [grouped([1, 3, null, 4, 2, 5])], viewport, type: 2 }, host))
+      .toEqual({ status: true, warning: "A: Category A1 removed due to: Numerator missing." });
+    expect(model.update({ dataViews: [grouped([null, null, null, null, null, null])], viewport, type: 2 }, host))
+      .toEqual({ status: false, error: "A: All numerators are missing or null!\nB: All numerators are missing or null!" });
+    expect(model.update({ dataViews: [buildDataView({ key: ["A0", "A1", "A2"], numerators: [1, null, 2] })], viewport, type: 2 }, host))
+      .toEqual({ status: true, warning: "Category A1 removed due to: Numerator missing." });
   });
 
   it("clears failed extraction state and recovers on the next visual update", () => {

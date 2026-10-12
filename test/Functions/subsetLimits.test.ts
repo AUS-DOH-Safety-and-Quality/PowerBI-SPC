@@ -97,7 +97,7 @@ describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", so
     expectLimits(limits, repEach(means, 4), rangeSigmas(ranges, 4));
   });
 
-  it.each([undefined, 0, 20])("uses every point when the subset count is %s", count => {
+  it.each([undefined, 20])("uses every point when the subset count is %s", count => {
     const limits = calculateLimits({ num_points_subset: count }, groupings, splitIndexes);
     expectLimits(limits, repEach([15, 38, 71], 4), rangeSigmas([4, 6, 8], 4));
   });

@@ -27,11 +27,11 @@ function update(spc: Partial<settingsValueType["spc"]>) {
 // A fractional subset count is rejected by settings validation with a message,
 // the same way as any other invalid setting value, instead of reaching an invalid array length.
 describe("subset count validation", () => {
-  it("rejects a fractional subset count with a validation message", () => {
-    expect(update({ num_points_subset: 2.5 }).result).toEqual({
+  it.each([2.5, 0])("rejects a subset count of %s with a validation message", count => {
+    expect(update({ num_points_subset: count }).result).toEqual({
       status: false,
       type: "settings",
-      error: "2.5 is not a valid value for num_points_subset. Valid values are whole numbers"
+      error: `${count} is not a valid value for num_points_subset. Valid values are whole numbers, at least 1`
     });
   });
 

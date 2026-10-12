@@ -6,13 +6,15 @@ import { keptPositions, keptValues, type InputDataResult, type ValidRows } from 
 import extractKeys from "./extractKeys";
 import validateInputData from "./validateInputData";
 import settingsModel, { defaultSettings, type settingsValueType } from "../settings";
+import { orderedPairError } from "powerbi-visuals-core/settings";
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 
 export type dataObject = RowAnnotations<settingsValueType["scatter"], settingsValueType["labels"]> & {
   limitInputArgs: Omit<controlLimitsArgs, "subset_points">;
   spcSettings: settingsValueType["spc"];
-  categories: powerbi.DataViewCategoryColumn;
+  /** Key and indicator columns, which together identify a row */
+  identityColumns: powerbi.DataViewCategoryColumn[];
   groupingIndexes: number[];
   line_formatting: settingsValueType["lines"][];
   warningMessage: string;
@@ -67,6 +69,11 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
     const i = kept[x];
     const row = idxs[i];
     limitInputArgs.keys[x] = { x, id: row, label: chart.x_axis_use_date ? keptKeys[x] : String(x) };
+    const specificationError = orderedPairError("specification_lower", lines[i].specification_lower,
+                                                "specification_upper", lines[i].specification_upper);
+    if (specificationError !== undefined) {
+      return { status: "invalid", error: specificationError };
+    }
     line_formatting[x] = lines[i];
     alt_target[x] = showAltTarget ? lines[i].alt_target : undefined;
     speclimits_lower[x] = showSpecification ? lines[i].specification_lower : undefined;
@@ -79,7 +86,7 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
       currentGrouping = grouping;
     }
   }
-  const groupName = categories.source.displayName;
+  const groupName = view.category.source.displayName;
   const removalMessages = rowWarnings(groupName, idxs, keys, validation.messages, {
     messages: validationMessages,
     messagePositionByRowIndex
@@ -105,7 +112,7 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
       ...annotations,
       limitInputArgs,
       spcSettings,
-      categories,
+      identityColumns: [...view.categories.key, ...(view.categories.indicator ?? [])],
       groupingIndexes,
       line_formatting,
       alt_target,

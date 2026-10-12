@@ -2,8 +2,9 @@
 
 import type powerbi from "powerbi-visuals-api";
 import {
-  PlotVisual, select, drawPlotAxes, drawPlotTooltips, drawPlotDots, drawPlotDownload, drawPlotValueLabels, drawPlotLines,
-  drawPlotLineLabels, highlightOpacity, valueTickFormat, type Selection, type BaseType, type AxisBounds, type SvgSelection
+  PlotVisual, drawPlotAxes, drawPlotTooltips, drawPlotDots, drawPlotDownload, drawPlotValueLabels, drawPlotLines,
+  drawPlotLineLabels, valueTickFormat, createTableContainer, showTable, highlightTable,
+  type AxisBounds, type SvgSelection, type TableSelection
 } from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
@@ -11,29 +12,18 @@ import viewModelClass, { type plotData, type plotDataGrouped } from "./Classes/v
 import axisRanges from "./Functions/axisRanges";
 import lineKeys from "./Functions/lineKeys";
 import type { settingsValueType } from "./settings";
-import { identitySelected, selectionState } from "powerbi-visuals-core/powerbi";
+import { selectionState } from "powerbi-visuals-core/powerbi";
 import { lineStyle, lowerLimitLines } from "powerbi-visuals-core/settings";
 
 export type svgBaseType = SvgSelection;
-export type divBaseType = Selection<HTMLDivElement, unknown, null, undefined>;
 
 export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueType> {
-  tableDiv: divBaseType;
+  tableDiv: TableSelection;
   protected readonly lineKeys = lineKeys;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions | undefined) {
     super(options, () => new viewModelClass());
-    this.tableDiv = select(this.element).insert("div", "svg")
-                                        .style("overflow", "auto");
-    // Collapsed borders stay behind when the sticky header scrolls, so cells draw their own
-    const table = this.tableDiv.append("table")
-                                .classed("table-group", true)
-                                .style("border-collapse", "separate")
-                                .style("border-spacing", "0")
-                                .style("width", "100%");
-
-    table.append("thead").append("tr").classed("table-header", true);
-    table.append('tbody').classed("table-body", true);
+    this.tableDiv = createTableContainer(this.element);
   }
 
   protected get settings(): settingsValueType {
@@ -123,11 +113,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
 
   resizeCanvas(width: number, height: number): void {
     super.resizeCanvas(width, height);
-    if (width === 0 && height === 0) {
-      this.tableDiv.style("width", "100%").style("height", "100%");
-    } else {
-      this.tableDiv.style("width", "0%").style("height", "0%");
-    }
+    showTable(this.tableDiv, width === 0 && height === 0);
   }
 
   updateHighlighting(): void {
@@ -138,11 +124,10 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     }
     const state = selectionState(this.selectionManager, anyHighlights);
     this.highlightPlotPoints(state, point => point.aesthetics);
-    const tableSelection: Selection<BaseType | HTMLTableRowElement, plotDataGrouped, BaseType, unknown> = this.tableDiv.selectAll(".table-body").selectChildren();
-    tableSelection.style("opacity", (d: plotDataGrouped) => highlightOpacity({
+    highlightTable<plotDataGrouped>(this.tableDiv, state, d => ({
       opacity: d.aesthetics.table_opacity,
       opacity_selected: d.aesthetics.table_opacity_selected,
       opacity_unselected: d.aesthetics.table_opacity_unselected
-    }, state.active, identitySelected(d.identity, state.selected) || d.highlighted));
+    }));
   }
 }

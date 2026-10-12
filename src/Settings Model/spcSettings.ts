@@ -36,7 +36,7 @@ const spcSettings = {
                                    + "Splits stay when this is turned off, and are ignored when Grouping (Summary Table) is used.", false),
       num_points_subset: numberOption("Subset Number of Points for Limit Calculations",
                                       "Calculates the first period's limits from only this many points; blank or out of range uses them all.",
-                                      undefined, { integer: true }),
+                                      undefined, { min: 1, integer: true }),
       subset_points_from: dropdownOption("Subset Points From", "Whether the subset is taken from the start or end of the period.",
                                          "Start", ["Start", "End"]),
       subset_rebaselines: toggleOption("Subset Points After Each Re-Baseline",

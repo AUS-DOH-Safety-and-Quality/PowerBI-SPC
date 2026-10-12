@@ -66,7 +66,7 @@
           "type": { "enumeration" : [ ] }
         },
         "subset_rebaselines": {
-          "type": { "bool": false }
+          "type": { "bool": true }
         },
         "ll_truncate": {
           "type": { "numeric": true }
@@ -587,7 +587,7 @@
           "type": { "numeric": true }
         },
         "plot_label_show_n_trend": {
-          "type": { "bool": true }
+          "type": { "numeric": true }
         },
         "plot_label_position_99": {
           "type": { "enumeration" : [ ] }

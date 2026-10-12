@@ -38,4 +38,4 @@
 | --- | --- | --- | --- |
 | Show Gridlines | Draws a gridline at each tick. | Off | On or Off |
 | Gridline Colour | Gridline colour. | `#D3D3D3` | Colour |
-| Gridline Width | Gridline width, in pixels. | 1 | Number, at least 0 |
+| Gridline Width | Gridline width, in pixels. | 1 | Number from 0 to 100 |

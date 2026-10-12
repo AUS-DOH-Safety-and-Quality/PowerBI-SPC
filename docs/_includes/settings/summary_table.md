@@ -12,7 +12,7 @@
 | Opacity if Selected | Opacity of selected rows while a selection is active. | 1 | Number from 0 to 1 |
 | Opacity if Unselected | Opacity of the other rows while a selection is active. | 0.2 | Number from 0 to 1 |
 | Outer Border Style | Line style of the border around the table. | None | • Solid (`solid`)<br>• Dotted (`dotted`)<br>• Dashed (`dashed`)<br>• Double (`double`)<br>• Groove (`groove`)<br>• Ridge (`ridge`)<br>• Inset (`inset`)<br>• Outset (`outset`)<br>• None (`none`) |
-| Outer Border Width | Width of the border around the table, in pixels. | 1 | Number, at least 0 |
+| Outer Border Width | Width of the border around the table, in pixels. | 1 | Number from 0 to 100 |
 | Outer Border Colour | Colour of the border around the table. | `#000000` | Colour |
 | Outer Border Top | Draws the top of the border around the table. | On | On or Off |
 | Outer Border Bottom | Draws the bottom of the border around the table. | On | On or Off |
@@ -32,7 +32,7 @@
 | Header Font Colour | Colour of the column headers. | `#000000` | Colour |
 | Header Background Colour | Background colour of the header row. | `#FFFFFF` | Colour |
 | Header Border Style | Line style of the header borders. | Solid | • Solid (`solid`)<br>• Dotted (`dotted`)<br>• Dashed (`dashed`)<br>• Double (`double`)<br>• Groove (`groove`)<br>• Ridge (`ridge`)<br>• Inset (`inset`)<br>• Outset (`outset`)<br>• None (`none`) |
-| Header Border Width | Width of the header borders, in pixels. | 1 | Number, at least 0 |
+| Header Border Width | Width of the header borders, in pixels. | 1 | Number from 0 to 100 |
 | Header Border Colour | Colour of the header borders. | `#000000` | Colour |
 | Bottom Border | Draws a border under the header row. | On | On or Off |
 | Inner Borders | Draws borders between the headers. | Off | On or Off |
@@ -50,7 +50,7 @@
 | Body Font Colour | Colour of the cell text. | `#000000` | Colour |
 | Body Background Colour | Background colour of the rows. | `#FFFFFF` | Colour |
 | Body Border Style | Line style of the cell borders. | Solid | • Solid (`solid`)<br>• Dotted (`dotted`)<br>• Dashed (`dashed`)<br>• Double (`double`)<br>• Groove (`groove`)<br>• Ridge (`ridge`)<br>• Inset (`inset`)<br>• Outset (`outset`)<br>• None (`none`) |
-| Body Border Width | Width of the cell borders, in pixels. | 1 | Number, at least 0 |
+| Body Border Width | Width of the cell borders, in pixels. | 1 | Number from 0 to 100 |
 | Body Border Colour | Colour of the cell borders. | `#D3D3D3` | Colour |
 | Top/Bottom Borders | Draws borders between rows. | On | On or Off |
 | Left/Right Borders | Draws borders between columns. | Off | On or Off |

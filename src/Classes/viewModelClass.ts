@@ -1,4 +1,7 @@
-import { groupCategoryRows, readColourPalette, validateDataView, type ColourPalette, type UpdateOptions } from "powerbi-visuals-core/powerbi";
+import {
+  groupCategoryRows, labelledMessage, readColourPalette, rowIdentity, validateDataView, type ColourPalette, type FormattingModel,
+  type UpdateOptions
+} from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
@@ -247,6 +250,8 @@ export default class viewModelClass {
 
   indicatorVarNames: string[];
   groupNames: string[][];
+  /** Each group's names joined, leading its messages */
+  groupLabels: string[];
   identities: ISelectionId[][];
 
   get showGrouped(): boolean {
@@ -275,6 +280,11 @@ export default class viewModelClass {
     this.svgHeight = 0;
     this.indicatorVarNames = [];
     this.groupNames = [];
+    this.groupLabels = [];
+  }
+
+  getFormattingModel(): FormattingModel {
+    return this.inputSettings.getFormattingModel();
   }
 
   update(options: UpdateOptions, host: IVisualHost): viewModelValidationT {
@@ -299,6 +309,7 @@ export default class viewModelClass {
     const indicatorGroups = groupCategoryRows(indicator_cols, view.rowCount);
     const idx_per_indicator = indicatorGroups.rows;
     this.groupNames = indicatorGroups.names;
+    this.groupLabels = indicatorGroups.labels;
 
     // Data and Style updates both rebuild settings, so theme changes reach the derived values
     const dataChanged = (options.type & (2 | 16)) !== 0 || this.firstRun;
@@ -345,7 +356,7 @@ export default class viewModelClass {
           messagePositionByRowIndex
         );
         if (extraction.status !== "valid") {
-          inputErrors.push(extraction.error);
+          inputErrors.push(labelledMessage(this.groupLabels[idx], extraction.error));
           continue;
         }
         const inpData = extraction.data;
@@ -362,7 +373,7 @@ export default class viewModelClass {
         const keys = inpData.limitInputArgs.keys;
         const identities = new Array<ISelectionId>(keys.length);
         for (let i = 0; i < keys.length; i++) {
-          identities[i] = host.createSelectionIdBuilder().withCategory(inpData.categories, keys[i].id).createSelectionId();
+          identities[i] = rowIdentity(host, inpData.identityColumns, keys[i].id);
         }
 
         this.groupStartEndIndexes.push(groupStartEnd);
@@ -399,7 +410,7 @@ export default class viewModelClass {
     const warnings: string[] = [];
     for (let i = 0; i < this.inputData.length; i++) {
       if (this.inputData[i].warningMessage !== "") {
-        warnings.push(this.inputData[i].warningMessage);
+        warnings.push(labelledMessage(this.groupLabels[i], this.inputData[i].warningMessage));
       }
     }
 
@@ -718,9 +729,7 @@ export default class viewModelClass {
         value: controlLimits.values[i],
         aesthetics: aesthetics,
         table_row: table_row,
-        identity: host.createSelectionIdBuilder()
-                      .withCategory(inputData.categories, controlLimits.keys[i].id)
-                      .createSelectionId(),
+        identity: rowIdentity(host, inputData.identityColumns, controlLimits.keys[i].id),
         highlighted: inputData.highlights[index] !== undefined,
         tooltip: buildTooltip(table_row, inputData.tooltips[index], settings, derivedSettings),
         label: {
