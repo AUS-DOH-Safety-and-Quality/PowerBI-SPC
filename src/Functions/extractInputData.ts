@@ -1,5 +1,5 @@
 import { extractRows, formatPrimitiveValue, readNumbers, type InputRows, type ValidatedDataView } from "powerbi-visuals-core/powerbi";
-import { keptValues, type InputDataResult } from "powerbi-visuals-core/data";
+import { keptValue, type InputDataResult } from "powerbi-visuals-core/data";
 import extractKeys from "./extractKeys";
 import validateInputData from "./validateInputData";
 import type { settingsValueType } from "../settings";
@@ -43,8 +43,10 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
   const { kept, warnings, ...rows } = extracted.data;
 
   const groupings = view.values.groupings?.[0];
-  const keptKeys = keptValues(keys, kept);
   const limitKeys = new Array<controlLimitsArgs["keys"][number]>(kept.length);
+  const keptNumerators = new Array<number>(kept.length);
+  const keptDenominators = denominators === undefined ? undefined : new Array<number>(kept.length);
+  const keptSds = xbar_sds === undefined ? undefined : new Array<number>(kept.length);
   const showAltTarget = inputSettings.lines.show_alt_target;
   const showSpecification = inputSettings.lines.show_specification;
   const line_formatting = new Array<settingsValueType["lines"]>(kept.length);
@@ -57,7 +59,14 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
     const i = kept[x];
     const row = idxs[i];
     const lines = rowSettings[i].lines;
-    limitKeys[x] = { x, id: row, label: chart.x_axis_use_date ? keptKeys[x] : String(x) };
+    limitKeys[x] = { x, id: row, label: chart.x_axis_use_date ? keptValue(keys, i) : String(x) };
+    keptNumerators[x] = keptValue(numerators, i);
+    if (keptDenominators !== undefined) {
+      keptDenominators[x] = keptValue(denominators, i);
+    }
+    if (keptSds !== undefined) {
+      keptSds[x] = keptValue(xbar_sds, i);
+    }
     const specificationError = orderedPairError("specification_lower", lines.specification_lower,
                                                 "specification_upper", lines.specification_upper);
     if (specificationError !== undefined) {
@@ -89,9 +98,9 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
       ...rows,
       limitInputArgs: {
         keys: limitKeys,
-        numerators: keptValues(numerators, kept),
-        denominators: denominators === undefined ? undefined : keptValues(denominators, kept),
-        xbar_sds: xbar_sds === undefined ? undefined : keptValues(xbar_sds, kept),
+        numerators: keptNumerators,
+        denominators: keptDenominators,
+        xbar_sds: keptSds,
         outliers_in_limits: inputSettings.spc.outliers_in_limits
       },
       groupingIndexes,

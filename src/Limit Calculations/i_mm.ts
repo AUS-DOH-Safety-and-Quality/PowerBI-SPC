@@ -9,16 +9,14 @@ export default function immLimits(args: Readonly<controlLimitsArgs>): Calculated
   const n_sub: number = args.subset_points.length;
   const subset_points: readonly number[] = args.subset_points;
 
-  let ratio_subset: number[] = new Array<number>(n_sub);
-  for (let i = 0; i < n_sub; i++) {
-    ratio_subset[i] = plotted.values[subset_points[i]];
-  }
-  const cl: number = median(ratio_subset);
-
-  let consec_diff: number[] = new Array<number>(n_sub - 1);
+  const ratio_subset: number[] = new Array<number>(n_sub);
+  const consec_diff: number[] = new Array<number>(n_sub - 1);
+  ratio_subset[0] = plotted.values[subset_points[0]];
   for (let i = 1; i < n_sub; i++) {
+    ratio_subset[i] = plotted.values[subset_points[i]];
     consec_diff[i - 1] = Math.abs(ratio_subset[i] - ratio_subset[i - 1]);
   }
+  const cl: number = median(ratio_subset);
   let mmr: number = median(consec_diff);
 
   if (!args.outliers_in_limits) {

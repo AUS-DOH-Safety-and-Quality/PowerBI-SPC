@@ -17,29 +17,27 @@ const monthNameToNumber: { readonly [key: string]: number } = {
 };
 
 
-function temporalTypeToKey(inputType: { readonly temporal?: boolean, readonly category?: string }, inputValue: powerbi.PrimitiveValue) {
-  if (!inputType.temporal) {
-    return [];
-  }
-
-  if (inputType.category === "DayOfMonth") {
-    return ["day", <number>(inputValue)]
-  } else if (inputType.category === "Months") {
-    return ["month", monthNameToNumber[<string>(inputValue)]]
-  } else if (inputType.category === "Quarters") {
-    return ["quarter", <string>inputValue]
-  } else if (inputType.category === "Years") {
-    return ["year", <number>(inputValue)]
-  } else {
-    return []
-  }
-}
-
 type datePartsType = {
   day?: number,
   month?: number,
   quarter?: string,
   year?: number
+}
+
+function readDatePart(parts: datePartsType, inputType: { readonly temporal?: boolean, readonly category?: string },
+                      inputValue: powerbi.PrimitiveValue): void {
+  if (!inputType.temporal) {
+    return;
+  }
+  if (inputType.category === "DayOfMonth") {
+    parts.day = <number>(inputValue);
+  } else if (inputType.category === "Months") {
+    parts.month = monthNameToNumber[<string>(inputValue)];
+  } else if (inputType.category === "Quarters") {
+    parts.quarter = <string>inputValue;
+  } else if (inputType.category === "Years") {
+    parts.year = <number>(inputValue);
+  }
 }
 
 export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]) {
@@ -49,11 +47,10 @@ export default function parseInputDates(inputs: readonly powerbi.DataViewCategor
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
     for (let i = 0; i < n_keys; i++) {
-      const datePartsArray: (string | number)[][] = [];
+      const datePartsObj: datePartsType = {};
       for (let j = 0; j < inputs.length; j++) {
-        datePartsArray.push(temporalTypeToKey(inputs[j].source.type! as unknown as { temporal?: boolean, category?: string}, inputs[j].values[idxs[i]]));
+        readDatePart(datePartsObj, inputs[j].source.type! as unknown as { temporal?: boolean, category?: string}, inputs[j].values[idxs[i]]);
       }
-      const datePartsObj: datePartsType = Object.fromEntries(datePartsArray);
       if (datePartsObj.quarter) {
         inputQuarters.push(datePartsObj.quarter)
       }

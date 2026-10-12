@@ -83,6 +83,9 @@ export default function extractKeys(col: readonly powerbi.DataViewCategoryColumn
     (groupedCols[queryName] ??= []).push(col[i]);
   }
   const queryNames = Object.keys(groupedCols);
+  if (queryNames.length === 1) {
+    return formatKeys(groupedCols[queryNames[0]], inputSettings, idxs);
+  }
   const combinedKeys = new Array<string | undefined>(idxs.length);
   for (let i = 0; i < queryNames.length; i++) {
     const groupKeys = formatKeys(groupedCols[queryNames[i]], inputSettings, idxs);
