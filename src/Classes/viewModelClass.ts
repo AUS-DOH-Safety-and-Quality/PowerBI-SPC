@@ -29,67 +29,67 @@ import { PlotViewModelBase, type AxisBounds, type GroupResults, type ViewModelVa
 export type viewModelValidationT = ViewModelValidation;
 
 export type lineData = {
-  x: number;
-  line_value: number | undefined;
-  group: LineName;
-  aesthetics: settingsValueType["lines"];
+  readonly x: number;
+  readonly line_value: number | undefined;
+  readonly group: LineName;
+  readonly aesthetics: settingsValueType["lines"];
 }
 
 export type summaryTableRowData = StandardLineValues<number | undefined> & {
-  date: string;
-  numerator: number | undefined;
-  denominator: number | undefined;
-  value: number;
-  speclimits_lower: number | undefined;
-  speclimits_upper: number | undefined;
-  trend_line: number | undefined;
-  astpoint: FlagDirection;
-  trend: FlagDirection;
-  shift: FlagDirection;
-  two_in_three: FlagDirection;
+  readonly date: string;
+  readonly numerator: number | undefined;
+  readonly denominator: number | undefined;
+  readonly value: number;
+  readonly speclimits_lower: number | undefined;
+  readonly speclimits_upper: number | undefined;
+  readonly trend_line: number | undefined;
+  readonly astpoint: FlagDirection;
+  readonly trend: FlagDirection;
+  readonly shift: FlagDirection;
+  readonly two_in_three: FlagDirection;
 }
 
 /** Grouped rows hold formatted text; indicator and tooltip columns are named by the report */
 export type summaryTableRowDataGrouped = StandardLineValues<string> & {
-  [column: string]: string;
-  latest_date: string;
-  value: string;
-  numerator: string;
-  denominator: string;
-  speclimits_lower: string;
-  speclimits_upper: string;
-  trend_line: string;
-  assurance: NhsIconName | "none";
+  readonly [column: string]: string;
+  readonly latest_date: string;
+  readonly value: string;
+  readonly numerator: string;
+  readonly denominator: string;
+  readonly speclimits_lower: string;
+  readonly speclimits_upper: string;
+  readonly trend_line: string;
+  readonly assurance: NhsIconName | "none";
 }
 
 export type plotData = {
-  x: number;
-  value: number;
-  aesthetics: settingsValueType["scatter"];
-  table_row: summaryTableRowData;
-  identity: ISelectionId;
+  readonly x: number;
+  readonly value: number;
+  readonly aesthetics: settingsValueType["scatter"];
+  readonly table_row: summaryTableRowData;
+  readonly identity: ISelectionId;
   /** Highlighted by selections in other visuals */
-  highlighted: boolean;
-  tooltip: VisualTooltipDataItem[];
-  label: {
-    text_value: string | undefined,
-    aesthetics: settingsValueType["labels"],
+  readonly highlighted: boolean;
+  readonly tooltip: VisualTooltipDataItem[];
+  readonly label: {
+    readonly text_value: string | undefined,
+    readonly aesthetics: settingsValueType["labels"],
     angle: number | undefined,
     distance: number | undefined
   };
 }
 
 export type plotDataGrouped = {
-  table_row: summaryTableRowDataGrouped;
-  variation_icons: NhsIconName[];
-  identity: ISelectionId[];
-  aesthetics: settingsValueType["summary_table"];
-  highlighted: boolean;
+  readonly table_row: summaryTableRowDataGrouped;
+  readonly variation_icons: readonly NhsIconName[];
+  readonly identity: readonly ISelectionId[];
+  readonly aesthetics: settingsValueType["summary_table"];
+  readonly highlighted: boolean;
 }
 
 /** Every series is row-aligned with `keys`; a cell is undefined where the chart or settings define no value */
 export type controlLimitsObject = StandardLineValues<(number | undefined)[]> & {
-  keys: { x: number, id: number, label: string }[];
+  keys: { readonly x: number, readonly id: number, readonly label: string }[];
   values: number[];
   numerators: (number | undefined)[];
   denominators: (number | undefined)[];
@@ -116,25 +116,28 @@ const limitSeries = Object.keys({
   speclimits_lower: true,
   speclimits_upper: true,
   trend_line: true
-} satisfies Record<LimitSeries, true>) as LimitSeries[];
+} satisfies Record<LimitSeries, true>) as readonly LimitSeries[];
 
-/** Calculators return only the series their chart defines */
-export type CalculatedLimits = Pick<controlLimitsObject, "keys" | "values"> & Partial<Pick<controlLimitsObject, LimitSeries>>;
+/** Calculators return only the series their chart defines, and may pass their inputs through */
+export type CalculatedLimits = {
+  readonly keys: readonly controlLimitsObject["keys"][number][];
+  readonly values: readonly number[];
+} & { readonly [K in LimitSeries]?: readonly (number | undefined)[] };
 
 export type controlLimitsArgs = {
-  keys: { x: number, id: number, label: string }[];
-  numerators: number[];
-  denominators?: number[];
-  xbar_sds?: number[];
-  outliers_in_limits?: boolean;
-  subset_points: number[];
+  readonly keys: readonly controlLimitsObject["keys"][number][];
+  readonly numerators: readonly number[];
+  readonly denominators?: readonly number[];
+  readonly xbar_sds?: readonly number[];
+  readonly outliers_in_limits?: boolean;
+  readonly subset_points: readonly number[];
 }
 
 export type outliersObject = {
-  astpoint: FlagDirection[];
-  trend: FlagDirection[];
-  two_in_three: FlagDirection[];
-  shift: FlagDirection[];
+  readonly astpoint: FlagDirection[];
+  readonly trend: FlagDirection[];
+  readonly two_in_three: FlagDirection[];
+  readonly shift: FlagDirection[];
 }
 
 function copyInto<T>(target: T[], source: readonly T[], offset: number): void {
@@ -262,7 +265,6 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     this.identities = new Array<ISelectionId[]>();
     this.tableColumns = new Array<{ name: string; label: string; }[]>();
 
-    const messagePositionByRowIndex = this.inputSettings.messagePositionByRowIndex;
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -271,14 +273,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       const settings = this.inputSettings.settings[idx];
       const derivedSettings = this.inputSettings.derivedSettings[idx];
 
-      const extraction = extractInputData(
-        view,
-        settings,
-        derivedSettings,
-        this.inputSettings.validationStatus.messages,
-        group_idxs,
-        messagePositionByRowIndex
-      );
+      const extraction = extractInputData(view, this.inputSettings, group_idxs, idx);
       if (extraction.status !== "valid") {
         errors.push(labelledMessage(this.groupLabels[idx], extraction.error));
         continue;
@@ -320,7 +315,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     return { errors, warnings };
   }
 
-  getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {
+  getGroupingIndexes(inputData: dataObject, splitIndexes?: readonly number[]): number[][] {
     const candidateIndexes: number[] = (splitIndexes ?? [])
                                           .concat([-1])
                                           .concat(inputData.groupingIndexes)
@@ -354,7 +349,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     return result;
   }
 
-  calculateLimits(inputData: dataObject, groupStartEndIndexes: number[][], inputSettings: settingsValueType): controlLimitsObject {
+  calculateLimits(inputData: dataObject, groupStartEndIndexes: readonly (readonly number[])[], inputSettings: settingsValueType): controlLimitsObject {
     const limitFunction: (args: controlLimitsArgs) => CalculatedLimits
       = limitFunctions[inputSettings.spc.chart_type];
 
@@ -398,12 +393,12 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         outliers_in_limits: inputSettings.spc.outliers_in_limits,
         subset_points: sequence(subsetStart, subsetCount, 1)
       });
-      group.trend_line = calculateTrendLine(group.values);
       controlLimits.keys = controlLimits.keys.concat(group.keys);
       controlLimits.values = controlLimits.values.concat(group.values);
       for (let s = 0; s < limitSeries.length; s++) {
         const name = limitSeries[s];
-        controlLimits[name] = controlLimits[name].concat(group[name] ?? rep(undefined, group.keys.length));
+        const series = name === "trend_line" ? calculateTrendLine(group.values) : group[name];
+        controlLimits[name] = controlLimits[name].concat(series ?? rep(undefined, group.keys.length));
       }
     }
 
@@ -587,7 +582,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
 
     for (let i: number = 0; i < controlLimits.keys.length; i++) {
       const index: number = controlLimits.keys[i].x;
-      const aesthetics: settingsValueType["scatter"] = inputData.scatter_formatting[index];
+      // Rows may share the store's default settings, so colour a copy
+      const aesthetics = { ...inputData.scatter_formatting[index] };
       if (this.colourPalette.isHighContrast) {
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
@@ -762,7 +758,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     }
   }
 
-  flagOutliers(controlLimits: controlLimitsObject, groupStartEndIndexes: number[][],
+  flagOutliers(controlLimits: Readonly<controlLimitsObject>, groupStartEndIndexes: readonly (readonly number[])[],
                 inputSettings: settingsValueType, derivedSettings: derivedSettingsClass): outliersObject {
     const process_flag_type = inputSettings.outliers.process_flag_type;
     const improvement_direction = inputSettings.outliers.improvement_direction;

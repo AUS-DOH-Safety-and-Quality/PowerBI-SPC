@@ -6,6 +6,7 @@ import { formatPrimitiveValue, validateDataView, type PrimitiveValue } from "pow
 import { cells, must } from "powerbi-visuals-core/testing";
 import settingsModel from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
+import settingsClass from "../../src/Classes/settingsClass";
 import viewModelClass from "../../src/Classes/viewModelClass";
 import extractInputData from "../../src/Functions/extractInputData";
 import extractKeys from "../../src/Functions/extractKeys";
@@ -13,20 +14,20 @@ import validateInputData from "../../src/Functions/validateInputData";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 
-function extract(view: powerbi.DataView, indices: number[], chart: "i" | "p" | "xbar" = "i") {
+function settingsFor(chart: "p" | "xbar") {
   const settings = createDefaultValues(settingsModel);
   settings.spc.chart_type = chart;
+  return settings;
+}
+
+function extract(view: powerbi.DataView, indices: number[]) {
   const validated = validateDataView([view], ["numerators"]);
   if (validated.status !== "valid") {
     return validated;
   }
-  const positions = new Map<number, number>();
-  const messages: string[][] = [];
-  for (let i = 0; i < indices.length; i++) {
-    positions.set(indices[i], i);
-    messages.push([]);
-  }
-  return extractInputData(validated.view, settings, new derivedSettingsClass(settings.spc), messages, indices, positions);
+  const store = new settingsClass();
+  store.update(validated.view.category, [indices]);
+  return extractInputData(validated.view, store, indices);
 }
 
 describe("input row contracts", () => {
@@ -87,7 +88,7 @@ describe("input row contracts", () => {
       numerators: [1, 2, 3],
       denominators: [10, null, 20],
       xbar_sds: [1, 2, 3]
-    }), [0, 1, 2], "xbar");
+    }, settingsFor("xbar")), [0, 1, 2]);
     if (valid.status !== "valid") {
       throw new Error(valid.error);
     }
@@ -95,7 +96,7 @@ describe("input row contracts", () => {
     expect(valid.data.limitInputArgs.denominators).toEqual([10, 20]);
     expect(valid.data.limitInputArgs.xbar_sds).toEqual([1, 3]);
     expect(extract(buildDataView({ key: ["A"], numerators: [null] }), [0])).toEqual({ status: "invalid", error: "All numerators are missing or null!" });
-    expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [0], "p")).toEqual({ status: "invalid", error: "All denominators are missing or null!" });
+    expect(extract(buildDataView({ key: ["A"], numerators: [1] }, settingsFor("p")), [0])).toEqual({ status: "invalid", error: "All denominators are missing or null!" });
     expect(extract(buildDataView({ key: ["A"] }), [0])).toEqual({ status: "invalid", error: "No numerators passed!" });
   });
 

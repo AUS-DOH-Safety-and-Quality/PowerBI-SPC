@@ -14,11 +14,10 @@ import { lowerLimitLines } from "powerbi-visuals-core/settings";
 
 export type svgBaseType = SvgSelection;
 
-const lowerLines = new Set(lowerLimitLines);
-lowerLines.add("speclimits_lower");
+const lowerLines: ReadonlySet<string> = new Set(lowerLimitLines).add("speclimits_lower");
 
 export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueType, lineData> {
-  tableDiv: TableSelection;
+  readonly tableDiv: TableSelection;
   protected readonly lineKeys = lineKeys;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions | undefined) {

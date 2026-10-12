@@ -7,9 +7,10 @@ import buildDataView from "../helpers/buildDataView";
 import { updateViewModel, type LimitInputs } from "../helpers/calculateLimits";
 import { rep } from "powerbi-visuals-core/math";
 
-type Bounds = Partial<Pick<settingsValueType["spc"], "ll_truncate" | "ul_truncate">
-  & Pick<settingsValueType["x_axis"], "xlimit_l" | "xlimit_u">
-  & Pick<settingsValueType["y_axis"], "ylimit_l" | "ylimit_u">>;
+type Defaults = typeof defaultSettings;
+type Bounds = Partial<Pick<Defaults["spc"], "ll_truncate" | "ul_truncate">
+  & Pick<Defaults["x_axis"], "xlimit_l" | "xlimit_u">
+  & Pick<Defaults["y_axis"], "ylimit_l" | "ylimit_u">>;
 
 const inputs: LimitInputs = { numerators: [5, 7, 5, 9, 7, 5, 4, 9, 8, 13, 8, 7] };
 const limitLines = ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;

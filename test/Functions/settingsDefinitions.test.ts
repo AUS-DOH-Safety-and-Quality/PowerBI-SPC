@@ -37,9 +37,8 @@ describe("setting definitions", () => {
     expect(settings.settings[1].spc.chart_type).toBe("p");
     expect(settings.settings[0].spc.subset_rebaselines).toBe(false);
     expect(settings.settings[1].spc.subset_rebaselines).toBe(true);
-    settings.settings[0].canvas.lower_padding = 40;
-    expect(settings.settings[1].canvas.lower_padding).toBe(10);
-    expect(other.settings[0].canvas.lower_padding).toBe(10);
+    expect(settings.settings[1].canvas).not.toBe(settings.settings[0].canvas);
+    expect(other.settings[0].canvas).not.toBe(settings.settings[0].canvas);
     expect(defaultSettings.canvas.lower_padding).toBe(10);
     expect(settingsModel.canvas.lower_padding.default).toBe(10);
   });

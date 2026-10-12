@@ -1,7 +1,7 @@
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
 
 /** Ratios when denominators are supplied, otherwise the raw numerators; the pair is kept for the summary table */
-export default function plottedValues(args: Readonly<controlLimitsArgs>): { values: number[]; numerators?: number[]; denominators?: number[] } {
+export default function plottedValues(args: controlLimitsArgs): { values: number[]; numerators?: readonly number[]; denominators?: readonly number[] } {
   const numerators = args.numerators;
   const denominators = args.denominators;
   if (denominators === undefined) {

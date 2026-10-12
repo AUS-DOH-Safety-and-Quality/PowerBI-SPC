@@ -3,7 +3,7 @@ import type powerbi from "powerbi-visuals-api";
 import settingsClass from "../Classes/settingsClass";
 
 /** Chart-type requirements only; the presence of data, keys and numerators is checked by Core first */
-export default function validateDataViewColumns(inputSettingsClass: settingsClass, valueColumns: RoleColumns<powerbi.DataViewValueColumn>): string {
+export default function validateDataViewColumns(inputSettingsClass: settingsClass, valueColumns: Readonly<RoleColumns<powerbi.DataViewValueColumn>>): string {
   for (let i = 0; i < inputSettingsClass.derivedSettings.length; i++) {
     const props = inputSettingsClass.derivedSettings[i].chart_type_props;
     if (props.needs_denominator && valueColumns.denominators === undefined) {

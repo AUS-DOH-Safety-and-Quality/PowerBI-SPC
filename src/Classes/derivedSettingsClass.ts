@@ -1,7 +1,7 @@
 import type { settingsValueType } from "../settings"
 import { deriveScaling, type ValueFormatter } from "powerbi-visuals-core/data";
 
-const valueNames: Record<string, string> = {
+const valueNames: Readonly<Record<string, string>> = {
   "i": "Observation",
   "i_m": "Observation",
   "i_mm": "Observation",
@@ -19,10 +19,10 @@ const valueNames: Record<string, string> = {
 }
 
 export default class derivedSettingsClass {
-  multiplier: number
-  percentLabels: boolean
-  formatValue: ValueFormatter
-  chart_type_props: {
+  readonly multiplier: number
+  readonly percentLabels: boolean
+  readonly formatValue: ValueFormatter
+  readonly chart_type_props: {
     name: string,
     needs_denominator: boolean,
     denominator_optional: boolean,

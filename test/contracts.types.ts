@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 import type { UpdateOptions, ValidatedDataView } from "powerbi-visuals-core/powerbi";
 import type viewModelClass from "../src/Classes/viewModelClass";
 import type { plotData, plotDataGrouped, LimitSeries, controlLimitsObject } from "../src/Classes/viewModelClass";
-import type derivedSettingsClass from "../src/Classes/derivedSettingsClass";
+import type settingsClass from "../src/Classes/settingsClass";
 import extractInputData from "../src/Functions/extractInputData";
 import type { settingsValueType } from "../src/settings";
 import type { NhsIconName } from "../src/D3 Plotting Functions/NHS Icons";
@@ -13,7 +13,7 @@ import buildDataView from "./helpers/buildDataView";
 declare const viewModel: viewModelClass;
 declare const visual: Visual;
 declare const settings: settingsValueType;
-declare const derived: derivedSettingsClass;
+declare const store: settingsClass;
 declare const dataView: powerbi.DataView;
 declare const validated: ValidatedDataView<"numerators">;
 declare const limits: controlLimitsObject;
@@ -48,9 +48,9 @@ const options: UpdateOptions = { dataViews: [], viewport: { width: 1, height: 1 
 buildDataView({ key: ["A", null], numerators: [1, undefined] });
 
 // Extraction only accepts a view Core has validated, and reads its required roles without a check
-extractInputData(validated, settings, derived, [], [0], new Map());
+extractInputData(validated, store, [0]);
 // @ts-expect-error Raw data views must pass validateDataView first.
-extractInputData(dataView, settings, derived, [], [0], new Map());
+extractInputData(dataView, store, [0]);
 const numerators: powerbi.DataViewValueColumn[] = validated.values.numerators;
 
 /** Every limit series exists; only its cells may be blank */

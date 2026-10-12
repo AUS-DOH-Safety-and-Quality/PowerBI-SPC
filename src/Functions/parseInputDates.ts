@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api"
 
-const monthNameToNumber: { [key: string]: number } = {
+const monthNameToNumber: { readonly [key: string]: number } = {
   "January": 0,
   "February": 1,
   "March": 2,
@@ -17,7 +17,7 @@ const monthNameToNumber: { [key: string]: number } = {
 };
 
 
-function temporalTypeToKey(inputType: { temporal?: boolean, category?: string}, inputValue: powerbi.PrimitiveValue) {
+function temporalTypeToKey(inputType: { readonly temporal?: boolean, readonly category?: string }, inputValue: powerbi.PrimitiveValue) {
   if (!inputType.temporal) {
     return [];
   }
@@ -42,7 +42,7 @@ type datePartsType = {
   year?: number
 }
 
-export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[], idxs: number[]) {
+export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]) {
   const n_keys: number = idxs.length;
   let inputDates: (Date | undefined)[] = [];
   const inputQuarters: string[] = [];

@@ -1,9 +1,9 @@
 /** Subset of Intl.DateTimeFormatOptions. */
 export interface DateFormatOptions {
-  weekday?: "short" | "long";
-  day?: "2-digit";
-  month?: "2-digit" | "short" | "long";
-  year?: "numeric" | "2-digit";
+  readonly weekday?: "short" | "long";
+  readonly day?: "2-digit";
+  readonly month?: "2-digit" | "short" | "long";
+  readonly year?: "numeric" | "2-digit";
 }
 
 /** Formatted date parts; unrequested parts are empty strings. */
@@ -14,22 +14,22 @@ export interface DatePartsRecord {
   year: string;
 }
 
-const weekdayShort: Record<"en-GB" | "en-US", string[]> = {
+const weekdayShort: Record<"en-GB" | "en-US", readonly string[]> = {
   "en-GB": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   "en-US": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 };
 
-const weekdayLong: Record<"en-GB" | "en-US", string[]> = {
+const weekdayLong: Record<"en-GB" | "en-US", readonly string[]> = {
   "en-GB": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "en-US": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 };
 
-const monthShort: Record<"en-GB" | "en-US", string[]> = {
+const monthShort: Record<"en-GB" | "en-US", readonly string[]> = {
   "en-GB": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
   "en-US": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 };
 
-const monthLong: Record<"en-GB" | "en-US", string[]> = {
+const monthLong: Record<"en-GB" | "en-US", readonly string[]> = {
   "en-GB": ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"],
   "en-US": ["January", "February", "March", "April", "May", "June",

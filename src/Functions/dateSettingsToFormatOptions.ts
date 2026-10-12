@@ -2,27 +2,27 @@ import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { settingsValueType } from "../settings"
 import type { DateFormatOptions } from "./formatDateParts"
 
-const weekdayDateMap: Record<string, "long" | "short" | null> = {
+const weekdayDateMap: Readonly<Record<string, "long" | "short" | null>> = {
   "DD" : null,
   "Thurs DD" : "short",
   "Thursday DD" : "long",
   "(blank)" : null
 }
 
-const monthDateMap: Record<string, "2-digit" | "short" | "long" | null> = {
+const monthDateMap: Readonly<Record<string, "2-digit" | "short" | "long" | null>> = {
   "MM" : "2-digit",
   "Mon" : "short",
   "Month" : "long",
   "(blank)" : null
 }
 
-const yearDateMap: Record<string, "numeric" | "2-digit" | null> = {
+const yearDateMap: Readonly<Record<string, "numeric" | "2-digit" | null>> = {
   "YYYY" : "numeric",
   "YY" : "2-digit",
   "(blank)" : null
 }
 
-const dayDateMap: Record<string, "2-digit" | null> = {
+const dayDateMap: Readonly<Record<string, "2-digit" | null>> = {
   "DD" : "2-digit",
   "Thurs DD" : "2-digit",
   "Thursday DD" : "2-digit",
@@ -34,7 +34,7 @@ const dateOptionsLookup = {
   "day" : dayDateMap,
   "month" : monthDateMap,
   "year" : yearDateMap
-}
+} as const
 
 /**
  * formatDateParts options from the visual's date settings; "(blank)" omits a part,

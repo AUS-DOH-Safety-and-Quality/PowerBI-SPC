@@ -1,32 +1,28 @@
-import {
-  extractRows, formatPrimitiveValue, readNumbers, readSettingsRows, type InputRows, type ValidatedDataView
-} from "powerbi-visuals-core/powerbi";
+import { extractRows, formatPrimitiveValue, readNumbers, type InputRows, type ValidatedDataView } from "powerbi-visuals-core/powerbi";
 import { keptValues, type InputDataResult } from "powerbi-visuals-core/data";
 import extractKeys from "./extractKeys";
 import validateInputData from "./validateInputData";
-import settingsModel, { defaultSettings, type settingsValueType } from "../settings";
+import type { settingsValueType } from "../settings";
 import { orderedPairError } from "powerbi-visuals-core/settings";
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
-import type derivedSettingsClass from "../Classes/derivedSettingsClass";
+import type settingsClass from "../Classes/settingsClass";
 
 export type dataObject = InputRows<settingsValueType["scatter"], settingsValueType["labels"]> & {
-  limitInputArgs: Omit<controlLimitsArgs, "subset_points">;
-  spcSettings: settingsValueType["spc"];
-  groupingIndexes: number[];
-  line_formatting: settingsValueType["lines"][];
+  readonly limitInputArgs: Omit<controlLimitsArgs, "subset_points">;
+  readonly groupingIndexes: number[];
+  readonly line_formatting: settingsValueType["lines"][];
   /** Row-aligned with the limit inputs; blank where the line is hidden or its setting is unset */
-  alt_target: (number | undefined)[];
-  speclimits_lower: (number | undefined)[];
-  speclimits_upper: (number | undefined)[];
+  readonly alt_target: (number | undefined)[];
+  readonly speclimits_lower: (number | undefined)[];
+  readonly speclimits_upper: (number | undefined)[];
 };
 
-export default function extractInputData(view: ValidatedDataView<"numerators">,
-                                          inputSettings: settingsValueType,
-                                          derivedSettings: derivedSettingsClass,
-                                          validationMessages: string[][],
-                                          idxs: number[],
-                                          messagePositionByRowIndex: Map<number, number>): InputDataResult<dataObject> {
-  const categories = view.category;
+/** The group's rows, read against the settings store's values and row settings for that group */
+export default function extractInputData(view: ValidatedDataView<"numerators">, inputSettingsClass: settingsClass,
+                                          idxs: readonly number[], group = 0): InputDataResult<dataObject> {
+  const inputSettings = inputSettingsClass.settings[group];
+  const derivedSettings = inputSettingsClass.derivedSettings[group];
+  const rowSettings = inputSettingsClass.rowSettings[group];
   const denominatorColumn = view.values.denominators?.[0];
   const sdColumn = view.values.xbar_sds?.[0];
   const chart = derivedSettings.chart_type_props;
@@ -38,9 +34,8 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
   const extracted = extractRows(view, idxs, {
     keys,
     validation: validateInputData(keys, numerators, denominators, xbar_sds, chart),
-    cards: { scatter: settingsModel.scatter, labels: settingsModel.labels },
-    defaults: { scatter: defaultSettings.scatter, labels: defaultSettings.labels },
-    settings: { messages: validationMessages, messagePositionByRowIndex }
+    rowSettings,
+    settings: { messages: inputSettingsClass.validationStatus.messages, messagePositionByRowIndex: inputSettingsClass.messagePositionByRowIndex }
   });
   if (extracted.status === "invalid") {
     return extracted;
@@ -48,16 +43,8 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
   const { kept, warnings, ...rows } = extracted.data;
 
   const groupings = view.values.groupings?.[0];
-  const lines = readSettingsRows(settingsModel.lines, "lines", defaultSettings.lines, categories, idxs).values;
-  const spcSettings = readSettingsRows(settingsModel.spc, "spc", defaultSettings.spc, categories, [idxs[0]]).values[0];
   const keptKeys = keptValues(keys, kept);
-  const limitInputArgs: dataObject["limitInputArgs"] = {
-    keys: new Array<controlLimitsArgs["keys"][number]>(kept.length),
-    numerators: keptValues(numerators, kept),
-    denominators: denominators === undefined ? undefined : keptValues(denominators, kept),
-    xbar_sds: xbar_sds === undefined ? undefined : keptValues(xbar_sds, kept),
-    outliers_in_limits: spcSettings.outliers_in_limits
-  };
+  const limitKeys = new Array<controlLimitsArgs["keys"][number]>(kept.length);
   const showAltTarget = inputSettings.lines.show_alt_target;
   const showSpecification = inputSettings.lines.show_specification;
   const line_formatting = new Array<settingsValueType["lines"]>(kept.length);
@@ -69,16 +56,17 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
   for (let x = 0; x < kept.length; x++) {
     const i = kept[x];
     const row = idxs[i];
-    limitInputArgs.keys[x] = { x, id: row, label: chart.x_axis_use_date ? keptKeys[x] : String(x) };
-    const specificationError = orderedPairError("specification_lower", lines[i].specification_lower,
-                                                "specification_upper", lines[i].specification_upper);
+    const lines = rowSettings[i].lines;
+    limitKeys[x] = { x, id: row, label: chart.x_axis_use_date ? keptKeys[x] : String(x) };
+    const specificationError = orderedPairError("specification_lower", lines.specification_lower,
+                                                "specification_upper", lines.specification_upper);
     if (specificationError !== undefined) {
       return { status: "invalid", error: specificationError };
     }
-    line_formatting[x] = lines[i];
-    alt_target[x] = showAltTarget ? lines[i].alt_target : undefined;
-    speclimits_lower[x] = showSpecification ? lines[i].specification_lower : undefined;
-    speclimits_upper[x] = showSpecification ? lines[i].specification_upper : undefined;
+    line_formatting[x] = lines;
+    alt_target[x] = showAltTarget ? lines.alt_target : undefined;
+    speclimits_lower[x] = showSpecification ? lines.specification_lower : undefined;
+    speclimits_upper[x] = showSpecification ? lines.specification_upper : undefined;
     if (groupings !== undefined) {
       const grouping = formatPrimitiveValue(groupings.values[row]);
       if (x > 0 && grouping !== currentGrouping) {
@@ -99,8 +87,13 @@ export default function extractInputData(view: ValidatedDataView<"numerators">,
     status: "valid",
     data: {
       ...rows,
-      limitInputArgs,
-      spcSettings,
+      limitInputArgs: {
+        keys: limitKeys,
+        numerators: keptValues(numerators, kept),
+        denominators: denominators === undefined ? undefined : keptValues(denominators, kept),
+        xbar_sds: xbar_sds === undefined ? undefined : keptValues(xbar_sds, kept),
+        outliers_in_limits: inputSettings.spc.outliers_in_limits
+      },
       groupingIndexes,
       line_formatting,
       alt_target,

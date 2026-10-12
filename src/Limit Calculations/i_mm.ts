@@ -4,7 +4,7 @@ import { median } from "powerbi-visuals-core/math";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
 
 /** I chart with a median centreline; sigma = median moving range / 0.954 (Wheeler, median-range d4 for n = 2). */
-export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
+export default function immLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
   const plotted = plottedValues(args);
   const n_sub: number = args.subset_points.length;
   const subset_points: readonly number[] = args.subset_points;

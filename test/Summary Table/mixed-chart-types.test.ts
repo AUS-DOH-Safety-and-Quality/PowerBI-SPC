@@ -7,14 +7,16 @@ import { columnNames, columnValues, groupedRow, tableRow } from "../helpers/summ
 import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
 
-function settingsFor(chartType: settingsValueType["spc"]["chart_type"]): settingsValueType {
-  const s: settingsValueType = JSON.parse(JSON.stringify(defaultSettings));
+type Settings = typeof defaultSettings;
+
+function settingsFor(chartType: settingsValueType["spc"]["chart_type"]): Settings {
+  const s: Settings = JSON.parse(JSON.stringify(defaultSettings));
   s.spc.chart_type = chartType;
   return s;
 }
 
-function cloneRows(rows: settingsValueType[]): settingsValueType[] {
-  const clones = new Array<settingsValueType>(rows.length);
+function cloneRows(rows: Settings[]): Settings[] {
+  const clones = new Array<Settings>(rows.length);
   for (let i = 0; i < rows.length; i++) {
     clones[i] = JSON.parse(JSON.stringify(rows[i]));
   }
@@ -40,7 +42,7 @@ const mixedKeys: string[] = pKeys.concat(uKeys).concat(cKeys).concat(runKeys);
 const mixedNumerators: number[] = pNumerators.concat(uNumerators).concat(cNumerators).concat(runNumerators);
 const mixedDenominators: number[] = pDenominators.concat(uDenominators).concat(rep(100, 6)).concat(rep(100, 6));
 const mixedIndicator: string[] = rep("Proportion Site", 6).concat(rep("Rate Site", 6)).concat(rep("Count Site", 6)).concat(rep("Trend Site", 6));
-const mixedSettingsByRow: settingsValueType[] = rep(settingsFor("p"), 6)
+const mixedSettingsByRow: Settings[] = rep(settingsFor("p"), 6)
   .concat(rep(settingsFor("u"), 6))
   .concat(rep(settingsFor("c"), 6))
   .concat(rep(settingsFor("run"), 6));

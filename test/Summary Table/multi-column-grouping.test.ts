@@ -6,7 +6,7 @@ import buildDataView from "../helpers/buildDataView";
 import { columnNames, columnValues, groupedRow } from "../helpers/summaryTable";
 import { describe, it, expect } from "vitest";
 
-function cloneSettings() {
+function cloneSettings(): typeof defaultSettings {
   return JSON.parse(JSON.stringify(defaultSettings));
 }
 
@@ -203,7 +203,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const indicator: string[] = ["Ward A", "Ward A", "Ward B", "Ward B", "Ward A", "Ward A"];
 
     function settingsWithSigFigs(sigFigs: number): settingsValueType {
-      const s: settingsValueType = cloneSettings();
+      const s = cloneSettings();
       s.spc.chart_type = "i";
       s.spc.sig_figs = sigFigs;
       return s;

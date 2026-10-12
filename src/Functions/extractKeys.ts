@@ -6,7 +6,7 @@ import dateSettingsToFormatOptions from "./dateSettingsToFormatOptions";
 import parseInputDates from "./parseInputDates";
 import formatDateParts from "./formatDateParts";
 
-function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: number[]): (string | undefined)[] {
+function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: readonly number[]): (string | undefined)[] {
   const n_keys: number = idxs.length;
   let ret = new Array<string | undefined>(n_keys);
   if (col.length === 1 && !(col[0].source.type?.temporal)) {
@@ -70,7 +70,7 @@ function formatKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settin
   return ret
 }
 
-export default function extractKeys(col: powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: number[]): (string | undefined)[] {
+export default function extractKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: readonly number[]): (string | undefined)[] {
   const groupedCols: Record<string, powerbi.DataViewCategoryColumn[]> = Object.create(null);
   for (let i = 0; i < col.length; i++) {
     let queryName = col[i].source.queryName ?? "";
