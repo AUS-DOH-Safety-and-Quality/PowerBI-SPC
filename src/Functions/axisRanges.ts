@@ -2,7 +2,7 @@ import { isValidNumber } from "powerbi-visuals-core/data";
 import type { AxisBounds } from "powerbi-visuals-core/rendering";
 import type viewModelClass from "../Classes/viewModelClass";
 
-/** Math.min/max order -0 and +0 as Core's min/max do; non-finite entries are skipped */
+/** Running min/max that skip blank and non-finite entries */
 function finiteMin(current: number, value: number | undefined): number {
   return isValidNumber(value) ? Math.min(current, value) : current;
 }
@@ -28,8 +28,8 @@ export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; 
   let maxKey: number = Number.NEGATIVE_INFINITY;
   for (let i = 0; i < controlLimits.keys.length; i++) {
     const value = controlLimits.values[i];
-    const altTarget = controlLimits.alt_targets[i];
-    const target = controlLimits.targets[i];
+    const altTarget = controlLimits.alt_target[i];
+    const target = controlLimits.target[i];
     maxValue = finiteMax(maxValue, value);
     minValue = finiteMin(minValue, value);
     maxValueOrLimit = finiteMax(maxValueOrLimit, value);

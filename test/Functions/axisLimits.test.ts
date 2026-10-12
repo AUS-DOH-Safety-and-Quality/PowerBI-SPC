@@ -60,7 +60,7 @@ describe("truncation and axis limit combinations", () => {
       }
     }
     expect(limits.values).toEqual(untruncated.values);
-    expect(limits.targets).toEqual(untruncated.targets);
+    expect(limits.target).toEqual(untruncated.target);
 
     // Explicit axis limits win; the automatic y range follows the truncated limits
     const truncatedOnly = update({ ll_truncate: bounds.ll_truncate, ul_truncate: bounds.ul_truncate });
@@ -97,6 +97,14 @@ describe("truncation and axis limit combinations", () => {
   });
 
   it.each([
+    { lines: { specification_lower: 5, specification_upper: 5 }, error: "specification_lower (5) must be below specification_upper (5)" },
+    { lines: { specification_lower: 6, specification_upper: 5 }, error: "specification_lower (6) must be below specification_upper (5)" }
+  ])("rejects $lines as an input error", ({ lines, error }) => {
+    const settings: settingsValueType = { ...defaultSettings, lines: { ...defaultSettings.lines, ...lines } };
+    expect(updateViewModel(settings, inputs).result).toMatchObject({ status: false, error });
+  });
+
+  it.each([
     { bounds: { xlimit_l: 50 }, error: `The x-axis lower limit (50) is above the upper limit (${automatic.x.upper})` },
     { bounds: { xlimit_u: -1 }, error: `The x-axis lower limit (${automatic.x.lower}) is above the upper limit (-1)` },
     { bounds: { ylimit_l: 100 }, error: `The y-axis lower limit (100) is above the upper limit (${automatic.y.upper})` },
@@ -112,7 +120,7 @@ describe("truncation and axis limit combinations", () => {
       indicator: ["A", "A", "A", "B", "B", "B"],
       numerators: [1, 2, 3, 30, 40, 50]
     }, settings);
-    const viewModel = new viewModelClass();
+    const viewModel = new viewModelClass(createVisualHost({}));
     const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
     expect(result.status).toBe(true);
     expect(viewModel.groupedRows).toHaveLength(2);

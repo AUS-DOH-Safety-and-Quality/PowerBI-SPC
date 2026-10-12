@@ -1,5 +1,5 @@
 import type { settingsValueType } from "../settings"
-import { createValueFormatter, resolvePercentScaling, type ValueFormatter } from "powerbi-visuals-core/data";
+import { deriveScaling, type ValueFormatter } from "powerbi-visuals-core/data";
 
 const valueNames: Record<string, string> = {
   "i": "Observation",
@@ -39,8 +39,6 @@ export default class derivedSettingsClass {
 
   constructor(inputSettingsSpc: settingsValueType["spc"]) {
     const chartType: string = inputSettingsSpc.chart_type;
-    const scaling = resolvePercentScaling(["p", "pp"].includes(chartType),
-                                          inputSettingsSpc.perc_labels, inputSettingsSpc.multiplier);
 
     this.chart_type_props = {
       name: chartType,
@@ -57,10 +55,13 @@ export default class derivedSettingsClass {
       denominator_gt_one: ["xbar", "s"].includes(chartType)
     }
 
+    const scaling = deriveScaling(inputSettingsSpc, {
+      proportion: this.chart_type_props.numerator_leq_denominator,
+      wholeCounts: this.chart_type_props.integer_num_den,
+      percentAllowed: true
+    });
     this.multiplier = scaling.multiplier
     this.percentLabels = scaling.percentLabels
-    const decimalPlaces = inputSettingsSpc.sig_figs;
-    this.formatValue = createValueFormatter(decimalPlaces, this.chart_type_props.integer_num_den ? 0 : decimalPlaces,
-                                            scaling.percentLabels ? "%" : "");
+    this.formatValue = scaling.formatValue
   }
 }

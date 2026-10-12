@@ -1,11 +1,9 @@
-import { limitLineKeys } from "powerbi-visuals-core/settings";
+import { standardLineKeys } from "powerbi-visuals-core/settings";
 
 /** Line names to their `createLineGroup` keys */
 const lineKeys = {
-  ...limitLineKeys,
-  targets: "target",
+  ...standardLineKeys,
   values: "main",
-  alt_targets: "alt_target",
   speclimits_lower: "specification",
   speclimits_upper: "specification",
   trend_line: "trend"

@@ -58,9 +58,9 @@ function calculateLimits(
 const bands = [["ll68", "ul68", 1], ["ll95", "ul95", 2], ["ll99", "ul99", 3]] as const;
 
 function expectLimits(limits: controlLimitsObject, centres: number[], sigmas: number[], lower = -Infinity, upper = Infinity) {
-  expect(limits.targets).toHaveLength(centres.length);
+  expect(limits.target).toHaveLength(centres.length);
   for (let i = 0; i < centres.length; i++) {
-    expect(limits.targets[i], `target at ${i}`).toBeCloseTo(centres[i], 8);
+    expect(limits.target[i], `target at ${i}`).toBeCloseTo(centres[i], 8);
   }
   for (let b = 0; b < bands.length; b++) {
     const ll = bands[b][0];
@@ -97,7 +97,7 @@ describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", so
     expectLimits(limits, repEach(means, 4), rangeSigmas(ranges, 4));
   });
 
-  it.each([undefined, 0, 20])("uses every point when the subset count is %s", count => {
+  it.each([undefined, 20])("uses every point when the subset count is %s", count => {
     const limits = calculateLimits({ num_points_subset: count }, groupings, splitIndexes);
     expectLimits(limits, repEach([15, 38, 71], 4), rangeSigmas([4, 6, 8], 4));
   });
@@ -127,8 +127,8 @@ it.each(["Start", "End"] as const)("uses every point in short rebaselines when s
     subset_rebaselines: true
   }, ["A", "A", "A", "A", "B", "B", "C"], [], numerators.slice(0, 7));
 
-  expect(limits.targets.slice(0, 4)).toEqual(Array(4).fill(from === "Start" ? 38 / 3 : 50 / 3));
-  expect(limits.targets.slice(4)).toEqual([32, 32, 40]);
+  expect(limits.target.slice(0, 4)).toEqual(Array(4).fill(from === "Start" ? 38 / 3 : 50 / 3));
+  expect(limits.target.slice(4)).toEqual([32, 32, 40]);
   for (let b = 0; b < bands.length; b++) {
     const ll = bands[b][0];
     const ul = bands[b][1];
@@ -267,7 +267,7 @@ it.each([
 
   // Subset ranges are [2, 4, 6, 8] from the start and [12, 6, 8, 10] from the end.
   expect(limits.values).toEqual([2, 4, 6, 8, 4, 6, 8, 12, 6, 8, 10]);
-  expect(limits.targets).toEqual(rep(centre, 11));
+  expect(limits.target).toEqual(rep(centre, 11));
   for (let i = 0; i < 11; i++) {
     expect(limits.ul99![i]).toBeCloseTo(centre * 3.267, 10);
   }

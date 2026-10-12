@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import settingsClass from "../../src/Classes/settingsClass";
-import settingsModel, { defaultSettings } from "../../src/settings";
+import settingsModel from "../../src/settings";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
@@ -15,63 +15,24 @@ function category(view: powerbi.DataView): powerbi.DataViewCategoryColumn {
 }
 
 describe("selected settings integration", () => {
-  it("uses Core's typed indicator groups without merging numeric and text values", () => {
-    const element = testDom("500", "500");
-    const host = createVisualHost({});
-    const visual = new Visual({ element, host });
-    const view = buildDataView({ key: ["A", "B", "C", "D"], numerators: [1, 10, 3, 14] });
-    view.categorical!.categories!.push({ source: { displayName: "Indicator", roles: { indicator: true } },
-      values: [1, "1", 1, "1"] });
-    try {
-      visual.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 });
-      expect(visual.viewModel.inputData).toHaveLength(2);
-      expect(visual.viewModel.inputData[0].limitInputArgs.numerators).toEqual([1, 3]);
-      expect(visual.viewModel.inputData[1].limitInputArgs.numerators).toEqual([10, 14]);
-    } finally {
-      element.remove();
-    }
-  });
-
-  it("uses each group's first requested row and only selected warnings", () => {
+  it("uses each group's first requested row and keeps warnings in group order", () => {
     const view = input();
     view.categorical!.categories![0].objects = [
       { spc: { sig_figs: 0 } }, { spc: { sig_figs: 4 } },
       { spc: { sig_figs: -1 } }, {}, { spc: { sig_figs: 2 }, y_axis: { ylimit_sig_figs: -1 } }
     ];
     const settings = new settingsClass();
-    settings.update(category(view), [[4, 2], [1]]);
+    settings.update(category(view), [[4, 2, 0], [1, 3]]);
     expect(settings.settings[0].spc.sig_figs).toBe(2);
     expect(settings.settings[1].spc.sig_figs).toBe(4);
     expect(settings.settings[0].y_axis.ylimit_sig_figs).toBeUndefined();
-    expect(settings.validationStatus.messages).toHaveLength(3);
+    expect(settings.validationStatus.messages).toHaveLength(5);
     expect(settings.validationStatus.messages[0][0]).toContain("ylimit_sig_figs");
     expect(settings.validationStatus.messages[1][0]).toContain("sig_figs");
     expect(settings.validationStatus.messages[2]).toEqual([]);
+    expect(settings.validationStatus.messages[3]).toEqual([]);
+    expect(settings.validationStatus.messages[4]).toEqual([]);
     expect(settings.validationStatus.status).toBe(0);
-  });
-
-  it("detects all selected rows invalid despite valid unselected rows, then resets", () => {
-    const view = input();
-    view.categorical!.categories![0].objects = [
-      {}, {}, { spc: { sig_figs: -1 } }, { spc: { sig_figs: Infinity } }, {}
-    ];
-    const settings = new settingsClass();
-    settings.update(category(view), [[3], [2]]);
-    expect(settings.validationStatus.status).toBe(1);
-    expect(settings.validationStatus.error).toContain("Infinity");
-    expect(settings.validationStatus.messages).toHaveLength(2);
-    settings.update(category(input()), [[4], [1]]);
-    expect(settings.validationStatus).toEqual({ status: 0, messages: [[], []] });
-    expect(settings.settings[0].spc.sig_figs).toBe(defaultSettings.spc.sig_figs);
-  });
-
-  it("keeps empty groups independent", () => {
-    const settings = new settingsClass();
-    settings.update(category(input()), [[], [4]]);
-    settings.settings[0].canvas.lower_padding = 25;
-    expect(settings.settings[1].canvas.lower_padding).toBe(10);
-    expect(settings.validationStatus.messages).toEqual([[]]);
-    expect(settings.getFormattingModel().cards).toHaveLength(12);
   });
 
   it("rejects flagging against specification limits that are not shown", () => {

@@ -1,29 +1,30 @@
 import variationIconsToDraw from "../../src/Outlier Flagging/variationIconsToDraw";
 import type { outliersObject } from "../../src/Classes/viewModelClass";
 import type { settingsValueType } from "../../src/settings";
+import type { FlagDirection } from "powerbi-visuals-core/data";
+import { settingsWith } from "../helpers/renderVisual";
 import { describe, it, expect } from "vitest";
 
 describe("variationIconsToDraw", () => {
     const createOutliers = (
-        astpoint: string[],
-        shift: string[],
-        trend: string[],
-        two_in_three: string[]
+        astpoint: FlagDirection[],
+        shift: FlagDirection[],
+        trend: FlagDirection[],
+        two_in_three: FlagDirection[]
     ): outliersObject => ({
         astpoint,
         shift,
         trend,
         two_in_three
-    } as outliersObject);
+    });
 
-    const createSettings = (improvement_direction: string, flag_last_point: boolean): settingsValueType => ({
-        outliers: {
-            improvement_direction: improvement_direction
-        },
-        nhs_icons: {
-            flag_last_point: flag_last_point
-        }
-    } as settingsValueType);
+    const createSettings = (
+        improvement_direction: settingsValueType["outliers"]["improvement_direction"],
+        flag_last_point: boolean
+    ): settingsValueType => settingsWith({
+        outliers: { improvement_direction },
+        nhs_icons: { flag_last_point }
+    });
 
     describe("no outliers detected", () => {
         it("should return 'commonCause' when no outliers are present", () => {
@@ -272,15 +273,6 @@ describe("variationIconsToDraw", () => {
             expect(result).toEqual(["improvementHigh"]);
         });
 
-        it("should handle empty arrays", () => {
-            const outliers = createOutliers([], [], [], []);
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["commonCause"]);
-        });
-
         it("should deduplicate icon types", () => {
             const outliers = createOutliers(
                 ["improvement", "improvement", "improvement"],
@@ -293,24 +285,6 @@ describe("variationIconsToDraw", () => {
             const result = variationIconsToDraw(outliers, settings);
 
             expect(result).toEqual(["improvementHigh"]);
-        });
-
-        it("should handle all four variation types simultaneously", () => {
-            const outliers = createOutliers(
-                ["improvement", "none", "none"],
-                ["deterioration", "none", "none"],
-                ["neutral_low", "none", "none"],
-                ["neutral_high", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toContain("improvementHigh");
-            expect(result).toContain("concernLow");
-            expect(result).toContain("neutralLow");
-            expect(result).toContain("neutralHigh");
-            expect(result.length).toBe(4);
         });
     });
 

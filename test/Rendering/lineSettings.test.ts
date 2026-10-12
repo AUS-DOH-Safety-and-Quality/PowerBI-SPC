@@ -17,8 +17,8 @@ const data = { key: sequentialKeys(numerators.length), numerators };
 /** Every line group, the lines it draws and what makes it drawable on an i chart */
 const lineGroups: { key: LineKey; names: LineName[]; enable: Partial<Lines> }[] = [
   { key: "main", names: ["values"], enable: {} },
-  { key: "target", names: ["targets"], enable: {} },
-  { key: "alt_target", names: ["alt_targets"], enable: { show_alt_target: true, alt_target: 25 } },
+  { key: "target", names: ["target"], enable: {} },
+  { key: "alt_target", names: ["alt_target"], enable: { show_alt_target: true, alt_target: 25 } },
   { key: "68", names: ["ll68", "ul68"], enable: { show_68: true } },
   { key: "95", names: ["ll95", "ul95"], enable: {} },
   { key: "99", names: ["ll99", "ul99"], enable: {} },
@@ -86,7 +86,7 @@ describe("line settings", () => {
     const rendered = renderVisual(settingsWith({
       lines: { ...enable, ...lineOverrides(key, { opacity: 0.6, opacity_unselected: 0.3 }) }
     }), data, { host: keyedHost() });
-    const other: LineName = key === "main" ? "targets" : "values";
+    const other: LineName = key === "main" ? "target" : "values";
     for (let i = 0; i < names.length; i++) {
       expect(must(lineGroup(rendered.element, names[i])).style.strokeOpacity, names[i]).toBe("0.6");
     }
@@ -118,9 +118,9 @@ describe("line settings", () => {
       return result;
     }
     const constant = renderVisual(settingsWith({ lines: { show_alt_target: true, alt_target: 20 } }), data, { splitIndexes: [3] });
-    expect(runs(constant.element, "alt_targets")).toBe(1);
-    expect(runs(renderVisual(rows(false), data).element, "alt_targets")).toBe(2);
-    expect(runs(renderVisual(rows(true), data).element, "alt_targets")).toBe(1);
+    expect(runs(constant.element, "alt_target")).toBe(1);
+    expect(runs(renderVisual(rows(false), data).element, "alt_target")).toBe(2);
+    expect(runs(renderVisual(rows(true), data).element, "alt_target")).toBe(1);
   });
 
   it("draws each segment in its own row's style when conditional formatting varies along a line", () => {
@@ -138,7 +138,7 @@ describe("line settings", () => {
       styles.add(`${segments[i].getAttribute("stroke")} ${segments[i].getAttribute("stroke-width")}`);
     }
     expect([...styles].sort()).toEqual(["#111111 1", "#222222 4"]);
-    expect(must(lineGroup(rendered.element, "targets")?.querySelector("path")).getAttribute("stroke")).toBe("#000000");
+    expect(must(lineGroup(rendered.element, "target")?.querySelector("path")).getAttribute("stroke")).toBe("#000000");
   });
 
   it("draws every line in the high-contrast foreground colour", () => {

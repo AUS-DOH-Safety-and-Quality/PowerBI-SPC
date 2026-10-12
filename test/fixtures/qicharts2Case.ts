@@ -12,5 +12,5 @@ export type Qicharts2Case = {
   numerators: number[];
   denominators: number[] | null;
   xbar_sds: number[] | null;
-  expected: Record<"values" | "targets" | "ll99" | "ll95" | "ul95" | "ul99", (number | null)[]>;
+  expected: Record<"values" | "target" | "ll99" | "ll95" | "ul95" | "ul99", (number | null)[]>;
 };

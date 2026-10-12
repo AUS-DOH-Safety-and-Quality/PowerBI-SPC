@@ -6,8 +6,8 @@
 | --- | --- | --- | --- |
 | Show Y Axis | Draws the axis with its ticks, title and gridlines. | On | On or Off |
 | Axis Colour | Colour of the axis line and tick marks. | `#000000` | Colour |
-| Axis Scaling Factor | Extends the y-axis past the centreline by this multiple of the distance to the furthest point, limit or target. | 1.5 | Number, at least 0 |
-| Tick Decimal Places | Decimal places for the tick values; blank uses Decimals to Report. | (blank) | Whole number from 0 to 100 |
+| Axis Scaling Factor | Extends the y-axis past the centreline by this multiple of the distance to the furthest point, limit or target. | 1.5 | Number, above 0 |
+| Tick Decimal Places | Decimal places for the tick values; blank uses Decimals to Report. | (blank) | Whole number from 0 to 20 |
 | Lower Limit | Lower end of the axis, as a plotted value; blank sets it automatically. | (blank) | Number |
 | Upper Limit | Upper end of the axis, as a plotted value; blank sets it automatically. | (blank) | Number |
 
@@ -40,4 +40,4 @@
 | --- | --- | --- | --- |
 | Show Gridlines | Draws a gridline at each tick. | Off | On or Off |
 | Gridline Colour | Gridline colour. | `#D3D3D3` | Colour |
-| Gridline Width | Gridline width, in pixels. | 1 | Number, at least 0 |
+| Gridline Width | Gridline width, in pixels. | 1 | Number from 0 to 100 |

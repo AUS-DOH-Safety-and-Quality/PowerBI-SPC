@@ -14,7 +14,7 @@ describe("specification limit tooltips", () => {
       }
     };
     const dataView = buildDataView({ key: ["1", "2", "3", "4"], numerators: [10, 12, 16, 22] }, settings);
-    const viewModel = new viewModelClass();
+    const viewModel = new viewModelClass(createVisualHost({}));
     const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
     expect(result.status).toBe(true);
     const tooltip = viewModel.plotPoints[0].tooltip;

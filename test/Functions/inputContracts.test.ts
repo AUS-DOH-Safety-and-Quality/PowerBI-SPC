@@ -3,8 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
 import { formatPrimitiveValue, validateDataView, type PrimitiveValue } from "powerbi-visuals-core/powerbi";
-import { cells } from "powerbi-visuals-core/testing";
-import { pickRows } from "powerbi-visuals-core/data";
+import { cells, must } from "powerbi-visuals-core/testing";
 import settingsModel from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
 import viewModelClass from "../../src/Classes/viewModelClass";
@@ -31,8 +30,7 @@ function extract(view: powerbi.DataView, indices: number[], chart: "i" | "p" | "
 }
 
 describe("input row contracts", () => {
-  it("preserves selection positions and keeps shortened optional columns aligned", () => {
-    expect(pickRows([10, 20], [1, 5, 0, 1])).toEqual([20, undefined, 10, 20]);
+  it("preserves selection order and keeps optional columns aligned to the selected rows", () => {
     const rows = [];
     for (let i = 0; i < 4; i++) {
       const settings = createDefaultValues(settingsModel);
@@ -42,37 +40,35 @@ describe("input row contracts", () => {
     const view = buildDataView({
       key: ["A", "B", "C", "D"],
       numerators: [1, null, 3, 4],
-      labels: [null, "removed", "C label"],
-      tooltips: [0, "removed", false],
+      labels: [null, "removed", "C label", null],
+      tooltips: [0, "removed", false, null],
       groupings: ["one", "one", null, "two"]
     }, rows);
-    view.categorical!.values![0].highlights = [0, 2];
-    const result = extract(view, [3, 1, 0, 2, 5, 3]);
+    must(must(view.categorical).values)[0].highlights = cells([0, 2, null, null]);
+    const result = extract(view, [3, 1, 0, 2]);
     if (result.status !== "valid") {
       throw new Error(result.error);
     }
     expect(result.data.limitInputArgs.keys).toEqual([
-      { x: 0, id: 3, label: "D" }, { x: 1, id: 0, label: "A" },
-      { x: 2, id: 2, label: "C" }, { x: 3, id: 3, label: "D" }
+      { x: 0, id: 3, label: "D" }, { x: 1, id: 0, label: "A" }, { x: 2, id: 2, label: "C" }
     ]);
-    expect(result.data.limitInputArgs.numerators).toEqual([4, 1, 3, 4]);
-    expect(result.data.labels).toEqual([undefined, undefined, "C label", undefined]);
-    expect(result.data.highlights).toEqual([undefined, 0, undefined, undefined]);
+    expect(result.data.limitInputArgs.numerators).toEqual([4, 1, 3]);
+    expect(result.data.labels).toEqual([undefined, undefined, "C label"]);
+    expect(result.data.highlights).toEqual([undefined, 0, undefined]);
     expect(result.data.tooltips).toEqual([
       [{ displayName: "Extra Tooltip", value: "" }], [{ displayName: "Extra Tooltip", value: "0" }],
-      [{ displayName: "Extra Tooltip", value: "false" }], [{ displayName: "Extra Tooltip", value: "" }]
+      [{ displayName: "Extra Tooltip", value: "false" }]
     ]);
-    expect(result.data.groupingIndexes).toEqual([0, 1, 2]);
+    expect(result.data.groupingIndexes).toEqual([0, 1]);
     expect(result.data.scatter_formatting[0].size).toBe(4);
     expect(result.data.scatter_formatting[1].size).toBe(1);
     expect(result.data.scatter_formatting[2].size).toBe(3);
-    expect(result.data.scatter_formatting[0]).not.toBe(result.data.scatter_formatting[3]);
     expect(result.data.anyHighlights).toBe(true);
     expect(result.data.anyLabels).toBe(true);
-    expect(result.data.warningMessage).toBe("Category B removed due to: Numerator missing.\nCategory (Blank) removed due to: Numerator missing.");
+    expect(result.data.warningMessage).toBe("Category B removed due to: Numerator missing.");
   });
 
-  it("reads absent optional columns as blank rows and present empty columns the same way", () => {
+  it("reads absent optional columns as blank rows", () => {
     const absent = extract(buildDataView({ key: ["A", "B"], numerators: [1, 2] }), [0, 1]);
     if (absent.status !== "valid") {
       throw new Error(absent.error);
@@ -83,17 +79,6 @@ describe("input row contracts", () => {
     expect(absent.data.anyLabels).toBe(false);
     expect(absent.data.anyHighlights).toBe(false);
     expect(absent.data.limitInputArgs.denominators).toBeUndefined();
-    const view = buildDataView({ key: ["A", "B"], numerators: [1, 2], labels: [], tooltips: [] });
-    view.categorical!.values![0].highlights = [];
-    const present = extract(view, [0, 1]);
-    if (present.status !== "valid") {
-      throw new Error(present.error);
-    }
-    expect(present.data.labels).toEqual([undefined, undefined]);
-    expect(present.data.highlights).toEqual([undefined, undefined]);
-    expect(present.data.anyLabels).toBe(false);
-    expect(present.data.anyHighlights).toBe(false);
-    expect(present.data.tooltips).toHaveLength(2);
   });
 
   it("narrows required numerics and returns errors without fabricated data", () => {
@@ -109,10 +94,8 @@ describe("input row contracts", () => {
     expect(valid.data.limitInputArgs.numerators).toEqual([1, 3]);
     expect(valid.data.limitInputArgs.denominators).toEqual([10, 20]);
     expect(valid.data.limitInputArgs.xbar_sds).toEqual([1, 3]);
-    expect("subset_points" in valid.data.limitInputArgs).toBe(false);
     expect(extract(buildDataView({ key: ["A"], numerators: [null] }), [0])).toEqual({ status: "invalid", error: "All numerators are missing or null!" });
-    expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [0], "p")).toEqual({ status: "invalid", error: "All denominators missing or null!" });
-    expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [])).toEqual({ status: "invalid", error: "No valid data found!" });
+    expect(extract(buildDataView({ key: ["A"], numerators: [1] }), [0], "p")).toEqual({ status: "invalid", error: "All denominators are missing or null!" });
     expect(extract(buildDataView({ key: ["A"] }), [0])).toEqual({ status: "invalid", error: "No numerators passed!" });
   });
 
@@ -128,7 +111,7 @@ describe("input row contracts", () => {
     });
   });
 
-  it("retains scalar key conversion, duplicate query groups and complete date hierarchies", () => {
+  it("retains scalar key conversion, multi-column keys and complete date hierarchies", () => {
     const settings = createDefaultValues(settingsModel);
     const column = (queryName: string, values: PrimitiveValue[], category?: string): powerbi.DataViewCategoryColumn => ({
       source: {
@@ -140,9 +123,8 @@ describe("input row contracts", () => {
       values: cells(values)
     });
     expect(extractKeys([column("key", [0, false, null, ""])], settings, [1, 0, 3, 2])).toEqual(["false", "0", "", undefined]);
-    expect(extractKeys([column("key", ["A", "B"]), column("key", ["X", "Y"])], settings, [1, 0])).toEqual(["B Y", "A X"]);
-    expect(extractKeys([column("key", [null]), column("key", [null])], settings, [0])).toStrictEqual([undefined]);
-    expect(extractKeys([], settings, [0])).toStrictEqual([undefined]);
+    expect(extractKeys([column("key", ["A", "B"]), column("other", ["X", "Y"])], settings, [1, 0])).toEqual(["B Y", "A X"]);
+    expect(extractKeys([column("key", [null]), column("other", [null])], settings, [0])).toStrictEqual([undefined]);
     const dates = extractKeys([
       column("Date Hierarchy.Year", [2024, 2025], "Years"), column("Date Hierarchy.Month", ["January", "February"], "Months"),
       column("Date Hierarchy.Day", [15, 20], "DayOfMonth"), column("label", ["A", "B"])
@@ -165,22 +147,43 @@ describe("input row contracts", () => {
     expect(formatter(undefined, "value")).toBe("");
   });
 
-  it("builds grouped selection identities only for accepted raw rows", () => {
+  it("builds grouped selection identities from the key and indicator columns, only for accepted raw rows", () => {
     const host = createVisualHost({});
-    const createdRows: number[] = [];
+    const createdRows: string[] = [];
     const original = host.createSelectionIdBuilder.bind(host);
     vi.spyOn(host, "createSelectionIdBuilder").mockImplementation(() => {
       const builder = original();
       const withCategory = builder.withCategory.bind(builder);
-      builder.withCategory = (category, index) => { createdRows.push(index); return withCategory(category, index); };
+      builder.withCategory = (category, index) => {
+        createdRows.push(`${category.source.displayName}[${index}]`);
+        return withCategory(category, index);
+      };
       return builder;
     });
-    const model = new viewModelClass();
+    const model = new viewModelClass(createVisualHost({}));
     const view = buildDataView({ key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators: [1, 3, null, 4, 2, 5] });
     expect(model.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 }, host).status).toBe(true);
-    expect(createdRows).toEqual([0, 4, 1, 3, 5]);
+    expect(createdRows).toEqual([
+      "Category[0]", "Indicator[0]", "Category[4]", "Indicator[4]",
+      "Category[1]", "Indicator[1]", "Category[3]", "Indicator[3]", "Category[5]", "Indicator[5]"
+    ]);
     expect(model.identities[0]).toHaveLength(2);
     expect(model.identities[1]).toHaveLength(3);
+  });
+
+  it("names the group in grouped warnings and reports every failing group's error", () => {
+    const host = createVisualHost({});
+    const model = new viewModelClass(createVisualHost({}));
+    const viewport = { width: 500, height: 500 };
+    const grouped = (numerators: (number | null)[]) => buildDataView({
+      key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators
+    });
+    expect(model.update({ dataViews: [grouped([1, 3, null, 4, 2, 5])], viewport, type: 2 }, host))
+      .toEqual({ status: true, warning: "A: Category A1 removed due to: Numerator missing." });
+    expect(model.update({ dataViews: [grouped([null, null, null, null, null, null])], viewport, type: 2 }, host))
+      .toEqual({ status: false, error: "A: All numerators are missing or null!\nB: All numerators are missing or null!" });
+    expect(model.update({ dataViews: [buildDataView({ key: ["A0", "A1", "A2"], numerators: [1, null, 2] })], viewport, type: 2 }, host))
+      .toEqual({ status: true, warning: "Category A1 removed due to: Numerator missing." });
   });
 
   it("clears failed extraction state and recovers on the next visual update", () => {

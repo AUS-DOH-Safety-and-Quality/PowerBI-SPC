@@ -47,7 +47,7 @@ describe("P Chart Test", () => {
       expect(renderingFinished).toHaveBeenCalledOnce();
       expect(chartElement.querySelector(".errormessage")).toBeNull();
       const limits = chart.viewModel.controlLimits[0];
-      const lines = ["values", "targets", "ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
+      const lines = ["values", "target", "ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
       for (let l = 0; l < lines.length; l++) {
         expect(limits[lines[l]]).toEqual(expectedValues);
       }

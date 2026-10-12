@@ -21,7 +21,7 @@ const settingsModel = {
   y_axis: createAxisCard("y", { tickRotation: 0, limitUnits: "a plotted value" }, {
     limit_multiplier: numberOption("Axis Scaling Factor",
                                    "Extends the y-axis past the centreline by this multiple of the distance to the furthest point, limit or target.",
-                                   1.5, { min: 0 })
+                                   1.5, { above: 0 })
   }),
   dates: defineCard(datesSettings),
   summary_table: defineCard(summaryTableSettings),

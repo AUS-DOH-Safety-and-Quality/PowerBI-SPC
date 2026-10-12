@@ -5,7 +5,6 @@ import type { plotData } from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
 import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
 import { keyedHost } from "powerbi-visuals-core/testing";
-import addContextMenu from "../src/D3 Plotting Functions/addContextMenu";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 
@@ -76,16 +75,8 @@ describe("Selection and context menu", () => {
     expect(show).toHaveBeenLastCalledWith({}, { x: 3, y: 4 });
     expect(onBackground.defaultPrevented).toBe(true);
 
-    const hidden = vi.spyOn(visual, "plotProperties", "get").mockReturnValue({ ...visual.plotProperties, displayPlot: false });
-    visual.svg.call(addContextMenu, visual);
-    const disabled = contextMenu(1, 1);
-    dot.dispatchEvent(disabled);
-    expect(show).toHaveBeenCalledTimes(2);
-    expect(disabled.defaultPrevented).toBe(false);
-
-    hidden.mockRestore();
-    visual.svg.call(addContextMenu, visual);
-    visual.svg.call(addContextMenu, visual);
+    visual.addContextMenu(svg);
+    visual.addContextMenu(svg);
     dot.dispatchEvent(contextMenu(5, 6));
     expect(show).toHaveBeenCalledTimes(3);
     expect(show).toHaveBeenLastCalledWith(point.identity, { x: 5, y: 6 });

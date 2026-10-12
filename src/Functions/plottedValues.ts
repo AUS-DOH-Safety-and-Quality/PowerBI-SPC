@@ -4,7 +4,7 @@ import type { controlLimitsArgs } from "../Classes/viewModelClass";
 export default function plottedValues(args: Readonly<controlLimitsArgs>): { values: number[]; numerators?: number[]; denominators?: number[] } {
   const numerators = args.numerators;
   const denominators = args.denominators;
-  if (denominators === undefined || denominators.length === 0) {
+  if (denominators === undefined) {
     return { values: numerators.slice() };
   }
   const values = new Array<number>(numerators.length);

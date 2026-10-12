@@ -11,7 +11,6 @@ export default function assuranceIconToDraw(controlLimits: Readonly<controlLimit
     return "none";
   }
   const imp_direction = inputSettings.outliers.improvement_direction;
-  const alt_targets = controlLimits.alt_targets;
   const ll99 = controlLimits.ll99;
   const ul99 = controlLimits.ul99;
 
@@ -20,7 +19,7 @@ export default function assuranceIconToDraw(controlLimits: Readonly<controlLimit
   }
 
   const N: number = ll99.length - 1;
-  const alt_target = alt_targets[N];
+  const alt_target = controlLimits.alt_target[N];
   const upper = ul99[N];
   const lower = ll99[N];
   const impDirectionIncrease: boolean = imp_direction === "increase";
