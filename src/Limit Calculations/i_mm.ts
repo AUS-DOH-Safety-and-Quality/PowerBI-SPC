@@ -1,6 +1,7 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import plottedValues from "../Functions/plottedValues";
 import { median } from "powerbi-visuals-core/math";
+import { sigmaLimits } from "powerbi-visuals-core/spc";
 
 /** I chart with a median centreline; sigma = median moving range / 0.954 (Wheeler, median-range d4 for n = 2). */
 export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
@@ -34,41 +35,9 @@ export default function immLimits(args: controlLimitsArgs): CalculatedLimits {
     }
   }
 
-  const sigma: number = mmr / 0.954;
-
-  const n: number = args.keys.length;
-  const rtn = {
+  return {
     keys: args.keys,
-    values: plotted.values,
-    numerators: plotted.numerators,
-    denominators: plotted.denominators,
-    target: new Array<number>(n),
-    ll99: new Array<number>(n),
-    ll95: new Array<number>(n),
-    ll68: new Array<number>(n),
-    ul68: new Array<number>(n),
-    ul95: new Array<number>(n),
-    ul99: new Array<number>(n)
-  }
-
-  const twoSigma: number = 2 * sigma;
-  const threeSigma: number = 3 * sigma;
-  const ll99: number = cl - threeSigma;
-  const ll95: number = cl - twoSigma;
-  const ll68: number = cl - sigma;
-  const ul68: number = cl + sigma;
-  const ul95: number = cl + twoSigma;
-  const ul99: number = cl + threeSigma;
-
-  for (let i = 0; i < n; i++) {
-    rtn.target[i] = cl;
-    rtn.ll99[i] = ll99;
-    rtn.ll95[i] = ll95;
-    rtn.ll68[i] = ll68;
-    rtn.ul68[i] = ul68;
-    rtn.ul95[i] = ul95;
-    rtn.ul99[i] = ul99;
-  }
-
-  return rtn;
+    ...plotted,
+    ...sigmaLimits(args.keys.length, cl, { sigma: mmr / 0.954 })
+  };
 }

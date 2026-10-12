@@ -1,5 +1,6 @@
 import iLimits from "./i"
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import { rep } from "powerbi-visuals-core/math";
 
 /** T chart: x^(1/3.6) makes exponential waiting times approximately normal; I chart limits are back-transformed. */
 export default function tLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
@@ -19,34 +20,17 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const limits = iLimits(inputArgsCopy);
 
   // I chart limits are constant, so back-transform the first
-  const cl: number = Math.pow(limits.target[0], 3.6);
-  const ll99: number = limits.ll99[0] < 0 ? 0 : Math.pow(limits.ll99[0], 3.6);
-  const ll95: number = limits.ll95[0] < 0 ? 0 : Math.pow(limits.ll95[0], 3.6);
-  const ll68: number = limits.ll68[0] < 0 ? 0 : Math.pow(limits.ll68[0], 3.6);
-  const ul68: number = Math.pow(limits.ul68[0], 3.6);
-  const ul95: number = Math.pow(limits.ul95[0], 3.6);
-  const ul99: number = Math.pow(limits.ul99[0], 3.6);
-
-  const rtn = {
+  const back = (value: number): number => Math.pow(value, 3.6);
+  const backLower = (value: number): number => value < 0 ? 0 : back(value);
+  return {
     keys: args.keys,
     values: args.numerators,
-    target: new Array<number>(n),
-    ll99: new Array<number>(n),
-    ll95: new Array<number>(n),
-    ll68: new Array<number>(n),
-    ul68: new Array<number>(n),
-    ul95: new Array<number>(n),
-    ul99: new Array<number>(n)
-  }
-
-  for (let i = 0; i < n; i++) {
-    rtn.target[i] = cl;
-    rtn.ll99[i] = ll99;
-    rtn.ll95[i] = ll95;
-    rtn.ll68[i] = ll68;
-    rtn.ul68[i] = ul68;
-    rtn.ul95[i] = ul95;
-    rtn.ul99[i] = ul99;
-  }
-  return rtn;
+    target: rep(back(limits.target[0]), n),
+    ll99: rep(backLower(limits.ll99[0]), n),
+    ll95: rep(backLower(limits.ll95[0]), n),
+    ll68: rep(backLower(limits.ll68[0]), n),
+    ul68: rep(back(limits.ul68[0]), n),
+    ul95: rep(back(limits.ul95[0]), n),
+    ul99: rep(back(limits.ul99[0]), n)
+  };
 }
