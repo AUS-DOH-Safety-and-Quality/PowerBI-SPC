@@ -160,7 +160,7 @@ describe("input row contracts", () => {
       };
       return builder;
     });
-    const model = new viewModelClass();
+    const model = new viewModelClass(createVisualHost({}));
     const view = buildDataView({ key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators: [1, 3, null, 4, 2, 5] });
     expect(model.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 }, host).status).toBe(true);
     expect(createdRows).toEqual([
@@ -173,7 +173,7 @@ describe("input row contracts", () => {
 
   it("names the group in grouped warnings and reports every failing group's error", () => {
     const host = createVisualHost({});
-    const model = new viewModelClass();
+    const model = new viewModelClass(createVisualHost({}));
     const viewport = { width: 500, height: 500 };
     const grouped = (numerators: (number | null)[]) => buildDataView({
       key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators

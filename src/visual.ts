@@ -4,12 +4,11 @@ import type powerbi from "powerbi-visuals-api";
 import {
   PlotVisual, drawPlotAxes, drawPlotTooltips, drawPlotDots, drawPlotDownload, drawPlotValueLabels, drawPlotLines,
   drawPlotLineLabels, valueTickFormat, createTableContainer, showTable, highlightTable,
-  type AxisBounds, type SvgSelection, type TableSelection
+  type SvgSelection, type TableSelection
 } from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
 import viewModelClass, { type plotData, type plotDataGrouped } from "./Classes/viewModelClass";
-import axisRanges from "./Functions/axisRanges";
 import lineKeys from "./Functions/lineKeys";
 import type { settingsValueType } from "./settings";
 import { selectionState } from "powerbi-visuals-core/powerbi";
@@ -22,16 +21,12 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
   protected readonly lineKeys = lineKeys;
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions | undefined) {
-    super(options, () => new viewModelClass());
+    super(options, host => new viewModelClass(host));
     this.tableDiv = createTableContainer(this.element);
   }
 
   protected get settings(): settingsValueType {
     return this.viewModel.inputSettings.settings[0];
-  }
-
-  protected axisRanges(): { x: AxisBounds; y: AxisBounds } {
-    return axisRanges(this.viewModel);
   }
 
   protected drawAlternate(): boolean {

@@ -33,7 +33,7 @@ describe("moving-range per-row metadata", () => {
     }
     const dataView = buildDataView({ key: keys, numerators, labels, tooltips }, rows);
     dataView.metadata.objects = { split_indexes_storage: { split_indexes: "[3]" } };
-    const viewModel = new viewModelClass();
+    const viewModel = new viewModelClass(createVisualHost({}));
     const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
     expect(result.status).toBe(true);
 
@@ -72,7 +72,7 @@ describe("moving-range per-row metadata", () => {
     };
     const dataView = buildDataView({ key: sequentialKeys(observations.length), numerators: observations }, settings);
     dataView.metadata.objects = { split_indexes_storage: { split_indexes: "[3]" } };
-    const viewModel = new viewModelClass();
+    const viewModel = new viewModelClass(createVisualHost({}));
     viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
 
     expect(viewModel.groupStartEndIndexes[0]).toEqual([[0, 3], [3, 7]]);

@@ -15,7 +15,7 @@ function update(spc: Partial<settingsValueType["spc"]>) {
     key: sequentialKeys(numerators.length),
     numerators
   }, settings);
-  const viewModel = new viewModelClass();
+  const viewModel = new viewModelClass(createVisualHost({}));
   const result = viewModel.update({
     dataViews: [dataView],
     viewport: { width: 500, height: 500 },

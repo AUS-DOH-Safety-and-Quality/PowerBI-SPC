@@ -1,9 +1,6 @@
-import type powerbi from "powerbi-visuals-api";
-import {
-  readSettingsGroups, buildFormattingModel, type FormattingModel, type SettingsGroupRule, type SettingsValidation
-} from "powerbi-visuals-core/powerbi";
+import { SettingsStore, type SettingsGroupRule } from "powerbi-visuals-core/powerbi";
 import settingsModel, { type settingsValueType } from "../settings";
-import { createDefaultValues, orderedBoundsError } from "powerbi-visuals-core/settings";
+import { orderedBoundsError } from "powerbi-visuals-core/settings";
 import derivedSettingsClass from "./derivedSettingsClass";
 
 const rules: SettingsGroupRule<settingsValueType>[] = [
@@ -26,30 +23,8 @@ const rules: SettingsGroupRule<settingsValueType>[] = [
   settings => orderedBoundsError(settings, settings.spc)
 ];
 
-export default class settingsClass {
-  settings: settingsValueType[];
-  derivedSettings: derivedSettingsClass[];
-  validationStatus: SettingsValidation;
-  messagePositionByRowIndex = new Map<number, number>();
-
-  update(category: powerbi.DataViewCategoryColumn, groupIdxs: readonly (readonly number[])[]): void {
-    const result = readSettingsGroups(settingsModel, category, groupIdxs, rules);
-    this.settings = result.values;
-    this.validationStatus = result.validation;
-    this.messagePositionByRowIndex = result.messagePositionByRowIndex;
-    this.derivedSettings = new Array<derivedSettingsClass>(this.settings.length);
-    for (let i = 0; i < this.settings.length; i++) {
-      this.derivedSettings[i] = new derivedSettingsClass(this.settings[i].spc);
-    }
-  }
-
-  public getFormattingModel(): FormattingModel {
-    return buildFormattingModel(settingsModel, this.settings[0]);
-  }
-
+export default class settingsClass extends SettingsStore<typeof settingsModel, derivedSettingsClass> {
   constructor() {
-    this.validationStatus = { status: 0, messages: [] };
-    this.settings = [createDefaultValues(settingsModel)];
-    this.derivedSettings = [new derivedSettingsClass(this.settings[0].spc)];
+    super(settingsModel, settings => new derivedSettingsClass(settings.spc), rules);
   }
 }

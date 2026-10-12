@@ -1,5 +1,5 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import plottedValues from "./plottedValues";
+import plottedValues from "../Functions/plottedValues";
 import { median } from "powerbi-visuals-core/math";
 
 /** Run chart: median centreline and no control limits. */

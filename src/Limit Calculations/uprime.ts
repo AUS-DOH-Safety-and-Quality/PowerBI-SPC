@@ -1,5 +1,5 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import averageMovingRange from "./averageMovingRange";
+import averageMovingRange from "../Functions/averageMovingRange";
 
 /** Laney U' chart: Poisson sigma scaled by the z-scores' average moving range / d2 (1.128 for n = 2). */
 export default function uprimeLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {

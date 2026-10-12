@@ -1,6 +1,6 @@
 import { c4, c5 } from "powerbi-visuals-core/math";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import withinGroupSd from "./withinGroupSd";
+import withinGroupSd from "../Functions/withinGroupSd";
 
 /** S chart: within-group SD centreline (withinGroupSd) with sigma = s * c5(n) / c4(n). */
 export default function sLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {

@@ -1,5 +1,5 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import plottedValues from "./plottedValues";
+import plottedValues from "../Functions/plottedValues";
 import { median } from "powerbi-visuals-core/math";
 
 /** I chart with a median centreline; sigma = median moving range / 0.954 (Wheeler, median-range d4 for n = 2). */

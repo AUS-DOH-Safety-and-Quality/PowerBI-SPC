@@ -1,6 +1,6 @@
 import { a3 } from "powerbi-visuals-core/math";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import withinGroupSd from "./withinGroupSd";
+import withinGroupSd from "../Functions/withinGroupSd";
 
 /** X-bar chart (S method): size-weighted grand mean centreline; within-group SD per withinGroupSd. */
 export default function xbarLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {

@@ -1,5 +1,5 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import plottedValues from "./plottedValues";
+import plottedValues from "../Functions/plottedValues";
 
 /** MR chart: upper limits are k/3 of D4 (3.267 for n = 2) times the mean moving range; lower limits are 0. */
 export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {

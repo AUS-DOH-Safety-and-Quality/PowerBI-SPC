@@ -24,7 +24,7 @@ export function updateViewModel(settings: settingsValueType, inputs: LimitInputs
   dataView.metadata.objects = {
     split_indexes_storage: { split_indexes: JSON.stringify(splitIndexes) }
   };
-  const viewModel = new viewModelClass();
+  const viewModel = new viewModelClass(createVisualHost({}));
   const result = viewModel.update({
     dataViews: [dataView],
     viewport: { width: 500, height: 500 },

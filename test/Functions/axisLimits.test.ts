@@ -120,7 +120,7 @@ describe("truncation and axis limit combinations", () => {
       indicator: ["A", "A", "A", "B", "B", "B"],
       numerators: [1, 2, 3, 30, 40, 50]
     }, settings);
-    const viewModel = new viewModelClass();
+    const viewModel = new viewModelClass(createVisualHost({}));
     const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
     expect(result.status).toBe(true);
     expect(viewModel.groupedRows).toHaveLength(2);

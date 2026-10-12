@@ -1,6 +1,6 @@
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
-import averageMovingRange from "./averageMovingRange";
-import plottedValues from "./plottedValues";
+import averageMovingRange from "../Functions/averageMovingRange";
+import plottedValues from "../Functions/plottedValues";
 import { median } from "powerbi-visuals-core/math";
 
 /** I chart with a median centreline; sigma = average moving range / d2 (1.128 for n = 2). */

@@ -1,6 +1,6 @@
 import type { controlLimitsArgs } from "../Classes/viewModelClass";
-import averageMovingRange from "./averageMovingRange";
-import plottedValues from "./plottedValues";
+import averageMovingRange from "../Functions/averageMovingRange";
+import plottedValues from "../Functions/plottedValues";
 
 /** I (XmR) chart: sigma = average moving range / d2 (1.128 for n = 2). */
 export default function iLimits(args: Readonly<controlLimitsArgs>) {

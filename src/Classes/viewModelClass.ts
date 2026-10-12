@@ -1,14 +1,11 @@
-import {
-  groupCategoryRows, labelledMessage, readColourPalette, rowIdentity, validateDataView, type ColourPalette, type FormattingModel,
-  type UpdateOptions
-} from "powerbi-visuals-core/powerbi";
+import { labelledMessage, rowIdentity, type CategoryGroups, type ValidatedDataView } from "powerbi-visuals-core/powerbi";
 import type powerbi from "powerbi-visuals-api";
 type IVisualHost = powerbi.extensibility.visual.IVisualHost;
 type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as limitFunctions from "../Limit Calculations"
 import settingsClass from "./settingsClass";
-import { type settingsValueType } from "../settings";
+import settingsModel, { type settingsValueType } from "../settings";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
 import { rep, between, clamp, calculateTrendLine } from "powerbi-visuals-core/math";
@@ -27,7 +24,7 @@ import lineKeys, { type LineName } from "../Functions/lineKeys";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
 import { sequence } from "powerbi-visuals-core/math";
 
-import { axisRangeError, type ViewModelValidation } from "powerbi-visuals-core/rendering";
+import { PlotViewModelBase, type AxisBounds, type GroupResults, type ViewModelValidation } from "powerbi-visuals-core/rendering";
 
 export type viewModelValidationT = ViewModelValidation;
 
@@ -227,202 +224,138 @@ function lineColumns(settings: settingsValueType, hasDenominators: boolean,
   return columns;
 }
 
-export default class viewModelClass {
-  inputData: dataObject[];
-  inputSettings: settingsClass;
-  controlLimits: controlLimitsObject[];
-  outliers: outliersObject[];
-  plotPoints: plotData[];
-  groupedRows: plotDataGrouped[];
-  groupedLines: [LineName, lineData[]][];
+export default class viewModelClass extends PlotViewModelBase<typeof settingsModel, derivedSettingsClass, "numerators"> {
+  inputData: dataObject[] = [];
+  controlLimits: controlLimitsObject[] = [];
+  outliers: outliersObject[] = [];
+  plotPoints: plotData[] = [];
+  groupedRows: plotDataGrouped[] = [];
+  groupedLines: [LineName, lineData[]][] = [];
   /** Positions in every grouped line that end a re-baselined period, joined or not */
-  rebaselineEnds: number[];
-  tickLabels: { x: number; label: string; }[];
-  splitIndexes: number[];
-  groupStartEndIndexes: number[][][];
-  firstRun: boolean;
-  colourPalette: ColourPalette;
-  tableColumns: { name: string; label: string; }[][];
-  svgWidth: number;
-  svgHeight: number;
-  headless: boolean;
-  frontend: boolean;
+  rebaselineEnds: number[] = [];
+  tickLabels: { x: number; label: string; }[] = [];
+  splitIndexes: number[] = [];
+  groupStartEndIndexes: number[][][] = [];
+  tableColumns: { name: string; label: string; }[][] = [];
 
-  indicatorVarNames: string[];
-  groupNames: string[][];
+  indicatorVarNames: string[] = [];
+  groupNames: string[][] = [];
   /** Each group's names joined, leading its messages */
-  groupLabels: string[];
-  identities: ISelectionId[][];
+  groupLabels: string[] = [];
+  identities: ISelectionId[][] = [];
 
   get showGrouped(): boolean {
     return this.inputData && this.inputData.length > 1;
   }
 
-  constructor() {
-    this.inputData = new Array<dataObject>();
-    this.inputSettings = new settingsClass();
-    this.controlLimits = new Array<controlLimitsObject>();
-    this.outliers = new Array<outliersObject>();
+  constructor(host: IVisualHost) {
+    super(host, new settingsClass(), ["numerators"]);
+  }
+
+  /** The grouped table has no axes */
+  protected get hasAxes(): boolean {
+    return !this.showGrouped;
+  }
+
+  axisRanges(): { x: AxisBounds; y: AxisBounds } {
+    return axisRanges(this);
+  }
+
+  protected reset(): void {
+    this.inputData = [];
+    this.controlLimits = [];
+    this.groupStartEndIndexes = [];
+    this.outliers = [];
+    this.identities = [];
     this.plotPoints = [];
     this.groupedRows = [];
     this.groupedLines = [];
-    this.rebaselineEnds = [];
-    this.firstRun = true
-    this.splitIndexes = new Array<number>();
-    this.groupStartEndIndexes = new Array<number[][]>();
-    this.identities = new Array<ISelectionId[]>();
-    this.tableColumns = new Array<{ name: string; label: string; }[]>();
-    this.colourPalette = {} as ColourPalette;
-    this.headless = false;
-    this.frontend = false;
     this.tickLabels = [];
-    this.svgWidth = 0;
-    this.svgHeight = 0;
-    this.indicatorVarNames = [];
-    this.groupNames = [];
-    this.groupLabels = [];
   }
 
-  getFormattingModel(): FormattingModel {
-    return this.inputSettings.getFormattingModel();
-  }
-
-  update(options: UpdateOptions, host: IVisualHost): viewModelValidationT {
-    // Read before any early return so error rendering is themed
-    this.colourPalette = readColourPalette(host);
-    const checkView = validateDataView(options.dataViews, ["numerators"]);
-    if (checkView.status !== "valid") {
-      return { status: false, error: checkView.error };
-    }
-    const view = checkView.view;
-    this.svgWidth = options.viewport.width;
-    this.svgHeight = options.viewport.height;
-    this.headless = options.headless ?? false;
-    this.frontend = options.frontend ?? false;
-
+  protected updateData(view: ValidatedDataView<"numerators">, indicatorGroups: CategoryGroups, host: IVisualHost): GroupResults {
     const indicator_cols = view.categories.indicator ?? [];
     this.indicatorVarNames = new Array<string>(indicator_cols.length);
     for (let i = 0; i < indicator_cols.length; i++) {
       this.indicatorVarNames[i] = indicator_cols[i].source.displayName;
     }
-
-    const indicatorGroups = groupCategoryRows(indicator_cols, view.rowCount);
     const idx_per_indicator = indicatorGroups.rows;
     this.groupNames = indicatorGroups.names;
     this.groupLabels = indicatorGroups.labels;
 
-    // Data and Style updates both rebuild settings, so theme changes reach the derived values
-    const dataChanged = (options.type & (2 | 16)) !== 0 || this.firstRun;
-    if (dataChanged) {
-      this.inputSettings.update(view.category, idx_per_indicator);
-    }
-    const settingsValidation = this.inputSettings.validationStatus;
-    if (settingsValidation.status !== 0) {
-      return { status: false, error: settingsValidation.error, type: "settings" };
-    }
     const checkDV: string = validateDataViewColumns(this.inputSettings, view.values);
     if (checkDV !== "valid") {
-      return { status: false, error: checkDV };
+      return { errors: [checkDV], warnings: [] };
     }
 
-    const inputErrors: string[] = [];
+    const hasIndicator = indicator_cols.length > 0;
+    const split_indexes_str: string = <string>(view.dataView.metadata.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+    const split_indexes: number[] = JSON.parse(split_indexes_str);
+    this.splitIndexes = hasIndicator ? [] : split_indexes;
 
-    if (dataChanged) {
-      const hasIndicator = indicator_cols.length > 0;
-      const split_indexes_str: string = <string>(view.dataView.metadata.objects?.split_indexes_storage?.split_indexes) ?? "[]";
-      const split_indexes: number[] = JSON.parse(split_indexes_str);
-      this.splitIndexes = hasIndicator ? [] : split_indexes;
+    this.inputData = new Array<dataObject>();
+    this.groupStartEndIndexes = new Array<number[][]>();
+    this.controlLimits = new Array<controlLimitsObject>();
+    this.outliers = new Array<outliersObject>();
+    this.identities = new Array<ISelectionId[]>();
+    this.tableColumns = new Array<{ name: string; label: string; }[]>();
 
-      this.inputData = new Array<dataObject>();
-      this.groupStartEndIndexes = new Array<number[][]>();
-      this.controlLimits = new Array<controlLimitsObject>();
-      this.outliers = new Array<outliersObject>();
-      this.identities = new Array<ISelectionId[]>();
-      this.tableColumns = new Array<{ name: string; label: string; }[]>();
-
-      const messagePositionByRowIndex = this.inputSettings.messagePositionByRowIndex;
-
-      for (let idx = 0; idx < idx_per_indicator.length; idx++) {
-        const group_idxs = idx_per_indicator[idx];
-        const settings = this.inputSettings.settings[idx];
-        const derivedSettings = this.inputSettings.derivedSettings[idx];
-
-        const extraction = extractInputData(
-          view,
-          settings,
-          derivedSettings,
-          this.inputSettings.validationStatus.messages,
-          group_idxs,
-          messagePositionByRowIndex
-        );
-        if (extraction.status !== "valid") {
-          inputErrors.push(labelledMessage(this.groupLabels[idx], extraction.error));
-          continue;
-        }
-        const inpData = extraction.data;
-        this.inputData.push(inpData);
-
-        const inputGroupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
-        const limits: controlLimitsObject = this.calculateLimits(inpData, inputGroupStartEnd, settings);
-        const groupStartEnd: number[][] = this.getResultGroupIndexes(limits.keys, inputGroupStartEnd);
-        // Flags compare display units (as specification limits are entered) against the truncated limits
-        this.scaleLimits(limits, settings, derivedSettings);
-        this.truncateLimits(limits, settings);
-        const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
-
-        const keys = inpData.limitInputArgs.keys;
-        const identities = new Array<ISelectionId>(keys.length);
-        for (let i = 0; i < keys.length; i++) {
-          identities[i] = rowIdentity(host, inpData.identityColumns, keys[i].id);
-        }
-
-        this.groupStartEndIndexes.push(groupStartEnd);
-        this.controlLimits.push(limits);
-        this.outliers.push(outliers);
-        this.identities.push(identities);
-      }
-
-      if (inputErrors.length === 0) {
-        if (this.showGrouped) {
-          this.initialisePlotDataGrouped();
-        } else {
-          this.initialisePlotData(host);
-          this.initialiseGroupedLines();
-        }
-      }
-    }
-
-    if (inputErrors.length > 0) {
-      this.inputData = [];
-      this.controlLimits = [];
-      this.groupStartEndIndexes = [];
-      this.outliers = [];
-      this.identities = [];
-      this.plotPoints = [];
-      this.groupedRows = [];
-      this.groupedLines = [];
-      this.tickLabels = [];
-      this.firstRun = true;
-      return { status: false, error: inputErrors.join("\n") };
-    }
-    this.firstRun = false;
-
+    const messagePositionByRowIndex = this.inputSettings.messagePositionByRowIndex;
+    const errors: string[] = [];
     const warnings: string[] = [];
-    for (let i = 0; i < this.inputData.length; i++) {
-      if (this.inputData[i].warningMessage !== "") {
-        warnings.push(labelledMessage(this.groupLabels[i], this.inputData[i].warningMessage));
+
+    for (let idx = 0; idx < idx_per_indicator.length; idx++) {
+      const group_idxs = idx_per_indicator[idx];
+      const settings = this.inputSettings.settings[idx];
+      const derivedSettings = this.inputSettings.derivedSettings[idx];
+
+      const extraction = extractInputData(
+        view,
+        settings,
+        derivedSettings,
+        this.inputSettings.validationStatus.messages,
+        group_idxs,
+        messagePositionByRowIndex
+      );
+      if (extraction.status !== "valid") {
+        errors.push(labelledMessage(this.groupLabels[idx], extraction.error));
+        continue;
       }
+      const inpData = extraction.data;
+      this.inputData.push(inpData);
+      if (inpData.warningMessage !== "") {
+        warnings.push(labelledMessage(this.groupLabels[idx], inpData.warningMessage));
+      }
+
+      const inputGroupStartEnd: number[][] = this.getGroupingIndexes(inpData, idx === 0 ? this.splitIndexes : undefined);
+      const limits: controlLimitsObject = this.calculateLimits(inpData, inputGroupStartEnd, settings);
+      const groupStartEnd: number[][] = this.getResultGroupIndexes(limits.keys, inputGroupStartEnd);
+      // Flags compare display units (as specification limits are entered) against the truncated limits
+      this.scaleLimits(limits, settings, derivedSettings);
+      this.truncateLimits(limits, settings);
+      const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
+
+      const keys = inpData.limitInputArgs.keys;
+      const identities = new Array<ISelectionId>(keys.length);
+      for (let i = 0; i < keys.length; i++) {
+        identities[i] = rowIdentity(host, inpData.identityColumns, keys[i].id);
+      }
+
+      this.groupStartEndIndexes.push(groupStartEnd);
+      this.controlLimits.push(limits);
+      this.outliers.push(outliers);
+      this.identities.push(identities);
     }
 
-    // The grouped table has no axes
-    if (!this.showGrouped) {
-      const rangeError = axisRangeError(axisRanges(this));
-      if (rangeError !== undefined) {
-        return { status: false, type: "settings", error: rangeError };
+    if (errors.length === 0) {
+      if (this.showGrouped) {
+        this.initialisePlotDataGrouped();
+      } else {
+        this.initialisePlotData(host);
+        this.initialiseGroupedLines();
       }
     }
-
-    return { status: true, warning: warnings.length > 0 ? warnings.join("\n") : undefined };
+    return { errors, warnings };
   }
 
   getGroupingIndexes(inputData: dataObject, splitIndexes?: number[]): number[][] {
