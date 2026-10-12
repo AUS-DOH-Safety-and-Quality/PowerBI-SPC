@@ -14,7 +14,7 @@ import extractInputData from "../Functions/extractInputData";
 import {
   isNullOrUndefined, isValidNumber, groupBy, pickRows, checkFlagDirection, applyFlagColours, type FlagDirection, type OutlierStatus
 } from "powerbi-visuals-core/data";
-import { limitLineNames } from "powerbi-visuals-core/settings";
+import { limitColumns, limitLineNames, type StandardLineValues } from "powerbi-visuals-core/settings";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
@@ -35,19 +35,11 @@ export type lineData = {
   aesthetics: settingsValueType["lines"];
 }
 
-export type summaryTableRowData = {
+export type summaryTableRowData = StandardLineValues<number | undefined> & {
   date: string;
   numerator: number | undefined;
   denominator: number | undefined;
   value: number;
-  target: number | undefined;
-  alt_target: number | undefined;
-  ll99: number | undefined;
-  ll95: number | undefined;
-  ll68: number | undefined;
-  ul68: number | undefined;
-  ul95: number | undefined;
-  ul99: number | undefined;
   speclimits_lower: number | undefined;
   speclimits_upper: number | undefined;
   trend_line: number | undefined;
@@ -58,20 +50,12 @@ export type summaryTableRowData = {
 }
 
 /** Grouped rows hold formatted text; indicator and tooltip columns are named by the report */
-export type summaryTableRowDataGrouped = {
+export type summaryTableRowDataGrouped = StandardLineValues<string> & {
   [column: string]: string;
   latest_date: string;
   value: string;
   numerator: string;
   denominator: string;
-  target: string;
-  alt_target: string;
-  ul99: string;
-  ul95: string;
-  ul68: string;
-  ll68: string;
-  ll95: string;
-  ll99: string;
   speclimits_lower: string;
   speclimits_upper: string;
   trend_line: string;
@@ -104,20 +88,12 @@ export type plotDataGrouped = {
 }
 
 /** Every series is row-aligned with `keys`; a cell is undefined where the chart or settings define no value */
-export type controlLimitsObject = {
+export type controlLimitsObject = StandardLineValues<(number | undefined)[]> & {
   keys: { x: number, id: number, label: string }[];
   values: number[];
   numerators: (number | undefined)[];
   denominators: (number | undefined)[];
-  target: (number | undefined)[];
-  ll99: (number | undefined)[];
-  ll95: (number | undefined)[];
-  ll68: (number | undefined)[];
-  ul68: (number | undefined)[];
-  ul95: (number | undefined)[];
-  ul99: (number | undefined)[];
   count: (number | undefined)[];
-  alt_target: (number | undefined)[];
   speclimits_lower: (number | undefined)[];
   speclimits_upper: (number | undefined)[];
   trend_line: (number | undefined)[];
@@ -202,25 +178,7 @@ function lineColumns(settings: settingsValueType, hasDenominators: boolean,
       label: `${lines.ttip_label_specification_prefix_lower}${lines.ttip_label_specification}`
     });
   }
-  const levels = ["99", "95", "68"] as const;
-  for (let l = 0; l < levels.length; l++) {
-    const level = levels[l];
-    if (hasControlLimits && lines[`show_${level}`]) {
-      columns.push({ name: `ul${level}`, label: `${lines[`ttip_label_${level}_prefix_upper`]}${lines[`ttip_label_${level}`]}` });
-    }
-  }
-  if (lines.show_target) {
-    columns.push({ name: "target", label: lines.ttip_label_target });
-  }
-  if (lines.show_alt_target) {
-    columns.push({ name: "alt_target", label: lines.ttip_label_alt_target });
-  }
-  for (let l = levels.length - 1; l >= 0; l--) {
-    const level = levels[l];
-    if (hasControlLimits && lines[`show_${level}`]) {
-      columns.push({ name: `ll${level}`, label: `${lines[`ttip_label_${level}_prefix_lower`]}${lines[`ttip_label_${level}`]}` });
-    }
-  }
+  columns.push(...limitColumns(lines, hasControlLimits));
   return columns;
 }
 
@@ -232,7 +190,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
   groupedRows: plotDataGrouped[] = [];
   groupedLines: [LineName, lineData[]][] = [];
   /** Positions in every grouped line that end a re-baselined period, joined or not */
-  rebaselineEnds: number[] = [];
+  periodEnds: number[] = [];
   tickLabels: { x: number; label: string; }[] = [];
   splitIndexes: number[] = [];
   groupStartEndIndexes: number[][][] = [];
@@ -246,6 +204,10 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
 
   get showGrouped(): boolean {
     return this.inputData && this.inputData.length > 1;
+  }
+
+  get anyLabels(): boolean {
+    return this.inputData[0].anyLabels;
   }
 
   constructor(host: IVisualHost) {
@@ -718,7 +680,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       isGroupStart[groups[i][0]] = true;
     }
 
-    this.rebaselineEnds = [];
+    this.periodEnds = [];
     let position: number = 0;
     for (let i: number = 0; i < nLimits; i++) {
       const isRebaselinePoint: boolean = isGroupStart[i];
@@ -727,7 +689,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         isNewAltTarget = controlLimits.alt_target[i] !== controlLimits.alt_target[i - 1];
       }
       if (isRebaselinePoint) {
-        this.rebaselineEnds.push(position - 1);
+        this.periodEnds.push(position - 1);
       }
       position += (isRebaselinePoint || isNewAltTarget) ? 2 : 1;
       for (let l = 0; l < labels.length; l++) {
@@ -754,7 +716,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         })
       }
     }
-    this.rebaselineEnds.push(position - 1);
+    this.periodEnds.push(position - 1);
     this.groupedLines = groupBy(formattedLines, "group");
   }
 

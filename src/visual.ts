@@ -2,21 +2,22 @@
 
 import type powerbi from "powerbi-visuals-api";
 import {
-  PlotVisual, drawPlotAxes, drawPlotTooltips, drawPlotDots, drawPlotDownload, drawPlotValueLabels, drawPlotLines,
-  drawPlotLineLabels, valueTickFormat, createTableContainer, showTable, highlightTable,
-  type SvgSelection, type TableSelection
+  PlotVisual, valueTickFormat, createTableContainer, showTable, highlightTable, type PlotOptions, type SvgSelection, type TableSelection
 } from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
-import viewModelClass, { type plotData, type plotDataGrouped } from "./Classes/viewModelClass";
+import viewModelClass, { type lineData, type plotData, type plotDataGrouped } from "./Classes/viewModelClass";
 import lineKeys from "./Functions/lineKeys";
 import type { settingsValueType } from "./settings";
 import { selectionState } from "powerbi-visuals-core/powerbi";
-import { lineStyle, lowerLimitLines } from "powerbi-visuals-core/settings";
+import { lowerLimitLines } from "powerbi-visuals-core/settings";
 
 export type svgBaseType = SvgSelection;
 
-export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueType> {
+const lowerLines = new Set(lowerLimitLines);
+lowerLines.add("speclimits_lower");
+
+export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueType, lineData> {
   tableDiv: TableSelection;
   protected readonly lineKeys = lineKeys;
 
@@ -39,53 +40,36 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     return true;
   }
 
-  drawVisual(): void {
-    const svg = this.svg.node();
-    if (svg === null) {
-      return;
-    }
+  protected plotOptions(): PlotOptions<plotData, lineData> {
     const viewModel = this.viewModel;
     const settings = this.settings;
-    const context = this.plotContext();
     const tickLabels = viewModel.tickLabels;
-    drawPlotAxes(svg, context, {
-      x: value => {
-        for (let i = 0; i < tickLabels.length; i++) {
-          if (tickLabels[i].x === value) {
-            return tickLabels[i].label;
+    return {
+      tickFormats: {
+        x: value => {
+          for (let i = 0; i < tickLabels.length; i++) {
+            if (tickLabels[i].x === value) {
+              return tickLabels[i].label;
+            }
           }
-        }
-        return "";
+          return "";
+        },
+        y: valueTickFormat(settings.y_axis.ylimit_sig_figs ?? settings.spc.sig_figs, viewModel.inputSettings.derivedSettings[0].percentLabels)
       },
-      y: valueTickFormat(settings.y_axis.ylimit_sig_figs ?? settings.spc.sig_figs, viewModel.inputSettings.derivedSettings[0].percentLabels)
-    });
-    drawPlotTooltips(svg, context, false);
-    // Each point carries its own row's line settings, so rebaselined segments may differ
-    drawPlotLines(svg, context, viewModel.groupedLines, (name, points, index) => lineStyle(points[index].aesthetics, lineKeys[name]));
-    drawPlotLineLabels(svg, context, {
-      lines: viewModel.groupedLines,
-      settings: settings.lines,
-      keys: lineKeys,
-      lower: name => lowerLimitLines.has(name) || name === "speclimits_lower",
-      format: viewModel.inputSettings.derivedSettings[0].formatValue,
-      periodEnds: viewModel.rebaselineEnds
-    });
-    drawPlotDots(svg, context, {
-      show: settings.scatter.show_dots,
-      text: undefined,
-      onClick: settings.spc.split_on_click ? point => this.toggleSplit(point) : undefined
-    });
-    this.svg.call(drawIcons, this);
-    this.addContextMenu(svg);
-    drawPlotDownload(svg, context, () => {
-      const points = context.points;
-      const rows = new Array<plotData["table_row"]>(points.length);
-      for (let i = 0; i < points.length; i++) {
-        rows[i] = points[i].table_row;
+      verticalCrosshair: false,
+      // Each point carries its own row's line settings, so rebaselined segments may differ
+      lineSettings: (points, index) => points[index].aesthetics,
+      lowerLines,
+      dots: {
+        show: settings.scatter.show_dots,
+        text: undefined,
+        onClick: settings.spc.split_on_click ? point => this.toggleSplit(point) : undefined
       }
-      return rows;
-    });
-    drawPlotValueLabels(svg, context, viewModel.inputData[0].anyLabels);
+    };
+  }
+
+  protected drawMarks(): void {
+    this.svg.call(drawIcons, this);
   }
 
   /** Toggles a limit split at the point; persisting it triggers the update that recalculates the limits */
