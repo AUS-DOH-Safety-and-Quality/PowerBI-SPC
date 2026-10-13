@@ -8,7 +8,7 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): Calculated
   const n_sub: number = args.subset_points.length;
   const subset_points: readonly number[] = args.subset_points;
 
-  let ratio_subset: number[] = new Array<number>(n_sub);
+  const ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
     ratio_subset[i] = plotted.values[subset_points[i]];
   }

@@ -6,11 +6,13 @@ import { settingsWith } from "../helpers/renderVisual";
 import { describe, it, expect } from "vitest";
 
 describe("variationIconsToDraw", () => {
+    const none: FlagDirection[] = ["none", "none", "none"];
+
     const createOutliers = (
         astpoint: FlagDirection[],
-        shift: FlagDirection[],
-        trend: FlagDirection[],
-        two_in_three: FlagDirection[]
+        shift: FlagDirection[] = none,
+        trend: FlagDirection[] = none,
+        two_in_three: FlagDirection[] = none
     ): outliersObject => ({
         astpoint,
         shift,
@@ -26,297 +28,56 @@ describe("variationIconsToDraw", () => {
         nhs_icons: { flag_last_point }
     });
 
-    describe("no outliers detected", () => {
-        it("should return 'commonCause' when no outliers are present", () => {
-            const outliers = createOutliers(
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["commonCause"]);
-        });
+    it("returns 'commonCause' when no point is flagged", () => {
+        expect(variationIconsToDraw(createOutliers(none), createSettings("increase", false))).toEqual(["commonCause"]);
     });
 
-    describe("improvement direction: increase", () => {
-        it("should return 'improvementHigh' when improvement is detected", () => {
-            const outliers = createOutliers(
-                ["improvement", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["improvementHigh"]);
-        });
-
-        it("should return 'concernLow' when deterioration is detected", () => {
-            const outliers = createOutliers(
-                ["deterioration", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["concernLow"]);
-        });
-
-        it("should return both icons when both improvement and deterioration present", () => {
-            const outliers = createOutliers(
-                ["improvement", "none", "none"],
-                ["deterioration", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toContain("improvementHigh");
-            expect(result).toContain("concernLow");
-            expect(result.length).toBe(2);
-        });
+    it("names the icon by the flag and the improvement direction", () => {
+        const cases = [
+            { direction: "increase", flag: "improvement", icon: "improvementHigh" },
+            { direction: "increase", flag: "deterioration", icon: "concernLow" },
+            { direction: "decrease", flag: "improvement", icon: "improvementLow" },
+            { direction: "decrease", flag: "deterioration", icon: "concernHigh" },
+            { direction: "neutral", flag: "neutral_low", icon: "neutralLow" },
+            { direction: "neutral", flag: "neutral_high", icon: "neutralHigh" }
+        ] as const;
+        for (let i = 0; i < cases.length; i++) {
+            const outliers = createOutliers([cases[i].flag, "none", "none"]);
+            const result = variationIconsToDraw(outliers, createSettings(cases[i].direction, false));
+            expect(result, `${cases[i].direction} ${cases[i].flag}`).toEqual([cases[i].icon]);
+        }
     });
 
-    describe("improvement direction: decrease", () => {
-        it("should return 'improvementLow' when improvement is detected", () => {
-            const outliers = createOutliers(
-                ["improvement", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("decrease", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["improvementLow"]);
-        });
-
-        it("should return 'concernHigh' when deterioration is detected", () => {
-            const outliers = createOutliers(
-                ["deterioration", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("decrease", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["concernHigh"]);
-        });
+    it("lists each kind of flag once, improvement before concern and low before high", () => {
+        const opposing = createOutliers(none, ["none", "deterioration", "none"], ["improvement", "none", "none"]);
+        expect(variationIconsToDraw(opposing, createSettings("increase", false))).toEqual(["improvementHigh", "concernLow"]);
+        const neutral = createOutliers(["neutral_high", "none", "none"], ["none", "neutral_low", "none"]);
+        expect(variationIconsToDraw(neutral, createSettings("neutral", false))).toEqual(["neutralLow", "neutralHigh"]);
     });
 
-    describe("improvement direction: neutral", () => {
-        it("should return 'neutralLow' when neutral_low is detected", () => {
-            const outliers = createOutliers(
-                ["neutral_low", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("neutral", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["neutralLow"]);
-        });
-
-        it("should return 'neutralHigh' when neutral_high is detected", () => {
-            const outliers = createOutliers(
-                ["neutral_high", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("neutral", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["neutralHigh"]);
-        });
-
-        it("should return both neutral icons when both directions detected", () => {
-            const outliers = createOutliers(
-                ["neutral_low", "neutral_high", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("neutral", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toContain("neutralLow");
-            expect(result).toContain("neutralHigh");
-            expect(result.length).toBe(2);
-        });
+    it("counts flags from all four patterns alike", () => {
+        const patterns = [
+            createOutliers(["none", "improvement", "none"]),
+            createOutliers(none, ["none", "improvement", "none"]),
+            createOutliers(none, none, ["none", "improvement", "none"]),
+            createOutliers(none, none, none, ["none", "improvement", "none"]),
+            createOutliers(["improvement", "improvement", "improvement"], ["improvement", "improvement", "improvement"],
+                           ["improvement", "improvement", "improvement"], ["improvement", "improvement", "improvement"])
+        ];
+        for (let i = 0; i < patterns.length; i++) {
+            expect(variationIconsToDraw(patterns[i], createSettings("increase", false)), `case ${i}`).toEqual(["improvementHigh"]);
+        }
     });
 
-    describe("multiple outlier types", () => {
-        it("should detect outliers from all four detection methods", () => {
-            const outliers = createOutliers(
-                ["improvement", "none", "none"],
-                ["none", "improvement", "none"],
-                ["none", "none", "improvement"],
-                ["improvement", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            // All contribute to improvementHigh
-            expect(result).toEqual(["improvementHigh"]);
-        });
-
-        it("should combine different detection methods with different directions", () => {
-            const outliers = createOutliers(
-                ["improvement", "none", "none"],
-                ["deterioration", "none", "none"],
-                ["improvement", "none", "none"],
-                ["deterioration", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toContain("improvementHigh");
-            expect(result).toContain("concernLow");
-            expect(result.length).toBe(2);
-        });
+    it("considers only the last point when flag_last_point is set", () => {
+        const earlier = createOutliers(["improvement", "improvement", "none"]);
+        expect(variationIconsToDraw(earlier, createSettings("increase", true))).toEqual(["commonCause"]);
+        const last = createOutliers(["none", "none", "improvement"], ["none", "none", "deterioration"]);
+        expect(variationIconsToDraw(last, createSettings("increase", true))).toEqual(["improvementHigh", "concernLow"]);
     });
 
-    describe("flag_last_point option", () => {
-        it("should only check last point when flag_last_point is true", () => {
-            const outliers = createOutliers(
-                ["improvement", "improvement", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", true);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            // Last point is "none" for all, so commonCause
-            expect(result).toEqual(["commonCause"]);
-        });
-
-        it("should detect outlier in last point when flag_last_point is true", () => {
-            const outliers = createOutliers(
-                ["none", "none", "improvement"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", true);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["improvementHigh"]);
-        });
-
-        it("should check all points when flag_last_point is false", () => {
-            const outliers = createOutliers(
-                ["improvement", "improvement", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["improvementHigh"]);
-        });
-
-        it("should check last point across all detection methods when flag_last_point is true", () => {
-            const outliers = createOutliers(
-                ["none", "none", "improvement"],
-                ["none", "none", "deterioration"],
-                ["none", "none", "improvement"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", true);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toContain("improvementHigh");
-            expect(result).toContain("concernLow");
-            expect(result.length).toBe(2);
-        });
-    });
-
-    describe("edge cases", () => {
-        it("should handle single point arrays", () => {
-            const outliers = createOutliers(
-                ["improvement"],
-                ["none"],
-                ["none"],
-                ["none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["improvementHigh"]);
-        });
-
-        it("should deduplicate icon types", () => {
-            const outliers = createOutliers(
-                ["improvement", "improvement", "improvement"],
-                ["improvement", "improvement", "improvement"],
-                ["improvement", "improvement", "improvement"],
-                ["improvement", "improvement", "improvement"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            expect(result).toEqual(["improvementHigh"]);
-        });
-    });
-
-    describe("improvement vs deterioration mapping", () => {
-        it("should correctly invert suffixes for deterioration in increase direction", () => {
-            const outliers = createOutliers(
-                ["deterioration", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("increase", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            // increase + deterioration -> concernLow (inverted)
-            expect(result).toEqual(["concernLow"]);
-        });
-
-        it("should correctly invert suffixes for deterioration in decrease direction", () => {
-            const outliers = createOutliers(
-                ["deterioration", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"],
-                ["none", "none", "none"]
-            );
-            const settings = createSettings("decrease", false);
-
-            const result = variationIconsToDraw(outliers, settings);
-
-            // decrease + deterioration -> concernHigh (inverted)
-            expect(result).toEqual(["concernHigh"]);
-        });
+    it("considers every point when flag_last_point is off", () => {
+        const earlier = createOutliers(["improvement", "none", "none"], ["none", "deterioration", "none"]);
+        expect(variationIconsToDraw(earlier, createSettings("decrease", false))).toEqual(["improvementLow", "concernHigh"]);
     });
 });

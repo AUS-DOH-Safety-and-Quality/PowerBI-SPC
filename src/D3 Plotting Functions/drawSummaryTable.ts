@@ -5,14 +5,14 @@ import initialiseIconSVG from "./initialiseIconSVG";
 import { nhsIcons, type NhsIconName } from "./NHS Icons"
 import type { settingsValueType } from "../settings";
 
-const columnKinds: Record<string, ColumnKind> = {
+const columnKinds: Readonly<Record<string, ColumnKind>> = {
   value: "number", target: "number", alt_target: "number", trend_line: "number", speclimits_lower: "number", speclimits_upper: "number",
   ll99: "number", ll95: "number", ll68: "number", ul68: "number", ul95: "number", ul99: "number",
   numerator: "integer", denominator: "integer",
   date: "date", latest_date: "date",
   astpoint: "flag", trend: "flag", shift: "flag", two_in_three: "flag"
 };
-const iconKinds: Record<string, ColumnKind> = { ...columnKinds, variation: "icon", assurance: "icon" };
+const iconKinds: Readonly<Record<string, ColumnKind>> = { ...columnKinds, variation: "icon", assurance: "icon" };
 
 /** Grouped rows draw the icon columns as icons rather than text */
 function drawsIcons(inputSettings: settingsValueType, showGrouped: boolean): boolean {
@@ -31,13 +31,20 @@ function rowTableSettings(row: plotData | plotDataGrouped,
 
 /** Square icons share one size: the shortest row's content height, capped so the icon columns' combined width holds them */
 function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValueType["nhs_icons"]) {
-  const iconCells = selection.select(".table-body")
-                             .selectAll("tr")
-                             .selectAll<HTMLTableCellElement, { column: string }>("td")
-                             .filter(d => isIconColumn(d.column));
-  const cells = iconCells.nodes();
-  const data = iconCells.data();
-  const icons = new Array<NhsIconName[]>(cells.length);
+  const allCells = selection.select(".table-body")
+                            .selectAll("tr")
+                            .selectAll<HTMLTableCellElement, { column: string }>("td");
+  const allNodes = allCells.nodes();
+  const allData = allCells.data();
+  const cells: HTMLTableCellElement[] = [];
+  const data: { column: string }[] = [];
+  for (let i = 0; i < allNodes.length; i++) {
+    if (isIconColumn(allData[i].column)) {
+      cells.push(allNodes[i]);
+      data.push(allData[i]);
+    }
+  }
+  const icons = new Array<readonly NhsIconName[]>(cells.length);
   let rowHeight: number = Number.POSITIVE_INFINITY;
   const columnWidths: Record<string, number> = { variation: 0, assurance: 0 };
   const maxIcons: Record<string, number> = { variation: 0, assurance: 0 };

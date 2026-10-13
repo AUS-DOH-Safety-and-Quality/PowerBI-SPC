@@ -69,8 +69,8 @@ function expectLimits(limits: controlLimitsObject, centres: number[], sigmas: nu
     expect(limits[ll]).toHaveLength(centres.length);
     expect(limits[ul]).toHaveLength(centres.length);
     for (let i = 0; i < centres.length; i++) {
-      expect(limits[ll]![i], `${ll} at ${i}`).toBeCloseTo(Math.max(lower, centres[i] - width * sigmas[i]), 8);
-      expect(limits[ul]![i], `${ul} at ${i}`).toBeCloseTo(Math.min(upper, centres[i] + width * sigmas[i]), 8);
+      expect(limits[ll][i], `${ll} at ${i}`).toBeCloseTo(Math.max(lower, centres[i] - width * sigmas[i]), 8);
+      expect(limits[ul][i], `${ul} at ${i}`).toBeCloseTo(Math.min(upper, centres[i] + width * sigmas[i]), 8);
     }
   }
 }
@@ -127,7 +127,7 @@ it.each(["Start", "End"] as const)("uses every point in short rebaselines when s
     subset_rebaselines: true
   }, ["A", "A", "A", "A", "B", "B", "C"], [], numerators.slice(0, 7));
 
-  expect(limits.target.slice(0, 4)).toEqual(Array(4).fill(from === "Start" ? 38 / 3 : 50 / 3));
+  expect(limits.target.slice(0, 4)).toEqual(new Array<number>(4).fill(from === "Start" ? 38 / 3 : 50 / 3));
   expect(limits.target.slice(4)).toEqual([32, 32, 40]);
   for (let b = 0; b < bands.length; b++) {
     const ll = bands[b][0];
@@ -136,11 +136,11 @@ it.each(["Start", "End"] as const)("uses every point in short rebaselines when s
     for (let i = 0; i < 6; i++) {
       const mean = i < 4 ? (from === "Start" ? 38 / 3 : 50 / 3) : 32;
       const range = i < 4 ? (from === "Start" ? 3 : 5) : 4;
-      expect(limits[ll]![i]).toBeCloseTo(mean - width * range / 1.128, 8);
-      expect(limits[ul]![i]).toBeCloseTo(mean + width * range / 1.128, 8);
+      expect(limits[ll][i]).toBeCloseTo(mean - width * range / 1.128, 8);
+      expect(limits[ul][i]).toBeCloseTo(mean + width * range / 1.128, 8);
     }
-    expect(limits[ll]![6]).toBeUndefined();
-    expect(limits[ul]![6]).toBeUndefined();
+    expect(limits[ll][6]).toBeUndefined();
+    expect(limits[ul][6]).toBeUndefined();
   }
 });
 
@@ -151,15 +151,15 @@ const chartReferences = [
     chart_type: "i", denominators: varyingDenominators, lower: -Infinity, upper: Infinity,
     Start: {
       centres: [0.08, 0.22],
-      sigmas: [Array(4).fill(0.0354609929), Array(4).fill(0.2127659574)]
+      sigmas: [new Array<number>(4).fill(0.0354609929), new Array<number>(4).fill(0.2127659574)]
     },
     End: {
       centres: [0.13, 0.16],
-      sigmas: [Array(4).fill(0.1595744681), Array(4).fill(0.0709219858)]
+      sigmas: [new Array<number>(4).fill(0.1595744681), new Array<number>(4).fill(0.0709219858)]
     },
     All: {
       centres: [0.105, 0.19],
-      sigmas: [Array(4).fill(0.0709219858), Array(4).fill(0.1359338061)]
+      sigmas: [new Array<number>(4).fill(0.0709219858), new Array<number>(4).fill(0.1359338061)]
     }
   },
   {
@@ -229,7 +229,7 @@ describe.each(["groupings", "click splits"])("Numerical control limits with %s",
 
       const first = reference[from];
       const second = rebaselines ? reference[from] : reference.All;
-      const centres = [...Array(4).fill(first.centres[0]), ...Array(4).fill(second.centres[1])];
+      const centres = [...new Array<number>(4).fill(first.centres[0]), ...new Array<number>(4).fill(second.centres[1])];
       expectLimits(limits, centres, [...first.sigmas[0], ...second.sigmas[1]], reference.lower, reference.upper);
       const values = new Array<number>(8);
       for (let i = 0; i < values.length; i++) {
@@ -269,7 +269,7 @@ it.each([
   expect(limits.values).toEqual([2, 4, 6, 8, 4, 6, 8, 12, 6, 8, 10]);
   expect(limits.target).toEqual(rep(centre, 11));
   for (let i = 0; i < 11; i++) {
-    expect(limits.ul99![i]).toBeCloseTo(centre * 3.267, 10);
+    expect(limits.ul99[i]).toBeCloseTo(centre * 3.267, 10);
   }
   expect(limits.ll99).toEqual(rep(0, 11));
   expect(keyIds(limits)).toEqual(sequence(1, 11, 1));

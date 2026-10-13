@@ -2,18 +2,19 @@ import type powerbi from "powerbi-visuals-api";
 import type { UpdateOptions, ValidatedDataView } from "powerbi-visuals-core/powerbi";
 import type viewModelClass from "../src/Classes/viewModelClass";
 import type { plotData, plotDataGrouped, LimitSeries, controlLimitsObject } from "../src/Classes/viewModelClass";
-import type derivedSettingsClass from "../src/Classes/derivedSettingsClass";
+import type settingsClass from "../src/Classes/settingsClass";
 import extractInputData from "../src/Functions/extractInputData";
 import type { settingsValueType } from "../src/settings";
 import type { NhsIconName } from "../src/D3 Plotting Functions/NHS Icons";
 import type { LineName } from "../src/Functions/lineKeys";
 import type { Visual } from "../src/visual";
 import buildDataView from "./helpers/buildDataView";
+import { updateType } from "powerbi-visuals-core/powerbi";
 
 declare const viewModel: viewModelClass;
 declare const visual: Visual;
 declare const settings: settingsValueType;
-declare const derived: derivedSettingsClass;
+declare const store: settingsClass;
 declare const dataView: powerbi.DataView;
 declare const validated: ValidatedDataView<"numerators">;
 declare const limits: controlLimitsObject;
@@ -39,18 +40,18 @@ const line: LineName = "ll50";
 visual.update({
   dataViews: [buildDataView({ key: ["A"], numerators: [1] })],
   viewport: { width: 1, height: 1 },
-  type: 2,
+  type: updateType.data,
   headless: true
 });
-const options: UpdateOptions = { dataViews: [], viewport: { width: 1, height: 1 }, type: 2 };
+const options: UpdateOptions = { dataViews: [], viewport: { width: 1, height: 1 }, type: updateType.data };
 
 // Fixture cells may be blank
 buildDataView({ key: ["A", null], numerators: [1, undefined] });
 
 // Extraction only accepts a view Core has validated, and reads its required roles without a check
-extractInputData(validated, settings, derived, [], [0], new Map());
+extractInputData(validated, store, [0]);
 // @ts-expect-error Raw data views must pass validateDataView first.
-extractInputData(dataView, settings, derived, [], [0], new Map());
+extractInputData(dataView, store, [0]);
 const numerators: powerbi.DataViewValueColumn[] = validated.values.numerators;
 
 /** Every limit series exists; only its cells may be blank */
@@ -61,4 +62,4 @@ const firstLimit: number = limits.ll99[0];
 const labels: (string | undefined)[] = viewModel.inputData[0].labels;
 const anyLabels: boolean = viewModel.inputData[0].anyLabels;
 
-void [point, numeric, assurance, icon, series, line, options, numerators, ll99, firstLimit, labels, anyLabels];
+[point, numeric, assurance, icon, series, line, options, numerators, ll99, firstLimit, labels, anyLabels];

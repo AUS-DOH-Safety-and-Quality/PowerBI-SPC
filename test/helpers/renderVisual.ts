@@ -12,6 +12,14 @@ export function settingsWith(overrides: SettingsOverrides): settingsValueType {
   return mergeSettings(defaultSettings, overrides);
 }
 
+/** Settings whose cards and values tests can assign */
+export type MutableSettings = { -readonly [C in keyof settingsValueType]: { -readonly [K in keyof settingsValueType[C]]: settingsValueType[C][K] } };
+
+/** A deep copy of the defaults, for tests that mutate cards in place */
+export function cloneSettings(): MutableSettings {
+  return structuredClone(defaultSettings);
+}
+
 export type RenderOptions = BaseRenderOptions & {
   /** Stored click splits, as 0-based segment ends */
   splitIndexes?: number[];

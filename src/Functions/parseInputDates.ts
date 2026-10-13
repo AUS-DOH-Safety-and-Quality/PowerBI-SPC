@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api"
 
-const monthNameToNumber: { [key: string]: number } = {
+const monthNameToNumber: { readonly [key: string]: number } = {
   "January": 0,
   "February": 1,
   "March": 2,
@@ -17,24 +17,6 @@ const monthNameToNumber: { [key: string]: number } = {
 };
 
 
-function temporalTypeToKey(inputType: { temporal?: boolean, category?: string}, inputValue: powerbi.PrimitiveValue) {
-  if (!inputType.temporal) {
-    return [];
-  }
-
-  if (inputType.category === "DayOfMonth") {
-    return ["day", <number>(inputValue)]
-  } else if (inputType.category === "Months") {
-    return ["month", monthNameToNumber[<string>(inputValue)]]
-  } else if (inputType.category === "Quarters") {
-    return ["quarter", <string>inputValue]
-  } else if (inputType.category === "Years") {
-    return ["year", <number>(inputValue)]
-  } else {
-    return []
-  }
-}
-
 type datePartsType = {
   day?: number,
   month?: number,
@@ -42,27 +24,51 @@ type datePartsType = {
   year?: number
 }
 
-export default function parseInputDates(inputs: powerbi.DataViewCategoryColumn[], idxs: number[]) {
+/** Power BI's runtime value types also carry the hierarchy level's category, which the api's descriptor omits */
+type datePartType = { readonly temporal?: unknown; readonly category?: string };
+
+function readDatePart(parts: datePartsType, inputType: datePartType | undefined, inputValue: powerbi.PrimitiveValue): void {
+  if (inputType?.temporal == null) {
+    return;
+  }
+  if (inputType.category === "DayOfMonth") {
+    parts.day = <number>(inputValue);
+  } else if (inputType.category === "Months") {
+    parts.month = monthNameToNumber[<string>(inputValue)];
+  } else if (inputType.category === "Quarters") {
+    parts.quarter = <string>inputValue;
+  } else if (inputType.category === "Years") {
+    parts.year = <number>(inputValue);
+  }
+}
+
+/** A date-only string is a local date; a UTC parse would shift it a day west of Greenwich */
+function parseDate(value: powerbi.PrimitiveValue): Date {
+  const parts = typeof value === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(value) : null;
+  if (parts !== null) {
+    return new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
+  }
+  return new Date(<Date>value);
+}
+
+export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]) {
   const n_keys: number = idxs.length;
-  let inputDates: (Date | undefined)[] = [];
-  const inputQuarters: string[] = [];
+  const inputDates: (Date | undefined)[] = [];
+  const inputQuarters: (string | undefined)[] = new Array<string | undefined>(n_keys);
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
     for (let i = 0; i < n_keys; i++) {
-      const datePartsArray: (string | number)[][] = [];
+      const datePartsObj: datePartsType = {};
       for (let j = 0; j < inputs.length; j++) {
-        datePartsArray.push(temporalTypeToKey(inputs[j].source.type! as unknown as { temporal?: boolean, category?: string}, inputs[j].values[idxs[i]]));
+        readDatePart(datePartsObj, inputs[j].source.type, inputs[j].values[idxs[i]]);
       }
-      const datePartsObj: datePartsType = Object.fromEntries(datePartsArray);
-      if (datePartsObj.quarter) {
-        inputQuarters.push(datePartsObj.quarter)
-      }
+      inputQuarters[i] = datePartsObj.quarter;
       inputDates[i] = new Date(datePartsObj.year ?? 1970, datePartsObj.month ?? 0, datePartsObj.day ?? 1)
     }
   } else {
     for (let i = 0; i < n_keys; i++) {
       const value = inputs[0].values[idxs[i]];
-      inputDates[i] = isNullOrUndefined(value) ? undefined : new Date(<Date>value)
+      inputDates[i] = isNullOrUndefined(value) ? undefined : parseDate(value)
     }
   }
   return { dates: inputDates, quarters: inputQuarters }

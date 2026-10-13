@@ -1,15 +1,12 @@
-import { defaultSettings } from "../../src/settings";
 import { testDom } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { columnNames, groupedRow, tableRow } from "../helpers/summaryTable";
-import { keyedHost } from "powerbi-visuals-core/testing";
+import { keyedHost, must } from "powerbi-visuals-core/testing";
 import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect, vi } from "vitest";
-
-function cloneSettings() {
-  return JSON.parse(JSON.stringify(defaultSettings));
-}
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { cloneSettings } from "../helpers/renderVisual";
 
 describe("Summary Table - edge cases in grouping, filtering and re-rendering", () => {
   const element = testDom("500", "500");
@@ -30,7 +27,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visual.viewModel.groupedRows.length).toBe(0);
@@ -50,7 +47,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
@@ -74,7 +71,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settingsOff) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     const colCountOff: number = visual.viewModel.tableColumns[0].length;
     expect(tableDivElement.querySelectorAll('.table-header th').length).toBe(colCountOff);
@@ -86,7 +83,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settingsOn) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     const colCountOn: number = visual.viewModel.tableColumns[0].length;
     expect(colCountOn).toBe(colCountOff + 1);
@@ -109,7 +106,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settingsAll) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const extremeRow = groupedRow(visual.viewModel.groupedRows, "Extreme");
@@ -125,13 +122,13 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       visual.update({
         dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settingsCommonOnly) ],
         viewport: { width: 500, height: 500 },
-        type: 2
+        type: updateType.data
       });
     }).not.toThrow();
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(1);
-    expect(tableDivElement.querySelector('tbody tr td')!.textContent).toBe("Stable");
+    expect(must(tableDivElement.querySelector('tbody tr td')).textContent).toBe("Stable");
   });
 
   it("table_variation_filter still narrows rows even when variation icons themselves are not displayed", () => {
@@ -147,7 +144,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const rows = visual.viewModel.groupedRows;
@@ -172,7 +169,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, narrowed) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(1);
 
@@ -182,7 +179,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
       visual.update({
         dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, widened) ],
         viewport: { width: 500, height: 500 },
-        type: 2
+        type: updateType.data
       });
     }).not.toThrow();
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
@@ -199,7 +196,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const siteBRow = groupedRow(visual.viewModel.groupedRows, "Site B");

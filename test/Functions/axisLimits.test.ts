@@ -6,10 +6,13 @@ import axisRanges from "../../src/Functions/axisRanges";
 import buildDataView from "../helpers/buildDataView";
 import { updateViewModel, type LimitInputs } from "../helpers/calculateLimits";
 import { rep } from "powerbi-visuals-core/math";
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { must } from "powerbi-visuals-core/testing";
 
-type Bounds = Partial<Pick<settingsValueType["spc"], "ll_truncate" | "ul_truncate">
-  & Pick<settingsValueType["x_axis"], "xlimit_l" | "xlimit_u">
-  & Pick<settingsValueType["y_axis"], "ylimit_l" | "ylimit_u">>;
+type Defaults = typeof defaultSettings;
+type Bounds = Partial<Pick<Defaults["spc"], "ll_truncate" | "ul_truncate">
+  & Pick<Defaults["x_axis"], "xlimit_l" | "xlimit_u">
+  & Pick<Defaults["y_axis"], "ylimit_l" | "ylimit_u">>;
 
 const inputs: LimitInputs = { numerators: [5, 7, 5, 9, 7, 5, 4, 9, 8, 13, 8, 7] };
 const limitLines = ["ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;
@@ -56,7 +59,7 @@ describe("truncation and axis limit combinations", () => {
       const series = limits[limitLines[l]];
       const reference = untruncated[limitLines[l]];
       for (let i = 0; i < series.length; i++) {
-        expect(series[i], `${limitLines[l]} at ${i}`).toBe(Math.min(upper, Math.max(lower, reference[i]!)));
+        expect(series[i], `${limitLines[l]} at ${i}`).toBe(Math.min(upper, Math.max(lower, must(reference[i]))));
       }
     }
     expect(limits.values).toEqual(untruncated.values);
@@ -121,7 +124,7 @@ describe("truncation and axis limit combinations", () => {
       numerators: [1, 2, 3, 30, 40, 50]
     }, settings);
     const viewModel = new viewModelClass(createVisualHost({}));
-    const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
+    const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: updateType.data }, createVisualHost({}));
     expect(result.status).toBe(true);
     expect(viewModel.groupedRows).toHaveLength(2);
   });

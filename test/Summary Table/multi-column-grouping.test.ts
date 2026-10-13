@@ -1,14 +1,13 @@
-import { defaultSettings, type settingsValueType } from "../../src/settings";
+import type { settingsValueType } from "../../src/settings";
 import type { plotDataGrouped, summaryTableRowDataGrouped } from "../../src/Classes/viewModelClass";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { columnNames, columnValues, groupedRow } from "../helpers/summaryTable";
 import { describe, it, expect } from "vitest";
-
-function cloneSettings() {
-  return JSON.parse(JSON.stringify(defaultSettings));
-}
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { cloneSettings } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 function rowsFor(rows: plotDataGrouped[], indicator: string, cohort: string): plotDataGrouped[] {
   const matches: plotDataGrouped[] = [];
@@ -42,7 +41,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
         numerators: numerators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
@@ -55,14 +54,14 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     for (let i = 0; i < rows.length; i++) {
       byCombo.set(`${rows[i].table_row["Indicator"]}|${rows[i].table_row["Cohort"]}`, rows[i].table_row);
     }
-    expect(byCombo.get("Ward A|2023")!.latest_date).toBe(keys[1]);
-    expect(byCombo.get("Ward A|2023")!.value).toBe("11.00");
-    expect(byCombo.get("Ward A|2024")!.latest_date).toBe(keys[3]);
-    expect(byCombo.get("Ward A|2024")!.value).toBe("21.00");
-    expect(byCombo.get("Ward B|2023")!.latest_date).toBe(keys[5]);
-    expect(byCombo.get("Ward B|2023")!.value).toBe("31.00");
-    expect(byCombo.get("Ward B|2024")!.latest_date).toBe(keys[7]);
-    expect(byCombo.get("Ward B|2024")!.value).toBe("41.00");
+    expect(must(byCombo.get("Ward A|2023")).latest_date).toBe(keys[1]);
+    expect(must(byCombo.get("Ward A|2023")).value).toBe("11.00");
+    expect(must(byCombo.get("Ward A|2024")).latest_date).toBe(keys[3]);
+    expect(must(byCombo.get("Ward A|2024")).value).toBe("21.00");
+    expect(must(byCombo.get("Ward B|2023")).latest_date).toBe(keys[5]);
+    expect(must(byCombo.get("Ward B|2023")).value).toBe("31.00");
+    expect(must(byCombo.get("Ward B|2024")).latest_date).toBe(keys[7]);
+    expect(must(byCombo.get("Ward B|2024")).value).toBe("41.00");
 
     const colNames: string[] = columnNames(visual);
     expect(colNames.slice(0, 2)).toEqual(["Indicator", "Cohort"]);
@@ -89,7 +88,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
         numerators: numerators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const rows = visual.viewModel.groupedRows;
@@ -127,7 +126,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
         numerators: numerators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
@@ -157,7 +156,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
         numerators: numerators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visual.viewModel.showGrouped).toBe(true);
@@ -186,7 +185,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
         numerators: numerators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
@@ -203,7 +202,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const indicator: string[] = ["Ward A", "Ward A", "Ward B", "Ward B", "Ward A", "Ward A"];
 
     function settingsWithSigFigs(sigFigs: number): settingsValueType {
-      const s: settingsValueType = cloneSettings();
+      const s = cloneSettings();
       s.spc.chart_type = "i";
       s.spc.sig_figs = sigFigs;
       return s;
@@ -217,7 +216,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     visual.update({
       dataViews: [ buildDataView({ key: keys, indicator: indicator, numerators: numerators }, settingsByRow) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();

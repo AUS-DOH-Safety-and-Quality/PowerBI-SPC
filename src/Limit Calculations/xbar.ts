@@ -1,13 +1,13 @@
 import { a3 } from "powerbi-visuals-core/math";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
-import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, xbarLimitsArgs } from "../Classes/viewModelClass";
 import withinGroupSd from "../Functions/withinGroupSd";
 
 /** X-bar chart (S method): size-weighted grand mean centreline; within-group SD per withinGroupSd. */
-export default function xbarLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
-  const count_per_group: readonly number[] = args.denominators!;
+export default function xbarLimits(args: Readonly<xbarLimitsArgs>): CalculatedLimits {
+  const count_per_group: readonly number[] = args.denominators;
   const group_means: readonly number[] = args.numerators;
-  const group_sd: readonly number[] = args.xbar_sds!;
+  const group_sd: readonly number[] = args.xbar_sds;
   const n_sub: number = args.subset_points.length;
   const subset_points: readonly number[] = args.subset_points;
 

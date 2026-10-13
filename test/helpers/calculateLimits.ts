@@ -3,6 +3,7 @@ import { createVisualHost } from "powerbi-visuals-utils-testutils";
 import viewModelClass, { type controlLimitsObject, type viewModelValidationT } from "../../src/Classes/viewModelClass";
 import type { settingsValueType } from "../../src/settings";
 import buildDataView, { sequentialKeys } from "./buildDataView";
+import { updateType } from "powerbi-visuals-core/powerbi";
 
 export type LimitInputs = {
   keys?: string[];
@@ -28,7 +29,7 @@ export function updateViewModel(settings: settingsValueType, inputs: LimitInputs
   const result = viewModel.update({
     dataViews: [dataView],
     viewport: { width: 500, height: 500 },
-    type: 2
+    type: updateType.data
   }, createVisualHost({}));
   return { viewModel, result };
 }

@@ -63,6 +63,16 @@ describe("scatter settings", () => {
     }
   });
 
+  it("draws every dot in the high-contrast foreground colour", () => {
+    const host = createVisualHost({});
+    Object.assign(host.colorPalette, { isHighContrast: true, foreground: { value: "#abcdef" } });
+    const drawn = dots(renderVisual(settingsWith({ scatter: { colour: "#123456" } }), data, { host }).element);
+    expect(drawn).toHaveLength(numerators.length);
+    for (let i = 0; i < drawn.length; i++) {
+      expect(drawn[i].style.fill).toBe("rgb(171, 205, 239)");
+    }
+  });
+
   // Size is the marker radius, so a circle spans twice it and a square of equal area its root-pi multiple
   it.each([2, 6])("draws distinct shapes sized by a size of %d", size => {
     const shapes = ["Circle", "Cross", "Diamond", "Square", "Star", "Triangle", "Wye"] as const;

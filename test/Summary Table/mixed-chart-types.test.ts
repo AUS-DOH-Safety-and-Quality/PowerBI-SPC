@@ -1,22 +1,26 @@
-import { defaultSettings, type settingsValueType } from "../../src/settings";
+import type { defaultSettings, settingsValueType } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { findBy } from "powerbi-visuals-core/testing";
+import { findBy, must } from "powerbi-visuals-core/testing";
 import { columnNames, columnValues, groupedRow, tableRow } from "../helpers/summaryTable";
 import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { cloneSettings } from "../helpers/renderVisual";
 
-function settingsFor(chartType: settingsValueType["spc"]["chart_type"]): settingsValueType {
-  const s: settingsValueType = JSON.parse(JSON.stringify(defaultSettings));
+type Settings = typeof defaultSettings;
+
+function settingsFor(chartType: settingsValueType["spc"]["chart_type"]): Settings {
+  const s = cloneSettings();
   s.spc.chart_type = chartType;
   return s;
 }
 
-function cloneRows(rows: settingsValueType[]): settingsValueType[] {
-  const clones = new Array<settingsValueType>(rows.length);
+function cloneRows(rows: Settings[]): Settings[] {
+  const clones = new Array<Settings>(rows.length);
   for (let i = 0; i < rows.length; i++) {
-    clones[i] = JSON.parse(JSON.stringify(rows[i]));
+    clones[i] = structuredClone(rows[i]);
   }
   return clones;
 }
@@ -40,7 +44,7 @@ const mixedKeys: string[] = pKeys.concat(uKeys).concat(cKeys).concat(runKeys);
 const mixedNumerators: number[] = pNumerators.concat(uNumerators).concat(cNumerators).concat(runNumerators);
 const mixedDenominators: number[] = pDenominators.concat(uDenominators).concat(rep(100, 6)).concat(rep(100, 6));
 const mixedIndicator: string[] = rep("Proportion Site", 6).concat(rep("Rate Site", 6)).concat(rep("Count Site", 6)).concat(rep("Trend Site", 6));
-const mixedSettingsByRow: settingsValueType[] = rep(settingsFor("p"), 6)
+const mixedSettingsByRow: Settings[] = rep(settingsFor("p"), 6)
   .concat(rep(settingsFor("u"), 6))
   .concat(rep(settingsFor("c"), 6))
   .concat(rep(settingsFor("run"), 6));
@@ -61,7 +65,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
     visual.update({
       dataViews: [ buildDataView(mixedArgs, mixedSettingsByRow) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
@@ -99,16 +103,16 @@ describe("Summary Table - combining indicators of different chart types", () => 
     visual.update({
       dataViews: [ buildDataView({ key: pKeys, numerators: pNumerators, denominators: pDenominators }, isolatedSettings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     const isolatedLastPoint = visual.viewModel.plotPoints[pKeys.length - 1];
-    const isolatedValueTooltip = findBy(isolatedLastPoint.tooltip, "displayName", "Proportion")!.value;
+    const isolatedValueTooltip = must(findBy(isolatedLastPoint.tooltip, "displayName", "Proportion")).value;
     const isolatedUl99 = isolatedLastPoint.table_row.ul99;
 
     visual.update({
       dataViews: [ buildDataView(mixedArgs, mixedSettingsByRow) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     const colNames: string[] = columnNames(visual);
     const valueIdx: number = colNames.indexOf("value");
@@ -116,10 +120,10 @@ describe("Summary Table - combining indicators of different chart types", () => 
     const proportionRow = tableRow(tableDivElement, "Proportion Site");
 
     expect(proportionRow.querySelectorAll('td')[valueIdx].textContent).toBe(isolatedValueTooltip);
-    expect(proportionRow.querySelectorAll('td')[ul99Idx].textContent).toBe(`${isolatedUl99!.toFixed(2)}%`);
+    expect(proportionRow.querySelectorAll('td')[ul99Idx].textContent).toBe(`${must(isolatedUl99).toFixed(2)}%`);
   });
 
-  it("assurance filtering excludes chart types without control limits from pass/fail/inconsistent, but not from 'all'/'any'", () => {
+  it("assurance filtering keeps chart types without control limits only for 'all'", () => {
     const settingsAll = cloneRows(mixedSettingsByRow);
     for (let i = 0; i < settingsAll.length; i++) {
       settingsAll[i].nhs_icons.show_assurance_icons = true;
@@ -130,7 +134,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
     visual.update({
       dataViews: [ buildDataView(mixedArgs, settingsAll) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     const allRows = visual.viewModel.groupedRows;
     expect(allRows.length).toBe(4);
@@ -146,7 +150,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
     visual.update({
       dataViews: [ buildDataView(mixedArgs, settingsFail) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
 
@@ -157,10 +161,10 @@ describe("Summary Table - combining indicators of different chart types", () => 
     visual.update({
       dataViews: [ buildDataView(mixedArgs, settingsAny) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
-    // "any" excludes only "inconsistent" - the run chart's "none" is not "inconsistent", so it stays
-    expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site", "Trend Site"]);
+    // "Consistent - Any" keeps only a pass or a fail, so the run chart's "none" goes
+    expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
   });
 
   it("differing sig_figs settings per group round each row to its own group's precision", () => {
@@ -172,7 +176,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
     visual.update({
       dataViews: [ buildDataView(mixedArgs, settingsByRow) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const rows = visual.viewModel.groupedRows;

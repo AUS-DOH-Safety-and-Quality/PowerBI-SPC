@@ -3,6 +3,7 @@ import type { controlLimitsObject } from "../../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { rep } from "powerbi-visuals-core/math";
 import calculateLimits, { type LimitInputs } from "../helpers/calculateLimits";
+import { must } from "powerbi-visuals-core/testing";
 
 type ChartType = settingsValueType["spc"]["chart_type"];
 type Series = (number | undefined)[];
@@ -132,9 +133,9 @@ describe.each(chartTypes)("%s chart limit options", chart_type => {
       lower = sorted[3];
       upper = sorted[8];
     } else {
-      const target = unclamped.target[0]!;
-      lower = (unclamped.ll99[0]! + target) / 2;
-      upper = (unclamped.ul99[0]! + target) / 2;
+      const target = must(unclamped.target[0]);
+      lower = (must(unclamped.ll99[0]) + target) / 2;
+      upper = (must(unclamped.ul99[0]) + target) / 2;
     }
     const clamped = calculateLimits(settingsFor(chart_type, { ll_truncate: lower, ul_truncate: upper }), inputs);
 
@@ -152,7 +153,7 @@ describe.each(chartTypes)("%s chart limit options", chart_type => {
     const screened = calculateLimits(settingsFor(chart_type, { outliers_in_limits: false }), outliers);
     if (screeningCharts.includes(chart_type)) {
       for (let i = 0; i < kept.keys.length; i++) {
-        expect(screened.ul99[i], `ul99 at ${i}`).toBeLessThan(kept.ul99[i]!);
+        expect(screened.ul99[i], `ul99 at ${i}`).toBeLessThan(must(kept.ul99[i]));
       }
     } else {
       expectAllLinesClose(screened, kept, chartLines);

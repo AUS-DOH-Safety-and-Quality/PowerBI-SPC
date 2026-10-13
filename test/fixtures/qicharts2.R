@@ -29,7 +29,7 @@ add_case <- function(name, chart_type, inputs, data, chart, multiply = 1, screen
     numerators = inputs$numerators,
     denominators = inputs$denominators,
     xbar_sds = inputs$xbar_sds,
-    expected = list(values = d$y, targets = d$cl, ll99 = d$lcl, ll95 = d$lcl.95, ul95 = d$ucl.95, ul99 = d$ucl)
+    expected = list(values = d$y, target = d$cl, ll99 = d$lcl, ll95 = d$lcl.95, ul95 = d$ucl.95, ul99 = d$ucl)
   )
 }
 

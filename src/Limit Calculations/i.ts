@@ -1,28 +1,28 @@
-import type { controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import averageMovingRange from "../Functions/averageMovingRange";
 import plottedValues from "../Functions/plottedValues";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
 
-/** I (XmR) chart: sigma = average moving range / d2 (1.128 for n = 2). */
-export default function iLimits(args: Readonly<controlLimitsArgs>) {
-  const plotted = plottedValues(args);
-  const values = plotted.values;
-  const n_sub: number = args.subset_points.length;
-  const subset_points: readonly number[] = args.subset_points;
-
+/** Mean centreline and moving-range sigma (average moving range / d2, 1.128 for n = 2) over the subset */
+export function iCentreAndSigma(values: readonly number[], subset_points: readonly number[],
+                                outliers_in_limits: boolean | undefined): { cl: number; sigma: number } {
+  const n_sub: number = subset_points.length;
   let prevVal: number = values[subset_points[0]];
   let cl: number = prevVal;
-  let consec_diff: number[] = new Array<number>(n_sub - 1);
+  const consec_diff: number[] = new Array<number>(n_sub - 1);
   for (let i = 1; i < n_sub; i++) {
-    let currVal: number = values[subset_points[i]];
+    const currVal: number = values[subset_points[i]];
     consec_diff[i - 1] = Math.abs(currVal - prevVal);
     cl += currVal;
     prevVal = currVal;
   }
-  cl /= n_sub;
+  return { cl: cl / n_sub, sigma: averageMovingRange(consec_diff, outliers_in_limits) / 1.128 };
+}
 
-  const sigma: number = averageMovingRange(consec_diff, args.outliers_in_limits) / 1.128;
-
+/** I (XmR) chart */
+export default function iLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
+  const plotted = plottedValues(args);
+  const { cl, sigma } = iCentreAndSigma(plotted.values, args.subset_points, args.outliers_in_limits);
   return {
     keys: args.keys,
     ...plotted,

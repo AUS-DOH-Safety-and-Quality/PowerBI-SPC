@@ -3,6 +3,8 @@ import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { describe, it, expect, vi } from "vitest";
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { must } from "powerbi-visuals-core/testing";
 
 const keys: string[] = ["2011-07-01","2011-08-01","2011-09-01","2011-10-01","2011-11-01","2011-12-01","2012-01-01","2012-02-01","2012-03-01","2012-04-01","2012-05-01","2012-06-01","2012-07-01","2012-08-01","2012-09-01","2012-10-01","2012-11-01","2012-12-01","2013-01-01","2013-02-01","2013-03-01","2013-04-01","2013-05-01","2013-06-01","2013-07-01","2013-08-01","2013-09-01","2013-10-01","2013-11-01","2013-12-01","2014-01-01","2014-02-01","2014-03-01","2014-04-01","2014-05-01","2014-06-01"];
 
@@ -40,7 +42,7 @@ describe("P Chart Test", () => {
           denominators: counts
         }, settings)],
         viewport: { width: 500, height: 500 },
-        type: 2
+        type: updateType.data
       });
 
       expect(renderingFailed).not.toHaveBeenCalled();
@@ -51,14 +53,14 @@ describe("P Chart Test", () => {
       for (let l = 0; l < lines.length; l++) {
         expect(limits[lines[l]]).toEqual(expectedValues);
       }
-      expect(chartElement.querySelector("svg")!.outerHTML).not.toMatch(/NaN|Infinity/);
+      expect(must(chartElement.querySelector("svg")).outerHTML).not.toMatch(/NaN|Infinity/);
 
       const dots = chartElement.querySelectorAll<SVGPathElement>(".dotsgroup path");
       expect(dots).toHaveLength(counts.length);
       const yAxis = chart.plotProperties.yAxis;
       const middleY = (500 - yAxis.start_padding + yAxis.end_padding) / 2;
       for (let i = 0; i < dots.length; i++) {
-        const transform = dots[i].transform.baseVal.consolidate()!.matrix;
+        const transform = must(dots[i].transform.baseVal.consolidate()).matrix;
         expect(transform.e).toBeGreaterThanOrEqual(0);
         expect(transform.e).toBeLessThanOrEqual(500);
         expect(transform.f).toBeCloseTo(middleY, 5);

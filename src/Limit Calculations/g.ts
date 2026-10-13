@@ -11,7 +11,7 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const subset_points: readonly number[] = args.subset_points;
   const n_sub: number = subset_points.length;
 
-  let numerator_subset: number[] = new Array<number>(n_sub);
+  const numerator_subset: number[] = new Array<number>(n_sub);
   let cl: number = 0;
   for (let i = 0; i < n_sub; i++) {
     const curr_numerator: number = numerators[subset_points[i]];

@@ -1,14 +1,12 @@
-import { defaultSettings } from "../../src/settings";
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
 import { columnNames, tableRow } from "../helpers/summaryTable";
 import { rep } from "powerbi-visuals-core/math";
 import { describe, it, expect } from "vitest";
-
-function cloneSettings() {
-  return JSON.parse(JSON.stringify(defaultSettings));
-}
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { cloneSettings } from "../helpers/renderVisual";
+import { must } from "powerbi-visuals-core/testing";
 
 const cKeys: string[] = ["2012-11-01","2012-12-01","2013-01-01","2013-02-01","2013-03-01","2013-04-01","2013-05-01","2013-06-01","2013-07-01","2013-08-01","2013-09-01","2013-10-01","2013-11-01","2013-12-01","2014-01-01","2014-02-01","2014-03-01","2014-04-01","2014-05-01","2014-06-01","2014-07-01","2014-08-01","2014-09-01","2014-10-01","2014-11-01","2014-12-01","2015-01-01","2015-02-01","2015-03-01","2015-04-01","2015-05-01","2015-06-01","2015-07-01","2015-08-01","2015-09-01","2015-10-01"];
 const cNumerators: number[] = [17,12,27,20,20,18,22,19,19,24,17,16,24,19,19,22,25,19,17,6,25,17,11,14,9,11,7,13,5,5,3,5,9,4,5,9];
@@ -34,6 +32,52 @@ describe("Summary Table - column presence, order and content driven by settings"
   const visual = new Visual({ element: element, host: createVisualHost({}) });
   const visualClassElement: Element = document.body.querySelector('.visual') as Element;
   const tableDivElement: Element = visualClassElement.querySelector('div') as Element;
+  const svgElement: Element = visualClassElement.querySelector('svg') as Element;
+
+  it("shows the chart unless show_table is set or the indicator takes more than one value", () => {
+    const settings = cloneSettings();
+    function render(indicator?: string[]): void {
+      visual.update({
+        dataViews: [ buildDataView({ key: cKeys, indicator: indicator, numerators: cNumerators }, settings) ],
+        viewport: { width: 500, height: 500 },
+        type: updateType.data
+      });
+    }
+    function expectChartShown(shown: boolean): void {
+      const svgSize: string = shown ? "500" : "0";
+      const tableSize: string = shown ? "0%" : "100%";
+      expect(svgElement.getAttribute('width')).toBe(svgSize);
+      expect(svgElement.getAttribute('height')).toBe(svgSize);
+      expect(tableDivElement.getAttribute('style')).toContain(`width: ${tableSize}`);
+      expect(tableDivElement.getAttribute('style')).toContain(`height: ${tableSize}`);
+    }
+
+    render();
+    expect(visual.viewModel.showGrouped).toBe(false);
+    expectChartShown(true);
+
+    settings.summary_table.show_table = true;
+    render();
+    expect(visual.viewModel.showGrouped).toBe(false);
+    expectChartShown(false);
+    expect(visual.viewModel.tableColumns[0][0]).toEqual({ name: "date", label: "Date" });
+    expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(cKeys.length);
+
+    settings.summary_table.show_table = false;
+    render(rep("Ward 1", 18).concat(rep("Ward 2", cKeys.length - 18)));
+    expect(visual.viewModel.showGrouped).toBe(true);
+    expectChartShown(false);
+    const rows = tableDivElement.querySelectorAll('tbody tr');
+    const names = new Array<string | null>(rows.length);
+    for (let i = 0; i < rows.length; i++) {
+      names[i] = must(rows[i].querySelector('td')).textContent;
+    }
+    expect(names).toEqual(["Ward 1", "Ward 2"]);
+
+    render(rep("Ward 1", cKeys.length));
+    expect(visual.viewModel.showGrouped).toBe(false);
+    expectChartShown(true);
+  });
 
   it("C Chart, default settings: grouped table shows the standard default column set in order", () => {
     const settings = cloneSettings();
@@ -42,7 +86,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     visual.update({
       dataViews: [ buildDataView({ key: cKeys, indicator: indicator, numerators: cNumerators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const colNames: string[] = columnNames(visual);
@@ -78,7 +122,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     visual.update({
       dataViews: [ buildDataView({ key: cKeys, indicator: indicator, numerators: cNumerators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     expect(columnNames(visual)).toEqual(["Indicator", "latest_date", "value", "target"]);
   });
@@ -98,7 +142,7 @@ describe("Summary Table - column presence, order and content driven by settings"
         denominators: uDenominators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const colNames: string[] = columnNames(visual);
@@ -124,7 +168,7 @@ describe("Summary Table - column presence, order and content driven by settings"
         denominators: pDenominators
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const colNames: string[] = columnNames(visual);
@@ -169,7 +213,7 @@ describe("Summary Table - column presence, order and content driven by settings"
         tooltips: tooltips
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const colNames: string[] = columnNames(visual);
@@ -209,7 +253,7 @@ describe("Summary Table - column presence, order and content driven by settings"
         xbar_sds: xbarSds
       }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     const colNames: string[] = columnNames(visual);
@@ -217,30 +261,6 @@ describe("Summary Table - column presence, order and content driven by settings"
     expect(colNames).toContain("trend");
     expect(colNames).not.toContain("astpoint");
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(xbarKeys.length);
-  });
-
-  it("Two grouping columns (indicator + indicator2) both appear as separate table columns", () => {
-    const settings = cloneSettings();
-    settings.spc.chart_type = "i";
-    const keys: string[] = ["1","2","3","4","5","6","7","8"];
-    const numerators: number[] = [10, 11, 9, 12, 20, 21, 19, 22];
-    const indicator: string[] = ["A", "A", "A", "A", "B", "B", "B", "B"];
-    const indicator2: string[] = ["X", "X", "Y", "Y", "X", "X", "Y", "Y"];
-    visual.update({
-      dataViews: [ buildDataView({
-        key: keys,
-        indicator: indicator,
-        indicator2: indicator2,
-        numerators: numerators
-      }, settings) ],
-      viewport: { width: 500, height: 500 },
-      type: 2
-    });
-
-    expect(visual.viewModel.indicatorVarNames).toEqual(["Indicator", "Indicator 2"]);
-    const colNames: string[] = columnNames(visual);
-    expect(colNames.slice(0, 2)).toEqual(["Indicator", "Indicator 2"]);
-    expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(4);
   });
 
   it("labels and orders the shared columns alike in both tables, as the tooltip does", () => {
@@ -269,7 +289,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     visual.update({
       dataViews: [ buildDataView({ key: pKeys, numerators: pNumerators, denominators: pDenominators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     const single = sharedColumns();
     const tooltip = visual.viewModel.plotPoints[0].tooltip;
@@ -288,8 +308,8 @@ describe("Summary Table - column presence, order and content driven by settings"
     // Same order as the tooltip, for the entries both show
     const tooltipLabels: string[] = [];
     for (let i = 0; i < tooltip.length; i++) {
-      if (labels.includes(tooltip[i].displayName!)) {
-        tooltipLabels.push(tooltip[i].displayName!);
+      if (labels.includes(tooltip[i].displayName)) {
+        tooltipLabels.push(tooltip[i].displayName);
       }
     }
     const tableLabels: string[] = [];
@@ -305,7 +325,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     visual.update({
       dataViews: [ buildDataView({ key: pKeys, indicator: indicator, numerators: pNumerators, denominators: pDenominators }, settings) ],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
     expect(visual.viewModel.showGrouped).toBe(true);
     expect(sharedColumns()).toEqual(single);

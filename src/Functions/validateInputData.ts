@@ -5,7 +5,7 @@ import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 
 export type ValidationT = RowValidation;
 
-const sd = { name: "SD", plural: "SDs" };
+const sd = { name: "SD", plural: "SDs" } as const;
 
 /** A row's message comes from its last failing block, so SD rules lead, then denominator, numerator and date */
 export default function validateInputData(keys: readonly (string | undefined)[],
@@ -30,7 +30,8 @@ export default function validateInputData(keys: readonly (string | undefined)[],
   }
   if (check_denom) {
     rules.push(missingRule(denominators, quantity.denominator), nanRule(denominators, quantity.denominator),
-               negativeRule(denominators, quantity.denominator));
+               negativeRule(denominators, quantity.denominator),
+               { fails: i => valueAt(denominators, i) === 0, message: "Denominator is zero", all: "All denominators are zero!" });
     if (chart_type_props.numerator_leq_denominator) {
       rules.push(ratioRule(numerators, denominators));
     }

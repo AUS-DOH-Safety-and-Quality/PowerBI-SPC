@@ -1,5 +1,6 @@
 import type { plotDataGrouped } from "../../src/Classes/viewModelClass";
 import type { Visual } from "../../src/visual";
+import { must } from "powerbi-visuals-core/testing";
 
 export function columnNames(visual: Visual): string[] {
   const columns = visual.viewModel.tableColumns[0];
@@ -31,7 +32,7 @@ export function groupedRow(rows: plotDataGrouped[], indicator: string): plotData
 export function tableRow(table: Element, indicator: string): Element {
   const rows = table.querySelectorAll("tbody tr");
   for (let i = 0; i < rows.length; i++) {
-    if (rows[i].querySelector("td")!.textContent === indicator) {
+    if (must(rows[i].querySelector("td")).textContent === indicator) {
       return rows[i];
     }
   }

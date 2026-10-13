@@ -15,19 +15,31 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
   const flag_last: boolean = inputSettings.nhs_icons.flag_last_point;
 
   const startIndex: number = flag_last ? outliers.astpoint.length - 1 : 0;
+  const patterns: readonly (readonly FlagDirection[])[] = [outliers.astpoint, outliers.shift, outliers.trend, outliers.two_in_three];
   let improvementPresent: boolean = false;
   let deteriorationPresent: boolean = false;
   let neutralLowPresent: boolean = false;
   let neutralHighPresent: boolean = false;
 
   for (let i: number = startIndex; i < outliers.astpoint.length; i++) {
-    const flagsToCheck: readonly FlagDirection[] = [outliers.astpoint[i], outliers.shift[i], outliers.trend[i], outliers.two_in_three[i]];
-
-    improvementPresent = improvementPresent || flagsToCheck.includes("improvement");
-    deteriorationPresent = deteriorationPresent || flagsToCheck.includes("deterioration");
-    neutralLowPresent = neutralLowPresent || flagsToCheck.includes("neutral_low");
-    neutralHighPresent = neutralHighPresent || flagsToCheck.includes("neutral_high");
-
+    for (let p = 0; p < patterns.length; p++) {
+      switch (patterns[p][i]) {
+        case "improvement":
+          improvementPresent = true;
+          break;
+        case "deterioration":
+          deteriorationPresent = true;
+          break;
+        case "neutral_low":
+          neutralLowPresent = true;
+          break;
+        case "neutral_high":
+          neutralHighPresent = true;
+          break;
+        case "none":
+          break;
+      }
+    }
     if (improvementPresent && deteriorationPresent && neutralLowPresent && neutralHighPresent) {
       break;
     }
