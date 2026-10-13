@@ -30,7 +30,8 @@ export default function validateInputData(keys: readonly (string | undefined)[],
   }
   if (check_denom) {
     rules.push(missingRule(denominators, quantity.denominator), nanRule(denominators, quantity.denominator),
-               negativeRule(denominators, quantity.denominator));
+               negativeRule(denominators, quantity.denominator),
+               { fails: i => valueAt(denominators, i) === 0, message: "Denominator is zero", all: "All denominators are zero!" });
     if (chart_type_props.numerator_leq_denominator) {
       rules.push(ratioRule(numerators, denominators));
     }

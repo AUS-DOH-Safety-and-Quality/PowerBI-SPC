@@ -31,12 +31,19 @@ function rowTableSettings(row: plotData | plotDataGrouped,
 
 /** Square icons share one size: the shortest row's content height, capped so the icon columns' combined width holds them */
 function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValueType["nhs_icons"]) {
-  const iconCells = selection.select(".table-body")
-                             .selectAll("tr")
-                             .selectAll<HTMLTableCellElement, { column: string }>("td")
-                             .filter(d => isIconColumn(d.column));
-  const cells = iconCells.nodes();
-  const data = iconCells.data();
+  const allCells = selection.select(".table-body")
+                            .selectAll("tr")
+                            .selectAll<HTMLTableCellElement, { column: string }>("td");
+  const allNodes = allCells.nodes();
+  const allData = allCells.data();
+  const cells: HTMLTableCellElement[] = [];
+  const data: { column: string }[] = [];
+  for (let i = 0; i < allNodes.length; i++) {
+    if (isIconColumn(allData[i].column)) {
+      cells.push(allNodes[i]);
+      data.push(allData[i]);
+    }
+  }
   const icons = new Array<readonly NhsIconName[]>(cells.length);
   let rowHeight: number = Number.POSITIVE_INFINITY;
   const columnWidths: Record<string, number> = { variation: 0, assurance: 0 };

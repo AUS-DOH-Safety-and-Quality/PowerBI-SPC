@@ -24,9 +24,11 @@ type datePartsType = {
   year?: number
 }
 
-function readDatePart(parts: datePartsType, inputType: { readonly temporal?: boolean, readonly category?: string },
-                      inputValue: powerbi.PrimitiveValue): void {
-  if (!inputType.temporal) {
+/** Power BI's runtime value types also carry the hierarchy level's category, which the api's descriptor omits */
+type datePartType = { readonly temporal?: unknown; readonly category?: string };
+
+function readDatePart(parts: datePartsType, inputType: datePartType | undefined, inputValue: powerbi.PrimitiveValue): void {
+  if (inputType?.temporal == null) {
     return;
   }
   if (inputType.category === "DayOfMonth") {
@@ -40,26 +42,33 @@ function readDatePart(parts: datePartsType, inputType: { readonly temporal?: boo
   }
 }
 
+/** A date-only string is a local date; a UTC parse would shift it a day west of Greenwich */
+function parseDate(value: powerbi.PrimitiveValue): Date {
+  const parts = typeof value === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(value) : null;
+  if (parts !== null) {
+    return new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
+  }
+  return new Date(<Date>value);
+}
+
 export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]) {
   const n_keys: number = idxs.length;
-  let inputDates: (Date | undefined)[] = [];
-  const inputQuarters: string[] = [];
+  const inputDates: (Date | undefined)[] = [];
+  const inputQuarters: (string | undefined)[] = new Array<string | undefined>(n_keys);
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
     for (let i = 0; i < n_keys; i++) {
       const datePartsObj: datePartsType = {};
       for (let j = 0; j < inputs.length; j++) {
-        readDatePart(datePartsObj, inputs[j].source.type! as unknown as { temporal?: boolean, category?: string}, inputs[j].values[idxs[i]]);
+        readDatePart(datePartsObj, inputs[j].source.type, inputs[j].values[idxs[i]]);
       }
-      if (datePartsObj.quarter) {
-        inputQuarters.push(datePartsObj.quarter)
-      }
+      inputQuarters[i] = datePartsObj.quarter;
       inputDates[i] = new Date(datePartsObj.year ?? 1970, datePartsObj.month ?? 0, datePartsObj.day ?? 1)
     }
   } else {
     for (let i = 0; i < n_keys; i++) {
       const value = inputs[0].values[idxs[i]];
-      inputDates[i] = isNullOrUndefined(value) ? undefined : new Date(<Date>value)
+      inputDates[i] = isNullOrUndefined(value) ? undefined : parseDate(value)
     }
   }
   return { dates: inputDates, quarters: inputQuarters }

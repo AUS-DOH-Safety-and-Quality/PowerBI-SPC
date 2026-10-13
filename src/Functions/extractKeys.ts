@@ -8,7 +8,7 @@ import formatDateParts from "./formatDateParts";
 
 function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: readonly number[]): (string | undefined)[] {
   const n_keys: number = idxs.length;
-  let ret = new Array<string | undefined>(n_keys);
+  const ret = new Array<string | undefined>(n_keys);
   if (col.length === 1 && !(col[0].source.type?.temporal)) {
     for (let i = 0; i < n_keys; i++) {
       ret[i] = formatPrimitiveValue(col[0].values[idxs[i]]);
@@ -48,7 +48,7 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
     if (isNullOrUndefined(date)) {
       ret[i] = undefined
     } else {
-      const datePartsRecord = formatDateParts(date, locale, formatOptions);
+      const datePartsRecord = formatDateParts(date, formatOptions);
       const datePartStrings: string[] = [(datePartsRecord.weekday + " " + datePartsRecord[day_elem]).trim(),
                                           datePartsRecord[month_elem],
                                           inputDates.quarters[i] ?? "",
@@ -71,7 +71,7 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
 }
 
 export default function extractKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: readonly number[]): (string | undefined)[] {
-  const groupedCols: Record<string, powerbi.DataViewCategoryColumn[]> = Object.create(null);
+  const groupedCols = Object.create(null) as Record<string, powerbi.DataViewCategoryColumn[]>;
   for (let i = 0; i < col.length; i++) {
     let queryName = col[i].source.queryName ?? "";
     if (queryName.includes("Date Hierarchy")) {
@@ -91,10 +91,11 @@ export default function extractKeys(col: readonly powerbi.DataViewCategoryColumn
     const groupKeys = formatKeys(groupedCols[queryNames[i]], inputSettings, idxs);
     for (let j = 0; j < idxs.length; j++) {
       const key = groupKeys[j];
-      if (i === 0 || combinedKeys[j] === undefined) {
+      const combined = combinedKeys[j];
+      if (i === 0 || combined === undefined) {
         combinedKeys[j] = key;
       } else if (key !== undefined) {
-        combinedKeys[j] += ` ${key}`;
+        combinedKeys[j] = `${combined} ${key}`;
       }
     }
   }

@@ -36,6 +36,8 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
         case "neutral_high":
           neutralHighPresent = true;
           break;
+        case "none":
+          break;
       }
     }
     if (improvementPresent && deteriorationPresent && neutralLowPresent && neutralHighPresent) {

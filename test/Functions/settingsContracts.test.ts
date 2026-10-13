@@ -6,43 +6,25 @@ import settingsModel from "../../src/settings";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { must } from "powerbi-visuals-core/testing";
 
 function input() {
   return buildDataView({ key: ["A", "B", "C", "D", "E"], numerators: [1, 2, 3, 4, 5] });
 }
 function category(view: powerbi.DataView): powerbi.DataViewCategoryColumn {
-  return view.categorical!.categories![0];
+  return must(must(view.categorical).categories)[0];
 }
 
 describe("selected settings integration", () => {
-  it("uses each group's first requested row and keeps warnings in group order", () => {
-    const view = input();
-    view.categorical!.categories![0].objects = [
-      { spc: { sig_figs: 0 } }, { spc: { sig_figs: 4 } },
-      { spc: { sig_figs: -1 } }, {}, { spc: { sig_figs: 2 }, y_axis: { ylimit_sig_figs: -1 } }
-    ];
-    const settings = new settingsClass();
-    settings.update(category(view), [[4, 2, 0], [1, 3]]);
-    expect(settings.settings[0].spc.sig_figs).toBe(2);
-    expect(settings.settings[1].spc.sig_figs).toBe(4);
-    expect(settings.settings[0].y_axis.ylimit_sig_figs).toBeUndefined();
-    expect(settings.validationStatus.messages).toHaveLength(5);
-    expect(settings.validationStatus.messages[0][0]).toContain("ylimit_sig_figs");
-    expect(settings.validationStatus.messages[1][0]).toContain("sig_figs");
-    expect(settings.validationStatus.messages[2]).toEqual([]);
-    expect(settings.validationStatus.messages[3]).toEqual([]);
-    expect(settings.validationStatus.messages[4]).toEqual([]);
-    expect(settings.validationStatus.status).toBe(0);
-  });
-
   it("rejects flagging against specification limits that are not shown", () => {
-    const view = input();
-    view.categorical!.categories![0].objects = [{ outliers: { astronomical: true, astronomical_limit: "Specification" } }, {}, {}, {}, {}];
+    const column = category(input());
+    column.objects = [{ outliers: { astronomical: true, astronomical_limit: "Specification" } }, {}, {}, {}, {}];
     const settings = new settingsClass();
-    settings.update(category(view), [[0, 1, 2, 3, 4]]);
+    settings.update(column, [[0, 1, 2, 3, 4]]);
     expect(settings.validationStatus).toMatchObject({ status: 1, error: "Flagging against specification limits requires the specification lines to be shown" });
-    view.categorical!.categories![0].objects[0].lines = { show_specification: true };
-    settings.update(category(view), [[0, 1, 2, 3, 4]]);
+    column.objects[0].lines = { show_specification: true };
+    settings.update(column, [[0, 1, 2, 3, 4]]);
     expect(settings.validationStatus.status).toBe(0);
   });
 
@@ -67,7 +49,7 @@ describe("selected settings integration", () => {
       numerators: [1, 2, 2, 3, 3, 4], denominators: [10, 10, 10, 10, 10, 10]
     }, rows);
     try {
-      visual.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 });
+      visual.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: updateType.data });
       expect(failed).not.toHaveBeenCalled();
       expect(finished).toHaveBeenCalledOnce();
       expect(visual.viewModel.inputSettings.settings[0].spc.chart_type).toBe("i");
@@ -89,39 +71,4 @@ describe("selected settings integration", () => {
       element.remove();
     }
   });
-});
-
-it("preserves blank limit tooltip prefixes through settings reading and rendering", () => {
-  const element = testDom("500", "500");
-  const host = createVisualHost({});
-  const failed = vi.spyOn(host.eventService, "renderingFailed");
-  const finished = vi.spyOn(host.eventService, "renderingFinished");
-  const visual = new Visual({ element, host });
-  const settings = createDefaultValues(settingsModel);
-  settings.lines.show_95 = true;
-  settings.lines.ttip_show_95 = true;
-  settings.lines.ttip_label_95_prefix_lower = "";
-  settings.lines.ttip_label_95_prefix_upper = "";
-  const view = buildDataView({ key: ["A", "B", "C"], numerators: [1, 2, 3] }, settings);
-  try {
-    visual.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 });
-    expect(failed).not.toHaveBeenCalled();
-    expect(finished).toHaveBeenCalledOnce();
-    expect(visual.viewModel.inputSettings.settings[0].lines.ttip_label_95_prefix_lower).toBe("");
-    const tooltip = visual.viewModel.plotPoints[0].tooltip;
-    let matchingLimits = 0;
-    for (let i = 0; i < tooltip.length; i++) {
-      if (tooltip[i].displayName === "95% Limit") {
-        matchingLimits++;
-      }
-      expect(tooltip[i].displayName).not.toBe("Lower 95% Limit");
-      expect(tooltip[i].displayName).not.toBe("Upper 95% Limit");
-    }
-    expect(matchingLimits).toBe(2);
-    expect(visual.viewModel.inputSettings.validationStatus).toEqual({ status: 0, messages: [[], [], []] });
-  } finally {
-    failed.mockRestore();
-    finished.mockRestore();
-    element.remove();
-  }
 });

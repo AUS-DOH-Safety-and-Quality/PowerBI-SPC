@@ -5,7 +5,8 @@ type VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 type ISelectionId = powerbi.visuals.ISelectionId;
 import * as limitFunctions from "../Limit Calculations"
 import settingsClass from "./settingsClass";
-import settingsModel, { type settingsValueType } from "../settings";
+import type settingsModel from "../settings";
+import type { settingsValueType } from "../settings";
 import type derivedSettingsClass from "./derivedSettingsClass";
 import buildTooltip from "../Functions/buildTooltip";
 import { rep, between, clamp, calculateTrendLine } from "powerbi-visuals-core/math";
@@ -133,6 +134,10 @@ export type controlLimitsArgs = {
   readonly subset_points: readonly number[];
 }
 
+/** Charts needing these series are dispatched only once validateDataViewColumns has found them */
+export type denominatorLimitsArgs = controlLimitsArgs & { readonly denominators: readonly number[] };
+export type xbarLimitsArgs = denominatorLimitsArgs & { readonly xbar_sds: readonly number[] };
+
 export type outliersObject = {
   readonly astpoint: FlagDirection[];
   readonly trend: FlagDirection[];
@@ -210,7 +215,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
   identities: ISelectionId[][] = [];
 
   get showGrouped(): boolean {
-    return this.inputData && this.inputData.length > 1;
+    return this.inputData.length > 1;
   }
 
   get anyLabels(): boolean {
@@ -259,7 +264,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
 
     const hasIndicator = indicator_cols.length > 0;
     const split_indexes_str: string = <string>(view.dataView.metadata.objects?.split_indexes_storage?.split_indexes) ?? "[]";
-    const split_indexes: number[] = JSON.parse(split_indexes_str);
+    const split_indexes = JSON.parse(split_indexes_str) as number[];
     this.splitIndexes = hasIndicator ? [] : split_indexes;
 
     this.inputData = new Array<dataObject>();
@@ -349,8 +354,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
   }
 
   calculateLimits(inputData: dataObject, groupStartEndIndexes: readonly (readonly number[])[], inputSettings: settingsValueType): controlLimitsObject {
-    const limitFunction: (args: controlLimitsArgs) => CalculatedLimits
-      = limitFunctions[inputSettings.spc.chart_type];
+    // Validation has found the series each chart's arguments require
+    const limitFunction = limitFunctions[inputSettings.spc.chart_type] as (args: controlLimitsArgs) => CalculatedLimits;
 
     const num_points_subset = inputSettings.spc.num_points_subset;
     const subset_points_from = inputSettings.spc.subset_points_from;
@@ -494,7 +499,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       const assIcon = assuranceIconToDraw(limits, this.inputSettings.settings[i],
                                                       this.inputSettings.derivedSettings[i]);
       if (assIconFilter !== "all") {
-        if (assIconFilter === "any" && assIcon === "inconsistent") {
+        if (assIconFilter === "any" && assIcon !== "consistentPass" && assIcon !== "consistentFail") {
           continue;
         }
         if (assIconFilter === "pass" && assIcon !== "consistentPass") {
@@ -514,7 +519,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       }
       const tooltipColumns: Record<string, string> = {};
       if (anyTooltips) {
-        const rowTooltips = this.inputData[i].tooltips[lastIndex];
+        // Through the key, as moving ranges drop a row per segment
+        const rowTooltips = this.inputData[i].tooltips[limits.keys[lastIndex].x];
         for (let t = 0; t < rowTooltips.length; t++) {
           tooltipColumns[rowTooltips[t].displayName] = rowTooltips[t].value;
         }
@@ -691,30 +697,39 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       if (isRebaselinePoint) {
         this.periodEnds.push(position - 1);
       }
-      position += (isRebaselinePoint || isNewAltTarget) ? 2 : 1;
+      position += 1 + (isRebaselinePoint ? 1 : 0) + (isNewAltTarget ? 2 : 0);
+      const x = controlLimits.keys[i].x;
+      const aesthetics = inputData.line_formatting[x];
       for (let l = 0; l < labels.length; l++) {
         const label = labels[l];
         const formattedLines = lines[l][1];
         const join_rebaselines: boolean = settings.lines[`join_rebaselines_${lineKeys[label]}`];
-        // By adding an additional null line value at each re-baseline point
-        // we avoid rendering a line joining each segment
-        if (isRebaselinePoint || isNewAltTarget) {
-          const is_alt_target: boolean = label === "alt_target" && isNewAltTarget;
-          const is_rebaseline: boolean = label !== "alt_target" && isRebaselinePoint;
+        const value = controlLimits[label][i];
+        const is_alt_target: boolean = label === "alt_target";
+        // A blank point at a rebaseline breaks the line unless the segments are joined; the alt. target only breaks where it changes
+        if (isRebaselinePoint) {
           formattedLines.push({
-            x: controlLimits.keys[i].x,
-            line_value: (!join_rebaselines && (is_alt_target || is_rebaseline)) ? undefined : controlLimits[label][i],
+            x,
+            line_value: (!join_rebaselines && !is_alt_target) ? undefined : value,
             group: label,
-            aesthetics: inputData.line_formatting[controlLimits.keys[i].x]
-          })
+            aesthetics
+          });
         }
-
-        formattedLines.push({
-          x: controlLimits.keys[i].x,
-          line_value: controlLimits[label][i],
-          group: label,
-          aesthetics: inputData.line_formatting[controlLimits.keys[i].x]
-        })
+        // The old alt. target runs up to the change, so a target that changes every row stays visible
+        if (isNewAltTarget) {
+          formattedLines.push({
+            x,
+            line_value: is_alt_target ? controlLimits.alt_target[i - 1] : value,
+            group: label,
+            aesthetics
+          }, {
+            x,
+            line_value: (is_alt_target && !join_rebaselines) ? undefined : value,
+            group: label,
+            aesthetics
+          });
+        }
+        formattedLines.push({ x, line_value: value, group: label, aesthetics });
       }
     }
     this.periodEnds.push(position - 1);

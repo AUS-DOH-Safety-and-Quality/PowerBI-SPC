@@ -4,6 +4,7 @@ import buildDataView from "./helpers/buildDataView";
 import { rep } from "powerbi-visuals-core/math";
 import type { PrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { describe, it, expect } from "vitest";
+import { updateType } from "powerbi-visuals-core/powerbi";
 
 const stringKeys: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const validNumerators: number[] = [742731.43, 263501, 283085.78, 300263.49, 376074.57, 814724.34, 570921.34];
@@ -28,7 +29,7 @@ describe("Chart Errors", () => {
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys }) ],
       viewport: { width: 500, height: 500 },
-      type:  2 /*powerbi.VisualUpdateType.Data*/
+      type: updateType.data
     });
 
     expect_error(svgElement, 'No numerators passed!');
@@ -36,7 +37,7 @@ describe("Chart Errors", () => {
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys, numerators: rep<PrimitiveValue>(null, 7) }) ],
       viewport: { width: 500, height: 500 },
-      type:  2 /*powerbi.VisualUpdateType.Data*/
+      type: updateType.data
     });
 
     expect_error(svgElement, 'All numerators are missing or null!');
@@ -44,7 +45,7 @@ describe("Chart Errors", () => {
     visual.update({
       dataViews: [ buildDataView({ key: stringKeys, numerators: stringKeys }) ],
       viewport: { width: 500, height: 500 },
-      type:  2 /*powerbi.VisualUpdateType.Data*/
+      type: updateType.data
     });
 
     expect_error(svgElement, 'All numerators are not numbers!');
@@ -52,7 +53,7 @@ describe("Chart Errors", () => {
     visual.update({
       dataViews: [ buildDataView({ key: rep<PrimitiveValue>(null, 7), numerators: validNumerators }) ],
       viewport: { width: 500, height: 500 },
-      type:  2 /*powerbi.VisualUpdateType.Data*/
+      type: updateType.data
     });
 
     expect_error(svgElement, 'All dates/IDs are missing or null!');

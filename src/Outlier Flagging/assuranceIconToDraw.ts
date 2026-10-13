@@ -3,7 +3,10 @@ import type { settingsValueType } from "../settings";
 import type derivedSettingsClass from "../Classes/derivedSettingsClass";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
 
-/** Assurance icon: a target outside the last 99% limits is consistently met or missed; inside them it is inconsistent. */
+/**
+ * Assurance icon: a target outside the last 99% limits is consistently met or missed; inside them it is inconsistent.
+ * No icon without an alt. target or limits at the last point.
+ */
 export default function assuranceIconToDraw(controlLimits: Readonly<controlLimitsObject>,
                                             inputSettings: Readonly<settingsValueType>,
                                             derivedSettings: Readonly<derivedSettingsClass>): NhsIconName | "none" {
@@ -24,11 +27,14 @@ export default function assuranceIconToDraw(controlLimits: Readonly<controlLimit
   const lower = ll99[N];
   const impDirectionIncrease: boolean = imp_direction === "increase";
 
-  if (alt_target !== undefined && upper !== undefined && alt_target > upper) {
-    return impDirectionIncrease ? "consistentFail" : "consistentPass";
-  } else if (alt_target !== undefined && lower !== undefined && alt_target < lower) {
-    return impDirectionIncrease ? "consistentPass" : "consistentFail";
-  } else {
-    return "inconsistent";
+  if (alt_target === undefined || upper === undefined || lower === undefined) {
+    return "none";
   }
+  if (alt_target > upper) {
+    return impDirectionIncrease ? "consistentFail" : "consistentPass";
+  }
+  if (alt_target < lower) {
+    return impDirectionIncrease ? "consistentPass" : "consistentFail";
+  }
+  return "inconsistent";
 }

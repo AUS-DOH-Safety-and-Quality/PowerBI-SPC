@@ -41,6 +41,9 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
     return extracted;
   }
   const { kept, warnings, ...rows } = extracted.data;
+  if (chart.name === "mr" && kept.length < 2) {
+    return { status: "invalid", error: "Moving range charts need at least two valid observations!" };
+  }
 
   const groupings = view.values.groupings?.[0];
   const limitKeys = new Array<controlLimitsArgs["keys"][number]>(kept.length);

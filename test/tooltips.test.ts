@@ -66,6 +66,8 @@ describe("tooltip contents", () => {
       lines: { show_95: false, show_99: false }
     }, 0, inputsFor("u"));
     expect(names(items)).toEqual(["Month", "Rate per bed", "Falls", "Centerline"]);
+    // Only c, p and pp charts write whole counts
+    expect(items[2].value).toBe("5.00");
     const hidden = tooltip({ spc: { ttip_show_date: false, ttip_show_value: false, ttip_show_numerator: false }, lines: { show_95: false, show_99: false } });
     expect(names(hidden)).toEqual(["Centerline"]);
   });
@@ -141,6 +143,11 @@ describe("line tooltip settings", () => {
     expect(unshown).not.toContain(upper);
     expect(untipped.length).toBe(shown.length - (lower === undefined ? 1 : 2));
     expect(unshown).toEqual(untipped);
+  });
+
+  it("keeps blank limit prefixes rather than restoring the defaults", () => {
+    const items = names(tooltip({ lines: { ttip_label_95_prefix_lower: "", ttip_label_95_prefix_upper: "" } }));
+    expect(items).toEqual(["Date", "Observation", "Upper 99% Limit", "95% Limit", "Centerline", "95% Limit", "Lower 99% Limit"]);
   });
 
   it("formats each line's value with the chart's percentage suffix", () => {

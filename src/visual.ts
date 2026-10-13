@@ -29,7 +29,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     return this.viewModel.inputSettings.settings[0];
   }
 
-  protected drawAlternate(): boolean {
+  protected override drawAlternate(): boolean {
     if (!(this.viewModel.showGrouped || this.settings.summary_table.show_table)) {
       return false;
     }
@@ -43,6 +43,8 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     const viewModel = this.viewModel;
     const settings = this.settings;
     const tickLabels = viewModel.tickLabels;
+    const derivedSettings = viewModel.inputSettings.derivedSettings[0];
+    const integerTicks: boolean = derivedSettings.chart_type_props.integer_values && derivedSettings.multiplier === 1;
     return {
       tickFormats: {
         x: value => {
@@ -53,7 +55,8 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
           }
           return "";
         },
-        y: valueTickFormat(settings.y_axis.ylimit_sig_figs ?? settings.spc.sig_figs, viewModel.inputSettings.derivedSettings[0].percentLabels)
+        y: valueTickFormat(settings.y_axis.ylimit_sig_figs ?? (integerTicks ? 0 : settings.spc.sig_figs), derivedSettings.percentLabels),
+        yInteger: integerTicks
       },
       verticalCrosshair: false,
       // Each point carries its own row's line settings, so rebaselined segments may differ
@@ -67,7 +70,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     };
   }
 
-  protected drawMarks(): void {
+  protected override drawMarks(): void {
     this.svg.call(drawIcons, this);
   }
 
@@ -89,7 +92,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     });
   }
 
-  resizeCanvas(width: number, height: number): void {
+  override resizeCanvas(width: number, height: number): void {
     super.resizeCanvas(width, height);
     showTable(this.tableDiv, width === 0 && height === 0);
   }

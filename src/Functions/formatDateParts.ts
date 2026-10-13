@@ -14,27 +14,14 @@ export interface DatePartsRecord {
   year: string;
 }
 
-const weekdayShort: Record<"en-GB" | "en-US", readonly string[]> = {
-  "en-GB": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  "en-US": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-};
+const weekdayShort: readonly string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const weekdayLong: Record<"en-GB" | "en-US", readonly string[]> = {
-  "en-GB": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-  "en-US": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-};
+const weekdayLong: readonly string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-const monthShort: Record<"en-GB" | "en-US", readonly string[]> = {
-  "en-GB": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  "en-US": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-};
+const monthShort: readonly string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const monthLong: Record<"en-GB" | "en-US", readonly string[]> = {
-  "en-GB": ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"],
-  "en-US": ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"]
-};
+const monthLong: readonly string[] = ["January", "February", "March", "April", "May", "June",
+                                      "July", "August", "September", "October", "November", "December"];
 
 /**
  * Stands in for Intl.DateTimeFormat.formatToParts, which QuickJS lacks.
@@ -42,7 +29,6 @@ const monthLong: Record<"en-GB" | "en-US", readonly string[]> = {
  */
 export default function formatDateParts(
   date: Date,
-  locale: "en-GB" | "en-US",
   options: DateFormatOptions
 ): DatePartsRecord {
   const result: DatePartsRecord = {
@@ -53,9 +39,9 @@ export default function formatDateParts(
   };
 
   if (options.weekday === "short") {
-    result.weekday = weekdayShort[locale][date.getDay()];
+    result.weekday = weekdayShort[date.getDay()];
   } else if (options.weekday === "long") {
-    result.weekday = weekdayLong[locale][date.getDay()];
+    result.weekday = weekdayLong[date.getDay()];
   }
 
   if (options.day === "2-digit") {
@@ -65,9 +51,9 @@ export default function formatDateParts(
   if (options.month === "2-digit") {
     result.month = String(date.getMonth() + 1).padStart(2, "0");
   } else if (options.month === "short") {
-    result.month = monthShort[locale][date.getMonth()];
+    result.month = monthShort[date.getMonth()];
   } else if (options.month === "long") {
-    result.month = monthLong[locale][date.getMonth()];
+    result.month = monthLong[date.getMonth()];
   }
 
   if (options.year === "numeric") {

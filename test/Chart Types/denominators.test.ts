@@ -5,6 +5,8 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import { Visual } from "../../src/visual";
 import buildDataView, { sequentialKeys } from "../helpers/buildDataView";
 import { rep } from "powerbi-visuals-core/math";
+import { updateType } from "powerbi-visuals-core/powerbi";
+import { must } from "powerbi-visuals-core/testing";
 
 const chartTypes = ["p", "pp", "u", "up", "i", "i_m", "i_mm", "mr", "run", "xbar", "s"] as const;
 const limitNames = ["ll68", "ul68", "ll95", "ul95", "ll99", "ul99"] as const;
@@ -26,8 +28,8 @@ function limitsAround(values: number[], centre: number, sigmas?: number[], lower
       expected[ll] = new Array<number>(sigmas.length);
       expected[ul] = new Array<number>(sigmas.length);
       for (let i = 0; i < sigmas.length; i++) {
-        expected[ll]![i] = Math.max(lower, centre - width * sigmas[i]);
-        expected[ul]![i] = Math.min(upper, centre + width * sigmas[i]);
+        expected[ll][i] = Math.max(lower, centre - width * sigmas[i]);
+        expected[ul][i] = Math.min(upper, centre + width * sigmas[i]);
       }
     }
   }
@@ -50,7 +52,7 @@ function checkChart(chart_type: settingsValueType["spc"]["chart_type"], input: I
     visual.update({
       dataViews: [buildDataView({ ...input, key: keys }, settings)],
       viewport: { width: 500, height: 500 },
-      type: 2
+      type: updateType.data
     });
 
     expect(failed).not.toHaveBeenCalled();
@@ -65,17 +67,17 @@ function checkChart(chart_type: settingsValueType["spc"]["chart_type"], input: I
         expect(limits[line], line).toEqual(new Array<undefined>(expected.values.length).fill(undefined));
         continue;
       }
-      expect(limits[line], line).toHaveLength(expected[line]!.length);
-      for (let i = 0; i < expected[line]!.length; i++) {
-        expect(limits[line][i], `${line} at ${i}`).toBeCloseTo(expected[line]![i]! * multiplier, 8);
+      expect(limits[line], line).toHaveLength(expected[line].length);
+      for (let i = 0; i < expected[line].length; i++) {
+        expect(limits[line][i], `${line} at ${i}`).toBeCloseTo(must(expected[line][i]) * multiplier, 8);
       }
     }
 
-    expect(element.querySelector("svg")!.outerHTML).not.toMatch(/NaN|Infinity/);
+    expect(must(element.querySelector("svg")).outerHTML).not.toMatch(/NaN|Infinity/);
     const dots = element.querySelectorAll<SVGPathElement>(".dotsgroup path");
     expect(dots).toHaveLength(expected.values.length);
     for (let i = 0; i < dots.length; i++) {
-      const matrix = dots[i].transform.baseVal.consolidate()!.matrix;
+      const matrix = must(dots[i].transform.baseVal.consolidate()).matrix;
       expect(matrix.a).toBe(1);
       expect(matrix.e).toBeGreaterThanOrEqual(0);
       expect(matrix.e).toBeLessThanOrEqual(500);
@@ -196,9 +198,9 @@ const movingRangeLimits: ExpectedLimits = {
 };
 for (let i = 0; i < 3; i++) {
   movingRangeLimits.target[i] = 13 / 60;
-  movingRangeLimits.ul68![i] = 0.23595;
-  movingRangeLimits.ul95![i] = 0.4719;
-  movingRangeLimits.ul99![i] = 0.70785;
+  must(movingRangeLimits.ul68)[i] = 0.23595;
+  must(movingRangeLimits.ul95)[i] = 0.4719;
+  must(movingRangeLimits.ul99)[i] = 0.70785;
 }
 const references = [
   { chart_type: "i", input: ratioInput, expected: limitsAround(ratioValues, 0.5375, meanRangeSigmas) },

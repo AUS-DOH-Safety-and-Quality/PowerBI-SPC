@@ -4,6 +4,7 @@ import viewModelClass from "../src/Classes/viewModelClass";
 import { defaultSettings, type settingsValueType } from "../src/settings";
 import buildDataView, { sequentialKeys } from "./helpers/buildDataView";
 import { findBy } from "powerbi-visuals-core/testing";
+import { updateType } from "powerbi-visuals-core/powerbi";
 
 const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 
@@ -34,7 +35,7 @@ describe("moving-range per-row metadata", () => {
     const dataView = buildDataView({ key: keys, numerators, labels, tooltips }, rows);
     dataView.metadata.objects = { split_indexes_storage: { split_indexes: "[3]" } };
     const viewModel = new viewModelClass(createVisualHost({}));
-    const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
+    const result = viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: updateType.data }, createVisualHost({}));
     expect(result.status).toBe(true);
 
     const points = viewModel.plotPoints;
@@ -73,7 +74,7 @@ describe("moving-range per-row metadata", () => {
     const dataView = buildDataView({ key: sequentialKeys(observations.length), numerators: observations }, settings);
     dataView.metadata.objects = { split_indexes_storage: { split_indexes: "[3]" } };
     const viewModel = new viewModelClass(createVisualHost({}));
-    viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: 2 }, createVisualHost({}));
+    viewModel.update({ dataViews: [dataView], viewport: { width: 500, height: 500 }, type: updateType.data }, createVisualHost({}));
 
     expect(viewModel.groupStartEndIndexes[0]).toEqual([[0, 3], [3, 7]]);
     // Second segment's moving ranges 1, 2, 3, 4 form a four-point trend only when grouped by result position

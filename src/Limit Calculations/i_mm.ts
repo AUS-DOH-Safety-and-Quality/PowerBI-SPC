@@ -22,7 +22,7 @@ export default function immLimits(args: Readonly<controlLimitsArgs>): Calculated
   if (!args.outliers_in_limits) {
     // Median-range D4 = 3.865 for n = 2
     const consec_diff_ulim: number = mmr * 3.865;
-    let valid_diffs: number[] = [];
+    const valid_diffs: number[] = [];
     for (let i = 0; i < consec_diff.length; i++) {
       if (consec_diff[i] < consec_diff_ulim) {
         valid_diffs.push(consec_diff[i]);

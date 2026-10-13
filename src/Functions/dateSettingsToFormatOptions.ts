@@ -59,5 +59,5 @@ export default function dateSettingsToFormatOptions(date_settings: settingsValue
       }
     }
   }
-  return Object.fromEntries(formatOpts);
+  return Object.fromEntries(formatOpts) as DateFormatOptions;
 }

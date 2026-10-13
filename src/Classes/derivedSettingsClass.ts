@@ -31,6 +31,8 @@ export default class derivedSettingsClass {
     has_control_limits: boolean,
     needs_sd: boolean,
     integer_num_den: boolean,
+    /** Plotted values are whole counts */
+    integer_values: boolean,
     value_name: string,
     x_axis_use_date: boolean,
     date_name: string,
@@ -49,6 +51,7 @@ export default class derivedSettingsClass {
       has_control_limits: !(["run"].includes(chartType)),
       needs_sd: ["xbar"].includes(chartType),
       integer_num_den: ["c", "p", "pp"].includes(chartType),
+      integer_values: ["c", "g"].includes(chartType),
       value_name: valueNames[chartType],
       x_axis_use_date: !(["g", "t"].includes(chartType)),
       date_name: !(["g", "t"].includes(chartType)) ? "Date" : "Event",

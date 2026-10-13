@@ -67,12 +67,12 @@ describe("flagging against specification limits", () => {
 
 describe("rule lengths", () => {
   it.each([
-    { outliers: { trend_n: 1 }, error: "1 is not a valid value for trend_n" },
-    { outliers: { trend_n: 2.5 }, error: "2.5 is not a valid value for trend_n" },
-    { outliers: { shift_n: 0 }, error: "0 is not a valid value for shift_n" },
-    { outliers: { shift_n: 2.5 }, error: "2.5 is not a valid value for shift_n" }
+    { outliers: { trend_n: 1 }, error: "1 is not a valid value for trend_n. Valid values are whole numbers, at least 2" },
+    { outliers: { trend_n: 2.5 }, error: "2.5 is not a valid value for trend_n. Valid values are whole numbers, at least 2" },
+    { outliers: { shift_n: 0 }, error: "0 is not a valid value for shift_n. Valid values are whole numbers, at least 1" },
+    { outliers: { shift_n: 2.5 }, error: "2.5 is not a valid value for shift_n. Valid values are whole numbers, at least 1" }
   ])("rejects $outliers as a settings error", ({ outliers, error }) => {
-    expect(update({ outliers }).result).toEqual({ status: false, type: "settings", error: expect.stringContaining(error) });
+    expect(update({ outliers }).result).toEqual({ status: false, type: "settings", error });
   });
 
   it("accepts the shortest whole-number runs", () => {
@@ -96,8 +96,8 @@ describe("sigma levels", () => {
       const astpoint = updated.viewModel.outliers[0].astpoint;
       let count = 0;
       for (let i = 0; i < spread.length; i++) {
-        const lower = limits[bands[levels[l]][0]][i]!;
-        const upper = limits[bands[levels[l]][1]][i]!;
+        const lower = must(limits[bands[levels[l]][0]][i]);
+        const upper = must(limits[bands[levels[l]][1]][i]);
         const expected = spread[i] > upper ? "improvement" : (spread[i] < lower ? "deterioration" : "none");
         expect(astpoint[i], `${levels[l]} at ${i}`).toBe(expected);
         count += expected === "none" ? 0 : 1;

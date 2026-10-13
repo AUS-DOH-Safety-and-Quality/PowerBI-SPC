@@ -5,20 +5,20 @@ import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
 import { settingsWith } from "../helpers/renderVisual";
 import { describe, it, expect } from "vitest";
 
+type Limits = (number | undefined)[];
+
 describe("assuranceIconToDraw", () => {
     const blanks = (n: number): (number | undefined)[] => new Array<number | undefined>(n).fill(undefined);
 
-    const createControlLimits = (ul99: number[], ll99: number[], alt_target: (number | undefined)[]): controlLimitsObject => {
+    const createControlLimits = (ul99: Limits, ll99: Limits, alt_target: Limits): controlLimitsObject => {
         const n = ul99.length;
         const keys = new Array<controlLimitsObject["keys"][number]>(n);
-        const values = new Array<number>(n);
         for (let i = 0; i < n; i++) {
             keys[i] = { x: i, id: i, label: String(i) };
-            values[i] = (ul99[i] + ll99[i]) / 2;
         }
         return {
             keys,
-            values,
+            values: new Array<number>(n).fill(0),
             numerators: blanks(n),
             denominators: blanks(n),
             target: blanks(n),
@@ -36,178 +36,37 @@ describe("assuranceIconToDraw", () => {
         };
     };
 
-    const createSettings = (
-        improvement_direction: settingsValueType["outliers"]["improvement_direction"],
-        show_alt_target = true
-    ): settingsValueType => settingsWith({
-        outliers: { improvement_direction },
-        lines: { show_alt_target }
-    });
-
-    const createDerivedSettings = (has_control_limits: boolean): derivedSettingsClass =>
-        new derivedSettingsClass(settingsWith({ spc: { chart_type: has_control_limits ? "i" : "run" } }).spc);
-
-    it("should return 'none' when chart type does not support control limits", () => {
-        const controlLimits = createControlLimits([10], [0], [5]);
-        const settings = createSettings("increase");
-        const derivedSettings = createDerivedSettings(false);
-
-        const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-        expect(result).toBe("none");
-    });
-
-    it("should return 'none' when the alternative target line is hidden", () => {
-        const controlLimits = createControlLimits([10], [0], [5]);
-        const settings = createSettings("increase", false);
-        const derivedSettings = createDerivedSettings(true);
-
-        const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-        expect(result).toBe("none");
-    });
-
-    it("should return 'none' when improvement direction is neutral", () => {
-        const controlLimits = createControlLimits([10], [0], [5]);
-        const settings = createSettings("neutral");
-        const derivedSettings = createDerivedSettings(true);
-
-        const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-        expect(result).toBe("none");
-    });
-
-    describe("increase improvement direction", () => {
-        it("should return 'consistentFail' when target is above upper limit", () => {
-            const controlLimits = createControlLimits([10], [0], [15]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("consistentFail");
-        });
-
-        it("should return 'consistentPass' when target is below lower limit", () => {
-            const controlLimits = createControlLimits([10], [0], [-5]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("consistentPass");
-        });
-
-        it("should return 'inconsistent' when target is within control limits", () => {
-            const controlLimits = createControlLimits([10], [0], [5]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("inconsistent");
-        });
-    });
-
-    describe("decrease improvement direction", () => {
-        it("should return 'consistentPass' when target is above upper limit", () => {
-            const controlLimits = createControlLimits([10], [0], [15]);
-            const settings = createSettings("decrease");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("consistentPass");
-        });
-
-        it("should return 'consistentFail' when target is below lower limit", () => {
-            const controlLimits = createControlLimits([10], [0], [-5]);
-            const settings = createSettings("decrease");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("consistentFail");
-        });
-
-        it("should return 'inconsistent' when target is within control limits", () => {
-            const controlLimits = createControlLimits([10], [0], [5]);
-            const settings = createSettings("decrease");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("inconsistent");
-        });
-    });
-
-    describe("boundary conditions", () => {
-        it("should treat target exactly on upper limit as inconsistent", () => {
-            const controlLimits = createControlLimits([10], [0], [10]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("inconsistent");
-        });
-
-        it("should treat target exactly on lower limit as inconsistent", () => {
-            const controlLimits = createControlLimits([10], [0], [0]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            expect(result).toBe("inconsistent");
-        });
-    });
-
-    describe("multiple data points (uses last value)", () => {
-        it("should use the last value of control limits and alternative targets", () => {
-            const controlLimits = createControlLimits([8, 9, 10], [2, 1, 0], [3, 4, 15]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            // Last alt_target is 15, last ul99 is 10 -> target above upper limit
-            expect(result).toBe("consistentFail");
-        });
-
-        it("should handle last alternative target within limits", () => {
-            const controlLimits = createControlLimits([8, 9, 10], [2, 1, 0], [15, 15, 5]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            // Last alt_target is 5, within [0, 10]
-            expect(result).toBe("inconsistent");
-        });
-    });
-
-    describe("negative control limits", () => {
-        it("should work with negative control limits and targets", () => {
-            const controlLimits = createControlLimits([0], [-10], [-15]);
-            const settings = createSettings("increase");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            // Target -15 is below lower limit -10
-            expect(result).toBe("consistentPass");
-        });
-
-        it("should handle negative target within negative control limits", () => {
-            const controlLimits = createControlLimits([0], [-10], [-5]);
-            const settings = createSettings("decrease");
-            const derivedSettings = createDerivedSettings(true);
-
-            const result = assuranceIconToDraw(controlLimits, settings, derivedSettings);
-
-            // Target -5 is within [-10, 0]
-            expect(result).toBe("inconsistent");
-        });
+    it.each<{
+        name: string;
+        ul99: Limits;
+        ll99: Limits;
+        alt_target: Limits;
+        direction?: settingsValueType["outliers"]["improvement_direction"];
+        show_alt_target?: boolean;
+        chart_type?: settingsValueType["spc"]["chart_type"];
+        expected: ReturnType<typeof assuranceIconToDraw>;
+    }>([
+        { name: "a chart without control limits", ul99: [10], ll99: [0], alt_target: [5], chart_type: "run", expected: "none" },
+        { name: "a hidden alt. target", ul99: [10], ll99: [0], alt_target: [5], show_alt_target: false, expected: "none" },
+        { name: "a neutral direction", ul99: [10], ll99: [0], alt_target: [5], direction: "neutral", expected: "none" },
+        { name: "an increase target above the limits", ul99: [10], ll99: [0], alt_target: [15], expected: "consistentFail" },
+        { name: "an increase target below the limits", ul99: [10], ll99: [0], alt_target: [-5], expected: "consistentPass" },
+        { name: "an increase target within the limits", ul99: [10], ll99: [0], alt_target: [5], expected: "inconsistent" },
+        { name: "a decrease target above the limits", ul99: [10], ll99: [0], alt_target: [15], direction: "decrease", expected: "consistentPass" },
+        { name: "a decrease target below the limits", ul99: [10], ll99: [0], alt_target: [-5], direction: "decrease", expected: "consistentFail" },
+        { name: "a decrease target within the limits", ul99: [10], ll99: [0], alt_target: [5], direction: "decrease", expected: "inconsistent" },
+        { name: "a target on the upper limit", ul99: [10], ll99: [0], alt_target: [10], expected: "inconsistent" },
+        { name: "a target on the lower limit", ul99: [10], ll99: [0], alt_target: [0], expected: "inconsistent" },
+        { name: "a last target above the last limits", ul99: [8, 9, 10], ll99: [2, 1, 0], alt_target: [3, 4, 15], expected: "consistentFail" },
+        { name: "a last target within the last limits", ul99: [8, 9, 10], ll99: [2, 1, 0], alt_target: [15, 15, 5], expected: "inconsistent" },
+        { name: "a target below negative limits", ul99: [0], ll99: [-10], alt_target: [-15], expected: "consistentPass" },
+        { name: "a target within negative limits", ul99: [0], ll99: [-10], alt_target: [-5], direction: "decrease", expected: "inconsistent" },
+        { name: "an undefined last alt. target", ul99: [10, 10], ll99: [0, 0], alt_target: [15, undefined], expected: "none" },
+        { name: "an undefined last upper limit", ul99: [10, undefined], ll99: [0, 0], alt_target: [15, 15], expected: "none" },
+        { name: "an undefined last lower limit", ul99: [10, 10], ll99: [0, undefined], alt_target: [-5, -5], expected: "none" }
+    ])("returns '$expected' for $name", ({ ul99, ll99, alt_target, direction = "increase", show_alt_target = true, chart_type = "i", expected }) => {
+        const settings = settingsWith({ outliers: { improvement_direction: direction }, lines: { show_alt_target } });
+        const derivedSettings = new derivedSettingsClass(settingsWith({ spc: { chart_type } }).spc);
+        expect(assuranceIconToDraw(createControlLimits(ul99, ll99, alt_target), settings, derivedSettings)).toBe(expected);
     });
 });

@@ -1,13 +1,13 @@
-import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
+import type { CalculatedLimits, denominatorLimitsArgs } from "../Classes/viewModelClass";
 import averageMovingRange from "../Functions/averageMovingRange";
 import plottedValues from "../Functions/plottedValues";
 import subsetRatio from "../Functions/subsetRatio";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
 
 /** Laney U' chart: Poisson sigma scaled by the z-scores' average moving range / d2 (1.128 for n = 2). */
-export default function uprimeLimits(args: Readonly<controlLimitsArgs>): CalculatedLimits {
+export default function uprimeLimits(args: Readonly<denominatorLimitsArgs>): CalculatedLimits {
   const n: number = args.keys.length;
-  const denominators: readonly number[] = args.denominators!;
+  const denominators: readonly number[] = args.denominators;
   const subset_points: readonly number[] = args.subset_points;
   const cl: number = subsetRatio(args.numerators, denominators, subset_points);
   const plotted = plottedValues(args);
@@ -18,15 +18,15 @@ export default function uprimeLimits(args: Readonly<controlLimitsArgs>): Calcula
   }
 
   const val: readonly number[] = plotted.values;
-  let sd: number[] = new Array<number>(n);
+  const sd: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
     sd[i] = Math.sqrt(cl / denominators[i]);
   }
 
-  let consec_diff: number[] = new Array<number>(subset_points.length - 1);
+  const consec_diff: number[] = new Array<number>(subset_points.length - 1);
   let prevZ: number = (val[subset_points[0]] - cl) / sd[subset_points[0]];
   for (let i = 1; i < subset_points.length; i++) {
-    let currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]];
+    const currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]];
     consec_diff[i - 1] = Math.abs(currZ - prevZ);
     prevZ = currZ;
   }

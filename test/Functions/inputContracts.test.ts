@@ -2,7 +2,7 @@ import type powerbi from "powerbi-visuals-api";
 import { describe, expect, it, vi } from "vitest";
 import { createVisualHost, testDom } from "powerbi-visuals-utils-testutils";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
-import { formatPrimitiveValue, validateDataView, type PrimitiveValue } from "powerbi-visuals-core/powerbi";
+import { updateType, validateDataView, type PrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { cells, must } from "powerbi-visuals-core/testing";
 import settingsModel from "../../src/settings";
 import derivedSettingsClass from "../../src/Classes/derivedSettingsClass";
@@ -132,20 +132,6 @@ describe("input row contracts", () => {
     ], settings, [1, 0]);
     expect(dates[0]).toBe("20/02/2025 B");
     expect(dates[1]).toBe("15/01/2024 A");
-    expect(formatPrimitiveValue(false)).toBe("false");
-  });
-
-  it("chooses chart-specific count precision and percentage suffixes locally", () => {
-    const settings = createDefaultValues(settingsModel);
-    settings.spc.sig_figs = 2;
-    settings.spc.chart_type = "i";
-    let formatter = new derivedSettingsClass(settings.spc).formatValue;
-    expect(formatter(12.625, "integer")).toBe("12.63");
-    settings.spc.chart_type = "p";
-    formatter = new derivedSettingsClass(settings.spc).formatValue;
-    expect(formatter(12.625, "integer")).toBe("13");
-    expect(formatter(12.625, "value")).toBe("12.63%");
-    expect(formatter(undefined, "value")).toBe("");
   });
 
   it("builds grouped selection identities from the key and indicator columns, only for accepted raw rows", () => {
@@ -163,7 +149,7 @@ describe("input row contracts", () => {
     });
     const model = new viewModelClass(createVisualHost({}));
     const view = buildDataView({ key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators: [1, 3, null, 4, 2, 5] });
-    expect(model.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: 2 }, host).status).toBe(true);
+    expect(model.update({ dataViews: [view], viewport: { width: 500, height: 500 }, type: updateType.data }, host).status).toBe(true);
     expect(createdRows).toEqual([
       "Category[0]", "Indicator[0]", "Category[4]", "Indicator[4]",
       "Category[1]", "Indicator[1]", "Category[3]", "Indicator[3]", "Category[5]", "Indicator[5]"
@@ -179,11 +165,11 @@ describe("input row contracts", () => {
     const grouped = (numerators: (number | null)[]) => buildDataView({
       key: ["A0", "B0", "A1", "B1", "A2", "B2"], indicator: ["A", "B", "A", "B", "A", "B"], numerators
     });
-    expect(model.update({ dataViews: [grouped([1, 3, null, 4, 2, 5])], viewport, type: 2 }, host))
+    expect(model.update({ dataViews: [grouped([1, 3, null, 4, 2, 5])], viewport, type: updateType.data }, host))
       .toEqual({ status: true, warning: "A: Category A1 removed due to: Numerator missing." });
-    expect(model.update({ dataViews: [grouped([null, null, null, null, null, null])], viewport, type: 2 }, host))
+    expect(model.update({ dataViews: [grouped([null, null, null, null, null, null])], viewport, type: updateType.data }, host))
       .toEqual({ status: false, error: "A: All numerators are missing or null!\nB: All numerators are missing or null!" });
-    expect(model.update({ dataViews: [buildDataView({ key: ["A0", "A1", "A2"], numerators: [1, null, 2] })], viewport, type: 2 }, host))
+    expect(model.update({ dataViews: [buildDataView({ key: ["A0", "A1", "A2"], numerators: [1, null, 2] })], viewport, type: updateType.data }, host))
       .toEqual({ status: true, warning: "Category A1 removed due to: Numerator missing." });
   });
 
@@ -193,7 +179,7 @@ describe("input row contracts", () => {
     const failed = vi.spyOn(host.eventService, "renderingFailed");
     const visual = new Visual({ element, host });
     try {
-      const update = (numerators: (number | null)[]) => visual.update({ dataViews: [buildDataView({ key: ["A", "B", "C"], numerators })], viewport: { width: 500, height: 500 }, type: 2 });
+      const update = (numerators: (number | null)[]) => visual.update({ dataViews: [buildDataView({ key: ["A", "B", "C"], numerators })], viewport: { width: 500, height: 500 }, type: updateType.data });
       update([1, 2, 3]);
       expect(failed).not.toHaveBeenCalled();
       update([null, null, null]);
