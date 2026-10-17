@@ -315,6 +315,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     if (errors.length === 0) {
       if (this.showGrouped) {
         this.initialisePlotDataGrouped();
+      } else if (this.controlLimits[0].keys.length === 0) {
+        errors.push("Moving range charts need at least two observations in the same rebaseline group!");
       } else {
         this.initialisePlotData();
         this.initialiseGroupedLines();
@@ -324,12 +326,19 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
   }
 
   getGroupingIndexes(inputData: dataObject, splitIndexes?: readonly number[]): number[][] {
-    const segmentEnds = new Set<number>(splitIndexes);
-    segmentEnds.add(-1);
+    const lastIndex = inputData.limitInputArgs.keys.length - 1;
+    const segmentEnds = new Set<number>([-1, lastIndex]);
+    if (splitIndexes !== undefined) {
+      for (let i = 0; i < splitIndexes.length; i++) {
+        const index = splitIndexes[i];
+        if (index >= 0 && index < lastIndex) {
+          segmentEnds.add(index);
+        }
+      }
+    }
     for (let i = 0; i < inputData.groupingIndexes.length; i++) {
       segmentEnds.add(inputData.groupingIndexes[i]);
     }
-    segmentEnds.add(inputData.limitInputArgs.keys.length - 1);
     const allIndexes: number[] = Array.from(segmentEnds).sort((a, b) => a - b);
 
     const groupStartEndIndexes = new Array<number[]>();
@@ -478,7 +487,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       const limits: controlLimitsObject = this.controlLimits[i];
       const outliers: outliersObject = this.outliers[i];
       const lastIndex: number = limits.keys.length - 1;
-      const varIcons = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
+      const lastKey = limits.keys[lastIndex];
+      const varIcons = lastKey === undefined ? [] : variationIconsToDraw(outliers, this.inputSettings.settings[i]);
       if (varIconFilter !== "all") {
         if (varIconFilter === "improvement" && !anyIcon(varIcons, ["improvementHigh", "improvementLow"])) {
           continue;
@@ -520,14 +530,14 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       const tooltipColumns: Record<string, string> = {};
       if (anyTooltips) {
         // Through the key, as moving ranges drop a row per segment
-        const rowTooltips = this.inputData[i].tooltips[limits.keys[lastIndex].x];
+        const rowTooltips = this.inputData[i].tooltips[lastKey?.x ?? 0];
         for (let t = 0; t < rowTooltips.length; t++) {
-          tooltipColumns[rowTooltips[t].displayName] = rowTooltips[t].value;
+          tooltipColumns[rowTooltips[t].displayName] = lastKey === undefined ? "" : rowTooltips[t].value;
         }
       }
       const table_row: summaryTableRowDataGrouped = {
         ...indicatorColumns,
-        latest_date: limits.keys[lastIndex].label,
+        latest_date: lastKey?.label ?? "",
         value: formatValues(limits.values[lastIndex], "value"),
         numerator: formatValues(limits.numerators[lastIndex], "integer"),
         denominator: formatValues(limits.denominators[lastIndex], "integer"),
