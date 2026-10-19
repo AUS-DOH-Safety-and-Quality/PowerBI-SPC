@@ -152,7 +152,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       viewport: { width: 500, height: 500 },
       type: updateType.data
     });
-    expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
+    expect(columnValues(visual.viewModel.groupedRows, "indicator_0").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
 
     const settingsAny = cloneRows(settingsAll);
     for (let i = 0; i < settingsAny.length; i++) {
@@ -164,7 +164,7 @@ describe("Summary Table - combining indicators of different chart types", () => 
       type: updateType.data
     });
     // "Consistent - Any" keeps only a pass or a fail, so the run chart's "none" goes
-    expect(columnValues(visual.viewModel.groupedRows, "Indicator").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
+    expect(columnValues(visual.viewModel.groupedRows, "indicator_0").sort()).toEqual(["Count Site", "Proportion Site", "Rate Site"]);
   });
 
   it("differing sig_figs settings per group round each row to its own group's precision", () => {

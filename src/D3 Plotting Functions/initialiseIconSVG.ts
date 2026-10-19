@@ -1,20 +1,16 @@
-import type { svgBaseType } from "../visual";
+import type { Selection } from "d3-selection";
 
 export function iconTransformSpec(svg_width: number, svg_height: number, location: string, scaling: number, count: number): string {
   const scaling_factor: number = (0.08 * (svg_height / 378)) * scaling
   const icon_x: number = location.includes("Right")
                           ? (svg_width / scaling_factor) - (378 + (count * 378))
-                          : location.includes("Centre") ? (svg_width / scaling_factor) / 2 - 189
-                                                        : (count * 378);
-  const icon_y: number = location.includes("Bottom")
-                          ? (svg_height / scaling_factor) - 378
-                          : location.includes("Centre") ? (svg_height / scaling_factor) / 2 - 189
-                                                        : 0;
+                          : (count * 378);
+  const icon_y: number = location.includes("Bottom") ? (svg_height / scaling_factor) - 378 : 0;
   return `scale(${scaling_factor}) translate(${icon_x}, ${icon_y})`;
 }
 
 /** Defines the filter and clip paths the NHS icon drawings reference by id. */
-export default function initialiseIconSVG(selection: svgBaseType, icon_name: string, transform_spec?: string): void {
+export default function initialiseIconSVG<E extends SVGGElement | SVGSVGElement>(selection: Selection<E, unknown, null, undefined>, icon_name: string, transform_spec?: string): void {
   const icon_group = selection.append('g')
                                 .classed("icongroup", true)
 

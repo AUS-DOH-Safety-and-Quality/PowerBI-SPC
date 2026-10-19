@@ -70,8 +70,9 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
     if (keptSds !== undefined) {
       keptSds[x] = keptValue(xbar_sds, i);
     }
-    const specificationError = orderedPairError("specification_lower", lines.specification_lower,
-                                                "specification_upper", lines.specification_upper);
+    const specificationError = showSpecification
+      ? orderedPairError("specification_lower", lines.specification_lower, "specification_upper", lines.specification_upper)
+      : undefined;
     if (specificationError !== undefined) {
       return { status: "invalid", error: specificationError };
     }

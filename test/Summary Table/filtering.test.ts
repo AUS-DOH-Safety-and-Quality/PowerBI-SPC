@@ -48,7 +48,7 @@ describe("Summary Table - variation and assurance filters", () => {
 
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
-    expect(rows[0].table_row["Indicator"]).toBe("Extreme");
+    expect(rows[0].table_row.indicator_0).toBe("Extreme");
     expect(rows[0].variation_icons).toEqual(["improvementHigh"]);
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(1);
   });
@@ -76,7 +76,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: updateType.data
     });
 
-    expect(columnValues(visual.viewModel.groupedRows, "Indicator")).toEqual(kept);
+    expect(columnValues(visual.viewModel.groupedRows, "indicator_0")).toEqual(kept);
   });
 
   const groupLowNumerators: number[] = [5, 6, 4, 5, 6, 4, 5, 6];
@@ -117,7 +117,7 @@ describe("Summary Table - variation and assurance filters", () => {
       type: updateType.data
     });
 
-    expect(columnValues(visual.viewModel.groupedRows, "Indicator")).toEqual(kept);
+    expect(columnValues(visual.viewModel.groupedRows, "indicator_0")).toEqual(kept);
     expect(visualClassElement.querySelector('.errormessage')).toBeNull();
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(kept.length);
   });
@@ -144,7 +144,7 @@ describe("Summary Table - variation and assurance filters", () => {
 
       const rows = visual2.viewModel.groupedRows;
       expect(rows.length).toBe(1);
-      expect(rows[0].table_row["Indicator"]).toBe("High Site");
+      expect(rows[0].table_row.indicator_0).toBe("High Site");
 
       expect(element2.querySelector('.errormessage')).toBeFalsy();
       const bodyRows = element2.querySelectorAll('tbody tr');

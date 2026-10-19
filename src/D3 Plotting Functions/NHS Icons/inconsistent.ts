@@ -11,8 +11,6 @@ export default function inconsistent(selection: Selection<BaseType, unknown, SVG
             .attr("clip-path","url(#clip3)")
             .attr("filter","url(#fx0)")
             .attr("transform","translate(16 25)")
-            .append("g")
-            .attr("clip-path","url(#clip4)")
             .append("path")
             .attr("d","M17.47 173.345C17.47 87.1637 87.1031 17.3 173 17.3 258.897 17.3 328.53 87.1637 328.53 173.345 328.53 259.526 258.897 329.39 173 329.39 87.1031 329.39 17.47 259.526 17.47 173.345Z")
             .attr("stroke","#A6A6A6")

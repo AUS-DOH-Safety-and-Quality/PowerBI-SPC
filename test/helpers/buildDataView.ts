@@ -15,6 +15,7 @@ export type DataViewArgs = {
   xbar_sds?: PrimitiveValue[];
   groupings?: PrimitiveValue[];
   tooltips?: PrimitiveValue[];
+  namedTooltips?: { name: string; values: PrimitiveValue[] }[];
   labels?: PrimitiveValue[];
 };
 
@@ -46,6 +47,11 @@ export default function buildDataView(args: DataViewArgs, settings?: settingsVal
   }
   if (args.tooltips !== undefined) {
     values.push({ role: "tooltips", values: args.tooltips, displayName: "Extra Tooltip" });
+  }
+  if (args.namedTooltips !== undefined) {
+    for (let i = 0; i < args.namedTooltips.length; i++) {
+      values.push({ role: "tooltips", values: args.namedTooltips[i].values, displayName: args.namedTooltips[i].name });
+    }
   }
   if (args.labels !== undefined) {
     values.push({ role: "labels", values: args.labels, displayName: "Labels" });

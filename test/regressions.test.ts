@@ -1,5 +1,5 @@
 import type powerbi from "powerbi-visuals-api";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createDefaultValues } from "powerbi-visuals-core/settings";
 import type { PrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { cells, findBy, must } from "powerbi-visuals-core/testing";
@@ -30,7 +30,7 @@ function perRowTargets(targets: (number | undefined)[], overrides: SettingsOverr
 }
 
 function chartIcons(element: HTMLElement): (string | null)[] {
-  const groups = element.querySelectorAll("svg > .icongroup > g");
+  const groups = element.querySelectorAll("svg > .marksgroup > .icongroup > g");
   const names: (string | null)[] = [];
   for (let i = 0; i < groups.length; i++) {
     names.push(groups[i].getAttribute("class"));
@@ -149,7 +149,7 @@ describe("reported issues", () => {
       const rows = table.visual.viewModel.groupedRows;
       const assurance: string[][] = [];
       for (let i = 0; i < rows.length; i++) {
-        assurance.push([rows[i].table_row.Indicator, rows[i].table_row.assurance]);
+        assurance.push([rows[i].table_row.indicator_0, rows[i].table_row.assurance]);
       }
       expect(assurance).toEqual(filters[f].expected);
     }
@@ -195,7 +195,7 @@ describe("reported issues", () => {
     const rendered = renderVisual(settingsWith({ spc: { chart_type: "i" } }), {
       key: ["1", "2", "3", "4", "1", "2", "3", "4"], indicator: ["A", "A", "A", "A", null, null, null, null] as string[], numerators: [1, 2, 3, 4, 5, 6, 7, 8]
     });
-    expect(columnValues(rendered.visual.viewModel.groupedRows, "Indicator")).toEqual(["A", ""]);
+    expect(columnValues(rendered.visual.viewModel.groupedRows, "indicator_0")).toEqual(["A", ""]);
   });
 
   it("#475 extends every line to the last point after a click split", () => {
@@ -222,11 +222,53 @@ describe("reported issues", () => {
     expect(rows[0].querySelectorAll("svg")).toHaveLength(2);
   });
 
+  it("opens the context menu for the group of a right-clicked table cell or icon", () => {
+    const rendered = renderVisual(settingsWith({
+      spc: { chart_type: "i" }, outliers: { astronomical: true }, nhs_icons: { show_variation_icons: true }
+    }), twoGroups(varying, varying));
+    const show = vi.spyOn(rendered.visual.selectionManager, "showContextMenu").mockResolvedValue({});
+    const row = rendered.element.querySelectorAll("tbody tr")[1];
+    const identity = rendered.visual.viewModel.groupedRows[1].identity[0];
+    must(row.querySelector("td")).dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: 5, clientY: 6 }));
+    expect(show).toHaveBeenLastCalledWith(identity, { x: 5, y: 6 });
+    must(row.querySelector("svg.rowsvg path")).dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: 7, clientY: 8 }));
+    expect(show).toHaveBeenLastCalledWith(identity, { x: 7, y: 8 });
+  });
+
+  it("keeps grouped table cells whose report names clash with each other or the table's columns", () => {
+    const keys = sequentialKeys(4);
+    const rendered = renderVisual(settingsWith({ spc: { chart_type: "i" }, nhs_icons: { show_assurance_icons: true } }), {
+      key: [...keys, ...keys],
+      numerators: [1, 2, 3, 4, 5, 6, 7, 8],
+      indicators: [
+        { name: "value", values: ["A", "A", "A", "A", "B", "B", "B", "B"] },
+        { name: "assurance", values: new Array<string>(8).fill("X") },
+        { name: "value", values: new Array<string>(8).fill("Y") }
+      ],
+      namedTooltips: [
+        { name: "latest_date", values: ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"] },
+        { name: "value", values: ["u1", "u2", "u3", "u4", "u5", "u6", "u7", "u8"] }
+      ]
+    });
+    const row = rendered.visual.viewModel.groupedRows[0].table_row;
+    expect([row.indicator_0, row.indicator_1, row.indicator_2, row.tooltip_0, row.tooltip_1]).toEqual(["A", "X", "Y", "t4", "u4"]);
+    expect([row.value, row.latest_date]).toEqual(["4.00", keys[3]]);
+    const headers = rendered.element.querySelectorAll("thead th");
+    const cells = rendered.element.querySelectorAll("tbody tr")[0].querySelectorAll("td");
+    const shown: Record<string, string> = {};
+    for (let i = 0; i < headers.length; i++) {
+      shown[`${i}:${headers[i].textContent}`] = cells[i].textContent;
+    }
+    expect(shown).toMatchObject({ "0:value": "A", "1:assurance": "X", "2:value": "Y", "3:Latest Date": keys[3], "4:Value": "4.00" });
+    expect(cells[headers.length - 2].textContent).toBe("t4");
+    expect(cells[headers.length - 1].textContent).toBe("u4");
+  });
+
   it("shows each group's own last tooltip in a grouped moving range table", () => {
     const rendered = renderVisual(settingsWith({ spc: { chart_type: "mr" } }), {
       ...twoGroups([10, 12, 16, 22], [30, 34, 40, 48]), tooltips: ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"]
     });
-    expect(columnValues(rendered.visual.viewModel.groupedRows, "Extra Tooltip")).toEqual(["t4", "t8"]);
+    expect(columnValues(rendered.visual.viewModel.groupedRows, "tooltip_0")).toEqual(["t4", "t8"]);
   });
 });
 
@@ -241,5 +283,23 @@ describe("date keys", () => {
       keyColumn("Date Hierarchy.Month", ["January", "April"], "Months"), keyColumn("Date Hierarchy.Day", [15, 3], "DayOfMonth")
     ], createDefaultValues(settingsModel), [0, 1]);
     expect(keys).toEqual(["15/01/2024", "03/04/Qtr 2/2024"]);
+  });
+
+  it("labels hierarchy keys with only the parts each row has, leaving a row without any blank", () => {
+    const defaults = createDefaultValues(settingsModel);
+    const quarters = extractKeys([
+      keyColumn("Date Hierarchy.Year", [2024, null, null], "Years"), keyColumn("Date Hierarchy.Quarter", ["Qtr 2", "Qtr 3", null], "Quarters")
+    ], defaults, [0, 1, 2]);
+    expect(quarters).toEqual(["Qtr 2/2024", "Qtr 3", undefined]);
+    const months = extractKeys([
+      keyColumn("Date Hierarchy.Year", [2024], "Years"), keyColumn("Date Hierarchy.Month", ["April"], "Months")
+    ], defaults, [0]);
+    expect(months).toEqual(["04/2024"]);
+    // A weekday would come from an invented year
+    const days = extractKeys([
+      keyColumn("Date Hierarchy.Month", ["April", "April"], "Months"), keyColumn("Date Hierarchy.Day", [3, 3], "DayOfMonth"),
+      keyColumn("Date Hierarchy.Year", [null, 2024], "Years")
+    ], { ...defaults, dates: { ...defaults.dates, date_format_day: "Thurs DD" } }, [0, 1]);
+    expect(days).toEqual(["03/04", "Wed 03/04/2024"]);
   });
 });

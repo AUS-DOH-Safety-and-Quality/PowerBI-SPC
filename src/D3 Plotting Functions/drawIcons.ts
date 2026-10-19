@@ -3,10 +3,11 @@ import initialiseIconSVG from "./initialiseIconSVG";
 import { iconTransformSpec } from "./initialiseIconSVG";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
-import type { svgBaseType, Visual } from "../visual";
+import type { MarksSelection } from "powerbi-visuals-core/rendering";
+import type { Visual } from "../visual";
 import type { settingsValueType } from "../settings";
 
-export default function drawIcons(selection: svgBaseType, visualObj: Visual): void {
+export default function drawIcons(selection: MarksSelection, visualObj: Visual): void {
   selection.selectAll(".icongroup").remove()
   if (!(visualObj.plotProperties.displayPlot)) {
     return;

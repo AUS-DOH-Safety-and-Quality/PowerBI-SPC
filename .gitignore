@@ -24,3 +24,7 @@ test/__screenshots__
 test/**/__screenshots__
 
 .vitest-attachments
+.vitest/
+
+*.md
+!README.md

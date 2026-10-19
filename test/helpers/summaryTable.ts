@@ -1,4 +1,4 @@
-import type { plotDataGrouped } from "../../src/Classes/viewModelClass";
+import type { plotDataGrouped, summaryTableRowDataGrouped } from "../../src/Classes/viewModelClass";
 import type { Visual } from "../../src/visual";
 import { must } from "powerbi-visuals-core/testing";
 
@@ -11,7 +11,16 @@ export function columnNames(visual: Visual): string[] {
   return names;
 }
 
-export function columnValues(rows: plotDataGrouped[], column: string): string[] {
+export function columnLabels(visual: Visual): string[] {
+  const columns = visual.viewModel.tableColumns[0];
+  const labels = new Array<string>(columns.length);
+  for (let i = 0; i < columns.length; i++) {
+    labels[i] = columns[i].label;
+  }
+  return labels;
+}
+
+export function columnValues(rows: plotDataGrouped[], column: keyof summaryTableRowDataGrouped): string[] {
   const values = new Array<string>(rows.length);
   for (let i = 0; i < rows.length; i++) {
     values[i] = rows[i].table_row[column];
@@ -21,7 +30,7 @@ export function columnValues(rows: plotDataGrouped[], column: string): string[] 
 
 export function groupedRow(rows: plotDataGrouped[], indicator: string): plotDataGrouped {
   for (let i = 0; i < rows.length; i++) {
-    if (rows[i].table_row["Indicator"] === indicator) {
+    if (rows[i].table_row.indicator_0 === indicator) {
       return rows[i];
     }
   }

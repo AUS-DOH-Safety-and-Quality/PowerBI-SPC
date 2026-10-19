@@ -50,9 +50,9 @@ export type summaryTableRowData = StandardLineValues<number | undefined> & {
   readonly two_in_three: FlagDirection;
 }
 
-/** Grouped rows hold formatted text; indicator and tooltip columns are named by the report */
+/** Grouped rows hold formatted text; indicator and tooltip columns are keyed by position, as report names can clash */
 export type summaryTableRowDataGrouped = StandardLineValues<string> & {
-  readonly [column: string]: string;
+  readonly [column: `indicator_${number}` | `tooltip_${number}`]: string;
   readonly latest_date: string;
   readonly value: string;
   readonly numerator: string;
@@ -315,6 +315,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     if (errors.length === 0) {
       if (this.showGrouped) {
         this.initialisePlotDataGrouped();
+      } else if (this.controlLimits[0].keys.length === 0) {
+        errors.push("Moving range charts need at least two observations in the same rebaseline group!");
       } else {
         this.initialisePlotData();
         this.initialiseGroupedLines();
@@ -324,12 +326,19 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
   }
 
   getGroupingIndexes(inputData: dataObject, splitIndexes?: readonly number[]): number[][] {
-    const segmentEnds = new Set<number>(splitIndexes);
-    segmentEnds.add(-1);
+    const lastIndex = inputData.limitInputArgs.keys.length - 1;
+    const segmentEnds = new Set<number>([-1, lastIndex]);
+    if (splitIndexes !== undefined) {
+      for (let i = 0; i < splitIndexes.length; i++) {
+        const index = splitIndexes[i];
+        if (index >= 0 && index < lastIndex) {
+          segmentEnds.add(index);
+        }
+      }
+    }
     for (let i = 0; i < inputData.groupingIndexes.length; i++) {
       segmentEnds.add(inputData.groupingIndexes[i]);
     }
-    segmentEnds.add(inputData.limitInputArgs.keys.length - 1);
     const allIndexes: number[] = Array.from(segmentEnds).sort((a, b) => a - b);
 
     const groupStartEndIndexes = new Array<number[]>();
@@ -435,7 +444,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
 
     const tableColumnsDef = new Array<{ name: string; label: string; }>();
     for (let i = 0; i < this.indicatorVarNames.length; i++) {
-      tableColumnsDef.push({ name: this.indicatorVarNames[i], label: this.indicatorVarNames[i] });
+      tableColumnsDef.push({ name: `indicator_${i}`, label: this.indicatorVarNames[i] });
     }
     tableColumnsDef.push({ name: "latest_date", label: "Latest Date" });
 
@@ -464,7 +473,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     if (anyTooltips) {
       const firstTooltips = this.inputData[0].tooltips[0];
       for (let i = 0; i < firstTooltips.length; i++) {
-        tableColumnsDef.push({ name: firstTooltips[i].displayName, label: firstTooltips[i].displayName });
+        tableColumnsDef.push({ name: `tooltip_${i}`, label: firstTooltips[i].displayName });
       }
     }
 
@@ -478,7 +487,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       const limits: controlLimitsObject = this.controlLimits[i];
       const outliers: outliersObject = this.outliers[i];
       const lastIndex: number = limits.keys.length - 1;
-      const varIcons = variationIconsToDraw(outliers, this.inputSettings.settings[i]);
+      const lastKey = limits.keys[lastIndex];
+      const varIcons = lastKey === undefined ? [] : variationIconsToDraw(outliers, this.inputSettings.settings[i]);
       if (varIconFilter !== "all") {
         if (varIconFilter === "improvement" && !anyIcon(varIcons, ["improvementHigh", "improvementLow"])) {
           continue;
@@ -512,22 +522,21 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
           continue;
         }
       }
-      // Indicator columns come first and tooltip columns last, so a shared name resolves as before
-      const indicatorColumns: Record<string, string> = {};
+      const indicatorColumns: Record<`indicator_${number}`, string> = {};
       for (let idx = 0; idx < this.indicatorVarNames.length; idx++) {
-        indicatorColumns[this.indicatorVarNames[idx]] = this.groupNames[i][idx];
+        indicatorColumns[`indicator_${idx}`] = this.groupNames[i][idx];
       }
-      const tooltipColumns: Record<string, string> = {};
+      const tooltipColumns: Record<`tooltip_${number}`, string> = {};
       if (anyTooltips) {
         // Through the key, as moving ranges drop a row per segment
-        const rowTooltips = this.inputData[i].tooltips[limits.keys[lastIndex].x];
+        const rowTooltips = this.inputData[i].tooltips[lastKey?.x ?? 0];
         for (let t = 0; t < rowTooltips.length; t++) {
-          tooltipColumns[rowTooltips[t].displayName] = rowTooltips[t].value;
+          tooltipColumns[`tooltip_${t}`] = lastKey === undefined ? "" : rowTooltips[t].value;
         }
       }
       const table_row: summaryTableRowDataGrouped = {
         ...indicatorColumns,
-        latest_date: limits.keys[lastIndex].label,
+        latest_date: lastKey?.label ?? "",
         value: formatValues(limits.values[lastIndex], "value"),
         numerator: formatValues(limits.numerators[lastIndex], "integer"),
         denominator: formatValues(limits.denominators[lastIndex], "integer"),

@@ -6,9 +6,9 @@ import buildDataView, { sequentialKeys } from "./buildDataView";
 import { updateType } from "powerbi-visuals-core/powerbi";
 
 export type LimitInputs = {
-  keys?: string[];
-  numerators: number[];
-  denominators?: number[];
+  keys?: (string | null)[];
+  numerators: (number | null)[];
+  denominators?: (number | null)[];
   xbar_sds?: number[];
   groupings?: string[];
 };

@@ -28,6 +28,22 @@ describe("selected settings integration", () => {
     expect(settings.validationStatus.status).toBe(0);
   });
 
+  it("rejects a one-point subset for charts whose limits come from moving ranges", () => {
+    const types = ["i", "i_m", "i_mm", "mr", "t", "pp", "up", "c", "p", "u", "xbar", "s", "g", "run"];
+    for (let i = 0; i < types.length; i++) {
+      for (let subset = 1; subset <= 2; subset++) {
+        const column = category(input());
+        column.objects = [{ spc: { chart_type: types[i], num_points_subset: subset } }, {}, {}, {}, {}];
+        const settings = new settingsClass();
+        settings.update(column, [[0, 1, 2, 3, 4]]);
+        const rejected = subset === 1 && i < 7;
+        expect(settings.validationStatus, `${types[i]}, ${subset}`).toMatchObject(rejected
+          ? { status: 1, error: "Moving range limits require a subset of at least 2 points" }
+          : { status: 0 });
+      }
+    }
+  });
+
   it("keeps interleaved group formatting and warning labels attached to their raw rows", () => {
     const element = testDom("500", "500");
     const host = createVisualHost({});

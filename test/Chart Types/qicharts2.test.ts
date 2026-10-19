@@ -3,7 +3,7 @@ import { defaultSettings, type settingsValueType } from "../../src/settings";
 import calculateLimits from "../helpers/calculateLimits";
 import references from "../fixtures/qicharts2";
 
-const lines = ["values", "target", "ll99", "ll95", "ul95", "ul99"] as const;
+const lines = ["values", "target", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;
 
 /** Both sides evaluate the same formulae, so agreement is expected at floating-point precision. */
 function expectRelativelyClose(actual: number | undefined, expected: number, label: string): void {
@@ -24,7 +24,8 @@ describe("qicharts2 reference limits", () => {
         multiplier: reference.multiplier,
         perc_labels: "No",
         outliers_in_limits: reference.outliers_in_limits,
-        num_points_subset: reference.num_points_subset ?? undefined
+        num_points_subset: reference.num_points_subset ?? undefined,
+        subset_points_from: reference.subset_points_from
       }
     };
     const limits = calculateLimits(settings, {
@@ -40,8 +41,11 @@ describe("qicharts2 reference limits", () => {
       const expected = reference.expected[line];
       for (let i = 0; i < expected.length; i++) {
         const value = expected[i];
-        // qicharts2 reports NA where it draws no line (run charts, non-finite limits)
         if (value === null) {
+          // The 1-sigma lines are derived from qicharts2's output only where that is exact (see qicharts2.R)
+          if (line !== "ll68" && line !== "ul68") {
+            expect(limits[line][i], `${line} at ${i}`).toBeUndefined();
+          }
           continue;
         }
         expectRelativelyClose(limits[line][i], value, `${line} at ${i}`);

@@ -149,7 +149,7 @@ describe("Summary Table - edge cases in grouping, filtering and re-rendering", (
 
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
-    expect(rows[0].table_row["Indicator"]).toBe("Stable");
+    expect(rows[0].table_row.indicator_0).toBe("Stable");
     expect(columnNames(visual)).not.toContain("variation");
   });
 

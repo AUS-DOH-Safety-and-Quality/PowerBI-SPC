@@ -3,7 +3,7 @@ import type { plotDataGrouped, summaryTableRowDataGrouped } from "../../src/Clas
 import { testDom, createVisualHost } from "powerbi-visuals-utils-testutils";
 import { Visual } from "../../src/visual";
 import buildDataView from "../helpers/buildDataView";
-import { columnNames, columnValues, groupedRow } from "../helpers/summaryTable";
+import { columnLabels, columnNames, columnValues, groupedRow } from "../helpers/summaryTable";
 import { describe, it, expect } from "vitest";
 import { updateType } from "powerbi-visuals-core/powerbi";
 import { cloneSettings } from "../helpers/renderVisual";
@@ -12,7 +12,7 @@ import { must } from "powerbi-visuals-core/testing";
 function rowsFor(rows: plotDataGrouped[], indicator: string, cohort: string): plotDataGrouped[] {
   const matches: plotDataGrouped[] = [];
   for (let i = 0; i < rows.length; i++) {
-    if (rows[i].table_row["Indicator"] === indicator && rows[i].table_row["Cohort"] === cohort) {
+    if (rows[i].table_row.indicator_0 === indicator && rows[i].table_row.indicator_1 === cohort) {
       matches.push(rows[i]);
     }
   }
@@ -52,7 +52,7 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
 
     const byCombo = new Map<string, summaryTableRowDataGrouped>();
     for (let i = 0; i < rows.length; i++) {
-      byCombo.set(`${rows[i].table_row["Indicator"]}|${rows[i].table_row["Cohort"]}`, rows[i].table_row);
+      byCombo.set(`${rows[i].table_row.indicator_0}|${rows[i].table_row.indicator_1}`, rows[i].table_row);
     }
     expect(must(byCombo.get("Ward A|2023")).latest_date).toBe(keys[1]);
     expect(must(byCombo.get("Ward A|2023")).value).toBe("11.00");
@@ -63,12 +63,12 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     expect(must(byCombo.get("Ward B|2024")).latest_date).toBe(keys[7]);
     expect(must(byCombo.get("Ward B|2024")).value).toBe("41.00");
 
-    const colNames: string[] = columnNames(visual);
-    expect(colNames.slice(0, 2)).toEqual(["Indicator", "Cohort"]);
+    expect(columnNames(visual).slice(0, 2)).toEqual(["indicator_0", "indicator_1"]);
+    expect(columnLabels(visual).slice(0, 2)).toEqual(["Indicator", "Cohort"]);
     const bodyRows = tableDivElement.querySelectorAll('tbody tr');
     expect(bodyRows.length).toBe(4);
     for (let i = 0; i < bodyRows.length; i++) {
-      expect(bodyRows[i].querySelectorAll('td').length).toBe(colNames.length);
+      expect(bodyRows[i].querySelectorAll('td').length).toBe(visual.viewModel.tableColumns[0].length);
     }
   });
 
@@ -134,8 +134,8 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(8);
 
-    const colNames: string[] = columnNames(visual);
-    expect(colNames.slice(0, 3)).toEqual(["Indicator", "Cohort", "Region"]);
+    expect(columnNames(visual).slice(0, 3)).toEqual(["indicator_0", "indicator_1", "indicator_2"]);
+    expect(columnLabels(visual).slice(0, 3)).toEqual(["Indicator", "Cohort", "Region"]);
     const bodyRows: Element[] = Array.from(tableDivElement.querySelectorAll('tbody tr'));
     expect(bodyRows.length).toBe(8);
   });
@@ -162,8 +162,8 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     expect(visual.viewModel.showGrouped).toBe(true);
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(3);
-    expect(columnValues(rows, "Indicator")).toEqual(["Ward A", "Ward A", "Ward A"]);
-    expect(columnValues(rows, "Cohort").sort()).toEqual(["2022", "2023", "2024"]);
+    expect(columnValues(rows, "indicator_0")).toEqual(["Ward A", "Ward A", "Ward A"]);
+    expect(columnValues(rows, "indicator_1").sort()).toEqual(["2022", "2023", "2024"]);
   });
 
   it("variation filtering narrows rows correctly when grouped by two columns, including when the excluded row is the first combination in the data", () => {
@@ -191,8 +191,8 @@ describe("Summary Table - multiple grouping columns (indicator + cohort)", () =>
     expect(visualClassElement.querySelector('.errormessage')).toBeFalsy();
     const rows = visual.viewModel.groupedRows;
     expect(rows.length).toBe(1);
-    expect(rows[0].table_row["Indicator"]).toBe("Ward B");
-    expect(rows[0].table_row["Cohort"]).toBe("2023");
+    expect(rows[0].table_row.indicator_0).toBe("Ward B");
+    expect(rows[0].table_row.indicator_1).toBe("2023");
     expect(tableDivElement.querySelectorAll('tbody tr').length).toBe(1);
   });
 

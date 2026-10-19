@@ -1,4 +1,5 @@
-import { limitValue, type FrontendChart } from "powerbi-visuals-core/frontends";
+import { indicatorFields, limitValue, type FrontendChart } from "powerbi-visuals-core/frontends";
+import { formatPrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { Visual } from "./visual";
 import settingsModel, { type settingsValueType } from "./settings";
 import type viewModelClass from "./Classes/viewModelClass";
@@ -6,8 +7,11 @@ import type { controlLimitsObject, outliersObject } from "./Classes/viewModelCla
 
 type LimitCell = string | number | null;
 type LimitRow = Record<string, LimitCell>;
-/** Grouped charts nest their rows by each indicator's group name */
-type LimitGroups = { [group: string]: LimitGroups | LimitRow[] };
+
+const limitColumns = [
+  "date", "numerator", "denominator", "value", "target", "alt_target", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99",
+  "speclimits_lower", "speclimits_upper", "trend_line", "astpoint", "trend", "shift", "two_in_three"
+] as const;
 
 /** The outlier setting that enables each flag column */
 const flagSettings: Readonly<Partial<Record<string, "astronomical" | "trend" | "shift" | "two_in_three">>> = {
@@ -27,12 +31,13 @@ function hasValues(column: readonly (LimitCell | undefined)[]): boolean {
 }
 
 /** Columns without values, and flags that are not enabled, are left out */
-function limitRows(limits: controlLimitsObject, outliers: outliersObject, outlierSettings: settingsValueType["outliers"]): LimitRow[] {
+function appendLimitRows(rows: LimitRow[], rowIds: number[], limits: controlLimitsObject, outliers: outliersObject,
+                         outlierSettings: settingsValueType["outliers"], indicators: LimitRow): void {
   const dates = new Array<string>(limits.keys.length);
   for (let i = 0; i < dates.length; i++) {
     dates[i] = limits.keys[i].label.trim();
   }
-  const columns: Readonly<Record<string, readonly (LimitCell | undefined)[]>> = {
+  const columns: Readonly<Record<(typeof limitColumns)[number], readonly (LimitCell | undefined)[]>> = {
     date: dates,
     numerator: limits.numerators,
     denominator: limits.denominators,
@@ -53,56 +58,50 @@ function limitRows(limits: controlLimitsObject, outliers: outliersObject, outlie
     shift: outliers.shift,
     two_in_three: outliers.two_in_three
   };
-  const columnNames = Object.keys(columns);
-  const names: string[] = [];
-  for (let i = 0; i < columnNames.length; i++) {
-    const flagSetting = flagSettings[columnNames[i]];
-    if ((flagSetting === undefined || outlierSettings[flagSetting]) && hasValues(columns[columnNames[i]])) {
-      names.push(columnNames[i]);
+  const names: (typeof limitColumns)[number][] = [];
+  for (let i = 0; i < limitColumns.length; i++) {
+    const flagSetting = flagSettings[limitColumns[i]];
+    if ((flagSetting === undefined || outlierSettings[flagSetting]) && hasValues(columns[limitColumns[i]])) {
+      names.push(limitColumns[i]);
     }
   }
-  const rows = new Array<LimitRow>(dates.length);
-  for (let i = 0; i < rows.length; i++) {
-    const row: LimitRow = {};
+  for (let i = 0; i < dates.length; i++) {
+    const row: LimitRow = { ...indicators };
     for (let j = 0; j < names.length; j++) {
       row[names[j]] = limitValue(columns[names[j]][i]);
     }
-    rows[i] = row;
+    rows.push(row);
+    rowIds.push(limits.keys[i].id);
   }
-  return rows;
 }
 
-function groupLimits(viewModel: viewModelClass, index: number): LimitRow[] {
-  return limitRows(viewModel.controlLimits[index], viewModel.outliers[index], viewModel.inputSettings.settings[index].outliers);
-}
-
-function chartLimits(viewModel: viewModelClass): LimitRow[] | LimitGroups {
-  if (viewModel.indicatorVarNames.length === 0) {
-    return groupLimits(viewModel, 0);
-  }
-  const result: LimitGroups = {};
+function chartLimits(viewModel: viewModelClass): { limits: LimitRow[]; rowIds: number[] } {
+  const result: LimitRow[] = [];
+  const rowIds: number[] = [];
   for (let i = 0; i < viewModel.controlLimits.length; i++) {
-    const groups = viewModel.groupNames[i];
-    let branch = result;
-    for (let j = 0; j < groups.length; j++) {
-      const name = groups[j] === "" ? "<blank>" : groups[j];
-      if (j === groups.length - 1) {
-        branch[name] = groupLimits(viewModel, i);
-      } else {
-        const existing = branch[name];
-        const next: LimitGroups = existing !== undefined && !Array.isArray(existing) ? existing : {};
-        branch[name] = next;
-        branch = next;
+    const limits = viewModel.controlLimits[i];
+    if (limits.keys.length === 0) {
+      continue;
+    }
+    const indicators: LimitRow = {};
+    const columns = viewModel.inputData[i].identityColumns;
+    for (let j = 0; j < columns.length; j++) {
+      const column = columns[j];
+      if (column.source.roles?.indicator) {
+        indicators[column.source.displayName] = limitValue(formatPrimitiveValue(column.values[limits.keys[0].id]));
       }
     }
+    appendLimitRows(result, rowIds, limits, viewModel.outliers[i], viewModel.inputSettings.settings[i].outliers,
+                    indicatorFields(indicators, limitColumns));
   }
-  return result;
+  return { limits: result, rowIds };
 }
 
 export const frontend: FrontendChart<Visual> = {
   Visual,
   settingsModel,
-  limits: visual => ({ limits: chartLimits(visual.viewModel), indicatorNames: visual.viewModel.indicatorVarNames }),
+  limitColumns,
+  limits: visual => chartLimits(visual.viewModel),
   // The grouped summary table is HTML, outside the SVG
   staticError: visual => visual.viewModel.showGrouped
     ? "Static plots are not available for SPC charts with multiple indicator groups."

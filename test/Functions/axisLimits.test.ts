@@ -102,9 +102,15 @@ describe("truncation and axis limit combinations", () => {
   it.each([
     { lines: { specification_lower: 5, specification_upper: 5 }, error: "specification_lower (5) must be below specification_upper (5)" },
     { lines: { specification_lower: 6, specification_upper: 5 }, error: "specification_lower (6) must be below specification_upper (5)" }
-  ])("rejects $lines as an input error", ({ lines, error }) => {
-    const settings: settingsValueType = { ...defaultSettings, lines: { ...defaultSettings.lines, ...lines } };
-    expect(updateViewModel(settings, inputs).result).toMatchObject({ status: false, error });
+  ])("rejects $lines as an input error only while the specification lines are shown", ({ lines, error }) => {
+    const shown: settingsValueType = { ...defaultSettings, lines: { ...defaultSettings.lines, ...lines, show_specification: true } };
+    expect(updateViewModel(shown, inputs).result).toMatchObject({ status: false, error });
+    const hidden: settingsValueType = { ...defaultSettings, lines: { ...defaultSettings.lines, ...lines, show_specification: false } };
+    const result = updateViewModel(hidden, inputs);
+    expect(result.result).toMatchObject({ status: true });
+    const hiddenLimits = new Array<undefined>(inputs.numerators.length).fill(undefined);
+    expect(result.viewModel.inputData[0].speclimits_lower).toEqual(hiddenLimits);
+    expect(result.viewModel.inputData[0].speclimits_upper).toEqual(hiddenLimits);
   });
 
   it.each([
