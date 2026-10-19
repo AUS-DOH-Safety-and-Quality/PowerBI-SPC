@@ -181,12 +181,12 @@ describe.each(charts)("%s rebaselines", chart => {
               const limits = model.controlLimits[g];
               const last = limits.keys.length - 1;
               const row = model.groupedRows[g].table_row;
-              expect(row["Indicator"]).toBe(multipleColumns ? (g < 2 ? "A" : "B") : String.fromCharCode(65 + g));
+              expect(row.indicator_0).toBe(multipleColumns ? (g < 2 ? "A" : "B") : String.fromCharCode(65 + g));
               if (multipleColumns) {
-                expect(row["Indicator 2"]).toBe(g === 1 ? "Y" : "X");
+                expect(row.indicator_1).toBe(g === 1 ? "Y" : "X");
               }
               expect(row.latest_date).toBe(limits.keys[last]?.label ?? "");
-              expect(row["Extra Tooltip"]).toBe(last < 0 ? "" : `tooltip ${g}/${expectedPositions[g][last]}`);
+              expect(row.tooltip_0).toBe(last < 0 ? "" : `tooltip ${g}/${expectedPositions[g][last]}`);
               const cells = rows[g].querySelectorAll("td");
               for (let c = 0; c < numericColumns.length; c++) {
                 const name = numericColumns[c];
@@ -195,9 +195,9 @@ describe.each(charts)("%s rebaselines", chart => {
                 const format = model.inputSettings.derivedSettings[g].formatValue;
                 expect(row[name]).toBe(format(value, name === "numerator" || name === "denominator" ? "integer" : "value"));
               }
+              const rowCells: Readonly<Record<string, string>> = row;
               for (let c = 0; c < columns.length; c++) {
-                const name = columns[c];
-                expect(cells[c].textContent).toBe(row[name]);
+                expect(cells[c].textContent).toBe(rowCells[columns[c]]);
               }
             }
           } else {
@@ -246,19 +246,19 @@ it("keeps an empty moving-range indicator beside an indicator with results", () 
   expect(rendered.element.querySelector(".errormessage")).toBeNull();
   const rows = rendered.visual.viewModel.groupedRows;
   expect(rows).toHaveLength(2);
-  expect(rows[0].table_row["Indicator"]).toBe("A");
+  expect(rows[0].table_row.indicator_0).toBe("A");
   expect(rows[0].table_row.latest_date).toBe("");
-  expect(rows[0].table_row["Extra Tooltip"]).toBe("");
+  expect(rows[0].table_row.tooltip_0).toBe("");
   for (let i = 0; i < numericColumns.length; i++) {
     expect(rows[0].table_row[numericColumns[i]]).toBe("");
   }
   expect(rows[0].table_row.alt_target).toBe("");
   expect(rows[0].variation_icons).toEqual([]);
   expect(rows[0].table_row.assurance).toBe("none");
-  expect(rows[1].table_row["Indicator"]).toBe("B");
+  expect(rows[1].table_row.indicator_0).toBe("B");
   expect(rows[1].table_row.latest_date).toBe("3");
   expect(rows[1].table_row.value).toBe("2.00");
-  expect(rows[1].table_row["Extra Tooltip"]).toBe("b3");
+  expect(rows[1].table_row.tooltip_0).toBe("b3");
   const tableRows = rendered.element.querySelectorAll("tbody tr");
   expect(tableRows).toHaveLength(2);
   expect(tableRows[0].querySelectorAll("svg")).toHaveLength(0);
@@ -289,7 +289,7 @@ it.each(charts)("passes frontend grouping data to the %s summary table after sor
     key: ["1", "2"], numerators: [10, 12], denominators: [100, 100], xbar_sds: [1, 1]
   });
   const aggregated = makeUpdateValues({
-    categories: ["2024-01-04", "2024-01-04", "2024-01-01", "2024-01-01", "2024-01-03", "2024-01-03", "2024-01-02", "2024-01-02"],
+    categories: ["2024-01-04", "2024-01-04", "2024-01-01", "2024-01-01", "2024-01-03", "2024-01-03", "2024-01-02", "2024-01-02"], category_name: "key",
     indicators: { Site: ["A", "A", "A", "A", "A", "A", "A", "A"], Measure: ["X", "Y", "X", "Y", "X", "Y", "X", "Y"] },
     numerators: [14, 24, 10, 20, 12, 22, 11, 21], denominators: new Array<number>(8).fill(100), xbar_sds: new Array<number>(8).fill(1),
     groupings: ["late", "late", "early", "early", "late", "late", "early", "late"]
@@ -305,8 +305,8 @@ it.each(charts)("passes frontend grouping data to the %s summary table after sor
   expect(model.groupStartEndIndexes).toEqual(chart === "mr"
     ? [[[0, 1], [1, 2]], [[0, 0], [0, 2]]]
     : [[[0, 2], [2, 4]], [[0, 1], [1, 4]]]);
-  expect(model.groupedRows[0].table_row["Measure"]).toBe("X");
-  expect(model.groupedRows[1].table_row["Measure"]).toBe("Y");
+  expect(model.groupedRows[0].table_row.indicator_1).toBe("X");
+  expect(model.groupedRows[1].table_row.indicator_1).toBe("Y");
   expect(rendered.element.querySelectorAll("tbody tr")).toHaveLength(2);
   expect(frontend.limits(rendered.visual).rowIds).toEqual(chart === "mr" ? [1, 3, 6, 7] : [0, 1, 2, 3, 4, 5, 6, 7]);
 });

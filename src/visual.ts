@@ -2,7 +2,7 @@
 
 import type powerbi from "powerbi-visuals-api";
 import {
-  PlotVisual, valueTickFormat, createTableContainer, showTable, highlightTable, type PlotOptions, type SvgSelection, type TableSelection
+  PlotVisual, valueTickFormat, createTableContainer, showTable, highlightTable, type PlotOptions, type MarksSelection, type TableSelection
 } from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
@@ -11,8 +11,6 @@ import lineKeys from "./Functions/lineKeys";
 import type { settingsValueType } from "./settings";
 import { selectionState } from "powerbi-visuals-core/powerbi";
 import { lowerLimitLines } from "powerbi-visuals-core/settings";
-
-export type svgBaseType = SvgSelection;
 
 const lowerLines: ReadonlySet<string> = new Set(lowerLimitLines).add("speclimits_lower");
 
@@ -70,8 +68,8 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     };
   }
 
-  protected override drawMarks(): void {
-    this.svg.call(drawIcons, this);
+  protected override drawMarks(marks: MarksSelection): void {
+    marks.call(drawIcons, this);
   }
 
   /** Toggles a limit split at the point; persisting it triggers the update that recalculates the limits */

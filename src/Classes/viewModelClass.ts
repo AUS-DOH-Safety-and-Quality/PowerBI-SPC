@@ -50,9 +50,9 @@ export type summaryTableRowData = StandardLineValues<number | undefined> & {
   readonly two_in_three: FlagDirection;
 }
 
-/** Grouped rows hold formatted text; indicator and tooltip columns are named by the report */
+/** Grouped rows hold formatted text; indicator and tooltip columns are keyed by position, as report names can clash */
 export type summaryTableRowDataGrouped = StandardLineValues<string> & {
-  readonly [column: string]: string;
+  readonly [column: `indicator_${number}` | `tooltip_${number}`]: string;
   readonly latest_date: string;
   readonly value: string;
   readonly numerator: string;
@@ -444,7 +444,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
 
     const tableColumnsDef = new Array<{ name: string; label: string; }>();
     for (let i = 0; i < this.indicatorVarNames.length; i++) {
-      tableColumnsDef.push({ name: this.indicatorVarNames[i], label: this.indicatorVarNames[i] });
+      tableColumnsDef.push({ name: `indicator_${i}`, label: this.indicatorVarNames[i] });
     }
     tableColumnsDef.push({ name: "latest_date", label: "Latest Date" });
 
@@ -473,7 +473,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     if (anyTooltips) {
       const firstTooltips = this.inputData[0].tooltips[0];
       for (let i = 0; i < firstTooltips.length; i++) {
-        tableColumnsDef.push({ name: firstTooltips[i].displayName, label: firstTooltips[i].displayName });
+        tableColumnsDef.push({ name: `tooltip_${i}`, label: firstTooltips[i].displayName });
       }
     }
 
@@ -522,17 +522,16 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
           continue;
         }
       }
-      // Indicator columns come first and tooltip columns last, so a shared name resolves as before
-      const indicatorColumns: Record<string, string> = {};
+      const indicatorColumns: Record<`indicator_${number}`, string> = {};
       for (let idx = 0; idx < this.indicatorVarNames.length; idx++) {
-        indicatorColumns[this.indicatorVarNames[idx]] = this.groupNames[i][idx];
+        indicatorColumns[`indicator_${idx}`] = this.groupNames[i][idx];
       }
-      const tooltipColumns: Record<string, string> = {};
+      const tooltipColumns: Record<`tooltip_${number}`, string> = {};
       if (anyTooltips) {
         // Through the key, as moving ranges drop a row per segment
         const rowTooltips = this.inputData[i].tooltips[lastKey?.x ?? 0];
         for (let t = 0; t < rowTooltips.length; t++) {
-          tooltipColumns[rowTooltips[t].displayName] = lastKey === undefined ? "" : rowTooltips[t].value;
+          tooltipColumns[`tooltip_${t}`] = lastKey === undefined ? "" : rowTooltips[t].value;
         }
       }
       const table_row: summaryTableRowDataGrouped = {

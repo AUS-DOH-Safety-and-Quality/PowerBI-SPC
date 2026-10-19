@@ -48,7 +48,14 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
     if (isNullOrUndefined(date)) {
       ret[i] = undefined
     } else {
-      const datePartsRecord = formatDateParts(date, formatOptions);
+      const present = inputDates.present[i];
+      // A weekday needs the whole date
+      const datePartsRecord = formatDateParts(date, {
+        weekday: present.day && present.month && present.year ? formatOptions.weekday : undefined,
+        day: present.day ? formatOptions.day : undefined,
+        month: present.month ? formatOptions.month : undefined,
+        year: present.year ? formatOptions.year : undefined
+      });
       const datePartStrings: string[] = [(datePartsRecord.weekday + " " + datePartsRecord[day_elem]).trim(),
                                           datePartsRecord[month_elem],
                                           inputDates.quarters[i] ?? "",

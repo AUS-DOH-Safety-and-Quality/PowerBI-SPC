@@ -1,5 +1,5 @@
 import type { CalculatedLimits, denominatorLimitsArgs } from "../Classes/viewModelClass";
-import averageMovingRange from "../Functions/averageMovingRange";
+import laneySigmaMultiplier from "../Functions/laneySigmaMultiplier";
 import plottedValues from "../Functions/plottedValues";
 import subsetRatio from "../Functions/subsetRatio";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
@@ -17,21 +17,11 @@ export default function uprimeLimits(args: Readonly<denominatorLimitsArgs>): Cal
     return { keys: args.keys, ...plotted, ...sigmaLimits(n, cl, { sigma: 0, floor: 0 }) };
   }
 
-  const val: readonly number[] = plotted.values;
   const sd: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
     sd[i] = Math.sqrt(cl / denominators[i]);
   }
-
-  const consec_diff: number[] = new Array<number>(subset_points.length - 1);
-  let prevZ: number = (val[subset_points[0]] - cl) / sd[subset_points[0]];
-  for (let i = 1; i < subset_points.length; i++) {
-    const currZ: number = (val[subset_points[i]] - cl) / sd[subset_points[i]];
-    consec_diff[i - 1] = Math.abs(currZ - prevZ);
-    prevZ = currZ;
-  }
-
-  const sigma_multiplier: number = averageMovingRange(consec_diff, args.outliers_in_limits) / 1.128;
+  const sigma_multiplier: number = laneySigmaMultiplier(plotted.values, cl, sd, subset_points, args.outliers_in_limits);
 
   return {
     keys: args.keys,

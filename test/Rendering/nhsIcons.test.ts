@@ -25,7 +25,7 @@ function render(icons: Partial<Icons>, overrides: Parameters<typeof settingsWith
 /** Drawn icons in order, with their boxes relative to the svg */
 function icons(element: HTMLElement): { name: string; box: DOMRect }[] {
   const svg = must(element.querySelector("svg")).getBoundingClientRect();
-  const groups = element.querySelectorAll<SVGGElement>("svg > .icongroup");
+  const groups = element.querySelectorAll<SVGGElement>("svg > .marksgroup > .icongroup");
   const result: { name: string; box: DOMRect }[] = [];
   for (let i = 0; i < groups.length; i++) {
     const rect = must(groups[i].querySelector(":scope > g > rect")).getBoundingClientRect();

@@ -7,7 +7,7 @@ export type ValidationT = RowValidation;
 
 const sd = { name: "SD", plural: "SDs" } as const;
 
-/** A row's message comes from its last failing block, so SD rules lead, then denominator, numerator and date */
+/** A row's message comes from its first failing rule, so SD rules take precedence, then denominator, numerator and date */
 export default function validateInputData(keys: readonly (string | undefined)[],
                                           numerators: readonly (number | undefined)[],
                                           denominators: readonly (number | undefined)[] | undefined,

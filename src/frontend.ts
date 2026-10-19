@@ -1,4 +1,4 @@
-import { limitValue, type FrontendChart } from "powerbi-visuals-core/frontends";
+import { indicatorFields, limitValue, type FrontendChart } from "powerbi-visuals-core/frontends";
 import { formatPrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { Visual } from "./visual";
 import settingsModel, { type settingsValueType } from "./settings";
@@ -7,6 +7,11 @@ import type { controlLimitsObject, outliersObject } from "./Classes/viewModelCla
 
 type LimitCell = string | number | null;
 type LimitRow = Record<string, LimitCell>;
+
+const limitColumns = [
+  "date", "numerator", "denominator", "value", "target", "alt_target", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99",
+  "speclimits_lower", "speclimits_upper", "trend_line", "astpoint", "trend", "shift", "two_in_three"
+] as const;
 
 /** The outlier setting that enables each flag column */
 const flagSettings: Readonly<Partial<Record<string, "astronomical" | "trend" | "shift" | "two_in_three">>> = {
@@ -32,7 +37,7 @@ function appendLimitRows(rows: LimitRow[], rowIds: number[], limits: controlLimi
   for (let i = 0; i < dates.length; i++) {
     dates[i] = limits.keys[i].label.trim();
   }
-  const columns: Readonly<Record<string, readonly (LimitCell | undefined)[]>> = {
+  const columns: Readonly<Record<(typeof limitColumns)[number], readonly (LimitCell | undefined)[]>> = {
     date: dates,
     numerator: limits.numerators,
     denominator: limits.denominators,
@@ -53,12 +58,11 @@ function appendLimitRows(rows: LimitRow[], rowIds: number[], limits: controlLimi
     shift: outliers.shift,
     two_in_three: outliers.two_in_three
   };
-  const columnNames = Object.keys(columns);
-  const names: string[] = [];
-  for (let i = 0; i < columnNames.length; i++) {
-    const flagSetting = flagSettings[columnNames[i]];
-    if ((flagSetting === undefined || outlierSettings[flagSetting]) && hasValues(columns[columnNames[i]])) {
-      names.push(columnNames[i]);
+  const names: (typeof limitColumns)[number][] = [];
+  for (let i = 0; i < limitColumns.length; i++) {
+    const flagSetting = flagSettings[limitColumns[i]];
+    if ((flagSetting === undefined || outlierSettings[flagSetting]) && hasValues(columns[limitColumns[i]])) {
+      names.push(limitColumns[i]);
     }
   }
   for (let i = 0; i < dates.length; i++) {
@@ -87,7 +91,8 @@ function chartLimits(viewModel: viewModelClass): { limits: LimitRow[]; rowIds: n
         indicators[column.source.displayName] = limitValue(formatPrimitiveValue(column.values[limits.keys[0].id]));
       }
     }
-    appendLimitRows(result, rowIds, limits, viewModel.outliers[i], viewModel.inputSettings.settings[i].outliers, indicators);
+    appendLimitRows(result, rowIds, limits, viewModel.outliers[i], viewModel.inputSettings.settings[i].outliers,
+                    indicatorFields(indicators, limitColumns));
   }
   return { limits: result, rowIds };
 }
@@ -95,6 +100,7 @@ function chartLimits(viewModel: viewModelClass): { limits: LimitRow[]; rowIds: n
 export const frontend: FrontendChart<Visual> = {
   Visual,
   settingsModel,
+  limitColumns,
   limits: visual => chartLimits(visual.viewModel),
   // The grouped summary table is HTML, outside the SVG
   staticError: visual => visual.viewModel.showGrouped

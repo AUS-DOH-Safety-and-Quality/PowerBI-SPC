@@ -25,7 +25,3 @@ export const nhsIcons = {
 };
 
 export type NhsIconName = keyof typeof nhsIcons;
-
-export function isNhsIcon(name: string): name is NhsIconName {
-  return Object.prototype.hasOwnProperty.call(nhsIcons, name);
-}

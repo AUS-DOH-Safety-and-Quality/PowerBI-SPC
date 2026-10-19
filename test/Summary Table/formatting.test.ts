@@ -72,7 +72,7 @@ describe("Summary Table - cell formatting and opacity from the SPC settings", ()
     settings.outliers.astronomical = true;
     settings.nhs_icons.show_variation_icons = true;
     render(settings, { key: keys, indicator: indicator, numerators: numerators });
-    const columns: string[] = ["Indicator", "latest_date", "value", "variation"];
+    const columns: string[] = ["indicator_0", "latest_date", "value", "variation"];
     const expected: string[] = ["left", "left", "right", "center"];
     const names: string[] = columnNames(visual);
     const headers = tableDivElement.querySelectorAll<HTMLElement>('th');

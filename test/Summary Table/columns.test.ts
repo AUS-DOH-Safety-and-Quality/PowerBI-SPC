@@ -92,7 +92,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     const colNames: string[] = columnNames(visual);
     // No denominators, so no numerator or denominator columns
     expect(colNames).toEqual([
-      "Indicator", "latest_date", "value",
+      "indicator_0", "latest_date", "value",
       "ul99", "ul95", "target", "ll95", "ll99"
     ]);
 
@@ -124,7 +124,7 @@ describe("Summary Table - column presence, order and content driven by settings"
       viewport: { width: 500, height: 500 },
       type: updateType.data
     });
-    expect(columnNames(visual)).toEqual(["Indicator", "latest_date", "value", "target"]);
+    expect(columnNames(visual)).toEqual(["indicator_0", "latest_date", "value", "target"]);
   });
 
   it("U Chart: disabling numerator/denominator tooltips removes those columns", () => {
@@ -219,11 +219,11 @@ describe("Summary Table - column presence, order and content driven by settings"
     const colNames: string[] = columnNames(visual);
     expect(colNames).toContain("variation");
     expect(colNames).toContain("assurance");
-    expect(colNames).toContain("Extra Tooltip");
+    expect(colNames).toContain("tooltip_0");
 
     const varIdx: number = colNames.indexOf("variation");
     const assIdx: number = colNames.indexOf("assurance");
-    const ttipIdx: number = colNames.indexOf("Extra Tooltip");
+    const ttipIdx: number = colNames.indexOf("tooltip_0");
 
     const rows = tableDivElement.querySelectorAll('tbody tr');
     expect(rows.length).toBe(2);
@@ -274,7 +274,7 @@ describe("Summary Table - column presence, order and content driven by settings"
     settings.lines.specification_upper = 40;
     settings.lines.specification_lower = 10;
     settings.lines.show_trend = true;
-    const ownColumns = new Set(["date", "latest_date", "Indicator", "astpoint", "trend", "shift", "two_in_three"]);
+    const ownColumns = new Set(["date", "latest_date", "indicator_0", "astpoint", "trend", "shift", "two_in_three"]);
     function sharedColumns(): { name: string; label: string; }[] {
       const columns = visual.viewModel.tableColumns[0];
       const shared: { name: string; label: string; }[] = [];

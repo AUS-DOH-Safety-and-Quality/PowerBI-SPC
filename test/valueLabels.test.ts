@@ -56,3 +56,33 @@ describe("Value labels", () => {
     expect(groups[1].querySelector("text")?.textContent).toBe("Three");
   });
 });
+
+describe("Value label connecting line", () => {
+  it("draws the connecting line with the configured dash pattern", () => {
+    const settings: settingsValueType = {
+      ...defaultSettings,
+      spc: { ...defaultSettings.spc, chart_type: "i" },
+      labels: { ...defaultSettings.labels, label_line_type: "2 5", label_line_width: 3, label_line_colour: "#123456" }
+    };
+    const element = testDom("500", "500");
+    const visual = new Visual({ element, host: createVisualHost({}) });
+    visual.update({
+      dataViews: [buildDataView({ key: sequentialKeys(numerators.length), numerators, labels }, settings)],
+      viewport: { width: 500, height: 500 },
+      type: updateType.data
+    });
+    const probe = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    probe.style.setProperty("stroke-dasharray", "2 5");
+    const defaultProbe = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    defaultProbe.style.setProperty("stroke-dasharray", defaultSettings.labels.label_line_type);
+    expect(probe.style.strokeDasharray).not.toBe(defaultProbe.style.strokeDasharray);
+    const lines = element.querySelectorAll<SVGLineElement>(".text-labels .text-group-inner line");
+    expect(lines).toHaveLength(labels.length - 1);
+    for (let i = 0; i < lines.length; i++) {
+      expect(lines[i].style.strokeDasharray).toBe(probe.style.strokeDasharray);
+      expect(lines[i].style.strokeWidth).toBe("3");
+      expect(lines[i].style.stroke).toBe("rgb(18, 52, 86)");
+    }
+    element.remove();
+  });
+});

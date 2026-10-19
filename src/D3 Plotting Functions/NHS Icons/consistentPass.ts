@@ -11,8 +11,6 @@ export default function consistentPass(selection: Selection<BaseType, unknown, S
             .attr("clip-path","url(#clip3)")
             .attr("filter","url(#fx0)")
             .attr("transform","translate(16 25)")
-            .append("g")
-            .attr("clip-path","url(#clip4)")
             .append("path")
             .attr("d","M17.47 172.83C17.47 86.9332 87.1031 17.3 173 17.3 258.897 17.3 328.53 86.9332 328.53 172.83 328.53 258.727 258.897 328.36 173 328.36 87.1031 328.36 17.47 258.727 17.47 172.83Z")
             .attr("stroke","#00B0F0")
