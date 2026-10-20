@@ -103,23 +103,24 @@ describe("Summary Table - NHS icons", () => {
     expect(size).toBeCloseTo(shortest, 5);
   });
 
-  it("keeps rows at their text height and scales icons by their setting", () => {
+  it("sizes icons at 2.1875x the shortest row's text, growing rows to hold them, and scales them by their setting", () => {
     const unscaled = render(40, true);
     const varIdx: number = columnNames(visual).indexOf("variation");
     const assIdx: number = columnNames(visual).indexOf("assurance");
     const unscaledVariation: number = must(unscaled[0].querySelectorAll('td')[varIdx].querySelector('svg')).getBoundingClientRect().height;
     const unscaledAssurance: number = must(unscaled[0].querySelectorAll('td')[assIdx].querySelector('svg')).getBoundingClientRect().height;
-    const heights: number[] = [];
-    for (let r = 0; r < unscaled.length; r++) {
-      heights.push(unscaled[r].getBoundingClientRect().height);
-    }
+    const withIcons: number = unscaled[0].getBoundingClientRect().height;
     const svgs = tableDivElement.querySelectorAll('svg.rowsvg');
     for (let i = 0; i < svgs.length; i++) {
       svgs[i].remove();
     }
+    let shortest: number = Number.POSITIVE_INFINITY;
     for (let r = 0; r < unscaled.length; r++) {
-      expect(unscaled[r].getBoundingClientRect().height).toBe(heights[r]);
+      shortest = Math.min(shortest, contentHeight(unscaled[r].querySelectorAll('td')[varIdx]));
     }
+    expect(unscaledVariation).toBeCloseTo(2.1875 * shortest, 5);
+    expect(unscaledAssurance).toBe(unscaledVariation);
+    expect(withIcons).toBeGreaterThan(unscaled[0].getBoundingClientRect().height);
 
     const scaled = render(40, true, 2);
     const variation = scaled[0].querySelectorAll('td')[varIdx].querySelectorAll('svg');
@@ -127,6 +128,15 @@ describe("Summary Table - NHS icons", () => {
       expect(variation[i].getBoundingClientRect().height).toBe(2 * unscaledVariation);
     }
     expect(must(scaled[0].querySelectorAll('td')[assIdx].querySelector('svg')).getBoundingClientRect().height).toBe(unscaledAssurance);
+  });
+
+  it("draws icons without the white backing square, so the cell colour shows around the ring", () => {
+    render(2, true);
+    const icons = tableDivElement.querySelectorAll('svg.rowsvg');
+    expect(icons.length).toBeGreaterThan(0);
+    for (let i = 0; i < icons.length; i++) {
+      expect(icons[i].querySelectorAll('.icongroup > g > rect[width="378"]')).toHaveLength(0);
+    }
   });
 
   it("lets text wrap again in cells that previously held icons", () => {

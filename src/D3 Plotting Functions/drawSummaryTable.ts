@@ -19,6 +19,9 @@ function drawsIcons(inputSettings: settingsValueType, showGrouped: boolean): boo
   return showGrouped && (inputSettings.nhs_icons.show_variation_icons || inputSettings.nhs_icons.show_assurance_icons);
 }
 
+// Icons outgrow the text so their glyphs stay legible, at the cost of taller rows
+const iconRowHeightRatio: number = 2.1875;
+
 function isIconColumn(column: string): boolean {
   return column === "variation" || column === "assurance";
 }
@@ -29,7 +32,7 @@ function rowTableSettings(row: plotData | plotDataGrouped,
   return ("table_body_bg_colour" in row.aesthetics) ? row.aesthetics : tableSettings;
 }
 
-/** Square icons share one size: the shortest row's content height, capped so the icon columns' combined width holds them */
+/** Square icons share one size: a multiple of the shortest row's content height, capped so the icon columns' combined width holds them */
 function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValueType["nhs_icons"]) {
   const allCells = selection.select(".table-body")
                             .selectAll("tr")
@@ -66,7 +69,7 @@ function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValue
   }
   const widthCap: number = (columnWidths.variation + columnWidths.assurance)
     / Math.max(1, maxIcons.variation + maxIcons.assurance);
-  const baseSize: number = Math.min(rowHeight, widthCap);
+  const baseSize: number = Math.min(rowHeight * iconRowHeightRatio, widthCap);
   for (let i = 0; i < cells.length; i++) {
     const variation: boolean = data[i].column === "variation";
     const scaling: number = variation ? nhsIconSettings.variation_icons_scaling : nhsIconSettings.assurance_icons_scaling;

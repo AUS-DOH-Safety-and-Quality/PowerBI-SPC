@@ -4,6 +4,9 @@ import { rep } from "powerbi-visuals-core/math";
 import { sequentialKeys } from "../helpers/buildDataView";
 import { renderVisual, settingsWith } from "../helpers/renderVisual";
 import { must } from "powerbi-visuals-core/testing";
+import { select } from "powerbi-visuals-core/rendering";
+import initialiseIconSVG from "../../src/D3 Plotting Functions/initialiseIconSVG";
+import { nhsIcons, type NhsIconName } from "../../src/D3 Plotting Functions/NHS Icons";
 
 type Icons = settingsValueType["nhs_icons"];
 type Location = Icons["variation_icons_locations"];
@@ -28,10 +31,11 @@ function icons(element: HTMLElement): { name: string; box: DOMRect }[] {
   const groups = element.querySelectorAll<SVGGElement>("svg > .marksgroup > .icongroup");
   const result: { name: string; box: DOMRect }[] = [];
   for (let i = 0; i < groups.length; i++) {
-    const rect = must(groups[i].querySelector(":scope > g > rect")).getBoundingClientRect();
+    // The drawing's 378-unit square, as its marks need not reach the edges
+    const ctm = must(groups[i].getScreenCTM());
     result.push({
       name: must(groups[i].querySelector(":scope > g")?.getAttribute("class")),
-      box: new DOMRect(rect.x - svg.x, rect.y - svg.y, rect.width, rect.height)
+      box: new DOMRect(ctm.e - svg.x, ctm.f - svg.y, 378 * ctm.a, 378 * ctm.d)
     });
   }
   return result;
@@ -61,6 +65,12 @@ function expectInCorner(box: DOMRect, location: Location): void {
 describe("chart NHS icons", () => {
   it("draws no icons unless requested", () => {
     expect(icons(render({}).element)).toHaveLength(0);
+  });
+
+  it("draws icons without the white backing square, so the canvas shows around the ring", () => {
+    const element = render({ show_variation_icons: true, show_assurance_icons: true, flag_last_point: false }).element;
+    expect(icons(element)).toHaveLength(3);
+    expect(element.querySelectorAll('.icongroup > g > rect[width="378"]')).toHaveLength(0);
   });
 
   it.each(locations)("places the variation icons in the %s corner, scaled by their setting", location => {
@@ -158,5 +168,45 @@ describe("chart NHS icons", () => {
     const texts = element.querySelectorAll(".errormessage text");
     expect(texts[texts.length - 1].textContent).toBe("Variation icons require at least one outlier pattern to be selected");
     expect(icons(element)).toHaveLength(0);
+  });
+});
+
+// Clip geometry of the NHSRplotthedots source SVGs
+const circleClip: string = "M189 38C105.605 38 38 105.605 38 189 38 272.395 105.605 340 189 340 272.395 340 340 272.395 340 189 340 105.605 272.395 38 189 38ZM5.63264e-06 5.63264e-06 378 5.63264e-06 378 378 5.63264e-06 378Z";
+const ellipseClip: string = "M189 38C105.605 38 38 105.829 38 189.5 38 273.171 105.605 341 189 341 272.395 341 340 273.171 340 189.5 340 105.829 272.395 38 189 38ZM5.63264e-06 5.63264e-06 378 5.63264e-06 378 378 5.63264e-06 378Z";
+
+function clipShape(element: Element, attribute: string): Element {
+  const id: string = must(element.getAttribute(attribute)?.match(/^url\(#(.+)\)$/))[1];
+  return must(document.getElementById(id)?.firstElementChild);
+}
+
+function rectGeometry(rect: Element): (string | null)[] {
+  return [rect.getAttribute("x"), rect.getAttribute("y"), rect.getAttribute("width"), rect.getAttribute("height")];
+}
+
+describe("NHS icon drawings", () => {
+  // Drawn together, as in the summary table, since clip and filter ids resolve document-wide
+  const names = Object.keys(nhsIcons) as NhsIconName[];
+  const host = document.createElement("div");
+  document.body.appendChild(host);
+  for (let i = 0; i < names.length; i++) {
+    select(host).append("svg")
+                .attr("viewBox", "0 0 378 378")
+                .attr("id", `icon-${names[i]}`)
+                .call(initialiseIconSVG, names[i])
+                .selectAll(".icongroup")
+                .selectAll(`.${names[i]}`)
+                .call(nhsIcons[names[i]]);
+  }
+
+  it.each(names)("clips and blurs the %s shadow as the source SVG does", name => {
+    const shadow = must(must(document.getElementById(`icon-${name}`)).querySelector("[filter]"));
+    const filter = must(document.getElementById(must(shadow.getAttribute("filter")?.match(/^url\(#(.+)\)$/))[1]));
+    expect(filter.getAttribute("primitiveUnits")).toBe("userSpaceOnUse");
+    expect(filter.hasAttribute("userSpaceOnUse")).toBe(false);
+    expect(clipShape(must(shadow.parentElement), "clip-path").getAttribute("d")).toBe(name === "inconsistent" ? ellipseClip : circleClip);
+    expect(rectGeometry(clipShape(shadow, "clip-path"))).toEqual(["-2", "-2", "349", "349"]);
+    const inner = must(shadow.querySelector(":scope > g[clip-path] > path"));
+    expect(rectGeometry(clipShape(must(inner.parentElement), "clip-path"))).toEqual(["0", "0", "346", name === "inconsistent" ? "347" : "346"]);
   });
 });

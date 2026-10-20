@@ -11,6 +11,8 @@ export default function improvementHigh(selection: Selection<BaseType, unknown, 
             .attr("clip-path","url(#clip3)")
             .attr("filter","url(#fx0)")
             .attr("transform","translate(16 25)")
+            .append("g")
+            .attr("clip-path","url(#clip4)")
             .append("path")
             .attr("d","M0 155.53C-1.9801e-14 69.6331 69.6331-1.9801e-14 155.53-3.96021e-14 241.427-7.92042e-14 311.06 69.6331 311.06 155.53 311.06 241.427 241.427 311.06 155.53 311.06 69.6331 311.06-9.90052e-14 241.427 0 155.53Z")
             .attr("stroke","#00B0F0")

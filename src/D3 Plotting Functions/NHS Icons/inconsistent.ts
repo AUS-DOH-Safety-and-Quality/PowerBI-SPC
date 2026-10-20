@@ -5,12 +5,30 @@ import type { BaseType, Selection } from "powerbi-visuals-core/rendering";
  * @see https://github.com/nhs-r-community/NHSRplotthedots/blob/main/inst/icons/assurance/inconsistent.svg
  */
 export default function inconsistent(selection: Selection<BaseType, unknown, SVGSVGElement | BaseType, unknown>): void {
+  // The source's clips are 1px taller than the shared ones; own ids, as ids resolve document-wide
+  const defs = selection.append("defs");
+  defs.append("clipPath")
+      .attr("id", "inconsistentClip2")
+      .append("path")
+      .attr("d","M189 38C105.605 38 38 105.829 38 189.5 38 273.171 105.605 341 189 341 272.395 341 340 273.171 340 189.5 340 105.829 272.395 38 189 38ZM5.63264e-06 5.63264e-06 378 5.63264e-06 378 378 5.63264e-06 378Z")
+      .attr("fill-rule","evenodd")
+      .attr("clip-rule","evenodd")
+  defs.append("clipPath")
+      .attr("id", "inconsistentClip4")
+      .append("rect")
+      .attr("x","0")
+      .attr("y","0")
+      .attr("width","346")
+      .attr("height","347")
+
   selection.append("g")
-            .attr("clip-path","url(#clip2)")
+            .attr("clip-path","url(#inconsistentClip2)")
             .append("g")
             .attr("clip-path","url(#clip3)")
             .attr("filter","url(#fx0)")
             .attr("transform","translate(16 25)")
+            .append("g")
+            .attr("clip-path","url(#inconsistentClip4)")
             .append("path")
             .attr("d","M17.47 173.345C17.47 87.1637 87.1031 17.3 173 17.3 258.897 17.3 328.53 87.1637 328.53 173.345 328.53 259.526 258.897 329.39 173 329.39 87.1031 329.39 17.47 259.526 17.47 173.345Z")
             .attr("stroke","#A6A6A6")
@@ -47,7 +65,7 @@ export default function inconsistent(selection: Selection<BaseType, unknown, SVG
   selection.append("path")
             .attr("d","M72.5001 239.762C89.0456 219.168 107.725 201.801 129.638 201.507 152.134 202.459 176.57 239.689 192.563 242.313 206.31 245.118 205.897 218.733 212.814 217.659 217.563 216.414 220.151 239.182 233.066 241.463 248.557 244.786 291.62 235.385 302.5 237.212")
             .attr("stroke","#7F7F7F")
-            .attr("stroke-width","10.66667")
+            .attr("stroke-width","10.6667")
             .attr("stroke-miterlimit","8")
             .attr("fill","none")
             .attr("fill-rule","evenodd")
