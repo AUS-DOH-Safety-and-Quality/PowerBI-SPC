@@ -8,7 +8,7 @@ import type { settingsValueType } from "../settings";
 const columnKinds: Readonly<Record<string, ColumnKind>> = {
   value: "number", target: "number", alt_target: "number", trend_line: "number", speclimits_lower: "number", speclimits_upper: "number",
   ll99: "number", ll95: "number", ll68: "number", ul68: "number", ul95: "number", ul99: "number",
-  numerator: "integer", denominator: "integer",
+  numerator: "input", denominator: "input",
   date: "date", latest_date: "date",
   astpoint: "flag", trend: "flag", shift: "flag", two_in_three: "flag"
 };

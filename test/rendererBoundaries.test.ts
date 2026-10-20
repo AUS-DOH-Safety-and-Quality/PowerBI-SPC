@@ -33,10 +33,10 @@ describe("renderer boundaries", () => {
     button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     expect(exportVisualsContent).toHaveBeenCalledTimes(1);
     const lines: string[] = exportVisualsContent.mock.calls[0][0].split("\n");
-    expect(lines[0].startsWith("date,numerator,denominator,value,")).toBe(true);
+    expect(lines[0].startsWith("date,numerator,denominator,xbar_sd,value,")).toBe(true);
     expect(lines).toHaveLength(keys.length + 1);
-    // An individuals chart without denominators leaves the numerator and denominator columns blank
-    expect(lines[1].split(",").slice(0, 4)).toEqual(["1", "", "", "10"]);
+    // An individuals chart without denominators leaves the numerator, denominator and SD columns blank
+    expect(lines[1].split(",").slice(0, 5)).toEqual(["1", "", "", "", "10"]);
     update(visual, settingsWith({}));
     expect(element.querySelector(".download-btn-group")).toBeNull();
     element.remove();

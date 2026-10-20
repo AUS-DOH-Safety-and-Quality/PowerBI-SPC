@@ -66,8 +66,8 @@ describe("tooltip contents", () => {
       lines: { show_95: false, show_99: false }
     }, 0, inputsFor("u"));
     expect(names(items)).toEqual(["Month", "Rate per bed", "Falls", "Centerline"]);
-    // Only c, p and pp charts write whole counts
-    expect(items[2].value).toBe("5.00");
+    // Integral counts have no decimals on every chart type
+    expect(items[2].value).toBe("5");
     const hidden = tooltip({ spc: { ttip_show_date: false, ttip_show_value: false, ttip_show_numerator: false }, lines: { show_95: false, show_99: false } });
     expect(names(hidden)).toEqual(["Centerline"]);
   });

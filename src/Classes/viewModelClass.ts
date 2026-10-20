@@ -40,6 +40,7 @@ export type summaryTableRowData = StandardLineValues<number | undefined> & {
   readonly date: string;
   readonly numerator: number | undefined;
   readonly denominator: number | undefined;
+  readonly xbar_sd: number | undefined;
   readonly value: number;
   readonly speclimits_lower: number | undefined;
   readonly speclimits_upper: number | undefined;
@@ -94,7 +95,7 @@ export type controlLimitsObject = StandardLineValues<(number | undefined)[]> & {
   values: number[];
   numerators: (number | undefined)[];
   denominators: (number | undefined)[];
-  count: (number | undefined)[];
+  xbar_sds: (number | undefined)[];
   speclimits_lower: (number | undefined)[];
   speclimits_upper: (number | undefined)[];
   trend_line: (number | undefined)[];
@@ -112,7 +113,7 @@ const limitSeries = Object.keys({
   ul68: true,
   ul95: true,
   ul99: true,
-  count: true,
+  xbar_sds: true,
   alt_target: true,
   speclimits_lower: true,
   speclimits_upper: true,
@@ -164,15 +165,24 @@ function anyIcon(icons: readonly NhsIconName[], names: readonly NhsIconName[]): 
   return false;
 }
 
+function anyDefined(values: readonly (number | undefined)[]): boolean {
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] !== undefined) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /** Columns both tables share, labelled and ordered as in the tooltip: limits top to bottom around the targets */
-function lineColumns(settings: settingsValueType, hasDenominators: boolean,
+function lineColumns(settings: settingsValueType, hasNumerators: boolean, hasDenominators: boolean,
                      hasControlLimits: boolean): { name: string; label: string; }[] {
   const lines = settings.lines;
   const columns = new Array<{ name: string; label: string; }>();
   if (lines.show_main) {
     columns.push({ name: "value", label: "Value" });
   }
-  if (hasDenominators && settings.spc.ttip_show_numerator) {
+  if (hasNumerators && settings.spc.ttip_show_numerator) {
     columns.push({ name: "numerator", label: "Numerator" });
   }
   if (hasDenominators && settings.spc.ttip_show_denominator) {
@@ -405,7 +415,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       ul68: new Array<number | undefined>(total),
       ul95: new Array<number | undefined>(total),
       ul99: new Array<number | undefined>(total),
-      count: new Array<number | undefined>(total),
+      xbar_sds: new Array<number | undefined>(total),
       alt_target: new Array<number | undefined>(total),
       speclimits_lower: new Array<number | undefined>(total),
       speclimits_upper: new Array<number | undefined>(total),
@@ -448,13 +458,15 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     }
     tableColumnsDef.push({ name: "latest_date", label: "Latest Date" });
 
+    let anyNumerators: boolean = false;
     let anyDenominators: boolean = false;
     let anyControlLimits: boolean = false;
-    for (let i = 0; i < this.inputData.length; i++) {
-      anyDenominators = anyDenominators || this.inputData[i].limitInputArgs.denominators !== undefined;
+    for (let i = 0; i < this.controlLimits.length; i++) {
+      anyNumerators = anyNumerators || anyDefined(this.controlLimits[i].numerators);
+      anyDenominators = anyDenominators || anyDefined(this.controlLimits[i].denominators);
       anyControlLimits = anyControlLimits || this.inputSettings.derivedSettings[i].chart_type_props.has_control_limits;
     }
-    tableColumnsDef.push(...lineColumns(this.inputSettings.settings[0], anyDenominators, anyControlLimits));
+    tableColumnsDef.push(...lineColumns(this.inputSettings.settings[0], anyNumerators, anyDenominators, anyControlLimits));
     const nhsIconSettings: settingsValueType["nhs_icons"] = this.inputSettings.settings[0].nhs_icons;
     if (nhsIconSettings.show_variation_icons) {
       tableColumnsDef.push({ name: "variation", label: "Variation" });
@@ -538,8 +550,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         ...indicatorColumns,
         latest_date: lastKey?.label ?? "",
         value: formatValues(limits.values[lastIndex], "value"),
-        numerator: formatValues(limits.numerators[lastIndex], "integer"),
-        denominator: formatValues(limits.denominators[lastIndex], "integer"),
+        numerator: formatValues(limits.numerators[lastIndex], "input"),
+        denominator: formatValues(limits.denominators[lastIndex], "input"),
         target: formatValues(limits.target[lastIndex], "value"),
         alt_target: formatValues(limits.alt_target[lastIndex], "value"),
         ul99: formatValues(limits.ul99[lastIndex], "value"),
@@ -580,7 +592,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     this.tableColumns[0] = new Array<{ name: string; label: string; }>();
 
     this.tableColumns[0].push({ name: "date", label: "Date" });
-    this.tableColumns[0].push(...lineColumns(settings, inputData.limitInputArgs.denominators !== undefined,
+    this.tableColumns[0].push(...lineColumns(settings, anyDefined(controlLimits.numerators), anyDefined(controlLimits.denominators),
                                              derivedSettings.chart_type_props.has_control_limits));
 
     if (settings.outliers.astronomical) {
@@ -612,6 +624,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         date: controlLimits.keys[i].label,
         numerator: controlLimits.numerators[i],
         denominator: controlLimits.denominators[i],
+        xbar_sd: controlLimits.xbar_sds[i],
         value: controlLimits.values[i],
         target: controlLimits.target[i],
         alt_target: controlLimits.alt_target[i],
@@ -752,7 +765,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     const multiplier: number = derivedSettings.multiplier;
     const ll_truncate = inputSettings.spc.ll_truncate;
     const ul_truncate = inputSettings.spc.ul_truncate;
-    const lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "target", "trend_line"];
+    const lines_to_scale: Exclude<keyof controlLimitsObject, "keys">[] = ["values", "target", "trend_line", "xbar_sds"];
 
     if (derivedSettings.chart_type_props.has_control_limits) {
       lines_to_scale.push(...limitLineNames);

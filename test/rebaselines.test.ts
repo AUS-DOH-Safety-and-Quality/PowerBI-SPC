@@ -193,7 +193,7 @@ describe.each(charts)("%s rebaselines", chart => {
                 const series = name === "value" ? "values" : name === "numerator" ? "numerators" : name === "denominator" ? "denominators" : name;
                 const value = limits[series][last];
                 const format = model.inputSettings.derivedSettings[g].formatValue;
-                expect(row[name]).toBe(format(value, name === "numerator" || name === "denominator" ? "integer" : "value"));
+                expect(row[name]).toBe(format(value, name === "numerator" || name === "denominator" ? "input" : "value"));
               }
               const rowCells: Readonly<Record<string, string>> = row;
               for (let c = 0; c < columns.length; c++) {

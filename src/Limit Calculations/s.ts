@@ -12,6 +12,7 @@ export default function sLimits(args: Readonly<denominatorLimitsArgs>): Calculat
   return {
     keys: args.keys,
     values: args.numerators,
+    denominators: args.denominators,
     ...sigmaLimits(args.keys.length, cl, { sigma: i => cl * (c5(count_per_group[i]) / c4(count_per_group[i])), floor: 0 })
   };
 }

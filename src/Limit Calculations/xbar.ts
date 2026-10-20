@@ -26,6 +26,7 @@ export default function xbarLimits(args: Readonly<xbarLimitsArgs>): CalculatedLi
     values: args.numerators,
     // A3 = 3 / (c4 * sqrt(n)), so A3 * sd / 3 is the standard error of the group mean
     ...sigmaLimits(args.keys.length, cl, { sigma: i => (a3(count_per_group[i]) * sd) / 3 }),
-    count: args.denominators
+    denominators: args.denominators,
+    xbar_sds: args.xbar_sds
   };
 }

@@ -28,7 +28,7 @@ describe("assuranceIconToDraw", () => {
             ul68: blanks(n),
             ul95: blanks(n),
             ul99,
-            count: blanks(n),
+            xbar_sds: blanks(n),
             alt_target,
             speclimits_lower: blanks(n),
             speclimits_upper: blanks(n),

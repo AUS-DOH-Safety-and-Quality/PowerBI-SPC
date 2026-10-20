@@ -26,10 +26,16 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
   const denominatorColumn = view.values.denominators?.[0];
   const sdColumn = view.values.xbar_sds?.[0];
   const chart = derivedSettings.chart_type_props;
-  const useDenominators = chart.needs_denominator || (chart.denominator_optional && denominatorColumn !== undefined);
   const keys = extractKeys(view.categories.key, inputSettings, idxs);
   const numerators = readNumbers(view.values.numerators[0], idxs);
-  const denominators = useDenominators && denominatorColumn !== undefined ? readNumbers(denominatorColumn, idxs) : undefined;
+  const groupDenominators = (chart.needs_denominator || chart.denominator_optional) && denominatorColumn !== undefined
+    ? readNumbers(denominatorColumn, idxs) : undefined;
+  let anyDenominator = false;
+  for (let i = 0; !anyDenominator && groupDenominators !== undefined && i < groupDenominators.length; i++) {
+    anyDenominator = groupDenominators[i] !== undefined;
+  }
+  // Optional denominators are per group, so an indicator without any plots its numerators
+  const denominators = chart.needs_denominator || anyDenominator ? groupDenominators : undefined;
   const xbar_sds = chart.needs_sd && sdColumn !== undefined ? readNumbers(sdColumn, idxs) : undefined;
   const extracted = extractRows(view, idxs, {
     keys,

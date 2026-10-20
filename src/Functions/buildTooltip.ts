@@ -24,6 +24,9 @@ export default function buildTooltip(table_row: summaryTableRowData,
     });
   }
   tooltip.push(...valueTooltips(inputSettings.spc, table_row, derivedSettings.chart_type_props.value_name, formatValues));
+  if (!isNullOrUndefined(table_row.xbar_sd)) {
+    tooltip.push({ displayName: "SD", value: formatValues(table_row.xbar_sd, "input") });
+  }
   if (inputSettings.lines.ttip_show_trend && inputSettings.lines.show_trend) {
     tooltip.push({
       displayName: inputSettings.lines.ttip_label_trend,
