@@ -101,13 +101,15 @@ it("leaves out columns the chart or settings give no values for", () => {
   expect(result).toHaveProperty(["limits", "0", "alt_target"], 0.5);
 });
 
-it("reports a static error only for a grouped summary table", () => {
+it("reports a table view, which has no static plot, for a grouped or requested summary table", () => {
   const single = renderVisual(settingsWith({}), { key: sequentialKeys(5), numerators: [5, 6, 5, 7, 6] });
-  expect(frontend.staticError?.(single.visual)).toBeUndefined();
+  expect(single.visual.showsTable).toBe(false);
+  expect(renderVisual(settingsWith({ summary_table: { show_table: true } }), { key: sequentialKeys(5), numerators: [5, 6, 5, 7, 6] })
+    .visual.showsTable).toBe(true);
   const grouped = renderVisual(settingsWith({}), {
     key: [...sequentialKeys(5), ...sequentialKeys(5)],
     numerators: [5, 6, 5, 7, 6, 5, 6, 5, 7, 6],
     indicator: [...Array<string>(5).fill("A"), ...Array<string>(5).fill("B")]
   });
-  expect(frontend.staticError?.(grouped.visual)).toBe("Static plots are not available for SPC charts with multiple indicator groups.");
+  expect(grouped.visual.showsTable).toBe(true);
 });

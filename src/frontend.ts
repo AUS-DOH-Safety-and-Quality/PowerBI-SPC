@@ -101,9 +101,5 @@ export const frontend: FrontendChart<Visual> = {
   Visual,
   settingsModel,
   limitColumns,
-  limits: visual => chartLimits(visual.viewModel),
-  // The grouped summary table is HTML, outside the SVG
-  staticError: visual => visual.viewModel.showGrouped
-    ? "Static plots are not available for SPC charts with multiple indicator groups."
-    : undefined
+  limits: visual => chartLimits(visual.viewModel)
 };

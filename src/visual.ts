@@ -2,7 +2,8 @@
 
 import type powerbi from "powerbi-visuals-api";
 import {
-  PlotVisual, valueTickFormat, createTableContainer, showTable, highlightTable, type PlotOptions, type MarksSelection, type TableSelection
+  PlotVisual, valueTickFormat, createTableContainer, showTable, highlightTable, type AlternateView, type PlotOptions, type MarksSelection,
+  type TableSelection
 } from "powerbi-visuals-core/rendering";
 import drawIcons from "./D3 Plotting Functions/drawIcons";
 import drawSummaryTable from "./D3 Plotting Functions/drawSummaryTable";
@@ -27,14 +28,14 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     return this.viewModel.inputSettings.settings[0];
   }
 
-  protected override drawAlternate(): boolean {
+  protected override drawAlternate(): AlternateView | undefined {
     if (!(this.viewModel.showGrouped || this.settings.summary_table.show_table)) {
-      return false;
+      return undefined;
     }
     this.resizeCanvas(0, 0);
     this.tableDiv.call(drawSummaryTable, this);
     this.addContextMenu(this.tableDiv.node(), true);
-    return true;
+    return "table";
   }
 
   protected plotOptions(): PlotOptions<plotData, lineData> {
