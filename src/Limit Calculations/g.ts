@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import { median } from "powerbi-visuals-core/math";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
@@ -14,7 +15,7 @@ export default function gLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const numerator_subset: number[] = new Array<number>(n_sub);
   let cl: number = 0;
   for (let i = 0; i < n_sub; i++) {
-    const curr_numerator: number = numerators[subset_points[i]];
+    const curr_numerator: number = at(numerators, at(subset_points, i));
     numerator_subset[i] = curr_numerator;
     cl += curr_numerator;
   }

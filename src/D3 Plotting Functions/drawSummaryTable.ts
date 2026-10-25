@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { select, drawSummaryTable as drawTable, type ColumnKind, type TableSelection } from "powerbi-visuals-core/rendering";
 import type { plotData, plotDataGrouped } from "../Classes/viewModelClass";
 import type { Visual } from "../visual";
@@ -22,7 +23,9 @@ function drawsIcons(inputSettings: settingsValueType, showGrouped: boolean): boo
 // Icons outgrow the text so their glyphs stay legible, at the cost of taller rows
 const iconRowHeightRatio: number = 2.1875;
 
-function isIconColumn(column: string): boolean {
+type IconColumn = "variation" | "assurance";
+
+function isIconColumn(column: string): column is IconColumn {
   return column === "variation" || column === "assurance";
 }
 
@@ -40,32 +43,34 @@ function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValue
   const allNodes = allCells.nodes();
   const allData = allCells.data();
   const cells: HTMLTableCellElement[] = [];
-  const data: { column: string }[] = [];
+  const data: { column: IconColumn }[] = [];
   for (let i = 0; i < allNodes.length; i++) {
-    if (isIconColumn(allData[i].column)) {
-      cells.push(allNodes[i]);
-      data.push(allData[i]);
+    const column = at(allData, i).column;
+    if (isIconColumn(column)) {
+      cells.push(at(allNodes, i));
+      data.push({ column });
     }
   }
   const icons = new Array<readonly NhsIconName[]>(cells.length);
   let rowHeight: number = Number.POSITIVE_INFINITY;
-  const columnWidths: Record<string, number> = { variation: 0, assurance: 0 };
-  const maxIcons: Record<string, number> = { variation: 0, assurance: 0 };
+  const columnWidths: Record<IconColumn, number> = { variation: 0, assurance: 0 };
+  const maxIcons: Record<IconColumn, number> = { variation: 0, assurance: 0 };
   // Measured before drawing; the variation column widens only by what the assurance column gives up
   for (let i = 0; i < cells.length; i++) {
-    const column = data[i].column;
-    const row = select<HTMLElement | null, plotDataGrouped>(cells[i].parentElement).datum();
+    const column = at(data, i).column;
+    const cell = at(cells, i);
+    const row = select<HTMLElement | null, plotDataGrouped>(cell.parentElement).datum();
     const assurance = row.table_row.assurance;
+    let cellIcons: readonly NhsIconName[] = [];
     if (column === "variation") {
-      icons[i] = row.variation_icons;
-    } else if (assurance === "none") {
-      icons[i] = [];
-    } else {
-      icons[i] = [assurance];
+      cellIcons = row.variation_icons;
+    } else if (assurance !== "none") {
+      cellIcons = [assurance];
     }
-    maxIcons[column] = Math.max(maxIcons[column], icons[i].length);
-    const style = getComputedStyle(cells[i]);
-    const rect = cells[i].getBoundingClientRect();
+    icons[i] = cellIcons;
+    maxIcons[column] = Math.max(maxIcons[column], cellIcons.length);
+    const style = getComputedStyle(cell);
+    const rect = cell.getBoundingClientRect();
     rowHeight = Math.min(rowHeight, rect.height
       - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)
       - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth));
@@ -77,12 +82,13 @@ function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValue
     / Math.max(1, maxIcons.variation + maxIcons.assurance);
   const baseSize: number = Math.min(rowHeight * iconRowHeightRatio, widthCap);
   for (let i = 0; i < cells.length; i++) {
-    const variation: boolean = data[i].column === "variation";
+    const variation: boolean = at(data, i).column === "variation";
     const scaling: number = variation ? nhsIconSettings.variation_icons_scaling : nhsIconSettings.assurance_icons_scaling;
     const size: number = baseSize * scaling;
-    const cell = select(cells[i]);
-    for (let j = 0; j < icons[i].length; j++) {
-      const icon = icons[i][j];
+    const cell = select(at(cells, i));
+    const cellIcons = at(icons, i);
+    for (let j = 0; j < cellIcons.length; j++) {
+      const icon = at(cellIcons, j);
       cell.append("svg")
           .attr("width", `${size}px`)
           .attr("height", `${size}px`)
@@ -100,17 +106,17 @@ function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValue
 export default function drawSummaryTable(selection: TableSelection, visualObj: Visual): void {
   const viewModel = visualObj.viewModel;
   const plotPoints: plotData[] | plotDataGrouped[] = viewModel.showGrouped ? viewModel.groupedRows : viewModel.plotPoints;
-  const inputSettings = viewModel.inputSettings.settings[0];
+  const { settings: inputSettings, derivedSettings } = viewModel.inputSettings.group(0);
   const tableSettings = inputSettings.summary_table;
   const draw_icons: boolean = drawsIcons(inputSettings, viewModel.showGrouped);
 
   drawTable<plotData | plotDataGrouped>(selection, {
-    columns: viewModel.tableColumns[0],
+    columns: at(viewModel.tableColumns, 0),
     rows: plotPoints,
     kinds: draw_icons ? iconKinds : columnKinds,
     settings: tableSettings,
     rowSettings: row => rowTableSettings(row, tableSettings),
-    formatValue: viewModel.inputSettings.derivedSettings[0].formatValue,
+    formatValue: derivedSettings.formatValue,
     width: viewModel.svgWidth,
     host: visualObj.host,
     selectionManager: visualObj.selectionManager,

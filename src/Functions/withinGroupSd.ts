@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 /** qicharts2 convention: mean subgroup SD for a constant subgroup size (Montgomery 6.29), pooled otherwise (6.31). */
 export default function withinGroupSd(group_sd: readonly number[], count_per_group: readonly number[], subset_points: readonly number[]): number {
   let varying: boolean = false;
@@ -12,9 +13,10 @@ export default function withinGroupSd(group_sd: readonly number[], count_per_gro
   let sd_sum: number = 0;
   let weight_sum: number = 0;
   for (let i = 0; i < n_sub; i++) {
-    const curr_sd: number = group_sd[subset_points[i]];
+    const point = at(subset_points, i);
+    const curr_sd: number = at(group_sd, point);
     if (varying) {
-      const Nm1: number = count_per_group[subset_points[i]] - 1;
+      const Nm1: number = at(count_per_group, point) - 1;
       sd_sum += Nm1 * curr_sd * curr_sd;
       weight_sum += Nm1;
     } else {

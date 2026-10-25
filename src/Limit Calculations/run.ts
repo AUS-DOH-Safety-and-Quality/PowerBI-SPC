@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import plottedValues from "../Functions/plottedValues";
 import { median, rep } from "powerbi-visuals-core/math";
@@ -10,7 +11,7 @@ export default function runLimits(args: Readonly<controlLimitsArgs>): Calculated
 
   const ratio_subset: number[] = new Array<number>(n_sub);
   for (let i = 0; i < n_sub; i++) {
-    ratio_subset[i] = plotted.values[subset_points[i]];
+    ratio_subset[i] = at(plotted.values, at(subset_points, i));
   }
 
   return {

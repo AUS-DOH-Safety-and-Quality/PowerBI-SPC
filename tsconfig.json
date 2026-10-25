@@ -1,6 +1,7 @@
 {
     "extends": "powerbi-visuals-core/config/tsconfig.visual.json",
     "compilerOptions": {
+        "noUncheckedIndexedAccess": true,
         "rootDir": "./",
         "outDir": "./.tmp/build/"
     },

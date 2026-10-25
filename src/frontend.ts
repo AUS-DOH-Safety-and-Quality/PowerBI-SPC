@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { indicatorFields, limitValue, type FrontendChart } from "powerbi-visuals-core/frontends";
 import { formatPrimitiveValue } from "powerbi-visuals-core/powerbi";
 import { Visual } from "./visual";
@@ -35,7 +36,7 @@ function appendLimitRows(rows: LimitRow[], rowIds: number[], limits: controlLimi
                          outlierSettings: settingsValueType["outliers"], indicators: LimitRow): void {
   const dates = new Array<string>(limits.keys.length);
   for (let i = 0; i < dates.length; i++) {
-    dates[i] = limits.keys[i].label.trim();
+    dates[i] = at(limits.keys, i).label.trim();
   }
   const columns: Readonly<Record<(typeof limitColumns)[number], readonly (LimitCell | undefined)[]>> = {
     date: dates,
@@ -60,18 +61,20 @@ function appendLimitRows(rows: LimitRow[], rowIds: number[], limits: controlLimi
   };
   const names: (typeof limitColumns)[number][] = [];
   for (let i = 0; i < limitColumns.length; i++) {
-    const flagSetting = flagSettings[limitColumns[i]];
-    if ((flagSetting === undefined || outlierSettings[flagSetting]) && hasValues(columns[limitColumns[i]])) {
-      names.push(limitColumns[i]);
+    const column = at(limitColumns, i);
+    const flagSetting = flagSettings[column];
+    if ((flagSetting === undefined || outlierSettings[flagSetting]) && hasValues(columns[column])) {
+      names.push(column);
     }
   }
   for (let i = 0; i < dates.length; i++) {
     const row: LimitRow = { ...indicators };
     for (let j = 0; j < names.length; j++) {
-      row[names[j]] = limitValue(columns[names[j]][i]);
+      const name = at(names, j);
+      row[name] = limitValue(columns[name][i]);
     }
     rows.push(row);
-    rowIds.push(limits.keys[i].id);
+    rowIds.push(at(limits.keys, i).id);
   }
 }
 
@@ -79,19 +82,20 @@ function chartLimits(viewModel: viewModelClass): { limits: LimitRow[]; rowIds: n
   const result: LimitRow[] = [];
   const rowIds: number[] = [];
   for (let i = 0; i < viewModel.controlLimits.length; i++) {
-    const limits = viewModel.controlLimits[i];
+    const limits = at(viewModel.controlLimits, i);
     if (limits.keys.length === 0) {
       continue;
     }
+    const firstRow = at(limits.keys, 0).id;
     const indicators: LimitRow = {};
-    const columns = viewModel.inputData[i].identityColumns;
+    const columns = at(viewModel.inputData, i).identityColumns;
     for (let j = 0; j < columns.length; j++) {
-      const column = columns[j];
+      const column = at(columns, j);
       if (column.source.roles?.indicator) {
-        indicators[column.source.displayName] = limitValue(formatPrimitiveValue(column.values[limits.keys[0].id]));
+        indicators[column.source.displayName] = limitValue(formatPrimitiveValue(column.values[firstRow]));
       }
     }
-    appendLimitRows(result, rowIds, limits, viewModel.outliers[i], viewModel.inputSettings.settings[i].outliers,
+    appendLimitRows(result, rowIds, limits, at(viewModel.outliers, i), viewModel.inputSettings.group(i).settings.outliers,
                     indicatorFields(indicators, limitColumns));
   }
   return { limits: result, rowIds };

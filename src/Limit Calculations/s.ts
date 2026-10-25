@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { c4, c5 } from "powerbi-visuals-core/math";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
 import type { CalculatedLimits, denominatorLimitsArgs } from "../Classes/viewModelClass";
@@ -13,6 +14,12 @@ export default function sLimits(args: Readonly<denominatorLimitsArgs>): Calculat
     keys: args.keys,
     values: args.numerators,
     denominators: args.denominators,
-    ...sigmaLimits(args.keys.length, cl, { sigma: i => cl * (c5(count_per_group[i]) / c4(count_per_group[i])), floor: 0 })
+    ...sigmaLimits(args.keys.length, cl, {
+      sigma: i => {
+        const count = at(count_per_group, i);
+        return cl * (c5(count) / c4(count));
+      },
+      floor: 0
+    })
   };
 }

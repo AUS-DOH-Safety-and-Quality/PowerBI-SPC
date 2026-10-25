@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { iCentreAndSigma } from "./i";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import type { SigmaLimitSeries } from "powerbi-visuals-core/spc";
@@ -7,7 +8,7 @@ export default function tLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
   const n: number = args.keys.length;
   const transformed: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
-    transformed[i] = Math.pow(args.numerators[i], 1 / 3.6);
+    transformed[i] = Math.pow(at(args.numerators, i), 1 / 3.6);
   }
   const { cl, sigma } = iCentreAndSigma(transformed, args.subset_points, args.outliers_in_limits);
 

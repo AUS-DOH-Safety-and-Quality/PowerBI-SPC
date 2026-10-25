@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { settingsValueType } from "../settings";
 import type { outliersObject } from "../Classes/viewModelClass";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
@@ -23,7 +24,7 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
 
   for (let i: number = startIndex; i < outliers.astpoint.length; i++) {
     for (let p = 0; p < patterns.length; p++) {
-      switch (patterns[p][i]) {
+      switch (at(at(patterns, p), i)) {
         case "improvement":
           improvementPresent = true;
           break;

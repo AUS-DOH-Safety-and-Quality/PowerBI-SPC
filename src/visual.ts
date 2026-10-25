@@ -1,5 +1,6 @@
 "use strict";
 
+import { at } from "powerbi-visuals-core/util";
 import type powerbi from "powerbi-visuals-api";
 import {
   PlotVisual, valueTickFormat, createTableContainer, showTable, highlightTable, type AlternateView, type PlotOptions, type MarksSelection,
@@ -25,7 +26,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
   }
 
   protected get settings(): settingsValueType {
-    return this.viewModel.inputSettings.settings[0];
+    return this.viewModel.inputSettings.group(0).settings;
   }
 
   protected override drawAlternate(): AlternateView | undefined {
@@ -42,14 +43,15 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     const viewModel = this.viewModel;
     const settings = this.settings;
     const tickLabels = viewModel.tickLabels;
-    const derivedSettings = viewModel.inputSettings.derivedSettings[0];
+    const derivedSettings = viewModel.inputSettings.group(0).derivedSettings;
     const integerTicks: boolean = derivedSettings.chart_type_props.integer_values && derivedSettings.multiplier === 1;
     return {
       tickFormats: {
         x: value => {
           for (let i = 0; i < tickLabels.length; i++) {
-            if (tickLabels[i].x === value) {
-              return tickLabels[i].label;
+            const tickLabel = at(tickLabels, i);
+            if (tickLabel.x === value) {
+              return tickLabel.label;
             }
           }
           return "";
@@ -59,7 +61,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
       },
       verticalCrosshair: false,
       // Each point carries its own row's line settings, so rebaselined segments may differ
-      lineSettings: (points, index) => points[index].aesthetics,
+      lineSettings: (points, index) => at(points, index).aesthetics,
       lowerLines,
       dots: {
         show: settings.scatter.show_dots,
@@ -100,7 +102,7 @@ export class Visual extends PlotVisual<plotData, viewModelClass, settingsValueTy
     const viewModel = this.viewModel;
     let anyHighlights: boolean = false;
     for (let i = 0; i < viewModel.inputData.length && !anyHighlights; i++) {
-      anyHighlights = viewModel.inputData[i].anyHighlights;
+      anyHighlights = at(viewModel.inputData, i).anyHighlights;
     }
     const state = selectionState(this.selectionManager, anyHighlights);
     this.highlightPlotPoints(state, point => point.aesthetics);

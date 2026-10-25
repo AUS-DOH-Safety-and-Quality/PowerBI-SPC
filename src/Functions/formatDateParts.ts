@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 /** Subset of Intl.DateTimeFormatOptions. */
 export type DateFormatOptions = {
   readonly weekday?: "short" | "long" | undefined;
@@ -39,9 +40,9 @@ export default function formatDateParts(
   };
 
   if (options.weekday === "short") {
-    result.weekday = weekdayShort[date.getDay()];
+    result.weekday = at(weekdayShort, date.getDay());
   } else if (options.weekday === "long") {
-    result.weekday = weekdayLong[date.getDay()];
+    result.weekday = at(weekdayLong, date.getDay());
   }
 
   if (options.day === "2-digit") {
@@ -51,9 +52,9 @@ export default function formatDateParts(
   if (options.month === "2-digit") {
     result.month = String(date.getMonth() + 1).padStart(2, "0");
   } else if (options.month === "short") {
-    result.month = monthShort[date.getMonth()];
+    result.month = at(monthShort, date.getMonth());
   } else if (options.month === "long") {
-    result.month = monthLong[date.getMonth()];
+    result.month = at(monthLong, date.getMonth());
   }
 
   if (options.year === "numeric") {

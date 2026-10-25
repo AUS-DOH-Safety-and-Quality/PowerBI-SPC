@@ -1,7 +1,7 @@
 import type { settingsValueType } from "../settings"
 import { deriveScaling, type ValueFormatter } from "powerbi-visuals-core/data";
 
-const valueNames: Readonly<Record<string, string>> = {
+const valueNames: Readonly<Record<settingsValueType["spc"]["chart_type"], string>> = {
   "i": "Observation",
   "i_m": "Observation",
   "i_mm": "Observation",
@@ -39,7 +39,7 @@ export default class derivedSettingsClass {
   }
 
   constructor(inputSettingsSpc: settingsValueType["spc"]) {
-    const chartType: string = inputSettingsSpc.chart_type;
+    const chartType = inputSettingsSpc.chart_type;
 
     this.chart_type_props = {
       name: chartType,

@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { extractRows, formatPrimitiveValue, readNumbers, type InputRows, type ValidatedDataView } from "powerbi-visuals-core/powerbi";
 import { keptValue, type InputDataResult } from "powerbi-visuals-core/data";
 import extractKeys from "./extractKeys";
@@ -20,14 +21,13 @@ export type dataObject = InputRows<settingsValueType["scatter"], settingsValueTy
 /** The group's rows, read against the settings store's values and row settings for that group */
 export default function extractInputData(view: ValidatedDataView<"numerators">, inputSettingsClass: settingsClass,
                                           idxs: readonly number[], group = 0): InputDataResult<dataObject> {
-  const inputSettings = inputSettingsClass.settings[group];
-  const derivedSettings = inputSettingsClass.derivedSettings[group];
-  const rowSettings = inputSettingsClass.rowSettings[group];
+  const { settings: inputSettings, derivedSettings } = inputSettingsClass.group(group);
+  const rowSettings = at(inputSettingsClass.rowSettings, group);
   const denominatorColumn = view.values.denominators?.[0];
   const sdColumn = view.values.xbar_sds?.[0];
   const chart = derivedSettings.chart_type_props;
   const keys = extractKeys(view.categories.key, inputSettings, idxs);
-  const numerators = readNumbers(view.values.numerators[0], idxs);
+  const numerators = readNumbers(at(view.values.numerators, 0), idxs);
   const groupDenominators = (chart.needs_denominator || chart.denominator_optional) && denominatorColumn !== undefined
     ? readNumbers(denominatorColumn, idxs) : undefined;
   let anyDenominator = false;
@@ -65,9 +65,9 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
   const groupingIndexes: number[] = [];
   let currentGrouping: string | undefined;
   for (let x = 0; x < kept.length; x++) {
-    const i = kept[x];
-    const row = idxs[i];
-    const lines = rowSettings[i].lines;
+    const i = at(kept, x);
+    const row = at(idxs, i);
+    const lines = at(rowSettings, i).lines;
     limitKeys[x] = { x, id: row, label: chart.x_axis_use_date ? keptValue(keys, i) : String(x) };
     keptNumerators[x] = keptValue(numerators, i);
     if (keptDenominators !== undefined) {

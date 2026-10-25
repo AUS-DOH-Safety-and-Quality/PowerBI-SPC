@@ -1,8 +1,9 @@
+import { at } from "powerbi-visuals-core/util";
 /** Mean moving range; unless outliers_in_limits, re-averaged without ranges at or above D4 * mean (3.267). */
 export default function averageMovingRange(consec_diff: readonly number[], outliers_in_limits: boolean | undefined): number {
   let amr: number = 0;
   for (let i = 0; i < consec_diff.length; i++) {
-    amr += consec_diff[i];
+    amr += at(consec_diff, i);
   }
   amr /= consec_diff.length;
 
@@ -11,8 +12,9 @@ export default function averageMovingRange(consec_diff: readonly number[], outli
     let screened_amr: number = 0;
     let screened_count: number = 0;
     for (let i = 0; i < consec_diff.length; i++) {
-      if (consec_diff[i] < consec_diff_ulim) {
-        screened_amr += consec_diff[i];
+      const diff = at(consec_diff, i);
+      if (diff < consec_diff_ulim) {
+        screened_amr += diff;
         screened_count += 1;
       }
     }
