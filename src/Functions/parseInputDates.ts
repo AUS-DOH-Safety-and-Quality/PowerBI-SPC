@@ -55,6 +55,12 @@ function parseDate(value: powerbi.PrimitiveValue): Date {
   return new Date((value as Date));
 }
 
+/** A hierarchy level names the part it holds; a whole date does not */
+function isDatePart(input: powerbi.DataViewCategoryColumn): boolean {
+  const type: datePartType | undefined = input.source.type;
+  return type?.category !== undefined;
+}
+
 /** The parts a row's key gave; the date fills in the others only so that it can be formatted */
 export type DatePartsPresent = { readonly day: boolean; readonly month: boolean; readonly year: boolean };
 
@@ -65,8 +71,8 @@ export default function parseInputDates(inputs: readonly powerbi.DataViewCategor
   const inputDates: (Date | undefined)[] = [];
   const inputQuarters: (string | undefined)[] = new Array<string | undefined>(n_keys);
   const present = new Array<DatePartsPresent>(n_keys);
-  // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
-  if (inputs.length > 1) {
+  // A date hierarchy gives one key column per level, however many levels are shown
+  if (inputs.length > 1 || isDatePart(at(inputs, 0))) {
     for (let i = 0; i < n_keys; i++) {
       const row = at(idxs, i);
       const datePartsObj: datePartsType = {};

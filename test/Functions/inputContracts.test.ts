@@ -132,6 +132,9 @@ describe("input row contracts", () => {
     ], settings, [1, 0]);
     expect(dates[0]).toBe("20/02/2025 B");
     expect(dates[1]).toBe("15/01/2024 A");
+    expect(extractKeys([column("Date Hierarchy.Year", [2024, 2025], "Years")], settings, [1, 0])).toEqual(["2025", "2024"]);
+    expect(extractKeys([column("Date Hierarchy.Month", ["March", null], "Months"), column("Date Hierarchy.Year", [2024, 2025], "Years")], settings, [0, 1]))
+      .toEqual(["03/2024", "2025"]);
   });
 
   it("builds grouped selection identities from the key and indicator columns, only for accepted raw rows", () => {
