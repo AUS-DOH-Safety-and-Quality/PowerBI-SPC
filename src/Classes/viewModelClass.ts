@@ -124,14 +124,14 @@ const limitSeries = Object.keys({
 export type CalculatedLimits = {
   readonly keys: readonly controlLimitsObject["keys"][number][];
   readonly values: readonly number[];
-} & Readonly<Partial<Record<LimitSeries, readonly (number | undefined)[]>>>;
+} & Readonly<Partial<Record<LimitSeries, readonly (number | undefined)[] | undefined>>>;
 
 export type controlLimitsArgs = {
   readonly keys: readonly controlLimitsObject["keys"][number][];
   readonly numerators: readonly number[];
-  readonly denominators?: readonly number[];
-  readonly xbar_sds?: readonly number[];
-  readonly outliers_in_limits?: boolean;
+  readonly denominators?: readonly number[] | undefined;
+  readonly xbar_sds?: readonly number[] | undefined;
+  readonly outliers_in_limits?: boolean | undefined;
   readonly subset_points: readonly number[];
 }
 

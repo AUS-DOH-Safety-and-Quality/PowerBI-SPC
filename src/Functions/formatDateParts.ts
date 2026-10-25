@@ -1,9 +1,9 @@
 /** Subset of Intl.DateTimeFormatOptions. */
 export type DateFormatOptions = {
-  readonly weekday?: "short" | "long";
-  readonly day?: "2-digit";
-  readonly month?: "2-digit" | "short" | "long";
-  readonly year?: "numeric" | "2-digit";
+  readonly weekday?: "short" | "long" | undefined;
+  readonly day?: "2-digit" | undefined;
+  readonly month?: "2-digit" | "short" | "long" | undefined;
+  readonly year?: "numeric" | "2-digit" | undefined;
 }
 
 /** Formatted date parts; unrequested parts are empty strings. */

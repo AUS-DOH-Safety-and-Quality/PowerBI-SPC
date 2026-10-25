@@ -6,11 +6,11 @@ import buildDataView, { sequentialKeys } from "./buildDataView";
 import { updateType } from "powerbi-visuals-core/powerbi";
 
 export type LimitInputs = {
-  keys?: (string | null)[];
+  keys?: (string | null)[] | undefined;
   numerators: (number | null)[];
-  denominators?: (number | null)[];
-  xbar_sds?: number[];
-  groupings?: string[];
+  denominators?: (number | null)[] | undefined;
+  xbar_sds?: number[] | undefined;
+  groupings?: string[] | undefined;
 };
 
 /** A view model updated from the inputs, with click splits supplied as the stored 0-based segment ends */
