@@ -124,7 +124,7 @@ const limitSeries = Object.keys({
 export type CalculatedLimits = {
   readonly keys: readonly controlLimitsObject["keys"][number][];
   readonly values: readonly number[];
-} & { readonly [K in LimitSeries]?: readonly (number | undefined)[] };
+} & Readonly<Partial<Record<LimitSeries, readonly (number | undefined)[]>>>;
 
 export type controlLimitsArgs = {
   readonly keys: readonly controlLimitsObject["keys"][number][];
@@ -273,7 +273,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     }
 
     const hasIndicator = indicator_cols.length > 0;
-    const split_indexes_str: string = <string>(view.dataView.metadata.objects?.split_indexes_storage?.split_indexes) ?? "[]";
+    const split_indexes_str: string = view.dataView.metadata.objects?.split_indexes_storage?.split_indexes as string ?? "[]";
     const split_indexes = JSON.parse(split_indexes_str) as number[];
     this.splitIndexes = hasIndicator ? [] : split_indexes;
 
@@ -438,7 +438,12 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         for (let s = 0; s < limitSeries.length; s++) {
           const name = limitSeries[s];
           const rows = perRow[name];
-          const value = rows !== undefined ? rows[key.x] : name === "trend_line" ? trend_line[i] : group[name]?.[i];
+          let value = group[name]?.[i];
+          if (rows !== undefined) {
+            value = rows[key.x];
+          } else if (name === "trend_line") {
+            value = trend_line[i];
+          }
           controlLimits[name][position] = isValidNumber(value) ? value : undefined;
         }
         position++;

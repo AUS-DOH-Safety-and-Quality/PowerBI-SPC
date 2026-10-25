@@ -27,7 +27,7 @@ function tickTexts(element: HTMLElement, axis: Axis): SVGTextElement[] {
 }
 
 function translation(element: Element): { x: number; y: number } | undefined {
-  const match = must(element.getAttribute("transform")).match(/^translate\(([^,]+),\s*([^)]+)\)$/);
+  const match = /^translate\(([^,]+),\s*([^)]+)\)$/.exec(must(element.getAttribute("transform")));
   return match === null ? undefined : { x: Number(match[1]), y: Number(match[2]) };
 }
 

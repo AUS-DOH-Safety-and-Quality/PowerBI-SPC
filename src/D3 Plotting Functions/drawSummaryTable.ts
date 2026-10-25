@@ -33,7 +33,7 @@ function rowTableSettings(row: plotData | plotDataGrouped,
 }
 
 /** Square icons share one size: a multiple of the shortest row's content height, capped so the icon columns' combined width holds them */
-function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValueType["nhs_icons"]) {
+function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValueType["nhs_icons"]): void {
   const allCells = selection.select(".table-body")
                             .selectAll("tr")
                             .selectAll<HTMLTableCellElement, { column: string }>("td");
@@ -56,7 +56,13 @@ function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValue
     const column = data[i].column;
     const row = select<HTMLElement | null, plotDataGrouped>(cells[i].parentElement).datum();
     const assurance = row.table_row.assurance;
-    icons[i] = column === "variation" ? row.variation_icons : (assurance === "none" ? [] : [assurance]);
+    if (column === "variation") {
+      icons[i] = row.variation_icons;
+    } else if (assurance === "none") {
+      icons[i] = [];
+    } else {
+      icons[i] = [assurance];
+    }
     maxIcons[column] = Math.max(maxIcons[column], icons[i].length);
     const style = getComputedStyle(cells[i]);
     const rect = cells[i].getBoundingClientRect();
@@ -91,7 +97,7 @@ function drawIconCells(selection: TableSelection, nhsIconSettings: settingsValue
   }
 }
 
-export default function drawSummaryTable(selection: TableSelection, visualObj: Visual) {
+export default function drawSummaryTable(selection: TableSelection, visualObj: Visual): void {
   const viewModel = visualObj.viewModel;
   const plotPoints: plotData[] | plotDataGrouped[] = viewModel.showGrouped ? viewModel.groupedRows : viewModel.plotPoints;
   const inputSettings = viewModel.inputSettings.settings[0];

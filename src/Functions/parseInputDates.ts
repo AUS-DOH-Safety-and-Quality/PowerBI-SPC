@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api"
 
-const monthNameToNumber: { readonly [key: string]: number } = {
+const monthNameToNumber: Readonly<Record<string, number>> = {
   "January": 0,
   "February": 1,
   "March": 2,
@@ -32,13 +32,13 @@ function readDatePart(parts: datePartsType, inputType: datePartType | undefined,
     return;
   }
   if (inputType.category === "DayOfMonth") {
-    parts.day = <number>(inputValue);
+    parts.day = inputValue as number;
   } else if (inputType.category === "Months") {
-    parts.month = monthNameToNumber[<string>(inputValue)];
+    parts.month = monthNameToNumber[(inputValue as string)];
   } else if (inputType.category === "Quarters") {
-    parts.quarter = <string>inputValue;
+    parts.quarter = inputValue as string;
   } else if (inputType.category === "Years") {
-    parts.year = <number>(inputValue);
+    parts.year = inputValue as number;
   }
 }
 
@@ -48,7 +48,7 @@ function parseDate(value: powerbi.PrimitiveValue): Date {
   if (parts !== null) {
     return new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
   }
-  return new Date(<Date>value);
+  return new Date((value as Date));
 }
 
 /** The parts a row's key gave; the date fills in the others only so that it can be formatted */
@@ -56,7 +56,7 @@ export type DatePartsPresent = { readonly day: boolean; readonly month: boolean;
 
 const allParts: DatePartsPresent = { day: true, month: true, year: true };
 
-export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]) {
+export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]): { dates: (Date | undefined)[]; quarters: (string | undefined)[]; present: DatePartsPresent[] } {
   const n_keys: number = idxs.length;
   const inputDates: (Date | undefined)[] = [];
   const inputQuarters: (string | undefined)[] = new Array<string | undefined>(n_keys);

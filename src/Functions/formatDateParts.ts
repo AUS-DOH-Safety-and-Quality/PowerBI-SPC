@@ -1,5 +1,5 @@
 /** Subset of Intl.DateTimeFormatOptions. */
-export interface DateFormatOptions {
+export type DateFormatOptions = {
   readonly weekday?: "short" | "long";
   readonly day?: "2-digit";
   readonly month?: "2-digit" | "short" | "long";
@@ -7,7 +7,7 @@ export interface DateFormatOptions {
 }
 
 /** Formatted date parts; unrequested parts are empty strings. */
-export interface DatePartsRecord {
+export type DatePartsRecord = {
   weekday: string;
   day: string;
   month: string;

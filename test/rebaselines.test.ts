@@ -1,12 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as calculators from "../src/Limit Calculations";
-import type { controlLimitsArgs } from "../src/Classes/viewModelClass";
+import type { controlLimitsArgs, controlLimitsObject } from "../src/Classes/viewModelClass";
 import { renderVisual, settingsWith } from "./helpers/renderVisual";
 import { sequentialKeys, type DataViewArgs } from "./helpers/buildDataView";
 import { columnNames } from "./helpers/summaryTable";
 import { frontend } from "../src/frontend";
 import { makeUpdateValues, toDataViews } from "powerbi-visuals-core/frontends";
 import { updateType } from "powerbi-visuals-core/powerbi";
+
+/** Two indicator columns split groups as A, A, B, B; one column names each group A, B, C, D */
+function indicatorName(multipleColumns: boolean, g: number): string {
+  if (!multipleColumns) {
+    return String.fromCharCode(65 + g);
+  }
+  return g < 2 ? "A" : "B";
+}
 
 vi.mock("../src/Limit Calculations", { spy: true });
 
@@ -31,6 +39,20 @@ const numerators = [10, 12, 16, 22, 30, 34, 40, 48];
 const denominators = [100, 200, 150, 120, 180, 110, 160, 130];
 const sds = [1, 2, 3, 4, 5, 6, 7, 8];
 const numericColumns = ["value", "numerator", "denominator", "target", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99"] as const;
+
+/** The limits series holding a summary table column */
+function seriesOf(name: typeof numericColumns[number]): Exclude<keyof controlLimitsObject, "keys"> {
+  switch (name) {
+    case "value":
+      return "values";
+    case "numerator":
+      return "numerators";
+    case "denominator":
+      return "denominators";
+    default:
+      return name;
+  }
+}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -86,7 +108,7 @@ describe.each(charts)("%s rebaselines", chart => {
               groupings[row] = `G${grouping}`;
               tooltips[row] = `tooltip ${g}/${i}`;
               if (indicator !== undefined) {
-                indicator[row] = multipleColumns ? (g < 2 ? "A" : "B") : String.fromCharCode(65 + g);
+                indicator[row] = indicatorName(multipleColumns, g);
               }
               if (indicator2 !== undefined) {
                 indicator2[row] = g === 1 ? "Y" : "X";
@@ -181,7 +203,7 @@ describe.each(charts)("%s rebaselines", chart => {
               const limits = model.controlLimits[g];
               const last = limits.keys.length - 1;
               const row = model.groupedRows[g].table_row;
-              expect(row.indicator_0).toBe(multipleColumns ? (g < 2 ? "A" : "B") : String.fromCharCode(65 + g));
+              expect(row.indicator_0).toBe(indicatorName(multipleColumns, g));
               if (multipleColumns) {
                 expect(row.indicator_1).toBe(g === 1 ? "Y" : "X");
               }
@@ -190,8 +212,7 @@ describe.each(charts)("%s rebaselines", chart => {
               const cells = rows[g].querySelectorAll("td");
               for (let c = 0; c < numericColumns.length; c++) {
                 const name = numericColumns[c];
-                const series = name === "value" ? "values" : name === "numerator" ? "numerators" : name === "denominator" ? "denominators" : name;
-                const value = limits[series][last];
+                const value = limits[seriesOf(name)][last];
                 const format = model.inputSettings.derivedSettings[g].formatValue;
                 expect(row[name]).toBe(format(value, name === "numerator" || name === "denominator" ? "input" : "value"));
               }
