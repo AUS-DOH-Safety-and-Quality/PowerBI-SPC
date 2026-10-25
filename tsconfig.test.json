@@ -1,4 +1,8 @@
 {
+    // Tests index the fixtures they built, where a wrong index already fails loudly
     "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noUncheckedIndexedAccess": false
+    },
     "include": ["src/**/*", "test/**/*"]
 }

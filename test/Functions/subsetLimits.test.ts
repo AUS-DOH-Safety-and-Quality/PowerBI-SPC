@@ -77,7 +77,12 @@ function expectLimits(limits: controlLimitsObject, centres: number[], sigmas: nu
 
 describe.each(["groupings", "click splits", "both"])("Limit subsets with %s", source => {
   const groupings = source === "click splits" ? undefined : groupLabels(source === "both" ? 8 : 4);
-  const splitIndexes = source === "groupings" ? [] : source === "both" ? [3] : [3, 7];
+  let splitIndexes: number[] = [3, 7];
+  if (source === "groupings") {
+    splitIndexes = [];
+  } else if (source === "both") {
+    splitIndexes = [3];
+  }
 
   it.each([
     { from: "Start", rebaselines: true, means: [11, 32, 63], ranges: [2, 4, 6] },
@@ -134,8 +139,12 @@ it.each(["Start", "End"] as const)("uses every point in short rebaselines when s
     const ul = bands[b][1];
     const width = bands[b][2];
     for (let i = 0; i < 6; i++) {
-      const mean = i < 4 ? (from === "Start" ? 38 / 3 : 50 / 3) : 32;
-      const range = i < 4 ? (from === "Start" ? 3 : 5) : 4;
+      let mean = 32;
+      let range = 4;
+      if (i < 4) {
+        mean = from === "Start" ? 38 / 3 : 50 / 3;
+        range = from === "Start" ? 3 : 5;
+      }
       expect(limits[ll][i]).toBeCloseTo(mean - width * range / 1.128, 8);
       expect(limits[ul][i]).toBeCloseTo(mean + width * range / 1.128, 8);
     }

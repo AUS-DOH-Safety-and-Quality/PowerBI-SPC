@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { isValidNumber } from "powerbi-visuals-core/data";
 import type { AxisBounds } from "powerbi-visuals-core/rendering";
 import type viewModelClass from "../Classes/viewModelClass";
@@ -13,9 +14,8 @@ function finiteMax(current: number, value: number | undefined): number {
 
 /** Explicit axis limits win; otherwise the keys span x, and the values, limits and targets span y */
 export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; y: AxisBounds } {
-  const controlLimits = viewModel.controlLimits[0];
-  const inputSettings = viewModel.inputSettings.settings[0];
-  const derivedSettings = viewModel.inputSettings.derivedSettings[0];
+  const controlLimits = at(viewModel.controlLimits, 0);
+  const { settings: inputSettings, derivedSettings } = viewModel.inputSettings.group(0);
 
   const limitMultiplier: number = inputSettings.y_axis.limit_multiplier;
   let maxValue: number = Number.NEGATIVE_INFINITY;
@@ -27,7 +27,8 @@ export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; 
   let minKey: number = Number.POSITIVE_INFINITY;
   let maxKey: number = Number.NEGATIVE_INFINITY;
   for (let i = 0; i < controlLimits.keys.length; i++) {
-    const value = controlLimits.values[i];
+    const key = at(controlLimits.keys, i);
+    const value = at(controlLimits.values, i);
     const altTarget = controlLimits.alt_target[i];
     const target = controlLimits.target[i];
     maxValue = finiteMax(maxValue, value);
@@ -42,8 +43,8 @@ export default function axisRanges(viewModel: viewModelClass): { x: AxisBounds; 
     minValueOrLimit = finiteMin(minValueOrLimit, altTarget);
     maxTarget = finiteMax(maxTarget, target);
     minTarget = finiteMin(minTarget, target);
-    minKey = Math.min(minKey, controlLimits.keys[i].x);
-    maxKey = Math.max(maxKey, controlLimits.keys[i].x);
+    minKey = Math.min(minKey, key.x);
+    maxKey = Math.max(maxKey, key.x);
   }
   if (!isValidNumber(maxTarget)) {
     maxTarget = (maxValueOrLimit - minValueOrLimit) / 2 + minValueOrLimit;

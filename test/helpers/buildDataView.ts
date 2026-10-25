@@ -6,17 +6,17 @@ import type { settingsValueType } from "../../src/settings";
 export { sequentialKeys } from "powerbi-visuals-core/testing";
 
 export type DataViewArgs = {
-  key?: PrimitiveValue[];
-  indicator?: string[];
-  indicator2?: string[];
-  indicators?: { name: string; values: string[] }[];
-  numerators?: PrimitiveValue[];
-  denominators?: PrimitiveValue[];
-  xbar_sds?: PrimitiveValue[];
-  groupings?: PrimitiveValue[];
-  tooltips?: PrimitiveValue[];
-  namedTooltips?: { name: string; values: PrimitiveValue[] }[];
-  labels?: PrimitiveValue[];
+  key?: PrimitiveValue[] | undefined;
+  indicator?: string[] | undefined;
+  indicator2?: string[] | undefined;
+  indicators?: { name: string; values: string[] }[] | undefined;
+  numerators?: PrimitiveValue[] | undefined;
+  denominators?: PrimitiveValue[] | undefined;
+  xbar_sds?: PrimitiveValue[] | undefined;
+  groupings?: PrimitiveValue[] | undefined;
+  tooltips?: PrimitiveValue[] | undefined;
+  namedTooltips?: { name: string; values: PrimitiveValue[] }[] | undefined;
+  labels?: PrimitiveValue[] | undefined;
 };
 
 const measures = ["numerators", "denominators", "xbar_sds", "groupings"] as const;

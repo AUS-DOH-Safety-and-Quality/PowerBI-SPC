@@ -48,7 +48,12 @@ describe("Summary Table - NHS icons", () => {
         keys.push(`${g}_${i}`);
       }
       // The second group's label wraps, so rows differ in height
-      const label: string = g === 0 ? "Mixed" : (g === 1 ? "Improving with a label long enough to wrap" : `Improving${g}`);
+      let label = `Improving${g}`;
+      if (g === 0) {
+        label = "Mixed";
+      } else if (g === 1) {
+        label = "Improving with a label long enough to wrap";
+      }
       indicator = indicator.concat(rep(label, values.length));
       numerators = numerators.concat(values);
     }

@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import plottedValues from "../Functions/plottedValues";
 import subsetMovingRanges from "../Functions/subsetMovingRanges";
@@ -16,8 +17,9 @@ export default function immLimits(args: Readonly<controlLimitsArgs>): Calculated
     const consec_diff_ulim: number = mmr * 3.865;
     const valid_diffs: number[] = [];
     for (let i = 0; i < consec_diff.length; i++) {
-      if (consec_diff[i] < consec_diff_ulim) {
-        valid_diffs.push(consec_diff[i]);
+      const diff = at(consec_diff, i);
+      if (diff < consec_diff_ulim) {
+        valid_diffs.push(diff);
       }
     }
     if (valid_diffs.length > 0) {

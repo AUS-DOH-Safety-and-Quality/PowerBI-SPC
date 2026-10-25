@@ -98,7 +98,12 @@ describe("sigma levels", () => {
       for (let i = 0; i < spread.length; i++) {
         const lower = must(limits[bands[levels[l]][0]][i]);
         const upper = must(limits[bands[levels[l]][1]][i]);
-        const expected = spread[i] > upper ? "improvement" : (spread[i] < lower ? "deterioration" : "none");
+        let expected = "none";
+        if (spread[i] > upper) {
+          expected = "improvement";
+        } else if (spread[i] < lower) {
+          expected = "deterioration";
+        }
         expect(astpoint[i], `${levels[l]} at ${i}`).toBe(expected);
         count += expected === "none" ? 0 : 1;
       }
@@ -217,7 +222,13 @@ describe("pattern rules and chart limits", () => {
     for (let i = 0; i < values.length; i++) {
       const upper = must(limits.ul99[i]);
       const lower = must(limits.ll99[i]);
-      expect(astpoint[i], `at ${i}`).toBe(values[i] > upper ? "improvement" : (values[i] < lower ? "deterioration" : "none"));
+      let expected = "none";
+      if (values[i] > upper) {
+        expected = "improvement";
+      } else if (values[i] < lower) {
+        expected = "deterioration";
+      }
+      expect(astpoint[i], `at ${i}`).toBe(expected);
     }
     // 13 lies beyond the truncated upper limit but within the calculated one
     expect(values[9]).toBeGreaterThan(12);

@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type { settingsValueType } from "../settings"
 import type { DateFormatOptions } from "./formatDateParts"
@@ -44,7 +45,7 @@ export default function dateSettingsToFormatOptions(date_settings: settingsValue
   const formatOpts: string[][] = new Array<string[]>();
   const keys = Object.keys(date_settings);
   for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
+    const key = at(keys, i);
     // Locale and delimiter are applied by the caller
     if (key !== "date_format_locale" && key !== "date_format_delim") {
       const formattedKey = key.replace("date_format_", "");

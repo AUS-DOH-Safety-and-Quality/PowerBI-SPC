@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import averageMovingRange from "../Functions/averageMovingRange";
 import plottedValues from "../Functions/plottedValues";
@@ -7,11 +8,11 @@ import { sigmaLimits } from "powerbi-visuals-core/spc";
 export function iCentreAndSigma(values: readonly number[], subset_points: readonly number[],
                                 outliers_in_limits: boolean | undefined): { cl: number; sigma: number } {
   const n_sub: number = subset_points.length;
-  let prevVal: number = values[subset_points[0]];
+  let prevVal: number = at(values, at(subset_points, 0));
   let cl: number = prevVal;
   const consec_diff: number[] = new Array<number>(n_sub - 1);
   for (let i = 1; i < n_sub; i++) {
-    const currVal: number = values[subset_points[i]];
+    const currVal: number = at(values, at(subset_points, i));
     consec_diff[i - 1] = Math.abs(currVal - prevVal);
     cl += currVal;
     prevVal = currVal;

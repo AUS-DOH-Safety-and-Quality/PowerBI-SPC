@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, denominatorLimitsArgs } from "../Classes/viewModelClass";
 import laneySigmaMultiplier from "../Functions/laneySigmaMultiplier";
 import plottedValues from "../Functions/plottedValues";
@@ -20,13 +21,13 @@ export default function pprimeLimits(args: Readonly<denominatorLimitsArgs>): Cal
   const cl_mult: number = cl * (1 - cl);
   const sd: number[] = new Array<number>(n);
   for (let i = 0; i < n; i++) {
-    sd[i] = Math.sqrt(cl_mult / denominators[i]);
+    sd[i] = Math.sqrt(cl_mult / at(denominators, i));
   }
   const sigma_multiplier: number = laneySigmaMultiplier(plotted.values, cl, sd, subset_points, args.outliers_in_limits);
 
   return {
     keys: args.keys,
     ...plotted,
-    ...sigmaLimits(n, cl, { sigma: i => sd[i] * sigma_multiplier, floor: 0, ceiling: 1 })
+    ...sigmaLimits(n, cl, { sigma: i => at(sd, i) * sigma_multiplier, floor: 0, ceiling: 1 })
   };
 }

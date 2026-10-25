@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api";
 import type { settingsValueType } from "../settings";
@@ -9,9 +10,10 @@ import formatDateParts from "./formatDateParts";
 function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: readonly number[]): (string | undefined)[] {
   const n_keys: number = idxs.length;
   const ret = new Array<string | undefined>(n_keys);
-  if (col.length === 1 && !(col[0].source.type?.temporal)) {
+  const only = col.length === 1 ? at(col, 0) : undefined;
+  if (only !== undefined && !only.source.type?.temporal) {
     for (let i = 0; i < n_keys; i++) {
-      ret[i] = formatPrimitiveValue(col[0].values[idxs[i]]);
+      ret[i] = formatPrimitiveValue(only.values[at(idxs, i)]);
     }
     return ret;
   }
@@ -19,19 +21,20 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
   // Only an all-temporal (date hierarchy) key is formatted as a date; mixed columns are joined as-is
   let allTemporal = true;
   for (let i = 0; i < col.length; i++) {
-    if (!col[i].source.type?.temporal) {
+    if (!at(col, i).source.type?.temporal) {
       allTemporal = false;
     }
   }
   if (!allTemporal) {
     const blankKey = delim.repeat(col.length - 1);
     for (let i = 0; i < n_keys; i++) {
+      const row = at(idxs, i);
       let key = "";
       for (let j = 0; j < col.length; j++) {
         if (j > 0) {
           key += delim;
         }
-        key += formatPrimitiveValue(col[j].values[idxs[i]]) ?? "";
+        key += formatPrimitiveValue(at(col, j).values[row]) ?? "";
       }
       ret[i] = key === blankKey ? undefined : key;
     }
@@ -48,7 +51,7 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
     if (isNullOrUndefined(date)) {
       ret[i] = undefined
     } else {
-      const present = inputDates.present[i];
+      const present = at(inputDates.present, i);
       // A weekday needs the whole date
       const datePartsRecord = formatDateParts(date, {
         weekday: present.day && present.month && present.year ? formatOptions.weekday : undefined,
@@ -63,13 +66,14 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
       let key = "";
       let partCount = 0;
       for (let j = 0; j < datePartStrings.length; j++) {
-        if (!datePartStrings[j].trim()) {
+        const part = at(datePartStrings, j);
+        if (!part.trim()) {
           continue;
         }
         if (partCount++ > 0) {
           key += delim;
         }
-        key += datePartStrings[j];
+        key += part;
       }
       ret[i] = key;
     }
@@ -80,22 +84,23 @@ function formatKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSetting
 export default function extractKeys(col: readonly powerbi.DataViewCategoryColumn[], inputSettings: settingsValueType, idxs: readonly number[]): (string | undefined)[] {
   const groupedCols = Object.create(null) as Record<string, powerbi.DataViewCategoryColumn[]>;
   for (let i = 0; i < col.length; i++) {
-    let queryName = col[i].source.queryName ?? "";
+    const column = at(col, i);
+    let queryName = column.source.queryName ?? "";
     if (queryName.includes("Date Hierarchy")) {
       const lastDot = queryName.lastIndexOf(".");
       if (lastDot !== -1) {
         queryName = queryName.substring(0, lastDot);
       }
     }
-    (groupedCols[queryName] ??= []).push(col[i]);
+    (groupedCols[queryName] ??= []).push(column);
   }
-  const queryNames = Object.keys(groupedCols);
-  if (queryNames.length === 1) {
-    return formatKeys(groupedCols[queryNames[0]], inputSettings, idxs);
+  const groups = Object.values(groupedCols);
+  if (groups.length === 1) {
+    return formatKeys(at(groups, 0), inputSettings, idxs);
   }
   const combinedKeys = new Array<string | undefined>(idxs.length);
-  for (let i = 0; i < queryNames.length; i++) {
-    const groupKeys = formatKeys(groupedCols[queryNames[i]], inputSettings, idxs);
+  for (let i = 0; i < groups.length; i++) {
+    const groupKeys = formatKeys(at(groups, i), inputSettings, idxs);
     for (let j = 0; j < idxs.length; j++) {
       const key = groupKeys[j];
       const combined = combinedKeys[j];

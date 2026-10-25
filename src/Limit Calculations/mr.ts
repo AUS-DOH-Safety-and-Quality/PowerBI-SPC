@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import plottedValues from "../Functions/plottedValues";
 import type { SigmaLimitSeries } from "powerbi-visuals-core/spc";
@@ -12,7 +13,7 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedL
 
   let cl: number = 0;
   for (let i = 1; i < n_sub; i++) {
-    cl += Math.abs(values[subset_points[i]] - values[subset_points[i - 1]]);
+    cl += Math.abs(at(values, at(subset_points, i)) - at(values, at(subset_points, i - 1)));
   }
   cl /= (n_sub - 1);
 
@@ -31,7 +32,7 @@ export default function mrLimits(args: Readonly<controlLimitsArgs>): CalculatedL
     ul99: new Array<number>(n_mr)
   };
   for (let i = 0; i < n_mr; i++) {
-    ranges[i] = Math.abs(values[i + 1] - values[i]);
+    ranges[i] = Math.abs(at(values, i + 1) - at(values, i));
     limits.target[i] = cl;
     limits.ll99[i] = 0;
     limits.ll95[i] = 0;

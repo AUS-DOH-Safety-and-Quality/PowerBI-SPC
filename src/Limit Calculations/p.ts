@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, denominatorLimitsArgs } from "../Classes/viewModelClass";
 import plottedValues from "../Functions/plottedValues";
 import subsetRatio from "../Functions/subsetRatio";
@@ -12,6 +13,6 @@ export default function pLimits(args: Readonly<denominatorLimitsArgs>): Calculat
   return {
     keys: args.keys,
     ...plottedValues(args),
-    ...sigmaLimits(args.keys.length, cl, { sigma: i => Math.sqrt(cl_mult / denominators[i]), floor: 0, ceiling: 1 })
+    ...sigmaLimits(args.keys.length, cl, { sigma: i => Math.sqrt(cl_mult / at(denominators, i)), floor: 0, ceiling: 1 })
   };
 }

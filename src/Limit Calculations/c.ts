@@ -1,3 +1,4 @@
+import { at } from "powerbi-visuals-core/util";
 import type { CalculatedLimits, controlLimitsArgs } from "../Classes/viewModelClass";
 import { sigmaLimits } from "powerbi-visuals-core/spc";
 
@@ -9,7 +10,7 @@ export default function cLimits(args: Readonly<controlLimitsArgs>): CalculatedLi
 
   let cl: number = 0;
   for (let i = 0; i < n_sub; i++) {
-    cl += numerators[subset_points[i]];
+    cl += at(numerators, at(subset_points, i));
   }
   cl = cl / n_sub;
 

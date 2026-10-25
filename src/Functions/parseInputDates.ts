@@ -1,7 +1,8 @@
+import { at } from "powerbi-visuals-core/util";
 import { isNullOrUndefined } from "powerbi-visuals-core/data";
 import type powerbi from "powerbi-visuals-api"
 
-const monthNameToNumber: { readonly [key: string]: number } = {
+const monthNameToNumber: Readonly<Record<string, number>> = {
   "January": 0,
   "February": 1,
   "March": 2,
@@ -27,18 +28,21 @@ type datePartsType = {
 /** Power BI's runtime value types also carry the hierarchy level's category, which the api's descriptor omits */
 type datePartType = { readonly temporal?: unknown; readonly category?: string };
 
-function readDatePart(parts: datePartsType, inputType: datePartType | undefined, inputValue: powerbi.PrimitiveValue): void {
+function readDatePart(parts: datePartsType, inputType: datePartType | undefined, inputValue: powerbi.PrimitiveValue | undefined): void {
   if (inputType?.temporal == null || isNullOrUndefined(inputValue)) {
     return;
   }
   if (inputType.category === "DayOfMonth") {
-    parts.day = <number>(inputValue);
+    parts.day = inputValue as number;
   } else if (inputType.category === "Months") {
-    parts.month = monthNameToNumber[<string>(inputValue)];
+    const month = monthNameToNumber[inputValue as string];
+    if (month !== undefined) {
+      parts.month = month;
+    }
   } else if (inputType.category === "Quarters") {
-    parts.quarter = <string>inputValue;
+    parts.quarter = inputValue as string;
   } else if (inputType.category === "Years") {
-    parts.year = <number>(inputValue);
+    parts.year = inputValue as number;
   }
 }
 
@@ -48,7 +52,7 @@ function parseDate(value: powerbi.PrimitiveValue): Date {
   if (parts !== null) {
     return new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
   }
-  return new Date(<Date>value);
+  return new Date((value as Date));
 }
 
 /** The parts a row's key gave; the date fills in the others only so that it can be formatted */
@@ -56,7 +60,7 @@ export type DatePartsPresent = { readonly day: boolean; readonly month: boolean;
 
 const allParts: DatePartsPresent = { day: true, month: true, year: true };
 
-export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]) {
+export default function parseInputDates(inputs: readonly powerbi.DataViewCategoryColumn[], idxs: readonly number[]): { dates: (Date | undefined)[]; quarters: (string | undefined)[]; present: DatePartsPresent[] } {
   const n_keys: number = idxs.length;
   const inputDates: (Date | undefined)[] = [];
   const inputQuarters: (string | undefined)[] = new Array<string | undefined>(n_keys);
@@ -64,18 +68,22 @@ export default function parseInputDates(inputs: readonly powerbi.DataViewCategor
   // If a 'Date Hierarchy' type is passed then there will be multiple 'key" entries
   if (inputs.length > 1) {
     for (let i = 0; i < n_keys; i++) {
+      const row = at(idxs, i);
       const datePartsObj: datePartsType = {};
       for (let j = 0; j < inputs.length; j++) {
-        readDatePart(datePartsObj, inputs[j].source.type, inputs[j].values[idxs[i]]);
+        const input = at(inputs, j);
+        readDatePart(datePartsObj, input.source.type, input.values[row]);
       }
       inputQuarters[i] = datePartsObj.quarter;
-      present[i] = { day: datePartsObj.day !== undefined, month: datePartsObj.month !== undefined, year: datePartsObj.year !== undefined };
-      const anyPart = present[i].day || present[i].month || present[i].year || datePartsObj.quarter !== undefined;
+      const partsPresent: DatePartsPresent = { day: datePartsObj.day !== undefined, month: datePartsObj.month !== undefined, year: datePartsObj.year !== undefined };
+      present[i] = partsPresent;
+      const anyPart = partsPresent.day || partsPresent.month || partsPresent.year || datePartsObj.quarter !== undefined;
       inputDates[i] = anyPart ? new Date(datePartsObj.year ?? 1970, datePartsObj.month ?? 0, datePartsObj.day ?? 1) : undefined;
     }
   } else {
+    const input = at(inputs, 0);
     for (let i = 0; i < n_keys; i++) {
-      const value = inputs[0].values[idxs[i]];
+      const value = input.values[at(idxs, i)];
       inputDates[i] = isNullOrUndefined(value) ? undefined : parseDate(value)
       present[i] = allParts;
     }
