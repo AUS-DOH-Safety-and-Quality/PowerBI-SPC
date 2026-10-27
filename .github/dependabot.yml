@@ -1,7 +1,7 @@
 # Please see the documentation for all configuration options:
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
-# Action versions are updated in PowerBI-Visuals-Core, whose reusable workflows this repo calls
+# Action versions are updated in powerbi-visuals-core, whose reusable workflows this repo calls
 version: 2
 updates:
   - package-ecosystem: "npm"

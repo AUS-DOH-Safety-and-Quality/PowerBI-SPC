@@ -21,4 +21,4 @@ concurrency:
 
 jobs:
   deploy:
-    uses: AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core/.github/workflows/deploy_docs.yml@main
+    uses: AUS-DOH-Safety-and-Quality/powerbi-visuals-core/.github/workflows/deploy_docs.yml@main

@@ -13,4 +13,4 @@ permissions:
 
 jobs:
   build:
-    uses: AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core/.github/workflows/test_visual.yml@main
+    uses: AUS-DOH-Safety-and-Quality/powerbi-visuals-core/.github/workflows/test_visual.yml@main

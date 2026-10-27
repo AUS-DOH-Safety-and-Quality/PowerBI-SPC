@@ -8,4 +8,4 @@ permissions:
 
 jobs:
   build-pbiviz-packages:
-    uses: AUS-DOH-Safety-and-Quality/PowerBI-Visuals-Core/.github/workflows/release_visual.yml@main
+    uses: AUS-DOH-Safety-and-Quality/powerbi-visuals-core/.github/workflows/release_visual.yml@main
