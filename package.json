@@ -17,12 +17,12 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@vitest/browser-playwright": "5.0.5",
-    "eslint": "10.12.0",
+    "eslint": "10.13.0",
     "eslint-plugin-powerbi-visuals": "1.1.1",
     "powerbi-visuals-api": "5.1.0",
     "powerbi-visuals-utils-testutils": "7.0.1",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.71.1",
+    "typescript-eslint": "8.72.0",
     "vitest": "5.0.5"
   },
   "overrides": {
