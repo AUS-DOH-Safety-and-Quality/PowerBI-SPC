@@ -189,7 +189,7 @@ describe("pattern tooltips", () => {
 
   it("names stratification", () => {
     const hugging = [10, 11, 10, 11, 10, 11, 10, 11, 10, 11, 10, 11];
-    expect(patterns({ stratification: true, stratification_n: 12 }, 3, { numerators: hugging })).toBe("Stratification");
+    expect(patterns({ stratification: true, stratification_n: 12 }, 3, { numerators: hugging })).toBe("Hugging / Stratification");
   });
 
   it.each([

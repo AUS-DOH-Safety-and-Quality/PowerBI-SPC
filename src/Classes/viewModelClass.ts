@@ -622,7 +622,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       tableColumns.push({ name: "two_in_three", label: "Two-in-Three" });
     }
     if (settings.outliers.stratification) {
-      tableColumns.push({ name: "stratification", label: "Stratification" });
+      tableColumns.push({ name: "stratification", label: "Hugging / Stratification" });
     }
 
     for (let i: number = 0; i < controlLimits.keys.length; i++) {

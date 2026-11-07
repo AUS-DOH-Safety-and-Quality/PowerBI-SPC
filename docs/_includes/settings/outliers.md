@@ -52,10 +52,10 @@
 | Neutral (Low) Two-in-Three Colour | Colour for two-in-three patterns at the lower limit when the improvement direction is neutral. | `#490092` | Colour |
 | Neutral (High) Two-in-Three Colour | Colour for two-in-three patterns at the upper limit when the improvement direction is neutral. | `#490092` | Colour |
 
-### Stratification
+### Hugging / Stratification
 
 | Setting | Description | Default | Values |
 | --- | --- | --- | --- |
-| Highlight Stratification | Flags runs of points within one sigma of the centreline. | Off | On or Off |
-| Stratification Points | Points needed for stratification; points on a one-sigma limit count as within it. | 15 | Whole number, at least 2 |
-| Strat. Colour | Colour for stratification points, which have no direction. | `#490092` | Colour |
+| Highlight Hugging / Stratification | Flags runs of points within one sigma of the centreline. | Off | On or Off |
+| Hugging / Stratification Points | Points needed for stratification; points on a one-sigma limit count as within it. | 15 | Whole number, at least 2 |
+| Hugging / Strat. Colour | Colour for stratification points, which have no direction. | `#490092` | Colour |

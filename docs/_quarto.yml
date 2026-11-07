@@ -54,7 +54,7 @@ website:
           - href: PatternDetection/twoInThree.md
             text: "Two-In-Three"
           - href: PatternDetection/stratification.md
-            text: "Stratification"
+            text: "Hugging / Stratification"
       - section: "Plot The Dots"
         href: PlotTheDots.md
         contents:
