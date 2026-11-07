@@ -58,7 +58,7 @@ function parseDate(value: powerbi.PrimitiveValue): Date {
 /** A hierarchy level names the part it holds; a whole date does not */
 function isDatePart(input: powerbi.DataViewCategoryColumn): boolean {
   const type: datePartType | undefined = input.source.type;
-  return type?.category !== undefined;
+  return !isNullOrUndefined(type?.category);
 }
 
 /** The parts a row's key gave; the date fills in the others only so that it can be formatted */

@@ -21,7 +21,7 @@ import variationIconsToDraw from "../Outlier Flagging/variationIconsToDraw";
 import assuranceIconToDraw from "../Outlier Flagging/assuranceIconToDraw";
 import validateDataViewColumns from "../Functions/validateDataViewColumns";
 import axisRanges from "../Functions/axisRanges";
-import { astronomical, shift, trend, twoInThree } from "powerbi-visuals-core/spc";
+import { astronomical, shift, stratification, trend, twoInThree } from "powerbi-visuals-core/spc";
 import lineKeys, { type LineName } from "../Functions/lineKeys";
 import type { NhsIconName } from "../D3 Plotting Functions/NHS Icons";
 import { sequence } from "powerbi-visuals-core/math";
@@ -50,6 +50,7 @@ export type summaryTableRowData = StandardLineValues<number | undefined> & {
   readonly trend: FlagDirection;
   readonly shift: FlagDirection;
   readonly two_in_three: FlagDirection;
+  readonly stratification: FlagDirection;
 }
 
 /** Grouped rows hold formatted text; indicator and tooltip columns are keyed by position, as report names can clash */
@@ -148,6 +149,7 @@ export type outliersObject = {
   readonly trend: FlagDirection[];
   readonly two_in_three: FlagDirection[];
   readonly shift: FlagDirection[];
+  readonly stratification: FlagDirection[];
 }
 
 /** A segment's raw flags written into the full series as the directions the settings flag */
@@ -619,6 +621,9 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     if (settings.outliers.two_in_three) {
       tableColumns.push({ name: "two_in_three", label: "Two-in-Three" });
     }
+    if (settings.outliers.stratification) {
+      tableColumns.push({ name: "stratification", label: "Hugging / Stratification" });
+    }
 
     for (let i: number = 0; i < controlLimits.keys.length; i++) {
       const key = at(controlLimits.keys, i);
@@ -629,12 +634,14 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         aesthetics.colour = this.colourPalette.foregroundColour;
       }
       // Later patterns take precedence, so an astronomical point's colour wins
+      const stratification = at(outliers.stratification, i);
       const shift = at(outliers.shift, i);
       const trend = at(outliers.trend, i);
       const two_in_three = at(outliers.two_in_three, i);
       const astpoint = at(outliers.astpoint, i);
       applyFlagColours(aesthetics, settings.outliers, [
-        [shift, "shift_colour"], [trend, "trend_colour"], [two_in_three, "twointhree_colour"], [astpoint, "ast_colour"]
+        [stratification, "strat_colour"], [shift, "shift_colour"], [trend, "trend_colour"], [two_in_three, "twointhree_colour"],
+        [astpoint, "ast_colour"]
       ] as const);
       const value = at(controlLimits.values, i);
       const table_row: summaryTableRowData = {
@@ -657,7 +664,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         astpoint,
         trend,
         shift,
-        two_in_three
+        two_in_three,
+        stratification
       };
 
       this.plotPoints.push({
@@ -806,6 +814,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     const improvement_direction = inputSettings.outliers.improvement_direction;
     const trend_n: number = inputSettings.outliers.trend_n;
     const shift_n: number = inputSettings.outliers.shift_n;
+    const stratification_n: number = inputSettings.outliers.stratification_n;
     const ast_specification: boolean = inputSettings.outliers.astronomical_limit === "Specification";
     const two_in_three_specification: boolean = inputSettings.outliers.two_in_three_limit === "Specification";
     const flagSettings: FlagSettings = { process_flag_type, improvement_direction };
@@ -813,7 +822,8 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       astpoint: rep<FlagDirection>("none", controlLimits.values.length),
       two_in_three: rep<FlagDirection>("none", controlLimits.values.length),
       trend: rep<FlagDirection>("none", controlLimits.values.length),
-      shift: rep<FlagDirection>("none", controlLimits.values.length)
+      shift: rep<FlagDirection>("none", controlLimits.values.length),
+      stratification: rep<FlagDirection>("none", controlLimits.values.length)
     }
     for (let i: number = 0; i < groupStartEndIndexes.length; i++) {
       const [start, end] = at(groupStartEndIndexes, i);
@@ -839,6 +849,11 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
           const lower_warn_limits = controlLimits[warnKeys[0]].slice(start, end);
           const upper_warn_limits = controlLimits[warnKeys[1]].slice(start, end);
           copyFlags(outliers.two_in_three, twoInThree(group_values, lower_warn_limits, upper_warn_limits, highlight_series), start, flagSettings);
+        }
+        if (inputSettings.outliers.stratification) {
+          const ll68 = controlLimits.ll68.slice(start, end);
+          const ul68 = controlLimits.ul68.slice(start, end);
+          copyFlags(outliers.stratification, stratification(group_values, ll68, ul68, stratification_n), start, flagSettings);
         }
       }
       if (inputSettings.outliers.trend) {

@@ -11,15 +11,16 @@ type LimitRow = Record<string, LimitCell>;
 
 const limitColumns = [
   "date", "numerator", "denominator", "value", "target", "alt_target", "ll99", "ll95", "ll68", "ul68", "ul95", "ul99",
-  "speclimits_lower", "speclimits_upper", "trend_line", "astpoint", "trend", "shift", "two_in_three"
+  "speclimits_lower", "speclimits_upper", "trend_line", "astpoint", "trend", "shift", "two_in_three", "stratification"
 ] as const;
 
 /** The outlier setting that enables each flag column */
-const flagSettings: Readonly<Partial<Record<string, "astronomical" | "trend" | "shift" | "two_in_three">>> = {
+const flagSettings: Readonly<Partial<Record<string, "astronomical" | "trend" | "shift" | "two_in_three" | "stratification">>> = {
   astpoint: "astronomical",
   trend: "trend",
   shift: "shift",
-  two_in_three: "two_in_three"
+  two_in_three: "two_in_three",
+  stratification: "stratification"
 };
 
 function hasValues(column: readonly (LimitCell | undefined)[]): boolean {
@@ -57,7 +58,8 @@ function appendLimitRows(rows: LimitRow[], rowIds: number[], limits: controlLimi
     astpoint: outliers.astpoint,
     trend: outliers.trend,
     shift: outliers.shift,
-    two_in_three: outliers.two_in_three
+    two_in_three: outliers.two_in_three,
+    stratification: outliers.stratification
   };
   const names: (typeof limitColumns)[number][] = [];
   for (let i = 0; i < limitColumns.length; i++) {

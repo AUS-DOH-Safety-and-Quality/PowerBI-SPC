@@ -70,6 +70,9 @@ export default function buildTooltip(table_row: summaryTableRowData,
     }
     patterns.push(flag_text)
   }
+  if (table_row.stratification !== "none") {
+    patterns.push("Hugging / Stratification")
+  }
   appendPatternTooltips(tooltip, patterns, inputTooltips);
   return tooltip;
 }

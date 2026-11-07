@@ -11,7 +11,7 @@ const columnKinds: Readonly<Record<string, ColumnKind>> = {
   ll99: "number", ll95: "number", ll68: "number", ul68: "number", ul95: "number", ul99: "number",
   numerator: "input", denominator: "input",
   date: "date", latest_date: "date",
-  astpoint: "flag", trend: "flag", shift: "flag", two_in_three: "flag"
+  astpoint: "flag", trend: "flag", shift: "flag", two_in_three: "flag", stratification: "flag"
 };
 const iconKinds: Readonly<Record<string, ColumnKind>> = { ...columnKinds, variation: "icon", assurance: "icon" };
 
