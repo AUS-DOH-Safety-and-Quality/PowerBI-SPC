@@ -54,6 +54,12 @@ const outliersSettings = {
                                                   "Colour for two-in-three patterns at the lower limit when the improvement direction is neutral.", "neutral_low"),
       twointhree_colour_neutral_high: colourOption("Neutral (High) Two-in-Three Colour",
                                                    "Colour for two-in-three patterns at the upper limit when the improvement direction is neutral.", "neutral_high")
+    },
+    "Stratification": {
+      stratification: toggleOption("Highlight Stratification", "Flags runs of points within one sigma of the centreline.", false),
+      stratification_n: numberOption("Stratification Points", "Points needed for stratification; points on a one-sigma limit count as within it.",
+                                     15, { min: 2, integer: true }),
+      strat_colour_neutral: colourOption("Strat. Colour", "Colour for stratification points, which have no direction.", "neutral")
     }
   }
 };

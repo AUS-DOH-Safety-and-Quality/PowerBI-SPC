@@ -16,7 +16,7 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
   const flag_last: boolean = inputSettings.nhs_icons.flag_last_point;
 
   const startIndex: number = flag_last ? outliers.astpoint.length - 1 : 0;
-  const patterns: readonly (readonly FlagDirection[])[] = [outliers.astpoint, outliers.shift, outliers.trend, outliers.two_in_three];
+  const patterns: readonly (readonly FlagDirection[])[] = [outliers.astpoint, outliers.shift, outliers.trend, outliers.two_in_three, outliers.stratification];
   let improvementPresent: boolean = false;
   let deteriorationPresent: boolean = false;
   let neutralLowPresent: boolean = false;
@@ -37,6 +37,7 @@ export default function variationIconsToDraw(outliers: Readonly<outliersObject>,
         case "neutral_high":
           neutralHighPresent = true;
           break;
+        case "neutral":
         case "none":
           break;
       }

@@ -70,7 +70,8 @@ describe("rule lengths", () => {
     { outliers: { trend_n: 1 }, error: "1 is not a valid value for trend_n. Valid values are whole numbers, at least 2" },
     { outliers: { trend_n: 2.5 }, error: "2.5 is not a valid value for trend_n. Valid values are whole numbers, at least 2" },
     { outliers: { shift_n: 0 }, error: "0 is not a valid value for shift_n. Valid values are whole numbers, at least 1" },
-    { outliers: { shift_n: 2.5 }, error: "2.5 is not a valid value for shift_n. Valid values are whole numbers, at least 1" }
+    { outliers: { shift_n: 2.5 }, error: "2.5 is not a valid value for shift_n. Valid values are whole numbers, at least 1" },
+    { outliers: { stratification_n: 1 }, error: "1 is not a valid value for stratification_n. Valid values are whole numbers, at least 2" }
   ])("rejects $outliers as a settings error", ({ outliers, error }) => {
     expect(update({ outliers }).result).toEqual({ status: false, type: "settings", error });
   });
@@ -80,6 +81,24 @@ describe("rule lengths", () => {
     expect(updated.result.status).toBe(true);
     expect(updated.viewModel.outliers[0].trend).toContain("improvement");
     expect(updated.viewModel.outliers[0].trend).toContain("deterioration");
+  });
+});
+
+describe("stratification", () => {
+  // Alternating 10 and 11 sit within one sigma of the centreline throughout; 30 breaks the run
+  const hugging = [10, 11, 10, 11, 10, 11, 10, 11, 10, 11, 10, 11];
+  const broken = [10, 11, 10, 11, 10, 11, 30, 11, 10, 11, 10, 11];
+
+  it("flags a run within one sigma as neutral regardless of the flag type and direction", () => {
+    const updated = update({ outliers: { process_flag_type: "improvement", stratification: true, stratification_n: 12 } }, { numerators: hugging });
+    expect(updated.result.status).toBe(true);
+    expect(updated.viewModel.outliers[0].stratification).toEqual(rep("neutral", 12));
+    expect(updated.viewModel.plotPoints[0].aesthetics.colour).toBe(defaultSettings.outliers.strat_colour_neutral);
+  });
+
+  it("does not flag a run shorter than the required length", () => {
+    const updated = update({ outliers: { stratification: true, stratification_n: 7 } }, { numerators: broken });
+    expect(updated.viewModel.outliers[0].stratification).toEqual(rep("none", 12));
   });
 });
 

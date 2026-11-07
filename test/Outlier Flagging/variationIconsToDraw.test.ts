@@ -12,12 +12,14 @@ describe("variationIconsToDraw", () => {
         astpoint: FlagDirection[],
         shift: FlagDirection[] = none,
         trend: FlagDirection[] = none,
-        two_in_three: FlagDirection[] = none
+        two_in_three: FlagDirection[] = none,
+        stratification: FlagDirection[] = none
     ): outliersObject => ({
         astpoint,
         shift,
         trend,
-        two_in_three
+        two_in_three,
+        stratification
     });
 
     const createSettings = (

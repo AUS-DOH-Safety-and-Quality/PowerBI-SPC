@@ -9,7 +9,8 @@ const movingRangeCharts: ReadonlySet<string> = new Set(["i", "i_m", "i_mm", "mr"
 const rules: SettingsGroupRule<settingsValueType>[] = [
   settings => {
     const patterns = settings.outliers;
-    if (settings.nhs_icons.show_variation_icons && !patterns.astronomical && !patterns.shift && !patterns.trend && !patterns.two_in_three) {
+    if (settings.nhs_icons.show_variation_icons && !patterns.astronomical && !patterns.shift && !patterns.trend && !patterns.two_in_three
+        && !patterns.stratification) {
       return "Variation icons require at least one outlier pattern to be selected";
     }
     return undefined;

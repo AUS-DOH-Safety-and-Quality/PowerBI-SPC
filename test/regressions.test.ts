@@ -48,7 +48,8 @@ function yTicks(element: HTMLElement): (string | null)[] {
 }
 
 function keyColumn(queryName: string, values: PrimitiveValue[], category?: string): powerbi.DataViewCategoryColumn {
-  const type = category === undefined ? { dateTime: true, temporal: true } : { temporal: true, category };
+  // Power BI's runtime ValueType carries a null category on a whole date
+  const type = category === undefined ? { dateTime: true, temporal: true, category: null } : { temporal: true, category };
   return {
     source: { displayName: queryName, queryName, roles: { key: true }, type: type as unknown as powerbi.ValueTypeDescriptor },
     values: cells(values)

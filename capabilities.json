@@ -186,6 +186,15 @@
         },
         "twointhree_colour_neutral_high":{
           "type": { "fill": { "solid": { "color": true } } }
+        },
+        "stratification": {
+          "type" : { "bool" : true }
+        },
+        "stratification_n": {
+          "type" : { "numeric" : true }
+        },
+        "strat_colour_neutral":{
+          "type": { "fill": { "solid": { "color": true } } }
         }
       }
     },

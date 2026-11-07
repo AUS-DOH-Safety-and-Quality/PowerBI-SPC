@@ -171,8 +171,8 @@ describe("line tooltip settings", () => {
 describe("pattern tooltips", () => {
   const flagged = [10, 11, 9, 10, 11, 9, 30, 10, 12, 13, 14, 15, 16, 10, 9, 11, 3, 4, 3, 4, 10, 8, 7, 6, 5, 4, 10, -12, 10, 11];
 
-  function patterns(outliers: Partial<settingsValueType["outliers"]>, index: number): string | undefined {
-    const items = tooltip({ outliers }, index, { numerators: flagged });
+  function patterns(outliers: Partial<settingsValueType["outliers"]>, index: number, inputs: LimitInputs = { numerators: flagged }): string | undefined {
+    const items = tooltip({ outliers }, index, inputs);
     for (let i = 0; i < items.length; i++) {
       if (items[i].displayName === "Pattern(s)") {
         return items[i].value;
@@ -185,6 +185,11 @@ describe("pattern tooltips", () => {
     const all = { astronomical: true, shift: true, shift_n: 4, trend: true, trend_n: 4, two_in_three: true };
     expect(patterns(all, 11)).toBe("Astronomical Point\nTrend\nShift\nTwo-in-Three");
     expect(patterns(all, 0)).toBeUndefined();
+  });
+
+  it("names stratification", () => {
+    const hugging = [10, 11, 10, 11, 10, 11, 10, 11, 10, 11, 10, 11];
+    expect(patterns({ stratification: true, stratification_n: 12 }, 3, { numerators: hugging })).toBe("Stratification");
   });
 
   it.each([
