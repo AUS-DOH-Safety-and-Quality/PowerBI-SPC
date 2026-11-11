@@ -156,7 +156,7 @@ describe("reported issues", () => {
     }
   });
 
-  it("#510 keeps an alt. target that changes every row visible, stepping at each change", () => {
+  it("#510 keeps an alt. target that changes every row visible, joined or not", () => {
     const targets = [10, 11, 12, 13, 14];
     const joins = [false, true];
     for (let j = 0; j < joins.length; j++) {
@@ -166,14 +166,14 @@ describe("reported issues", () => {
       const line = must(findBy(rendered.visual.viewModel.groupedLines, 0, "alt_target"))[1];
       const expected: [number, number | undefined][] = [[0, 10]];
       for (let i = 1; i < targets.length; i++) {
-        expected.push([i, targets[i - 1]], [i, joins[j] ? targets[i] : undefined], [i, targets[i]]);
+        expected.push([i, joins[j] ? targets[i] : targets[i - 1]], [i, joins[j] ? targets[i] : undefined], [i, targets[i]]);
       }
       const points: [number, number | undefined][] = [];
       for (let i = 0; i < line.length; i++) {
         points.push([line[i].x, line[i].line_value]);
       }
       expect(points).toEqual(expected);
-      // Each old target is drawn as a segment up to its change; joined, the steps are one path
+      // Unjoined, each old target is drawn as a segment up to its change; joined, the line is one path
       const path = must(rendered.element.querySelector(".alt_target-linegroup path")?.getAttribute("d"));
       expect(path.split("M").length - 1).toBe(joins[j] ? 1 : targets.length);
       expect(path.split("L").length - 1).toBe(joins[j] ? 3 * (targets.length - 1) : targets.length - 1);

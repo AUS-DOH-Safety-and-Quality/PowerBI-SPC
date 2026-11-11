@@ -754,11 +754,11 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
             aesthetics
           });
         }
-        // The old alt. target runs up to the change, so a target that changes every row stays visible
+        // Unjoined, the old alt. target runs up to the change, so a target that changes every row stays visible
         if (isNewAltTarget) {
           formattedLines.push({
             x,
-            line_value: is_alt_target ? controlLimits.alt_target[i - 1] : value,
+            line_value: (is_alt_target && !join_rebaselines) ? controlLimits.alt_target[i - 1] : value,
             group: label,
             aesthetics
           }, {
