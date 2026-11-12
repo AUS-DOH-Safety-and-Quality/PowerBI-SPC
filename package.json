@@ -5,6 +5,7 @@
     "start": "pbiviz start",
     "prepackage": "npm run typecheck",
     "package": "pbiviz package",
+    "package:dev": "package-dev",
     "build": "npm run package",
     "eslint": "npx eslint .",
     "test": "vitest --run",
@@ -12,9 +13,6 @@
     "docs": "quarto preview docs"
   },
   "dependencies": {
-    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/powerbi-visuals-core#5ea52ae"
-  },
-  "overrides": {
-    "powerbi-visuals-api": "$powerbi-visuals-api"
+    "powerbi-visuals-core": "github:AUS-DOH-Safety-and-Quality/powerbi-visuals-core#610c763"
   }
 }
