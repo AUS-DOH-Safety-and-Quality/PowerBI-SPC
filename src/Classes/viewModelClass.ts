@@ -292,6 +292,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
 
     const errors: string[] = [];
     const warnings: string[] = [];
+    const rejections: string[] = [];
 
     for (let idx = 0; idx < idx_per_indicator.length; idx++) {
       const group_idxs = at(idx_per_indicator, idx);
@@ -304,7 +305,9 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       }
       const inpData = extraction.data;
       this.inputData.push(inpData);
-      if (inpData.warningMessage !== "") {
+      if (inpData.rejected !== undefined) {
+        rejections.push(labelledMessage(at(this.groupLabels, idx), inpData.rejected.error));
+      } else if (inpData.warningMessage !== "") {
         warnings.push(labelledMessage(at(this.groupLabels, idx), inpData.warningMessage));
       }
 
@@ -315,16 +318,24 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
       this.scaleAndTruncateLimits(limits, settings, derivedSettings);
       const outliers: outliersObject = this.flagOutliers(limits, groupStartEnd, settings, derivedSettings);
 
+      // A rejected group's table row selects all of its rows
       const keys = inpData.limitInputArgs.keys;
-      const identities = new Array<ISelectionId>(keys.length);
-      for (let i = 0; i < keys.length; i++) {
-        identities[i] = rowIdentity(host, inpData.identityColumns, at(keys, i).id);
+      const identities = new Array<ISelectionId>(inpData.rejected === undefined ? keys.length : group_idxs.length);
+      for (let i = 0; i < identities.length; i++) {
+        identities[i] = rowIdentity(host, inpData.identityColumns, inpData.rejected === undefined ? at(keys, i).id : at(group_idxs, i));
       }
 
       this.groupStartEndIndexes.push(groupStartEnd);
       this.controlLimits.push(limits);
       this.outliers.push(outliers);
       this.identities.push(identities);
+    }
+
+    // Rejected groups keep their summary table row; a single chart has nothing to draw
+    if (idx_per_indicator.length === 1) {
+      errors.push(...rejections);
+    } else {
+      warnings.push(...rejections);
     }
 
     if (errors.length === 0) {
@@ -474,8 +485,9 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
     let anyControlLimits: boolean = false;
     for (let i = 0; i < this.controlLimits.length; i++) {
       const limits = at(this.controlLimits, i);
-      anyNumerators = anyNumerators || anyDefined(limits.numerators);
-      anyDenominators = anyDenominators || anyDefined(limits.denominators);
+      const rejected = at(this.inputData, i).rejected;
+      anyNumerators = anyNumerators || anyDefined(limits.numerators) || rejected?.numerator !== undefined;
+      anyDenominators = anyDenominators || anyDefined(limits.denominators) || rejected?.denominator !== undefined;
       anyControlLimits = anyControlLimits || this.inputSettings.group(i).derivedSettings.chart_type_props.has_control_limits;
     }
     const firstSettings = this.inputSettings.group(0).settings;
@@ -528,7 +540,7 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
         if (varIconFilter === "common" && varIcons[0] !== "commonCause") {
           continue;
         }
-        if (varIconFilter === "special" && varIcons[0] === "commonCause") {
+        if (varIconFilter === "special" && (varIcons.length === 0 || varIcons[0] === "commonCause")) {
           continue;
         }
       }
@@ -560,12 +572,13 @@ export default class viewModelClass extends PlotViewModelBase<typeof settingsMod
           tooltipColumns[`tooltip_${t}`] = lastKey === undefined ? "" : at(rowTooltips, t).value;
         }
       }
+      const rejected = at(this.inputData, i).rejected;
       const table_row: summaryTableRowDataGrouped = {
         ...indicatorColumns,
-        latest_date: lastKey?.label ?? "",
+        latest_date: lastKey?.label ?? rejected?.date ?? "",
         value: formatValues(limits.values[lastIndex], "value"),
-        numerator: formatValues(limits.numerators[lastIndex], "input"),
-        denominator: formatValues(limits.denominators[lastIndex], "input"),
+        numerator: formatValues(limits.numerators[lastIndex] ?? rejected?.numerator, "input"),
+        denominator: formatValues(limits.denominators[lastIndex] ?? rejected?.denominator, "input"),
         target: formatValues(limits.target[lastIndex], "value"),
         alt_target: formatValues(limits.alt_target[lastIndex], "value"),
         ul99: formatValues(limits.ul99[lastIndex], "value"),

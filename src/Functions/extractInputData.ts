@@ -1,6 +1,7 @@
 import { at } from "powerbi-visuals-core/util";
 import { extractRows, formatPrimitiveValue, readNumbers, type InputRows, type ValidatedDataView } from "powerbi-visuals-core/powerbi";
-import { keptValue, type InputDataResult } from "powerbi-visuals-core/data";
+import { isValidNumber, keptValue, type InputDataResult } from "powerbi-visuals-core/data";
+import { sequence } from "powerbi-visuals-core/math";
 import extractKeys from "./extractKeys";
 import validateInputData from "./validateInputData";
 import type { settingsValueType } from "../settings";
@@ -16,6 +17,13 @@ export type dataObject = InputRows<settingsValueType["scatter"], settingsValueTy
   readonly alt_target: (number | undefined)[];
   readonly speclimits_lower: (number | undefined)[];
   readonly speclimits_upper: (number | undefined)[];
+  /** Set when no limits can be calculated: the group's last row, as its summary table row shows it */
+  readonly rejected: {
+    readonly error: string;
+    readonly date: string;
+    readonly numerator: number | undefined;
+    readonly denominator: number | undefined;
+  } | undefined;
 };
 
 /** The group's rows, read against the settings store's values and row settings for that group */
@@ -37,19 +45,28 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
   // Optional denominators are per group, so an indicator without any plots its numerators
   const denominators = chart.needs_denominator || anyDenominator ? groupDenominators : undefined;
   const xbar_sds = chart.needs_sd && sdColumn !== undefined ? readNumbers(sdColumn, idxs) : undefined;
+  const validation = validateInputData(keys, numerators, denominators, xbar_sds, chart);
   const extracted = extractRows(view, idxs, {
     keys,
-    validation: validateInputData(keys, numerators, denominators, xbar_sds, chart),
+    // A rejected group keeps every row's annotations, for its summary table row
+    validation: validation.status === 0 ? validation : { status: 0, messages: validation.messages, kept: sequence(0, idxs.length, 1) },
     rowSettings,
     settings: { messages: inputSettingsClass.validationStatus.messages, messagePositionByRowIndex: inputSettingsClass.messagePositionByRowIndex }
   });
   if (extracted.status === "invalid") {
     return extracted;
   }
-  const { kept, warnings, ...rows } = extracted.data;
-  if (chart.name === "mr" && kept.length < 2) {
-    return { status: "invalid", error: "Moving range charts need at least two valid observations!" };
+  const { kept: validRows, warnings, ...rows } = extracted.data;
+  let rejection: string | undefined;
+  if (validation.status !== 0) {
+    rejection = validation.error;
+  } else if (chart.name === "mr" && validRows.length < 2) {
+    rejection = "Moving range charts need at least two valid observations!";
   }
+  const kept: readonly number[] = rejection === undefined ? validRows : [];
+  const last = idxs.length - 1;
+  const lastNumerator = numerators[last];
+  const lastDenominator = denominators?.[last];
 
   const groupings = view.values.groupings?.[0];
   const limitKeys = new Array<controlLimitsArgs["keys"][number]>(kept.length);
@@ -118,6 +135,12 @@ export default function extractInputData(view: ValidatedDataView<"numerators">, 
       alt_target,
       speclimits_lower,
       speclimits_upper,
+      rejected: rejection === undefined ? undefined : {
+        error: rejection,
+        date: chart.x_axis_use_date ? keys[last] ?? "" : String(last),
+        numerator: isValidNumber(lastNumerator) ? lastNumerator : undefined,
+        denominator: isValidNumber(lastDenominator) ? lastDenominator : undefined
+      },
       warningMessage: warnings.join("\n")
     }
   };

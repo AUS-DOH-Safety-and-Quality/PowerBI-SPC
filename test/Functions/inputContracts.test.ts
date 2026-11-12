@@ -82,7 +82,7 @@ describe("input row contracts", () => {
     expect(absent.data.limitInputArgs.denominators).toBeUndefined();
   });
 
-  it("narrows required numerics and returns errors without fabricated data", () => {
+  it("narrows required numerics and returns rejected groups without limit inputs", () => {
     const valid = extract(buildDataView({
       key: ["A", "B", "C"],
       numerators: [1, 2, 3],
@@ -95,8 +95,14 @@ describe("input row contracts", () => {
     expect(valid.data.limitInputArgs.numerators).toEqual([1, 3]);
     expect(valid.data.limitInputArgs.denominators).toEqual([10, 20]);
     expect(valid.data.limitInputArgs.xbar_sds).toEqual([1, 3]);
-    expect(extract(buildDataView({ key: ["A"], numerators: [null] }), [0])).toEqual({ status: "invalid", error: "All numerators are missing or null!" });
-    expect(extract(buildDataView({ key: ["A"], numerators: [1] }, settingsFor("p")), [0])).toEqual({ status: "invalid", error: "All denominators are missing or null!" });
+    const noNumerators = extract(buildDataView({ key: ["A"], numerators: [null] }), [0]);
+    const noDenominators = extract(buildDataView({ key: ["A"], numerators: [1] }, settingsFor("p")), [0]);
+    if (noNumerators.status !== "valid" || noDenominators.status !== "valid") {
+      throw new Error("Rejected groups are returned with their last row");
+    }
+    expect(noNumerators.data.rejected).toEqual({ error: "All numerators are missing or null!", date: "A", numerator: undefined, denominator: undefined });
+    expect(noDenominators.data.rejected).toEqual({ error: "All denominators are missing or null!", date: "A", numerator: 1, denominator: undefined });
+    expect(noDenominators.data.limitInputArgs.numerators).toEqual([]);
     expect(extract(buildDataView({ key: ["A"] }), [0])).toEqual({ status: "invalid", error: "No numerators passed!" });
   });
 
@@ -161,7 +167,7 @@ describe("input row contracts", () => {
     expect(model.identities[1]).toHaveLength(3);
   });
 
-  it("names the group in grouped warnings and reports every failing group's error", () => {
+  it("names the group in grouped warnings and reports every failing group as a warning", () => {
     const host = createVisualHost({});
     const model = new viewModelClass(createVisualHost({}));
     const viewport = { width: 500, height: 500 };
@@ -171,7 +177,7 @@ describe("input row contracts", () => {
     expect(model.update({ dataViews: [grouped([1, 3, null, 4, 2, 5])], viewport, type: updateType.data }, host))
       .toEqual({ status: true, warning: "A: Category A1 removed due to: Numerator missing." });
     expect(model.update({ dataViews: [grouped([null, null, null, null, null, null])], viewport, type: updateType.data }, host))
-      .toEqual({ status: false, error: "A: All numerators are missing or null!\nB: All numerators are missing or null!" });
+      .toEqual({ status: true, warning: "A: All numerators are missing or null!\nB: All numerators are missing or null!" });
     expect(model.update({ dataViews: [buildDataView({ key: ["A0", "A1", "A2"], numerators: [1, null, 2] })], viewport, type: updateType.data }, host))
       .toEqual({ status: true, warning: "Category A1 removed due to: Numerator missing." });
   });
